@@ -850,6 +850,27 @@ function doMgrAdd(){
 // ── 管理者總覽（從 Google Sheets 即時讀取）──
 let sheetRecs = []; // 從雲端讀回來的資料
 
+// 把 HIST 紙本記錄轉成管理頁面格式
+function getHistRows(){
+  return HIST.map(h=>{
+    const date = h.key.split('_')[0];
+    const name = h.key.split('_')[1];
+    const d = SCHED.find(s=>s.date===date)||{};
+    return {
+      date: '2026/'+date,
+      wd: d.wd||'',
+      label: '第'+d.seq+'場',
+      signer: name,
+      t1: h.t1,
+      t2: h.t2,
+      mats: h.mats,
+      note: h.note||'',
+      type: '紙本記錄',
+      ts: '紙本記錄（管理員建入）'
+    };
+  });
+}
+
 function renderMgr(){
   initMgrForm();
   const el = document.getElementById('mgrList');
@@ -857,36 +878,35 @@ function renderMgr(){
   el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">⏳ 讀取中...</div>';
   statsEl.innerHTML = '';
 
-  if(!gasUrl){ renderMgrLocal(); return; }
+  if(!gasUrl){ renderMgrWithData(getHistRows()); return; }
 
   fetch(gasUrl)
     .then(r=>r.json())
     .then(rows=>{
-      sheetRecs = rows;
-      renderMgrWithData(rows);
+      // 合併：紙本記錄 ＋ Google Sheets 資料
+      const histRows = getHistRows();
+      const allRows = [...histRows, ...rows];
+      sheetRecs = allRows;
+      renderMgrWithData(allRows);
     })
     .catch(()=>{
-      renderMgrLocal();
+      renderMgrWithData(getHistRows());
     });
-}
-
-function renderMgrLocal(){
-  sheetRecs = [];
-  renderMgrWithData([]);
 }
 
 function renderMgrWithData(rows){
   initMgrForm();
-  const total = rows.length;
+  const histCount = rows.filter(r=>r.type==='紙本記錄').length;
   const freeCount = rows.filter(r=>r.type==='自由練習').length;
   const mgrCount = rows.filter(r=>r.type==='管理員補登').length;
   const schedCount = rows.filter(r=>r.type==='排班簽到').length;
+  const total = rows.length;
 
   document.getElementById('mgrStats').innerHTML=`
     <div class="stat-card"><div class="stat-n">${total}</div><div class="stat-l">總記錄筆數</div></div>
     <div class="stat-card"><div class="stat-n">${schedCount}</div><div class="stat-l">排班簽到</div></div>
     <div class="stat-card"><div class="stat-n">${freeCount}</div><div class="stat-l">自由練習</div></div>
-    <div class="stat-card"><div class="stat-n">${mgrCount}</div><div class="stat-l">管理員補登</div></div>`;
+    <div class="stat-card"><div class="stat-n">${histCount}</div><div class="stat-l">紙本記錄</div></div>`;
 
   const el = document.getElementById('mgrList'); el.innerHTML='';
 
@@ -934,6 +954,7 @@ function openMgrPerson(name, rows){
       let badgeClass='badge-sched', badgeTxt='📋 排班';
       if(r.type==='自由練習'){badgeClass='badge-free';badgeTxt='🟣 自由練習';}
       if(r.type==='管理員補登'){badgeClass='badge-mgr';badgeTxt='🛠 補登';}
+      if(r.type==='紙本記錄'){badgeClass='badge-hist';badgeTxt='📄 紙本';}
       card.className='rec-card';
       card.innerHTML=`
         <div class="rec-top">
