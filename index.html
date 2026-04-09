@@ -198,7 +198,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
       <p>13:30–17:30 ｜ 2026/3/30–4/23 ｜ 9位學員</p>
     </div>
     <div class="hd-btns">
-      <button class="hd-btn mgr" onclick="go('mgr')">管理</button>
+      <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
       <button class="hd-btn" onclick="go('settings')">⚙</button>
     </div>
   </div>
@@ -513,7 +513,16 @@ function todayISO() {
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 }
 
-// ── 導航 ──
+// ── 管理者密碼 ──
+function checkMgr(){
+  const pw = prompt('請輸入管理者密碼：');
+  if(pw === '1688'){
+    go('mgr');
+  } else if(pw !== null){
+    alert('密碼錯誤！');
+  }
+}
+
 function go(s) {
   document.querySelectorAll('.scr').forEach(x => x.classList.remove('on'));
   document.getElementById('scr-'+s).classList.add('on');
@@ -838,37 +847,107 @@ function doMgrAdd(){
   pushSheet({date:'2026/'+mmdd,wd:d?d.wd:'-',label:d?'第'+d.seq+'場（補登）':'自由練習（補登）',signer:who,t1,t2,mats,note,type:'管理員補登'},'mgrAddNote');
 }
 
-// ── 管理者總覽 ──
+// ── 管理者總覽（從 Google Sheets 即時讀取）──
+let sheetRecs = []; // 從雲端讀回來的資料
+
 function renderMgr(){
   initMgrForm();
-  let totalSigned=0,withSig=0,freeCount=freeRec.length,mgrCount=0;
-  Object.values(sigRec).forEach(r=>{totalSigned++;if(r.sig)withSig++;if(r.type==='管理員補登')mgrCount++;});
-  freeRec.forEach(r=>{if(r.type==='管理員補登')mgrCount++;});
+  const el = document.getElementById('mgrList');
+  const statsEl = document.getElementById('mgrStats');
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">⏳ 讀取中...</div>';
+  statsEl.innerHTML = '';
+
+  if(!gasUrl){ renderMgrLocal(); return; }
+
+  fetch(gasUrl)
+    .then(r=>r.json())
+    .then(rows=>{
+      sheetRecs = rows;
+      renderMgrWithData(rows);
+    })
+    .catch(()=>{
+      renderMgrLocal();
+    });
+}
+
+function renderMgrLocal(){
+  sheetRecs = [];
+  renderMgrWithData([]);
+}
+
+function renderMgrWithData(rows){
+  initMgrForm();
+  const total = rows.length;
+  const freeCount = rows.filter(r=>r.type==='自由練習').length;
+  const mgrCount = rows.filter(r=>r.type==='管理員補登').length;
+  const schedCount = rows.filter(r=>r.type==='排班簽到').length;
+
   document.getElementById('mgrStats').innerHTML=`
-    <div class="stat-card"><div class="stat-n">${totalSigned+freeRec.length}</div><div class="stat-l">總記錄筆數</div></div>
-    <div class="stat-card"><div class="stat-n">${withSig+freeRec.filter(r=>r.sig).length}</div><div class="stat-l">電子簽名</div></div>
+    <div class="stat-card"><div class="stat-n">${total}</div><div class="stat-l">總記錄筆數</div></div>
+    <div class="stat-card"><div class="stat-n">${schedCount}</div><div class="stat-l">排班簽到</div></div>
     <div class="stat-card"><div class="stat-n">${freeCount}</div><div class="stat-l">自由練習</div></div>
     <div class="stat-card"><div class="stat-n">${mgrCount}</div><div class="stat-l">管理員補登</div></div>`;
-  const el=document.getElementById('mgrList'); el.innerHTML='';
+
+  const el = document.getElementById('mgrList'); el.innerHTML='';
+
+  // 重新整理按鈕
+  const refreshBtn = document.createElement('button');
+  refreshBtn.style.cssText='width:100%;padding:9px;font-size:13px;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:8px;cursor:pointer;margin-bottom:12px;font-family:inherit';
+  refreshBtn.textContent='🔄 重新整理（讀取最新資料）';
+  refreshBtn.onclick = ()=>renderMgr();
+  el.appendChild(refreshBtn);
+
   MEMBERS.forEach(m=>{
-    const recs=m.future?[]:getAllPersonRecs(m.name);
-    const schedTotal=m.future?0:SCHED.filter(d=>d.m1===m.name||d.m2===m.name).length;
-    const schedDone=m.future?0:Object.keys(sigRec).filter(k=>k.split('_')[1]===m.name).length;
-    const pct=schedTotal?Math.round(schedDone/schedTotal*100):0;
+    const personRows = rows.filter(r=>r.signer===m.name);
+    const schedTotal = m.future?0:SCHED.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedDone = personRows.filter(r=>r.type==='排班簽到').length;
+    const pct = schedTotal?Math.round(schedDone/schedTotal*100):0;
     const row=document.createElement('div'); row.className='person-row';
     row.innerHTML=`
       <div class="av${m.future?' fut':''}">${m.name[0]}</div>
       <div class="info">
         <div class="pname">${m.no}. ${m.name}${m.future?' <span style="font-size:10px;color:var(--gray-400);font-weight:400">（未來）</span>':''}</div>
-        <div class="psub">${m.future?'尚未加入':`排班${schedDone}/${schedTotal}｜共${recs.length}筆`}</div>
+        <div class="psub">${m.future?'尚未加入':`排班${schedDone}/${schedTotal}｜共${personRows.length}筆`}</div>
       </div>
       <div class="pbar-wrap">
         <div class="pct">${m.future?'—':pct+'%'}</div>
         <div class="pbar"><div class="pbar-f" style="width:${pct}%"></div></div>
       </div>`;
-    if(!m.future) row.onclick=()=>openPerson(m.name,true);
+    if(!m.future) row.onclick=()=>openMgrPerson(m.name, rows);
     el.appendChild(row);
   });
+}
+
+function openMgrPerson(name, rows){
+  const personRows = rows.filter(r=>r.signer===name);
+  const schedTotal = SCHED.filter(d=>d.m1===name||d.m2===name).length;
+  document.getElementById('mgrPersonAv').textContent = name[0];
+  document.getElementById('mgrPersonName').textContent = name;
+  document.getElementById('mgrPersonSub').textContent = `共 ${personRows.length} 筆記錄（含排班、自由練習、補登）`;
+  const el = document.getElementById('mgrPersonRecs');
+  if(!personRows.length){
+    el.innerHTML='<div class="empty">📋 尚無記錄</div>';
+  } else {
+    el.innerHTML='';
+    personRows.forEach(r=>{
+      const card=document.createElement('div');
+      let badgeClass='badge-sched', badgeTxt='📋 排班';
+      if(r.type==='自由練習'){badgeClass='badge-free';badgeTxt='🟣 自由練習';}
+      if(r.type==='管理員補登'){badgeClass='badge-mgr';badgeTxt='🛠 補登';}
+      card.className='rec-card';
+      card.innerHTML=`
+        <div class="rec-top">
+          <span class="rec-date">${r.date} ${r.label}</span>
+          <span class="rec-time">${r.t1} – ${r.t2}</span>
+        </div>
+        <div style="margin-bottom:5px"><span class="rec-type-badge ${badgeClass}">${badgeTxt}</span></div>
+        <div class="rec-mat">📦 ${r.mats||'—'}</div>
+        ${r.note?`<div class="rec-mat" style="margin-top:2px">📝 ${r.note}</div>`:''}
+        <div class="rec-ts">記錄時間：${r.ts}</div>`;
+      el.appendChild(card);
+    });
+  }
+  go('mgr-person');
 }
 
 // ── 編輯 & 刪除（管理者） ──
