@@ -483,7 +483,7 @@ const HIST = [
 ];
 
 // ── 狀態 ──
-let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxKgrwRLgmpnDr7eMRO0KXOE7KYCpmakn3OBUncoBo8txroHhSNZv9uHyZ0Tksft_nWmg/exec';
+let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxwCFLIBRwejIfRamkZOKVrrUwkVAgNB0x2lZ9bj0VkugtGzDoEngJ7bzRxHk6YF0unAA/exec';
 let sigRec = {};
 try { sigRec = JSON.parse(localStorage.getItem('sigRec7') || '{}'); } catch(e) {}
 // 自由練習記錄（用陣列，允許同一人多次）
@@ -766,11 +766,12 @@ function doSubmit() {
   const t2=document.getElementById('t2').value;
   const note=document.getElementById('noteInput').value.trim();
   const matsStr=getMatsStr(matVals);
-  const sig=document.getElementById('sigCanvas').toDataURL('image/png');
+  const cv=document.getElementById('sigCanvas');
+  const sig=cv.toDataURL('image/jpeg',0.5);
   const key=cur.date+'_'+who;
   sigRec[key]={t1,t2,mats:matsStr,note,sig,hist:false,type:'排班',ts:new Date().toLocaleString('zh-TW')};
   save();
-  pushSheet({date:'2026/'+cur.date,wd:cur.wd,label:'第'+cur.seq+'場',signer:who,t1,t2,mats:matsStr,note,type:'排班簽到'},'syncNote');
+  pushSheet({date:'2026/'+cur.date,wd:cur.wd,label:'第'+cur.seq+'場',signer:who,t1,t2,mats:matsStr,note,type:'排班簽到',sig},'syncNote');
   showSucc('✅',who+' — 排班簽到完成！',`📅 2026/${cur.date}（${cur.wd}）第${cur.seq}場\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
 }
 
@@ -801,12 +802,13 @@ function doFreeSubmit(){
   const t2=document.getElementById('freeT2').value;
   const note=document.getElementById('freeNote').value.trim();
   const matsStr=getMatsStr(freeMatVals);
-  const sig=document.getElementById('freeSigCanvas').toDataURL('image/png');
+  const cv2=document.getElementById('freeSigCanvas');
+  const sig=cv2.toDataURL('image/jpeg',0.5);
   const ts=new Date().toLocaleString('zh-TW');
   freeRec.push({name:who,date,t1,t2,mats:matsStr,note,sig,type:'自由練習',ts});
   save();
   const mmdd=date.slice(5,7)+'/'+date.slice(8,10);
-  pushSheet({date:'2026/'+mmdd,wd:'-',label:'自由練習',signer:who,t1,t2,mats:matsStr,note,type:'自由練習'},'freeSyncNote');
+  pushSheet({date:'2026/'+mmdd,wd:'-',label:'自由練習',signer:who,t1,t2,mats:matsStr,note,type:'自由練習',sig},'freeSyncNote');
   showSucc('🟣',who+' — 自由練習記錄完成！',`📅 2026/${mmdd} 自由練習\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
 }
 
