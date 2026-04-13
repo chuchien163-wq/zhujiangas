@@ -518,14 +518,18 @@ let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
 
 function loadSchedFromSheets() {
   if (!gasUrl) return;
-  fetch(gasUrl, {
-    method:'POST',
-    mode:'no-cors',
-    headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({action:'getSched'})
-  })
-  .then(()=>{})
-  .catch(()=>{});
+  fetch(gasUrl+'?action=getSched')
+    .then(r=>r.json())
+    .then(data=>{
+      if (data.sched && data.sched.length > 0) {
+        data.sched.forEach(s=>{
+          const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+          if (idx>-1) { SCHED_DATA[idx].m1=s.m1; SCHED_DATA[idx].m2=s.m2; }
+        });
+        renderList(); renderGrid();
+      }
+    })
+    .catch(()=>{});
 }
 
 function editSched(seq) {
@@ -538,14 +542,18 @@ function editSched(seq) {
   d.m1 = newM1.trim();
   d.m2 = newM2.trim();
   if (gasUrl) {
-    fetch(gasUrl, {
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'updateSched', seq:d.seq, date:d.date, wd:d.wd, m1:d.m1, m2:d.m2})
-    })
-    .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
-    .catch(()=>alert('⚠️ 同步失敗'));
+    const params = new URLSearchParams({
+      action:'updateSched',
+      seq:String(d.seq),
+      date:d.date,
+      wd:d.wd,
+      m1:d.m1,
+      m2:d.m2
+    });
+    fetch(gasUrl+'?'+params.toString())
+      .then(r=>r.text())
+      .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
+      .catch(()=>alert('⚠️ 同步失敗'));
   }
   renderMgr();
 }
