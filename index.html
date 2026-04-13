@@ -483,7 +483,7 @@ const HIST = [
 ];
 
 // ── 狀態 ──
-let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxwCFLIBRwejIfRaAKfycbxKgrwRLgmpnDr7eMRO0KXOE7KYCpmakn3OBUncoBo8txroHhSNZv9uHyZ0Tksft_nWmgmkZOKVrrUwkVAgNB0x2lZ9bj0VkugtGzDoEngJ7bzRxHk6YF0unAA/exec';
+let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxwCFLIBRwejIfRamkZOKVrrUwkVAgNB0x2lZ9bj0VkugtGzDoEngJ7bzRxHk6YF0unAA/exec';
 let sigRec = {};
 try { sigRec = JSON.parse(localStorage.getItem('sigRec7') || '{}'); } catch(e) {}
 // 自由練習記錄（用陣列，允許同一人多次）
@@ -518,18 +518,14 @@ let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
 
 function loadSchedFromSheets() {
   if (!gasUrl) return;
-  fetch(gasUrl, {method:'POST', body:JSON.stringify({action:'getSched'})})
-    .then(r=>r.json())
-    .then(data=>{
-      if (data.sched && data.sched.length > 0) {
-        data.sched.forEach(s=>{
-          const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
-          if (idx>-1) { SCHED_DATA[idx].m1=s.m1; SCHED_DATA[idx].m2=s.m2; }
-        });
-      }
-      renderList(); renderGrid();
-    })
-    .catch(()=>{});
+  fetch(gasUrl, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({action:'getSched'})
+  })
+  .then(()=>{})
+  .catch(()=>{});
 }
 
 function editSched(seq) {
@@ -542,9 +538,14 @@ function editSched(seq) {
   d.m1 = newM1.trim();
   d.m2 = newM2.trim();
   if (gasUrl) {
-    fetch(gasUrl, {method:'POST', body:JSON.stringify({action:'updateSched', seq:d.seq, date:d.date, wd:d.wd, m1:d.m1, m2:d.m2})})
-      .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
-      .catch(()=>alert('⚠️ 同步失敗'));
+    fetch(gasUrl, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'updateSched', seq:d.seq, date:d.date, wd:d.wd, m1:d.m1, m2:d.m2})
+    })
+    .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
+    .catch(()=>alert('⚠️ 同步失敗'));
   }
   renderMgr();
 }
