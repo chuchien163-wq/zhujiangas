@@ -927,14 +927,30 @@ function renderMgr(){
 
   if(!gasUrl){ renderMgrWithData(getHistRows()); return; }
 
-  fetch(gasUrl)
+  // 先讀取最新排班，再讀取簽到記錄
+  const schedPromise = fetch(gasUrl+'?action=getSched')
     .then(r=>r.json())
-    .then(rows=>{
-      // 合併：紙本記錄 ＋ Google Sheets 資料
+    .then(data=>{
+      if(data.sched && data.sched.length>0){
+        data.sched.forEach(s=>{
+          const idx=SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+          if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
+        });
+      }
+    })
+    .catch(()=>{});
+
+  const recsPromise = fetch(gasUrl)
+    .then(r=>r.json())
+    .catch(()=>[]);
+
+  Promise.all([schedPromise, recsPromise])
+    .then(([_, rows])=>{
       const histRows = getHistRows();
-      const allRows = [...histRows, ...rows];
+      const allRows = [...histRows, ...(rows||[])];
       sheetRecs = allRows;
       renderMgrWithData(allRows);
+      renderList(); renderGrid();
     })
     .catch(()=>{
       renderMgrWithData(getHistRows());
