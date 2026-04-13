@@ -515,6 +515,14 @@ function todayISO() {
 
 // ── 排班資料（可從 Sheets 覆蓋）──
 let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
+// 從 localStorage 讀取已存的排班修改
+try {
+  const savedSched = JSON.parse(localStorage.getItem('schedOverride') || '[]');
+  savedSched.forEach(s=>{
+    const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+    if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
+  });
+} catch(e) {}
 
 function loadSchedFromSheets() {
   if (!gasUrl) return;
@@ -522,9 +530,11 @@ function loadSchedFromSheets() {
     .then(r=>r.json())
     .then(data=>{
       if (data.sched && data.sched.length > 0) {
+        // 存到 localStorage 讓下次載入不閃爍
+        localStorage.setItem('schedOverride', JSON.stringify(data.sched));
         data.sched.forEach(s=>{
           const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
-          if (idx>-1) { SCHED_DATA[idx].m1=s.m1; SCHED_DATA[idx].m2=s.m2; }
+          if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
         });
         renderList(); renderGrid();
       }
