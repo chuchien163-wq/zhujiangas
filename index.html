@@ -513,6 +513,42 @@ function todayISO() {
   return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 }
 
+// ── 排班資料（可從 Sheets 覆蓋）──
+let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
+
+function loadSchedFromSheets() {
+  if (!gasUrl) return;
+  fetch(gasUrl, {method:'POST', body:JSON.stringify({action:'getSched'})})
+    .then(r=>r.json())
+    .then(data=>{
+      if (data.sched && data.sched.length > 0) {
+        data.sched.forEach(s=>{
+          const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+          if (idx>-1) { SCHED_DATA[idx].m1=s.m1; SCHED_DATA[idx].m2=s.m2; }
+        });
+      }
+      renderList(); renderGrid();
+    })
+    .catch(()=>{});
+}
+
+function editSched(seq) {
+  const d = SCHED_DATA.find(s=>s.seq===seq);
+  if (!d) return;
+  const newM1 = prompt(`第${seq}場 練習人員1（目前：${d.m1}）`, d.m1);
+  if (newM1===null) return;
+  const newM2 = prompt(`第${seq}場 練習人員2（目前：${d.m2}）`, d.m2);
+  if (newM2===null) return;
+  d.m1 = newM1.trim();
+  d.m2 = newM2.trim();
+  if (gasUrl) {
+    fetch(gasUrl, {method:'POST', body:JSON.stringify({action:'updateSched', seq:d.seq, date:d.date, wd:d.wd, m1:d.m1, m2:d.m2})})
+      .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
+      .catch(()=>alert('⚠️ 同步失敗'));
+  }
+  renderMgr();
+}
+
 // ── 管理者密碼 ──
 function checkMgr(){
   const pw = prompt('請輸入管理者密碼：');
@@ -544,7 +580,7 @@ function renderList() {
   const td = today(), el = document.getElementById('sList');
   el.innerHTML = '';
   let done = 0;
-  SCHED.forEach(d => {
+  SCHED_DATA.forEach(d => {
     const k1=d.date+'_'+d.m1, k2=d.date+'_'+d.m2;
     const r1=sigRec[k1], r2=sigRec[k2];
     if(r1) done++; if(r2) done++;
@@ -579,7 +615,7 @@ function renderGrid() {
   MEMBERS.forEach(m => {
     if(m.future) return;
     const recs = getAllPersonRecs(m.name);
-    const schedTotal = SCHED.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedTotal = SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
     const pct = schedTotal ? Math.round(Object.keys(sigRec).filter(k=>k.split('_')[1]===m.name).length/schedTotal*100) : 0;
     const c = document.createElement('div'); c.className='p-card';
     c.innerHTML = `
@@ -606,7 +642,7 @@ function getAllPersonRecs(name) {
 // ── 個人詳細 ──
 function openPerson(name, isAdmin) {
   const recs = getAllPersonRecs(name);
-  const schedTotal = SCHED.filter(d=>d.m1===name||d.m2===name).length;
+  const schedTotal = SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
   const schedDone  = Object.keys(sigRec).filter(k=>k.split('_')[1]===name).length;
   const freeCount  = freeRec.filter(r=>r.name===name).length;
 
@@ -919,10 +955,34 @@ function renderMgrWithData(rows){
   refreshBtn.onclick = ()=>renderMgr();
   el.appendChild(refreshBtn);
 
+  // 排班表編輯區
+  const schedLabel = document.createElement('p');
+  schedLabel.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;margin:4px 0 8px';
+  schedLabel.textContent='📅 排班表管理（點✏️可修改人員）';
+  el.appendChild(schedLabel);
+  SCHED_DATA.forEach(d=>{
+    const srow = document.createElement('div');
+    srow.style.cssText='background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px';
+    srow.innerHTML=`
+      <div>
+        <span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span>
+        <div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.m1}、${d.m2}</div>
+      </div>
+      <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 修改</button>`;
+    el.appendChild(srow);
+  });
+  const divider = document.createElement('div');
+  divider.style.cssText='border-top:1px solid var(--border);margin:14px 0 10px';
+  el.appendChild(divider);
+  const memberLabel = document.createElement('p');
+  memberLabel.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;margin:0 0 8px';
+  memberLabel.textContent='👥 學員個別狀況';
+  el.appendChild(memberLabel);
+
   MEMBERS.forEach(m=>{
     const personRows = rows.filter(r=>r.signer===m.name);
-    const schedTotal = m.future?0:SCHED.filter(d=>d.m1===m.name||d.m2===m.name).length;
-    const schedDone = personRows.filter(r=>r.type==='排班簽到').length;
+    const schedTotal = m.future?0:SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedDone = personRows.filter(r=>r.type==='排班簽到'||r.type==='管理員補登').length;
     const pct = schedTotal?Math.round(schedDone/schedTotal*100):0;
     const row=document.createElement('div'); row.className='person-row';
     row.innerHTML=`
@@ -942,7 +1002,7 @@ function renderMgrWithData(rows){
 
 function openMgrPerson(name, rows){
   const personRows = rows.filter(r=>r.signer===name);
-  const schedTotal = SCHED.filter(d=>d.m1===name||d.m2===name).length;
+  const schedTotal = SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
   document.getElementById('mgrPersonAv').textContent = name[0];
   document.getElementById('mgrPersonName').textContent = name;
   document.getElementById('mgrPersonSub').textContent = `共 ${personRows.length} 筆記錄（含排班、自由練習、補登）`;
@@ -1034,6 +1094,7 @@ function cpCode(){
 // ── 初始化 ──
 renderList();
 renderGrid();
+loadSchedFromSheets();
 setTimeout(()=>{initSig('sigCanvas');initSig('freeSigCanvas');},300);
 </script>
 </body>
