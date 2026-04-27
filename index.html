@@ -18,7 +18,6 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(--gray-800);min-height:100vh}
-
 .hd{background:var(--blue);color:#fff;padding:12px 16px;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(26,95,168,.3)}
 .hd-row{display:flex;justify-content:space-between;align-items:center}
 .hd h1{font-size:15px;font-weight:700;line-height:1.3}
@@ -26,24 +25,53 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(-
 .hd-btns{display:flex;gap:6px;flex-shrink:0;margin-left:10px}
 .hd-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;font-weight:500}
 .hd-btn.mgr{background:rgba(255,220,100,.25);border-color:rgba(255,220,100,.5)}
-
-.scr{display:none;padding:14px 14px 60px;max-width:620px;margin:0 auto}
+.scr{display:none;padding:14px 14px 60px;max-width:680px;margin:0 auto}
 .scr.on{display:block}
-
 .tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:100}
 .tab{flex:1;padding:10px 4px;font-size:13px;font-family:inherit;background:transparent;border:none;border-bottom:2.5px solid transparent;color:var(--gray-400);cursor:pointer;font-weight:500}
 .tab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.sec{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;margin:16px 0 8px}
 
-.sec{font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;text-transform:uppercase;margin:16px 0 8px}
-
-/* PROGRESS */
+/* 行事曆 */
+.cal-section{margin-bottom:18px}
+.cal-month-title{font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:8px;padding-left:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{font-size:10px;color:var(--gray-400);text-align:center;padding:4px 0;font-weight:700}
+.cal-dow.we{color:var(--red)}
+.cal-cell{min-height:72px;border-radius:8px;border:1px solid var(--border);padding:5px;background:#fff;position:relative}
+.cal-cell.empty{background:transparent;border-color:transparent}
+.cal-cell.holiday{background:var(--gray-50)}
+.cal-cell.has-sched{border-color:var(--blue-m);cursor:pointer;transition:box-shadow .15s,border-color .15s}
+.cal-cell.has-sched:hover{box-shadow:0 2px 8px rgba(26,95,168,.15);border-color:var(--blue)}
+.cal-cell.reminder{border-color:#f0c070;background:#fffbf0;cursor:default}
+.cal-cell.all-done{border-color:var(--green)}
+.cal-daynum{font-size:11px;font-weight:700;color:var(--gray-400);margin-bottom:3px}
+.cal-cell.has-sched .cal-daynum{color:var(--blue)}
+.cal-cell.holiday .cal-daynum{color:var(--red)}
+.cal-cell.reminder .cal-daynum{color:var(--amber)}
+.cal-cell.all-done .cal-daynum{color:var(--green)}
+.cal-person{font-size:9px;padding:1px 4px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.cal-person.done{background:var(--green-l);color:var(--green)}
+.cal-person.wait{background:var(--blue-l);color:var(--blue)}
+.cal-person.blank{background:var(--amber-l);color:var(--amber);border:1px dashed #f0c070}
+.cal-reminder-tag{font-size:9px;background:var(--amber-l);color:var(--amber);border-radius:3px;padding:2px 4px;line-height:1.4}
 .prog-box{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .prog-lbl{font-size:12px;color:var(--gray-600);white-space:nowrap}
 .prog-bar{flex:1;height:7px;background:var(--gray-100);border-radius:4px;overflow:hidden}
 .prog-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .5s}
 .prog-val{font-size:13px;font-weight:700;color:var(--blue);white-space:nowrap}
 
-/* FREE PRACTICE BUTTON */
+/* 個人 grid */
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.p-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 8px;cursor:pointer;text-align:center;transition:border-color .15s}
+.p-card:hover{border-color:var(--blue-m)}
+.p-av{width:44px;height:44px;border-radius:50%;background:var(--blue-l);color:var(--blue);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 7px}
+.p-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.p-cnt{font-size:11px;color:var(--gray-400)}
+.p-bar{height:3px;background:var(--gray-100);border-radius:2px;margin-top:7px;overflow:hidden}
+.p-fill{height:100%;background:var(--blue);border-radius:2px}
+
+/* 自由練習按鈕 */
 .free-btn{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed var(--purple);border-radius:var(--r);padding:13px 16px;margin-bottom:12px;cursor:pointer;transition:background .15s}
 .free-btn:hover{background:var(--purple-l)}
 .free-btn .fb-ico{width:40px;height:40px;border-radius:50%;background:var(--purple-l);color:var(--purple);font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -51,33 +79,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(-
 .free-btn .fb-title{font-size:14px;font-weight:700;color:var(--purple)}
 .free-btn .fb-sub{font-size:11px;color:var(--gray-400);margin-top:2px}
 .free-btn .fb-arr{color:var(--purple);font-size:18px}
-
-/* DAY CARDS */
-.day-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:9px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
-.day-card:hover{border-color:var(--blue-m);box-shadow:0 2px 8px rgba(26,95,168,.1)}
-.day-card.today{border:2px solid var(--blue)}
-.day-card.alldone{border-color:var(--green)}
-.c-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.c-date{font-size:14px;font-weight:700}
-.t-pill{background:var(--blue);color:#fff;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700}
-.hist-pill{background:#fff3cd;color:#856404;font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid #ffc107}
-.c-seq{font-size:11px;color:var(--gray-400)}
-.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
-.chip{font-size:12px;padding:3px 10px;border-radius:20px;border:1px solid var(--gray-200);color:var(--gray-600)}
-.chip.ok{background:var(--green-l);color:var(--green);border-color:transparent;font-weight:500}
-.chip.wait{border-color:var(--blue);color:var(--blue);font-weight:500}
-.chip.hist{background:#fff8e1;color:#8a6d00;border-color:transparent}
-
-/* PERSON GRID */
-.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.p-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 8px;cursor:pointer;text-align:center;transition:border-color .15s}
-.p-card:hover{border-color:var(--blue-m)}
-.p-av{width:44px;height:44px;border-radius:50%;background:var(--blue-l);color:var(--blue);font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 7px}
-.p-av.fut{background:var(--gray-100);color:var(--gray-400)}
-.p-name{font-size:12px;font-weight:700;margin-bottom:2px}
-.p-cnt{font-size:11px;color:var(--gray-400)}
-.p-bar{height:3px;background:var(--gray-100);border-radius:2px;margin-top:7px;overflow:hidden}
-.p-fill{height:100%;background:var(--blue);border-radius:2px}
 
 /* FORM */
 .back-btn{background:transparent;border:none;color:var(--gray-600);font-size:13px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:4px;margin-bottom:12px;font-family:inherit}
@@ -88,14 +89,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(-
 .info-box strong{color:var(--gray-800)}
 .fg{margin-bottom:11px}
 .fg label{font-size:12px;color:var(--gray-600);display:block;margin-bottom:4px;font-weight:500}
-.fg select,.fg input[type=time],.fg input[type=text],.fg input[type=date],.fg textarea{
-  width:100%;font-size:14px;padding:9px 11px;border-radius:var(--rs);
-  border:1px solid var(--gray-200);background:#fff;color:var(--gray-800);font-family:inherit}
+.fg select,.fg input[type=time],.fg input[type=text],.fg input[type=date],.fg textarea{width:100%;font-size:14px;padding:9px 11px;border-radius:var(--rs);border:1px solid var(--gray-200);background:#fff;color:var(--gray-800);font-family:inherit}
 .fg select:focus,.fg input:focus,.fg textarea:focus{outline:none;border-color:var(--blue)}
 .fg textarea{resize:none;height:60px}
 .t2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* MAT TABLE */
 .mat-wrap{border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
 .mat-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .mat-tbl th{font-size:11px;font-weight:700;color:var(--gray-600);padding:7px 8px;background:var(--gray-50);border-bottom:1px solid var(--border);text-align:left}
@@ -106,32 +103,22 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(-
 .qb{width:28px;height:28px;border-radius:6px;border:1px solid var(--gray-200);background:#fff;color:var(--gray-800);cursor:pointer;font-size:17px;line-height:1;display:flex;align-items:center;justify-content:center;font-family:inherit}
 .qb:active{background:var(--gray-100)}
 .qv{min-width:24px;text-align:center;font-size:13px;font-weight:700}
-
-/* SIG */
 .sig-wrap{border:1px solid var(--gray-200);border-radius:var(--rs);background:#fdfdfc;overflow:hidden}
 canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .sig-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-top:1px solid var(--border)}
 .sig-hint{font-size:11px;color:var(--gray-400)}
 .sig-clr{font-size:12px;padding:3px 12px;border-radius:6px;border:1px solid var(--gray-200);background:transparent;color:var(--gray-600);cursor:pointer;font-family:inherit}
-
-/* BTN */
 .btn-p{width:100%;padding:13px;font-size:15px;font-weight:700;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);cursor:pointer;margin-top:10px;font-family:inherit;transition:background .15s}
 .btn-p:hover{background:var(--blue-d)}
-.btn-p:disabled{opacity:.4;cursor:not-allowed}
 .btn-p.purple{background:var(--purple)}
 .btn-p.purple:hover{background:#4a3190}
-
 .alert{border-radius:var(--rs);padding:9px 14px;margin-top:9px;font-size:13px}
 .a-ok{background:var(--green-l);color:var(--green)}
 .a-warn{background:var(--amber-l);color:var(--amber)}
-
-/* SUCCESS */
 .succ{text-align:center;padding:32px 16px}
 .succ .ico{font-size:52px;margin-bottom:14px}
 .succ h2{font-size:20px;font-weight:700;margin-bottom:6px}
 .succ-d{font-size:13px;color:var(--gray-600);line-height:1.8;white-space:pre-line;background:var(--gray-50);border-radius:var(--rs);padding:13px 16px;margin-top:12px;text-align:left}
-
-/* REC CARDS */
 .rec-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;margin-bottom:10px}
 .rec-card.free-rec{border-left:3px solid var(--purple)}
 .rec-card.mgr-rec{border-left:3px solid var(--amber)}
@@ -150,8 +137,6 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .rec-ts{font-size:10px;color:var(--gray-400);margin-top:5px}
 .hist-note{font-size:11px;color:var(--amber);background:var(--amber-l);padding:4px 8px;border-radius:5px;margin:6px 0 3px;display:inline-block}
 .empty{text-align:center;padding:30px;color:var(--gray-400);font-size:13px}
-
-/* MANAGER */
 .mgr-header{background:linear-gradient(135deg,#1a3a5c,#1a5fa8);color:#fff;border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
 .mgr-header h2{font-size:16px;font-weight:700;margin-bottom:4px}
 .mgr-header p{font-size:12px;opacity:.8}
@@ -162,7 +147,6 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .person-row{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .15s}
 .person-row:hover{border-color:var(--blue-m)}
 .person-row .av{width:38px;height:38px;border-radius:50%;background:var(--blue-l);color:var(--blue);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.person-row .av.fut{background:var(--gray-100);color:var(--gray-400)}
 .person-row .info{flex:1;min-width:0}
 .person-row .pname{font-size:14px;font-weight:700}
 .person-row .psub{font-size:11px;color:var(--gray-400);margin-top:1px}
@@ -170,32 +154,26 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .person-row .pbar{height:5px;background:var(--gray-100);border-radius:3px;overflow:hidden;margin-top:3px}
 .person-row .pbar-f{height:100%;background:var(--blue);border-radius:3px}
 .person-row .pct{font-size:11px;color:var(--blue);font-weight:700;text-align:right}
-
-/* MGR ADD FORM */
 .mgr-add-box{background:var(--amber-l);border:1px solid #f0c070;border-radius:var(--r);padding:14px;margin-bottom:14px}
 .mgr-add-box h3{font-size:14px;font-weight:700;color:var(--amber);margin-bottom:10px}
-
-/* SETTINGS */
 .s-box{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
 .s-box h3{font-size:14px;font-weight:700;margin-bottom:10px}
 .step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
 .step-n{width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .step-t{font-size:13px;color:var(--gray-600);line-height:1.6}
 .step-t strong{color:var(--gray-800)}
-.code-blk{background:var(--gray-800);color:#a8d8a8;border-radius:var(--rs);padding:12px;font-size:10px;font-family:monospace;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin-top:8px;max-height:220px;overflow-y:auto}
-.copy-btn{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid var(--gray-200);background:transparent;color:var(--gray-600);cursor:pointer;margin-top:6px;font-family:inherit}
-
+.cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gray-600)}
+.leg-dot{width:10px;height:10px;border-radius:2px}
 @media(max-width:380px){.p-grid{grid-template-columns:repeat(2,1fr)}.mgr-stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
-
-<!-- HEADER -->
 <div class="hd">
   <div class="hd-row">
     <div>
       <h1>竹建瓦斯 乙級導管配管自主練習</h1>
-      <p>13:30–17:30 ｜ 2026/3/30–4/23 ｜ 9位學員</p>
+      <p>13:30–17:30 ｜ 2026/4/28–5/13 ｜ 每場2人+空白位</p>
     </div>
     <div class="hd-btns">
       <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
@@ -204,21 +182,18 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   </div>
 </div>
 
-<!-- ══ 學員主頁 ══ -->
+<!-- 主頁 -->
 <div id="scr-list" class="scr on">
   <div class="tabs" style="margin:0 -14px;padding:0 14px">
-    <button class="tab on" onclick="swTab('s',this)">排班表</button>
+    <button class="tab on" onclick="swTab('s',this)">行事曆</button>
     <button class="tab" onclick="swTab('p',this)">個人記錄</button>
   </div>
-
   <div id="tab-s" style="padding-top:14px">
     <div class="prog-box">
       <span class="prog-lbl">排班進度</span>
       <div class="prog-bar"><div class="prog-fill" id="pFill" style="width:0%"></div></div>
       <span class="prog-val" id="pVal">—</span>
     </div>
-
-    <!-- 自由練習按鈕 -->
     <div class="free-btn" onclick="go('free')">
       <div class="fb-ico">＋</div>
       <div class="fb-txt">
@@ -227,16 +202,20 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
       </div>
       <div class="fb-arr">›</div>
     </div>
-
-    <div id="sList"></div>
+    <div class="cal-legend">
+      <div class="leg"><div class="leg-dot" style="background:var(--blue-l);border:1px solid var(--blue-m)"></div>有排班</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--green-l);border:1px solid var(--green)"></div>已完成</div>
+      <div class="leg"><div class="leg-dot" style="background:#fffbf0;border:1px solid #f0c070"></div>提醒事項</div>
+      <div class="leg"><div class="leg-dot" style="background:var(--gray-50);border:1px solid var(--border)"></div>假日</div>
+    </div>
+    <div id="calContainer"></div>
   </div>
-
   <div id="tab-p" style="display:none;padding-top:14px">
     <div class="p-grid" id="pGrid"></div>
   </div>
 </div>
 
-<!-- ══ 個人詳細（學員） ══ -->
+<!-- 個人詳細 -->
 <div id="scr-person" class="scr">
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
@@ -249,9 +228,9 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div id="personRecs"></div>
 </div>
 
-<!-- ══ 排班簽到 ══ -->
+<!-- 排班簽到 -->
 <div id="scr-sign" class="scr">
-  <button class="back-btn" onclick="go('list')">← 返回排班表</button>
+  <button class="back-btn" onclick="go('list')">← 返回行事曆</button>
   <div class="info-box blue" id="signInfo"></div>
   <div class="sec">簽名人</div>
   <div class="fg"><label>選擇您的姓名</label><select id="who"></select></div>
@@ -268,11 +247,11 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <canvas id="sigCanvas"></canvas>
     <div class="sig-bar"><span class="sig-hint">請用手指或滑鼠在此簽名</span><button class="sig-clr" onclick="clrSig('sigCanvas')">清除重簽</button></div>
   </div>
-  <button class="btn-p" id="okBtn" onclick="doSubmit()">✔ 確認簽到送出</button>
+  <button class="btn-p" onclick="doSubmit()">✔ 確認簽到送出</button>
   <div id="syncNote" style="display:none" class="alert"></div>
 </div>
 
-<!-- ══ 自由練習簽到 ══ -->
+<!-- 自由練習 -->
 <div id="scr-free" class="scr">
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div class="info-box purple">
@@ -295,11 +274,11 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <canvas id="freeSigCanvas"></canvas>
     <div class="sig-bar"><span class="sig-hint">請用手指或滑鼠在此簽名</span><button class="sig-clr" onclick="clrSig('freeSigCanvas')">清除重簽</button></div>
   </div>
-  <button class="btn-p purple" id="freeOkBtn" onclick="doFreeSubmit()">✔ 送出自由練習記錄</button>
+  <button class="btn-p purple" onclick="doFreeSubmit()">✔ 送出自由練習記錄</button>
   <div id="freeSyncNote" style="display:none" class="alert"></div>
 </div>
 
-<!-- ══ 成功頁 ══ -->
+<!-- 成功頁 -->
 <div id="scr-success" class="scr">
   <div class="succ">
     <div class="ico" id="succIco">✅</div>
@@ -309,16 +288,14 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   </div>
 </div>
 
-<!-- ══ 管理者 ══ -->
+<!-- 管理者 -->
 <div id="scr-mgr" class="scr">
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div class="mgr-header">
     <h2>管理者總覽</h2>
-    <p>竹建瓦斯 乙級導管配管自主練習 2026/3/30–4/23</p>
+    <p>竹建瓦斯 乙級導管配管自主練習 2026/4/28–5/13</p>
   </div>
   <div class="mgr-stats" id="mgrStats"></div>
-
-  <!-- 管理者補登 -->
   <div class="mgr-add-box">
     <h3>＋ 幫學員補登記錄</h3>
     <div class="fg"><label>學員姓名</label><select id="mgrWho"></select></div>
@@ -327,17 +304,16 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
       <div class="fg"><label>開始時間</label><input type="time" id="mgrT1" value="13:30"></div>
       <div class="fg"><label>結束時間</label><input type="time" id="mgrT2" value="17:30"></div>
     </div>
-    <div class="fg"><label>料件記錄</label><input type="text" id="mgrMats" placeholder="例：鍍鋅鋼管 3/4&quot; 1支（大家一起用）"></div>
+    <div class="fg"><label>料件記錄</label><input type="text" id="mgrMats" placeholder="例：鍍鋅鋼管 3/4&quot; 1支"></div>
     <div class="fg"><label>備註</label><input type="text" id="mgrNote" placeholder="備註說明"></div>
     <button class="btn-p" onclick="doMgrAdd()" style="background:var(--amber);margin-top:4px">補登送出</button>
     <div id="mgrAddNote" style="display:none" class="alert"></div>
   </div>
-
   <div class="sec">學員個別狀況</div>
   <div id="mgrList"></div>
 </div>
 
-<!-- ══ 管理者個人記錄 ══ -->
+<!-- 管理者個人記錄 -->
 <div id="scr-mgr-person" class="scr">
   <button class="back-btn" onclick="go('mgr')">← 返回管理總覽</button>
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
@@ -350,7 +326,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div id="mgrPersonRecs"></div>
 </div>
 
-<!-- ══ 設定 ══ -->
+<!-- 設定 -->
 <div id="scr-settings" class="scr">
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div class="s-box">
@@ -359,390 +335,296 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <button class="btn-p" onclick="saveCfg()" style="margin-top:0">儲存連結</button>
     <div id="cfgOk" style="display:none" class="alert a-ok">✅ 已儲存！</div>
   </div>
-  <div class="s-box">
-    <h3>📋 設定步驟</h3>
-    <div class="step"><div class="step-n">1</div><div class="step-t">到 <strong>Google Sheets</strong> 建立新試算表，取名「竹建瓦斯練習記錄」</div></div>
-    <div class="step"><div class="step-n">2</div><div class="step-t">上方選單 → <strong>擴充功能</strong> → <strong>Apps Script</strong></div></div>
-    <div class="step"><div class="step-n">3</div><div class="step-t">把原本程式碼全部刪掉，點下方「複製程式碼」貼入，Ctrl+S 儲存</div></div>
-    <div class="step"><div class="step-n">4</div><div class="step-t">按「<strong>部署</strong>」→「新增部署」→ 網頁應用程式 → 執行身分「我」→ 存取「<strong>任何人</strong>」→「部署」→ 授權</div></div>
-    <div class="step"><div class="step-n">5</div><div class="step-t">複製「網頁應用程式網址」→ 貼到上方 → 儲存完成</div></div>
-  </div>
-  <div class="s-box">
-    <h3>💻 Apps Script 程式碼</h3>
-    <div class="code-blk" id="gasCode">function doPost(e) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sh = ss.getSheetByName('簽到記錄');
-  if (!sh) {
-    sh = ss.insertSheet('簽到記錄');
-    sh.appendRow(['日期','星期','場次/類型','簽名人','簽到','簽退','材料異動','備註','記錄類型','記錄時間']);
-    sh.getRange(1,1,1,10).setFontWeight('bold');
-    sh.setFrozenRows(1);
-  }
-  var d = JSON.parse(e.postData.contents);
-  sh.appendRow([
-    d.date, d.wd || '-', d.label, d.signer,
-    d.t1, d.t2, d.mats, d.note, d.type,
-    new Date().toLocaleString('zh-TW')
-  ]);
-  return ContentService
-    .createTextOutput(JSON.stringify({ok:true}))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-function doGet(){ return ContentService.createTextOutput('OK'); }</div>
-    <button class="copy-btn" onclick="cpCode()">複製程式碼</button>
-  </div>
 </div>
 
-<!-- ══════════ JS ══════════ -->
 <script>
 const SCHED = [
-  {seq:1,  date:'03/30', wd:'一', m1:'蔡凱程', m2:'劉建彣'},
-  {seq:2,  date:'03/31', wd:'二', m1:'張鈞豪', m2:'林琮炫'},
-  {seq:3,  date:'04/01', wd:'三', m1:'陳人豪', m2:'王璽凱'},
-  {seq:4,  date:'04/07', wd:'二', m1:'蔡凱程', m2:'陳東彥'},
-  {seq:5,  date:'04/08', wd:'三', m1:'張鈞豪', m2:'黃禹竣'},
-  {seq:6,  date:'04/09', wd:'四', m1:'陳人豪', m2:'劉建彣'},
-  {seq:7,  date:'04/10', wd:'五', m1:'黃禹竣', m2:'林琮炫'},
-  {seq:8,  date:'04/13', wd:'一', m1:'陳人豪', m2:'黃禹竣'},
-  {seq:9,  date:'04/14', wd:'二', m1:'林孟賢', m2:'林琮炫'},
-  {seq:10, date:'04/15', wd:'三', m1:'陳東彥', m2:'林孟賢'},
-  {seq:11, date:'04/16', wd:'四', m1:'張鈞豪', m2:'林孟賢'},
-  {seq:12, date:'04/17', wd:'五', m1:'陳人豪', m2:'王璽凱'},
-  {seq:13, date:'04/20', wd:'一', m1:'林孟賢', m2:'陳東彥'},
-  {seq:14, date:'04/21', wd:'二', m1:'劉建彣', m2:'張鈞豪'},
-  {seq:15, date:'04/22', wd:'三', m1:'黃禹竣', m2:'劉建彣'},
-  {seq:16, date:'04/23', wd:'四', m1:'王璽凱', m2:'蔡凱程'}
+  {seq:1,  date:'04/28', wd:'二', m1:'林孟賢', m2:'陳人豪'},
+  {seq:2,  date:'04/29', wd:'三', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:3,  date:'04/30', wd:'四', m1:'黃禹竣', m2:'王璽凱'},
+  {seq:4,  date:'05/04', wd:'一', m1:'林琮炫', m2:'蔡凱程'},
+  {seq:5,  date:'05/05', wd:'二', m1:'陳東彥', m2:'林孟賢'},
+  {seq:6,  date:'05/06', wd:'三', m1:'陳人豪', m2:'張鈞豪'},
+  {seq:7,  date:'05/07', wd:'四', m1:'劉建彣', m2:'黃禹竣'},
+  {seq:8,  date:'05/08', wd:'五', m1:'王璽凱', m2:'林琮炫'},
+  {seq:9,  date:'05/11', wd:'一', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:10, date:'05/12', wd:'二', m1:'林孟賢', m2:'張鈞豪'},
 ];
 
+const REMINDER = {date:'05/13', wd:'三', text:'第三次內訓\n乙級技術士訓練\n舊倉庫'};
+
 const MEMBERS = [
-  {name:'林孟賢', no:1,  future:false},
-  {name:'陳人豪', no:2,  future:false},
-  {name:'張鈞豪', no:3,  future:false},
-  {name:'劉建彣', no:4,  future:false},
-  {name:'黃禹竣', no:5,  future:false},
-  {name:'王璽凱', no:6,  future:false},
-  {name:'林琮炫', no:7,  future:false},
-  {name:'蔡凱程', no:8,  future:false},
-  {name:'陳東彥', no:9,  future:false},
-  {name:'董哲淵', no:10, future:true},
+  {name:'林孟賢',no:1},{name:'陳人豪',no:2},{name:'張鈞豪',no:3},
+  {name:'劉建彣',no:4},{name:'黃禹竣',no:5},{name:'王璽凱',no:6},
+  {name:'林琮炫',no:7},{name:'蔡凱程',no:8},{name:'陳東彥',no:9},
 ];
 
 const MATS = [
-  {id:1, n:'鍍鋅鋼管',      s:'1 1/2"',      q:2,u:'M'},
-  {id:2, n:'鍍鋅鋼管',      s:'1"',           q:1,u:'M'},
-  {id:3, n:'鍍鋅鋼管',      s:'3/4"',         q:4,u:'M'},
-  {id:4, n:'鑄鐵彎頭90°',   s:'1"',           q:1,u:'只'},
-  {id:5, n:'鑄鐵彎頭90°',   s:'3/4"',         q:8,u:'只'},
-  {id:6, n:'鑄鐵短接',      s:'3/4"',         q:2,u:'只'},
-  {id:7, n:'鑄鐵短接',      s:'1"',           q:2,u:'只'},
-  {id:8, n:'鑄鐵彎管45°',   s:'3/4"',         q:1,u:'只'},
-  {id:9, n:'鑄鐵彎管90°',   s:'3/4"',         q:2,u:'只'},
-  {id:10,n:'鑄鐵彎管90°',   s:'1 1/2"',       q:3,u:'只'},
-  {id:11,n:'鑄鐵丁字接頭',  s:'3/4"',         q:3,u:'只'},
-  {id:12,n:'鑄鐵異徑丁字',  s:'1"×3/4"',     q:1,u:'只'},
-  {id:13,n:'鑄鐵異徑丁字',  s:'3/4"×1/2"',   q:1,u:'只'},
-  {id:14,n:'鑄鐵異徑丁字',  s:'1 1/2"×3/4"', q:1,u:'只'},
-  {id:15,n:'鑄鐵塞頭',      s:'3/4"',         q:3,u:'只'},
-  {id:16,n:'鑄鐵塞頭',      s:'1 1/2"',       q:1,u:'只'},
-  {id:17,n:'鑄鐵由令',      s:'1"',           q:2,u:'只'},
-  {id:18,n:'鑄鐵縮接',      s:'3/4"×1/2"',   q:3,u:'只'},
-  {id:19,n:'鑄鐵縮接',      s:'1 1/2"×1"',   q:1,u:'只'},
-  {id:20,n:'PE管',          s:'32mm',         q:5,u:'M'},
-  {id:21,n:'PE電融接頭',    s:'32mm',         q:5,u:'只'},
-  {id:22,n:'PE電融丁字',    s:'32mm',         q:1,u:'只'},
-  {id:23,n:'PE管帽',        s:'32mm',         q:1,u:'只'},
-  {id:24,n:'PE轉換牙口',    s:'32mm',         q:2,u:'支'},
-  {id:25,n:'減壓器',        s:'3/4"',         q:1,u:'個'},
-  {id:26,n:'牙口過濾器',    s:'3/4"',         q:1,u:'個'},
-  {id:27,n:'瓦斯表',        s:'4號',          q:1,u:'個'},
-  {id:28,n:'單口龍頭',      s:'1/2"',         q:3,u:'只'},
-  {id:29,n:'安全考克',      s:'3/4"',         q:1,u:'只'},
-  {id:30,n:'安全考克',      s:'1"',           q:1,u:'只'},
-  {id:31,n:'壓力表',        s:'0-15kg/cm²',  q:1,u:'只'},
-  {id:32,n:'C型鋼',         s:'0.5M',         q:1,u:'只'},
-  {id:33,n:'C型鋼',         s:'0.3M',         q:1,u:'只'},
-  {id:34,n:'C型鋼',         s:'0.2M',         q:3,u:'只'},
-  {id:35,n:'PE管支撐架',    s:'—',            q:5,u:'組'},
-  {id:36,n:'PE防脫固定夾架',s:'—',            q:2,u:'組'},
-  {id:37,n:'接頭',          s:'1 1/2"',       q:3,u:'只'},
-  {id:38,n:'供給丁字',      s:'3/4"',         q:1,u:'只'}
+  {id:1,n:'鍍鋅鋼管',s:'1 1/2"',q:2,u:'M'},{id:2,n:'鍍鋅鋼管',s:'1"',q:1,u:'M'},
+  {id:3,n:'鍍鋅鋼管',s:'3/4"',q:4,u:'M'},{id:4,n:'鑄鐵彎頭90°',s:'1"',q:1,u:'只'},
+  {id:5,n:'鑄鐵彎頭90°',s:'3/4"',q:8,u:'只'},{id:6,n:'鑄鐵短接',s:'3/4"',q:2,u:'只'},
+  {id:7,n:'鑄鐵短接',s:'1"',q:2,u:'只'},{id:8,n:'鑄鐵彎管45°',s:'3/4"',q:1,u:'只'},
+  {id:9,n:'鑄鐵彎管90°',s:'3/4"',q:2,u:'只'},{id:10,n:'鑄鐵彎管90°',s:'1 1/2"',q:3,u:'只'},
+  {id:11,n:'鑄鐵丁字接頭',s:'3/4"',q:3,u:'只'},{id:12,n:'鑄鐵異徑丁字',s:'1"×3/4"',q:1,u:'只'},
+  {id:13,n:'鑄鐵異徑丁字',s:'3/4"×1/2"',q:1,u:'只'},{id:14,n:'鑄鐵異徑丁字',s:'1 1/2"×3/4"',q:1,u:'只'},
+  {id:15,n:'鑄鐵塞頭',s:'3/4"',q:3,u:'只'},{id:16,n:'鑄鐵塞頭',s:'1 1/2"',q:1,u:'只'},
+  {id:17,n:'鑄鐵由令',s:'1"',q:2,u:'只'},{id:18,n:'鑄鐵縮接',s:'3/4"×1/2"',q:3,u:'只'},
+  {id:19,n:'鑄鐵縮接',s:'1 1/2"×1"',q:1,u:'只'},{id:20,n:'PE管',s:'32mm',q:5,u:'M'},
+  {id:21,n:'PE電融接頭',s:'32mm',q:5,u:'只'},{id:22,n:'PE電融丁字',s:'32mm',q:1,u:'只'},
+  {id:23,n:'PE管帽',s:'32mm',q:1,u:'只'},{id:24,n:'PE轉換牙口',s:'32mm',q:2,u:'支'},
+  {id:25,n:'減壓器',s:'3/4"',q:1,u:'個'},{id:26,n:'牙口過濾器',s:'3/4"',q:1,u:'個'},
+  {id:27,n:'瓦斯表',s:'4號',q:1,u:'個'},{id:28,n:'單口龍頭',s:'1/2"',q:3,u:'只'},
+  {id:29,n:'安全考克',s:'3/4"',q:1,u:'只'},{id:30,n:'安全考克',s:'1"',q:1,u:'只'},
+  {id:31,n:'壓力表',s:'0-15kg/cm²',q:1,u:'只'},{id:32,n:'C型鋼',s:'0.5M',q:1,u:'只'},
+  {id:33,n:'C型鋼',s:'0.3M',q:1,u:'只'},{id:34,n:'C型鋼',s:'0.2M',q:3,u:'只'},
+  {id:35,n:'PE管支撐架',s:'—',q:5,u:'組'},{id:36,n:'PE防脫固定夾架',s:'—',q:2,u:'組'},
+  {id:37,n:'接頭',s:'1 1/2"',q:3,u:'只'},{id:38,n:'供給丁字',s:'3/4"',q:1,u:'只'}
 ];
 
-// 既有歷史記錄（3/30–4/8，紙本轉入）
-const HIST = [
-  {key:'03/30_蔡凱程', t1:'13:30',t2:'17:30',mats:'（與標準相同）',note:'',type:'排班'},
-  {key:'03/30_劉建彣', t1:'13:30',t2:'17:30',mats:'（與標準相同）',note:'',type:'排班'},
-  {key:'03/31_張鈞豪', t1:'13:30',t2:'17:00',mats:'（與標準相同）',note:'',type:'排班'},
-  {key:'03/31_林琮炫', t1:'13:30',t2:'17:00',mats:'（與標準相同）',note:'',type:'排班'},
-  {key:'04/01_陳人豪', t1:'15:00',t2:'17:30',mats:'鍍鋅鋼管 1 1/2" 1支（大家一起用）',note:'',type:'排班'},
-  {key:'04/01_王璽凱', t1:'15:00',t2:'17:30',mats:'鍍鋅鋼管 1 1/2" 1支（大家一起用）',note:'',type:'排班'},
-  {key:'04/07_蔡凱程', t1:'14:30',t2:'17:30',mats:'鍍鋅鋼管 3/4" 1支（大家一起用）',note:'',type:'排班'},
-  {key:'04/07_陳東彥', t1:'14:30',t2:'17:30',mats:'鍍鋅鋼管 3/4" 1支（大家一起用）',note:'',type:'排班'},
-  {key:'04/08_張鈞豪', t1:'13:50',t2:'17:30',mats:'（與標準相同）',note:'',type:'排班'},
-  {key:'04/08_黃禹竣', t1:'13:50',t2:'17:30',mats:'（與標準相同）',note:'',type:'排班'},
-];
-
-// ── 狀態 ──
 let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxKgrwRLgmpnDr7eMRO0KXOE7KYCpmakn3OBUncoBo8txroHhSNZv9uHyZ0Tksft_nWmg/exec';
 let sigRec = {};
-try { sigRec = JSON.parse(localStorage.getItem('sigRec7') || '{}'); } catch(e) {}
-// 自由練習記錄（用陣列，允許同一人多次）
+try { sigRec = JSON.parse(localStorage.getItem('sigRec8') || '{}'); } catch(e) {}
 let freeRec = [];
-try { freeRec = JSON.parse(localStorage.getItem('freeRec7') || '[]'); } catch(e) {}
-
-HIST.forEach(h => {
-  if (!sigRec[h.key]) {
-    sigRec[h.key] = {t1:h.t1,t2:h.t2,mats:h.mats,note:h.note,sig:null,hist:true,type:h.type,ts:'紙本記錄（管理員建入）'};
-  }
-});
-save();
-
-function save() {
-  try {
-    localStorage.setItem('sigRec7', JSON.stringify(sigRec));
-    localStorage.setItem('freeRec7', JSON.stringify(freeRec));
-  } catch(e) {}
-}
-
-function today() {
-  const n = new Date();
-  return String(n.getMonth()+1).padStart(2,'0')+'/'+String(n.getDate()).padStart(2,'0');
-}
-function todayISO() {
-  const n = new Date();
-  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
-}
-
-// ── 排班資料（可從 Sheets 覆蓋）──
+try { freeRec = JSON.parse(localStorage.getItem('freeRec8') || '[]'); } catch(e) {}
 let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
-// 從 localStorage 讀取已存的排班修改
 try {
-  const savedSched = JSON.parse(localStorage.getItem('schedOverride') || '[]');
-  savedSched.forEach(s=>{
+  const saved = JSON.parse(localStorage.getItem('schedOverride8') || '[]');
+  saved.forEach(s=>{
     const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
-    if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
+    if(idx>-1){if(s.m1)SCHED_DATA[idx].m1=s.m1;if(s.m2)SCHED_DATA[idx].m2=s.m2;}
   });
 } catch(e) {}
 
-function loadSchedFromSheets() {
-  if (!gasUrl) return;
-  fetch(gasUrl+'?action=getSched')
-    .then(r=>r.json())
-    .then(data=>{
-      if (data.sched && data.sched.length > 0) {
-        // 存到 localStorage 讓下次載入不閃爍
-        localStorage.setItem('schedOverride', JSON.stringify(data.sched));
-        data.sched.forEach(s=>{
-          const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
-          if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
-        });
-        renderList(); renderGrid();
-      }
-    })
-    .catch(()=>{});
+function save(){
+  try{
+    localStorage.setItem('sigRec8',JSON.stringify(sigRec));
+    localStorage.setItem('freeRec8',JSON.stringify(freeRec));
+  }catch(e){}
 }
 
-function editSched(seq) {
-  const d = SCHED_DATA.find(s=>s.seq===seq);
-  if (!d) return;
-  const newM1 = prompt(`第${seq}場 練習人員1（目前：${d.m1}）`, d.m1);
-  if (newM1===null) return;
-  const newM2 = prompt(`第${seq}場 練習人員2（目前：${d.m2}）`, d.m2);
-  if (newM2===null) return;
-  d.m1 = newM1.trim();
-  d.m2 = newM2.trim();
-  if (gasUrl) {
-    const params = new URLSearchParams({
-      action:'updateSched',
-      seq:String(d.seq),
-      date:d.date,
-      wd:d.wd,
-      m1:d.m1,
-      m2:d.m2
-    });
-    fetch(gasUrl+'?'+params.toString())
-      .then(r=>r.text())
-      .then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`))
-      .catch(()=>alert('⚠️ 同步失敗'));
-  }
-  renderMgr();
+function today(){
+  const n=new Date();
+  return String(n.getMonth()+1).padStart(2,'0')+'/'+String(n.getDate()).padStart(2,'0');
+}
+function todayISO(){
+  const n=new Date();
+  return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
 }
 
-// ── 管理者密碼 ──
 function checkMgr(){
-  const pw = prompt('請輸入管理者密碼：');
-  if(pw === '1688'){
-    go('mgr');
-  } else if(pw !== null){
-    alert('密碼錯誤！');
-  }
+  const pw=prompt('請輸入管理者密碼：');
+  if(pw==='1688'){go('mgr');}else if(pw!==null){alert('密碼錯誤！');}
 }
 
-function go(s) {
-  document.querySelectorAll('.scr').forEach(x => x.classList.remove('on'));
+function go(s){
+  document.querySelectorAll('.scr').forEach(x=>x.classList.remove('on'));
   document.getElementById('scr-'+s).classList.add('on');
   window.scrollTo(0,0);
-  if (s==='list')    { renderList(); renderGrid(); }
-  if (s==='mgr')     { renderMgr(); }
-  if (s==='free')    { initFreeForm(); }
-  if (s==='settings') document.getElementById('gasIn').value = gasUrl;
+  if(s==='list'){renderCal();renderGrid();}
+  if(s==='mgr'){renderMgr();}
+  if(s==='free'){initFreeForm();}
+  if(s==='settings')document.getElementById('gasIn').value=gasUrl;
 }
-function swTab(n, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+
+function swTab(n,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   btn.classList.add('on');
-  document.getElementById('tab-s').style.display = n==='s'?'block':'none';
-  document.getElementById('tab-p').style.display  = n==='p'?'block':'none';
+  document.getElementById('tab-s').style.display=n==='s'?'block':'none';
+  document.getElementById('tab-p').style.display=n==='p'?'block':'none';
 }
 
-// ── 排班表 ──
-function renderList() {
-  const td = today(), el = document.getElementById('sList');
-  el.innerHTML = '';
-  let done = 0;
-  SCHED_DATA.forEach(d => {
-    const k1=d.date+'_'+d.m1, k2=d.date+'_'+d.m2;
-    const r1=sigRec[k1], r2=sigRec[k2];
-    if(r1) done++; if(r2) done++;
-    const isT = d.date===td, allDone = r1&&r2;
-    const isHist = (r1&&r1.hist)||(r2&&r2.hist);
-    const c = document.createElement('div');
-    c.className = 'day-card'+(isT?' today':'')+(allDone?' alldone':'');
-    c.innerHTML = `
-      <div class="c-top">
-        <span class="c-date">2026/${d.date}（${d.wd}）</span>
-        <div style="display:flex;align-items:center;gap:5px">
-          ${isT?'<span class="t-pill">今日</span>':''}
-          ${isHist&&!isT?'<span class="hist-pill">紙本</span>':''}
-          <span class="c-seq">第${d.seq}場</span>
-        </div>
-      </div>
-      <div class="chips">
-        <span class="chip ${r1?(r1.hist?'hist':'ok'):'wait'}">${d.m1}${r1?(r1.hist?' 📄':' ✓'):''}</span>
-        <span class="chip ${r2?(r2.hist?'hist':'ok'):'wait'}">${d.m2}${r2?(r2.hist?' 📄':' ✓'):''}</span>
+// ── 行事曆 ──
+function renderCal(){
+  const td=today();
+  const container=document.getElementById('calContainer');
+  container.innerHTML='';
+
+  // 進度（只算排班人員）
+  let done=0, total=0;
+  SCHED_DATA.forEach(d=>{
+    [d.m1,d.m2].forEach(m=>{ total++; if(sigRec[d.date+'_'+m]) done++; });
+  });
+  document.getElementById('pFill').style.width=Math.round(done/total*100)+'%';
+  document.getElementById('pVal').textContent=done+'/'+total;
+
+  const schedMap={};
+  SCHED_DATA.forEach(d=>schedMap[d.date]=d);
+
+  const months=[
+    {year:2026,month:4,label:'2026年4月（4/28起）',firstDow:1, startDate:28},
+    {year:2026,month:5,label:'2026年5月（5/4起）',firstDow:0, startDate:4},
+  ];
+
+  months.forEach(m=>{
+    const sec=document.createElement('div');
+    sec.className='cal-section';
+    const days=new Date(m.year,m.month,0).getDate();
+    const startDow=m.startDay;
+
+    let html=`<div class="cal-month-title">${m.label}</div>`;
+    html+=`<div class="cal-grid">`;
+    html+=`<div class="cal-dow">一</div><div class="cal-dow">二</div><div class="cal-dow">三</div><div class="cal-dow">四</div><div class="cal-dow">五</div><div class="cal-dow we">六</div><div class="cal-dow we">日</div>`;
+
+    const firstDow=m.firstDow;
+    for(let i=0;i<firstDow;i++) html+=`<div class="cal-cell empty"></div>`;
+
+    for(let day=m.startDate;day<=days;day++){
+      const mmdd=String(m.month).padStart(2,'0')+'/'+String(day).padStart(2,'0');
+      const dow=(firstDow + (day - m.startDate)) % 7;
+      const isWeekend=(dow===5||dow===6);
+      const sched=schedMap[mmdd];
+      const isReminder=(mmdd===REMINDER.date);
+      const inRange=(m.month===4&&day>=28)||(m.month===5&&day<=13);
+
+      if(!inRange){
+        html+=`<div class="cal-cell empty"></div>`;
+        continue;
+      }
+
+      if(isReminder){
+        html+=`<div class="cal-cell reminder">
+          <div class="cal-daynum">${day}</div>
+          <div class="cal-reminder-tag">${REMINDER.text.replace(/\n/g,'<br>')}</div>
+        </div>`;
+        continue;
+      }
+
+      if(isWeekend||!sched){
+        html+=`<div class="cal-cell ${isWeekend?'holiday':''}"><div class="cal-daynum" style="color:${isWeekend?'var(--red)':'var(--gray-400)'}">${day}</div></div>`;
+        continue;
+      }
+
+      // 有排班：2人+空白位
+      const r1=sigRec[mmdd+'_'+sched.m1];
+      const r2=sigRec[mmdd+'_'+sched.m2];
+      // 空白位：找有沒有不是m1/m2但有簽到的
+      const blankSigners=Object.keys(sigRec).filter(k=>{
+        const parts=k.split('_');
+        return parts[0]===mmdd && parts[1]!==sched.m1 && parts[1]!==sched.m2;
+      }).map(k=>k.split('_')[1]);
+
+      const allDone=r1&&r2;
+      html+=`<div class="cal-cell has-sched${allDone?' all-done':''}" onclick="openSign(SCHED_DATA.find(s=>s.date==='${mmdd}'))">
+        <div class="cal-daynum">${day}</div>
+        <div class="cal-person ${r1?'done':'wait'}">${r1?'✓ ':''} ${sched.m1}</div>
+        <div class="cal-person ${r2?'done':'wait'}">${r2?'✓ ':''} ${sched.m2}</div>
+        ${(()=>{
+          const bHTML=blankSigners.map(n=>`<div class="cal-person done">✓ ${n}</div>`).join('');
+          const emptySlots=2-blankSigners.length;
+          const eHTML=emptySlots>0?Array(emptySlots).fill('<div class="cal-person blank">＋ 空白位</div>').join(''):'';
+          return bHTML+eHTML;
+        })()}
       </div>`;
-    c.onclick = () => openSign(d);
-    el.appendChild(c);
-  });
-  const total = SCHED.length*2;
-  document.getElementById('pFill').style.width = Math.round(done/total*100)+'%';
-  document.getElementById('pVal').textContent = done+'/'+total;
-}
+    }
 
-// ── 個人 grid ──
-function renderGrid() {
-  const el = document.getElementById('pGrid'); el.innerHTML='';
-  MEMBERS.forEach(m => {
-    if(m.future) return;
-    const recs = getAllPersonRecs(m.name);
-    const schedTotal = SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
-    const pct = schedTotal ? Math.round(Object.keys(sigRec).filter(k=>k.split('_')[1]===m.name).length/schedTotal*100) : 0;
-    const c = document.createElement('div'); c.className='p-card';
-    c.innerHTML = `
-      <div class="p-av">${m.name[0]}</div>
-      <div class="p-name">${m.name}</div>
-      <div class="p-cnt">${recs.length} 筆記錄</div>
-      <div class="p-bar"><div class="p-fill" style="width:${Math.min(pct,100)}%"></div></div>`;
-    c.onclick = () => openPerson(m.name, false);
-    el.appendChild(c);
+    const totalCells=firstDow+(days-m.startDate+1);
+    const remainder=totalCells%7;
+    if(remainder>0){for(let i=0;i<7-remainder;i++)html+=`<div class="cal-cell empty"></div>`;}
+    html+=`</div>`;
+    sec.innerHTML=html;
+    container.appendChild(sec);
   });
 }
 
-// 取得某人所有記錄（排班＋自由＋補登）
-function getAllPersonRecs(name) {
-  const sched = Object.keys(sigRec)
-    .filter(k=>k.split('_')[1]===name)
-    .map(k=>({key:k, ...sigRec[k], _sort:k}));
-  const free = freeRec
-    .filter(r=>r.name===name)
-    .map(r=>({...r, _sort:r.date+'_free_'+r.ts}));
+// 個人 grid
+
+function renderGrid(){
+  const el=document.getElementById('pGrid');el.innerHTML='';
+  MEMBERS.forEach(m=>{
+    const recs=getAllPersonRecs(m.name);
+    const schedTotal=SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedDone=Object.keys(sigRec).filter(k=>k.split('_')[1]===m.name).length;
+    const pct=schedTotal?Math.round(schedDone/schedTotal*100):0;
+    const c=document.createElement('div');c.className='p-card';
+    c.innerHTML=`<div class="p-av">${m.name[0]}</div><div class="p-name">${m.name}</div><div class="p-cnt">${recs.length} 筆記錄</div><div class="p-bar"><div class="p-fill" style="width:${Math.min(pct,100)}%"></div></div>`;
+    c.onclick=()=>openPerson(m.name,false);
+    el.appendChild(c);
+  });
+}
+
+function getAllPersonRecs(name){
+  const sched=Object.keys(sigRec).filter(k=>k.split('_')[1]===name).map(k=>({key:k,...sigRec[k],_sort:k}));
+  const free=freeRec.filter(r=>r.name===name).map(r=>({...r,_sort:r.date+'_free_'+r.ts}));
   return [...sched,...free].sort((a,b)=>a._sort.localeCompare(b._sort));
 }
 
-// ── 個人詳細 ──
-function openPerson(name, isAdmin) {
-  const recs = getAllPersonRecs(name);
-  const schedTotal = SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
-  const schedDone  = Object.keys(sigRec).filter(k=>k.split('_')[1]===name).length;
-  const freeCount  = freeRec.filter(r=>r.name===name).length;
-
-  const avId   = isAdmin?'mgrPersonAv':'personAv';
-  const nameId = isAdmin?'mgrPersonName':'personName';
-  const subId  = isAdmin?'mgrPersonSub':'personSub';
-  const recsId = isAdmin?'mgrPersonRecs':'personRecs';
-
-  document.getElementById(avId).textContent = name[0];
-  document.getElementById(nameId).textContent = name;
-  document.getElementById(subId).textContent =
-    `排班 ${schedDone}/${schedTotal} 場完成｜自由練習 ${freeCount} 筆`;
-
-  const el = document.getElementById(recsId);
-  if (!recs.length) { el.innerHTML='<div class="empty">📋 尚無記錄</div>'; }
-  else {
-    el.innerHTML = '';
-    recs.forEach(r => {
-      const card = document.createElement('div');
-      // 判斷類型
-      let typeClass='', badgeClass='', badgeTxt='', dateLabel='', timeLabel='';
-      if (r.key) {
-        const date = r.key.split('_')[0];
-        const d = SCHED.find(s=>s.date===date)||{};
-        dateLabel = `2026/${date}（${d.wd||''}）第${d.seq||''}場`;
-        timeLabel = `${r.t1} – ${r.t2}`;
-        if (r.hist) { badgeClass='badge-hist'; badgeTxt='📄 紙本'; }
-        else if (r.type==='管理員補登') { typeClass='mgr-rec'; badgeClass='badge-mgr'; badgeTxt='🛠 補登'; }
-        else { badgeClass='badge-sched'; badgeTxt='📋 排班'; }
-      } else {
-        // 自由練習
-        const iso = r.date; // YYYY-MM-DD
-        const mmdd = iso.slice(5,7)+'/'+iso.slice(8,10);
-        dateLabel = `2026/${mmdd} 自由練習`;
-        timeLabel = `${r.t1} – ${r.t2}`;
-        typeClass = 'free-rec'; badgeClass='badge-free'; badgeTxt='🟣 自由';
+function openPerson(name,isAdmin){
+  const recs=getAllPersonRecs(name);
+  const schedTotal=SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
+  const schedDone=Object.keys(sigRec).filter(k=>k.split('_')[1]===name).length;
+  const freeCount=freeRec.filter(r=>r.name===name).length;
+  const avId=isAdmin?'mgrPersonAv':'personAv';
+  const nameId=isAdmin?'mgrPersonName':'personName';
+  const subId=isAdmin?'mgrPersonSub':'personSub';
+  const recsId=isAdmin?'mgrPersonRecs':'personRecs';
+  document.getElementById(avId).textContent=name[0];
+  document.getElementById(nameId).textContent=name;
+  document.getElementById(subId).textContent=`排班 ${schedDone}/${schedTotal} 場完成｜自由練習 ${freeCount} 筆`;
+  const el=document.getElementById(recsId);
+  if(!recs.length){el.innerHTML='<div class="empty">📋 尚無記錄</div>';}
+  else{
+    el.innerHTML='';
+    recs.forEach(r=>{
+      const card=document.createElement('div');
+      let typeClass='',badgeClass='',badgeTxt='',dateLabel='',timeLabel='';
+      if(r.key){
+        const date=r.key.split('_')[0];
+        const d=SCHED_DATA.find(s=>s.date===date)||{};
+        dateLabel=`2026/${date}（${d.wd||''}）第${d.seq||''}場`;
+        timeLabel=`${r.t1} – ${r.t2}`;
+        if(r.type==='管理員補登'){typeClass='mgr-rec';badgeClass='badge-mgr';badgeTxt='🛠 補登';}
+        else{badgeClass='badge-sched';badgeTxt='📋 排班';}
+      }else{
+        const iso=r.date;const mmdd=iso.slice(5,7)+'/'+iso.slice(8,10);
+        dateLabel=`2026/${mmdd} 自由練習`;timeLabel=`${r.t1} – ${r.t2}`;
+        typeClass='free-rec';badgeClass='badge-free';badgeTxt='🟣 自由';
       }
-      card.className = 'rec-card '+typeClass;
-      const sigHTML = r.sig
-        ? `<div class="rec-sig-wrap"><div class="rec-sig-lbl">電子簽名：</div><img class="rec-sig-img" src="${r.sig}" alt="簽名"></div>`
-        : r.hist
-          ? `<div style="margin:5px 0"><span class="hist-note">📄 紙本記錄（無電子簽名）</span></div>`
-          : '';
-      const editBtn = isAdmin
-        ? `<button onclick="editRec('${r.key||''}','${r.ts||''}')" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;margin-top:8px;font-family:inherit">✏️ 編輯</button>
-           <button onclick="deleteRec('${r.key||''}','${r.ts||''}','${name}')" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--red);color:var(--red);background:transparent;cursor:pointer;margin-top:8px;margin-left:6px;font-family:inherit">🗑 刪除</button>`
-        : '';
-      card.innerHTML = `
-        <div class="rec-top">
-          <span class="rec-date">${dateLabel}</span>
-          <span class="rec-time">${timeLabel}</span>
-        </div>
+      card.className='rec-card '+typeClass;
+      const sigHTML=r.sig?`<div class="rec-sig-wrap"><div class="rec-sig-lbl">電子簽名：</div><img class="rec-sig-img" src="${r.sig}" alt="簽名"></div>`:'';
+      const editBtn=isAdmin?`<button onclick="editRec('${r.key||''}','${r.ts||''}')" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;margin-top:8px;font-family:inherit">✏️ 編輯</button>
+        <button onclick="deleteRec('${r.key||''}','${r.ts||''}','${name}')" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid var(--red);color:var(--red);background:transparent;cursor:pointer;margin-top:8px;margin-left:6px;font-family:inherit">🗑 刪除</button>`:'';
+      card.innerHTML=`<div class="rec-top"><span class="rec-date">${dateLabel}</span><span class="rec-time">${timeLabel}</span></div>
         <div style="margin-bottom:5px"><span class="rec-type-badge ${badgeClass}">${badgeTxt}</span></div>
-        ${sigHTML}
-        <div class="rec-mat">📦 ${r.mats}</div>
+        ${sigHTML}<div class="rec-mat">📦 ${r.mats}</div>
         ${r.note?`<div class="rec-mat" style="margin-top:2px">📝 ${r.note}</div>`:''}
-        <div class="rec-ts">記錄時間：${r.ts}</div>
-        ${editBtn}`;
+        <div class="rec-ts">記錄時間：${r.ts}</div>${editBtn}`;
       el.appendChild(card);
     });
   }
   go(isAdmin?'mgr-person':'person');
 }
 
-// ── 排班簽到 ──
-let cur=null, matVals={}, freeMatVals={};
-function openSign(d) {
-  cur = d;
-  document.getElementById('signInfo').innerHTML = `
+// 簽到
+let cur=null,matVals={},freeMatVals={};
+function openSign(d){
+  if(!d)return;
+  cur=d;
+  document.getElementById('signInfo').innerHTML=`
     <p><strong>2026/${d.date}（${d.wd}）第${d.seq}場</strong></p>
-    <p style="margin-top:4px">練習人員：${d.m1}、${d.m2}</p>
+    <p style="margin-top:4px">排班人員：${d.m1}、${d.m2}　＋　空白位（開放）</p>
     <p style="font-size:11px;margin-top:3px;color:var(--blue)">時段 13:30–17:30</p>`;
-  const sel = document.getElementById('who');
-  sel.innerHTML = '<option value="">— 請選擇您的姓名 —</option>';
-  [d.m1,d.m2].forEach(n=>{
-    const o=document.createElement('option'); o.value=n;
+  const sel=document.getElementById('who');
+  sel.innerHTML='<option value="">— 請選擇您的姓名 —</option>';
+  // 排班人員優先顯示，其次是其他人（空白位）
+  const scheduled=[d.m1,d.m2];
+  const others=MEMBERS.map(m=>m.name).filter(n=>!scheduled.includes(n));
+  const optGroup1=document.createElement('optgroup');optGroup1.label='排班人員';
+  scheduled.forEach(n=>{
+    const o=document.createElement('option');o.value=n;
     const r=sigRec[d.date+'_'+n];
-    o.textContent=n+(r?(r.hist?' （紙本）':' （已簽）'):'');
-    sel.appendChild(o);
+    o.textContent=n+(r?' （已簽）':'');
+    optGroup1.appendChild(o);
   });
-  buildMat('matTbl', matVals);
+  sel.appendChild(optGroup1);
+  const optGroup2=document.createElement('optgroup');optGroup2.label='空白位（其他人員）';
+  others.forEach(n=>{
+    const o=document.createElement('option');o.value=n;
+    const r=sigRec[d.date+'_'+n];
+    o.textContent=n+(r?' （已簽）':'');
+    optGroup2.appendChild(o);
+  });
+  sel.appendChild(optGroup2);
+  buildMat('matTbl',matVals);
   clrSig('sigCanvas');
   document.getElementById('noteInput').value='';
   document.getElementById('t1').value='13:30';
@@ -751,69 +633,59 @@ function openSign(d) {
   go('sign');
 }
 
-function buildMat(tblId, vals) {
+function buildMat(tblId,vals){
   Object.keys(vals).forEach(k=>delete vals[k]);
   MATS.forEach(m=>vals[m.id]=m.q);
-  const tbl = document.getElementById(tblId);
-  tbl.innerHTML = `<tr><th>#</th><th>品名</th><th>規格</th><th style="text-align:center">標準</th><th style="text-align:center;min-width:90px">今日用量</th><th>單位</th></tr>`;
-  const pfx = tblId==='matTbl'?'':'f';
+  const tbl=document.getElementById(tblId);
+  tbl.innerHTML=`<tr><th>#</th><th>品名</th><th>規格</th><th style="text-align:center">標準</th><th style="text-align:center;min-width:90px">今日用量</th><th>單位</th></tr>`;
+  const pfx=tblId==='matTbl'?'':'f';
   MATS.forEach(m=>{
-    const tr=document.createElement('tr'); tr.id=pfx+'mr'+m.id;
-    tr.innerHTML=`
-      <td style="color:var(--gray-400);font-size:11px">${m.id}</td>
-      <td style="font-weight:500">${m.n}</td>
+    const tr=document.createElement('tr');tr.id=pfx+'mr'+m.id;
+    tr.innerHTML=`<td style="color:var(--gray-400);font-size:11px">${m.id}</td><td style="font-weight:500">${m.n}</td>
       <td style="color:var(--gray-400);white-space:nowrap;font-size:12px">${m.s}</td>
       <td style="text-align:center;color:var(--gray-400)">${m.q}</td>
-      <td><div class="qty-ctrl">
-        <button class="qb" onclick="adj('${tblId}',${m.id},-1)">−</button>
-        <span class="qv" id="${pfx}qv${m.id}">${m.q}</span>
-        <button class="qb" onclick="adj('${tblId}',${m.id},1)">+</button>
-      </div></td>
+      <td><div class="qty-ctrl"><button class="qb" onclick="adj('${tblId}',${m.id},-1)">−</button><span class="qv" id="${pfx}qv${m.id}">${m.q}</span><button class="qb" onclick="adj('${tblId}',${m.id},1)">+</button></div></td>
       <td style="color:var(--gray-400);font-size:12px">${m.u}</td>`;
     tbl.appendChild(tr);
   });
 }
 
-function adj(tblId, id, delta) {
-  const vals = tblId==='matTbl' ? matVals : freeMatVals;
-  const pfx  = tblId==='matTbl' ? '' : 'f';
-  vals[id] = Math.max(0,(vals[id]||0)+delta);
-  document.getElementById(pfx+'qv'+id).textContent = vals[id];
-  const orig = MATS.find(m=>m.id===id).q;
-  document.getElementById(pfx+'mr'+id).className = vals[id]!==orig?'hi':'';
+function adj(tblId,id,delta){
+  const vals=tblId==='matTbl'?matVals:freeMatVals;
+  const pfx=tblId==='matTbl'?'':'f';
+  vals[id]=Math.max(0,(vals[id]||0)+delta);
+  document.getElementById(pfx+'qv'+id).textContent=vals[id];
+  const orig=MATS.find(m=>m.id===id).q;
+  document.getElementById(pfx+'mr'+id).className=vals[id]!==orig?'hi':'';
 }
 
-function getMatsStr(vals) {
+function getMatsStr(vals){
   const diffs=[];
   MATS.forEach(m=>{const v=vals[m.id];if(v!==m.q)diffs.push(`${m.n}(${m.s}) 標準${m.q}→今日${v}${m.u}`);});
   return diffs.length?diffs.join('；'):'（與標準相同）';
 }
 
-// ── 電子簽名 ──
-const sigDrawing = {};
-const sigHasSig  = {};
-function initSig(canvasId) {
-  const cv  = document.getElementById(canvasId);
-  const ctx = cv.getContext('2d');
-  const dpr = window.devicePixelRatio||1;
-  const rc  = cv.getBoundingClientRect();
-  cv.width  = rc.width*dpr; cv.height=160*dpr;
+const sigDrawing={},sigHasSig={};
+function initSig(canvasId){
+  const cv=document.getElementById(canvasId);
+  const ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rc=cv.getBoundingClientRect();
+  cv.width=rc.width*dpr;cv.height=160*dpr;
   ctx.scale(dpr,dpr);
-  ctx.lineWidth=2.5; ctx.lineCap='round'; ctx.lineJoin='round';
-  ctx.strokeStyle='#1a5fa8';
-  sigDrawing[canvasId]=false; sigHasSig[canvasId]=false;
+  ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#1a5fa8';
+  sigDrawing[canvasId]=false;sigHasSig[canvasId]=false;
   function pos(e){const r=cv.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:s.clientX-r.left,y:s.clientY-r.top};}
   cv.onmousedown=e=>{sigDrawing[canvasId]=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);};
   cv.onmousemove=e=>{if(!sigDrawing[canvasId])return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();sigHasSig[canvasId]=true;};
   cv.onmouseup=cv.onmouseleave=()=>sigDrawing[canvasId]=false;
   cv.addEventListener('touchstart',e=>{e.preventDefault();sigDrawing[canvasId]=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);},{passive:false});
-  cv.addEventListener('touchmove', e=>{e.preventDefault();if(!sigDrawing[canvasId])return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();sigHasSig[canvasId]=true;},{passive:false});
+  cv.addEventListener('touchmove',e=>{e.preventDefault();if(!sigDrawing[canvasId])return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();sigHasSig[canvasId]=true;},{passive:false});
   cv.addEventListener('touchend',()=>sigDrawing[canvasId]=false);
 }
 function clrSig(canvasId){sigHasSig[canvasId]=false;setTimeout(()=>initSig(canvasId),60);}
 
-// ── 排班送出 ──
-function doSubmit() {
+function doSubmit(){
   const who=document.getElementById('who').value;
   if(!who){alert('請先選擇您的姓名');return;}
   if(!sigHasSig['sigCanvas']){alert('請先完成電子簽名');return;}
@@ -821,30 +693,22 @@ function doSubmit() {
   const t2=document.getElementById('t2').value;
   const note=document.getElementById('noteInput').value.trim();
   const matsStr=getMatsStr(matVals);
-  const cv=document.getElementById('sigCanvas');
-  const sig=cv.toDataURL('image/jpeg',0.5);
+  const sig=document.getElementById('sigCanvas').toDataURL('image/jpeg',0.5);
   const key=cur.date+'_'+who;
-  sigRec[key]={t1,t2,mats:matsStr,note,sig,hist:false,type:'排班',ts:new Date().toLocaleString('zh-TW')};
+  sigRec[key]={t1,t2,mats:matsStr,note,sig,type:'排班',ts:new Date().toLocaleString('zh-TW')};
   save();
   pushSheet({date:'2026/'+cur.date,wd:cur.wd,label:'第'+cur.seq+'場',signer:who,t1,t2,mats:matsStr,note,type:'排班簽到',sig},'syncNote');
   showSucc('✅',who+' — 排班簽到完成！',`📅 2026/${cur.date}（${cur.wd}）第${cur.seq}場\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
 }
 
-// ── 自由練習 ──
 function initFreeForm(){
-  MEMBERS.forEach(m=>{});
   const sel=document.getElementById('freeWho');
   sel.innerHTML='<option value="">— 請選擇您的姓名 —</option>';
-  MEMBERS.filter(m=>!m.future).forEach(m=>{
-    const o=document.createElement('option');o.value=m.name;o.textContent=m.name;sel.appendChild(o);
-  });
+  MEMBERS.forEach(m=>{const o=document.createElement('option');o.value=m.name;o.textContent=m.name;sel.appendChild(o);});
   document.getElementById('freeDate').value=todayISO();
-  document.getElementById('freeT1').value='13:30';
-  document.getElementById('freeT2').value='17:30';
-  document.getElementById('freeNote').value='';
-  document.getElementById('freeSyncNote').style.display='none';
-  buildMat('freeMatTbl',freeMatVals);
-  clrSig('freeSigCanvas');
+  document.getElementById('freeT1').value='13:30';document.getElementById('freeT2').value='17:30';
+  document.getElementById('freeNote').value='';document.getElementById('freeSyncNote').style.display='none';
+  buildMat('freeMatTbl',freeMatVals);clrSig('freeSigCanvas');
 }
 
 function doFreeSubmit(){
@@ -853,12 +717,10 @@ function doFreeSubmit(){
   if(!sigHasSig['freeSigCanvas']){alert('請先完成電子簽名');return;}
   const date=document.getElementById('freeDate').value;
   if(!date){alert('請填入練習日期');return;}
-  const t1=document.getElementById('freeT1').value;
-  const t2=document.getElementById('freeT2').value;
+  const t1=document.getElementById('freeT1').value;const t2=document.getElementById('freeT2').value;
   const note=document.getElementById('freeNote').value.trim();
   const matsStr=getMatsStr(freeMatVals);
-  const cv2=document.getElementById('freeSigCanvas');
-  const sig=cv2.toDataURL('image/jpeg',0.5);
+  const sig=document.getElementById('freeSigCanvas').toDataURL('image/jpeg',0.5);
   const ts=new Date().toLocaleString('zh-TW');
   freeRec.push({name:who,date,t1,t2,mats:matsStr,note,sig,type:'自由練習',ts});
   save();
@@ -867,197 +729,132 @@ function doFreeSubmit(){
   showSucc('🟣',who+' — 自由練習記錄完成！',`📅 2026/${mmdd} 自由練習\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
 }
 
-// ── 管理者補登 ──
 function initMgrForm(){
   const sel=document.getElementById('mgrWho');
   sel.innerHTML='<option value="">— 選擇學員 —</option>';
-  MEMBERS.filter(m=>!m.future).forEach(m=>{
-    const o=document.createElement('option');o.value=m.name;o.textContent=m.no+'. '+m.name;sel.appendChild(o);
-  });
+  MEMBERS.forEach(m=>{const o=document.createElement('option');o.value=m.name;o.textContent=m.no+'. '+m.name;sel.appendChild(o);});
   document.getElementById('mgrDate').value=todayISO();
 }
 
 function doMgrAdd(){
-  const who=document.getElementById('mgrWho').value;
-  if(!who){alert('請選擇學員');return;}
-  const dateISO=document.getElementById('mgrDate').value;
-  if(!dateISO){alert('請填入日期');return;}
-  const t1=document.getElementById('mgrT1').value;
-  const t2=document.getElementById('mgrT2').value;
+  const who=document.getElementById('mgrWho').value;if(!who){alert('請選擇學員');return;}
+  const dateISO=document.getElementById('mgrDate').value;if(!dateISO){alert('請填入日期');return;}
+  const t1=document.getElementById('mgrT1').value;const t2=document.getElementById('mgrT2').value;
   const mats=document.getElementById('mgrMats').value.trim()||'（管理員補登）';
   const note=document.getElementById('mgrNote').value.trim();
   const ts=new Date().toLocaleString('zh-TW');
   const mmdd=dateISO.slice(5,7)+'/'+dateISO.slice(8,10);
-  // 找是否有排班
-  const d=SCHED.find(s=>s.date===mmdd&&(s.m1===who||s.m2===who));
+  const d=SCHED_DATA.find(s=>s.date===mmdd&&(s.m1===who||s.m2===who));
   if(d){
     const key=mmdd+'_'+who;
-    sigRec[key]={t1,t2,mats,note,sig:null,hist:false,type:'管理員補登',ts:'管理員補登 '+ts};
-  } else {
+    sigRec[key]={t1,t2,mats,note,sig:null,type:'管理員補登',ts:'管理員補登 '+ts};
+  }else{
     freeRec.push({name:who,date:dateISO,t1,t2,mats,note,sig:null,type:'管理員補登',ts:'管理員補登 '+ts});
   }
   save();
   const el=document.getElementById('mgrAddNote');
-  el.className='alert a-ok'; el.textContent=`✅ 已補登 ${who} 在 2026/${mmdd} 的記錄！`;
-  el.style.display='block';
+  el.className='alert a-ok';el.textContent=`✅ 已補登 ${who} 在 2026/${mmdd} 的記錄！`;el.style.display='block';
   setTimeout(()=>{el.style.display='none';renderMgr();},2500);
   pushSheet({date:'2026/'+mmdd,wd:d?d.wd:'-',label:d?'第'+d.seq+'場（補登）':'自由練習（補登）',signer:who,t1,t2,mats,note,type:'管理員補登'},'mgrAddNote');
 }
 
-// ── 管理者總覽（從 Google Sheets 即時讀取）──
-let sheetRecs = []; // 從雲端讀回來的資料
-
-// 把 HIST 紙本記錄轉成管理頁面格式
-function getHistRows(){
-  return HIST.map(h=>{
-    const date = h.key.split('_')[0];
-    const name = h.key.split('_')[1];
-    const d = SCHED.find(s=>s.date===date)||{};
-    return {
-      date: '2026/'+date,
-      wd: d.wd||'',
-      label: '第'+d.seq+'場',
-      signer: name,
-      t1: h.t1,
-      t2: h.t2,
-      mats: h.mats,
-      note: h.note||'',
-      type: '紙本記錄',
-      ts: '紙本記錄（管理員建入）'
-    };
-  });
+function editSched(seq){
+  const d=SCHED_DATA.find(s=>s.seq===seq);if(!d)return;
+  const newM1=prompt(`第${seq}場 人員1（目前：${d.m1}）`,d.m1);if(newM1===null)return;
+  const newM2=prompt(`第${seq}場 人員2（目前：${d.m2}）`,d.m2);if(newM2===null)return;
+  d.m1=newM1.trim();d.m2=newM2.trim();
+  try{
+    const saved=JSON.parse(localStorage.getItem('schedOverride8')||'[]');
+    const idx=saved.findIndex(s=>String(s.seq)===String(seq));
+    if(idx>-1){saved[idx].m1=d.m1;saved[idx].m2=d.m2;}else saved.push({seq:d.seq,m1:d.m1,m2:d.m2});
+    localStorage.setItem('schedOverride8',JSON.stringify(saved));
+  }catch(e){}
+  if(gasUrl){
+    const params=new URLSearchParams({action:'updateSched',seq:String(d.seq),date:d.date,wd:d.wd,m1:d.m1,m2:d.m2});
+    fetch(gasUrl+'?'+params.toString()).then(()=>alert(`✅ 第${seq}場已更新：${d.m1}、${d.m2}`)).catch(()=>alert('⚠️ 同步失敗'));
+  }
+  renderMgr();
 }
 
+let sheetRecs=[];
 function renderMgr(){
   initMgrForm();
-  const el = document.getElementById('mgrList');
-  const statsEl = document.getElementById('mgrStats');
-  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--gray-400)">⏳ 讀取中...</div>';
-  statsEl.innerHTML = '';
-
-  if(!gasUrl){ renderMgrWithData(getHistRows()); return; }
-
-  // 先讀取最新排班，再讀取簽到記錄
-  const schedPromise = fetch(gasUrl+'?action=getSched')
-    .then(r=>r.json())
-    .then(data=>{
-      if(data.sched && data.sched.length>0){
-        data.sched.forEach(s=>{
-          const idx=SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
-          if(idx>-1){SCHED_DATA[idx].m1=s.m1;SCHED_DATA[idx].m2=s.m2;}
-        });
-      }
-    })
-    .catch(()=>{});
-
-  const recsPromise = fetch(gasUrl)
-    .then(r=>r.json())
-    .catch(()=>[]);
-
-  Promise.all([schedPromise, recsPromise])
-    .then(([_, rows])=>{
-      const histRows = getHistRows();
-      const allRows = [...histRows, ...(rows||[])];
-      sheetRecs = allRows;
-      renderMgrWithData(allRows);
-      renderList(); renderGrid();
-    })
-    .catch(()=>{
-      renderMgrWithData(getHistRows());
-    });
+  const el=document.getElementById('mgrList');
+  const statsEl=document.getElementById('mgrStats');
+  el.innerHTML='<div style="text-align:center;padding:20px;color:var(--gray-400)">⏳ 讀取中...</div>';
+  statsEl.innerHTML='';
+  if(!gasUrl){renderMgrWithData([]);return;}
+  const schedP=fetch(gasUrl+'?action=getSched').then(r=>r.json()).then(data=>{
+    if(data.sched&&data.sched.length>0){
+      data.sched.forEach(s=>{
+        const idx=SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+        if(idx>-1){if(s.m1)SCHED_DATA[idx].m1=s.m1;if(s.m2)SCHED_DATA[idx].m2=s.m2;}
+      });
+    }
+  }).catch(()=>{});
+  const recsP=fetch(gasUrl).then(r=>r.json()).catch(()=>[]);
+  Promise.all([schedP,recsP]).then(([_,rows])=>{
+    sheetRecs=rows||[];
+    renderMgrWithData(sheetRecs);
+    renderCal();renderGrid();
+  }).catch(()=>renderMgrWithData([]));
 }
 
 function renderMgrWithData(rows){
   initMgrForm();
-  const histCount = rows.filter(r=>r.type==='紙本記錄').length;
-  const freeCount = rows.filter(r=>r.type==='自由練習').length;
-  const mgrCount = rows.filter(r=>r.type==='管理員補登').length;
-  const schedCount = rows.filter(r=>r.type==='排班簽到').length;
-  const total = rows.length;
-
+  const schedCount=rows.filter(r=>r.type==='排班簽到').length;
+  const freeCount=rows.filter(r=>r.type==='自由練習').length;
+  const mgrCount=rows.filter(r=>r.type==='管理員補登').length;
+  const total=rows.length;
   document.getElementById('mgrStats').innerHTML=`
     <div class="stat-card"><div class="stat-n">${total}</div><div class="stat-l">總記錄筆數</div></div>
     <div class="stat-card"><div class="stat-n">${schedCount}</div><div class="stat-l">排班簽到</div></div>
     <div class="stat-card"><div class="stat-n">${freeCount}</div><div class="stat-l">自由練習</div></div>
-    <div class="stat-card"><div class="stat-n">${histCount}</div><div class="stat-l">紙本記錄</div></div>`;
-
-  const el = document.getElementById('mgrList'); el.innerHTML='';
-
-  // 重新整理按鈕
-  const refreshBtn = document.createElement('button');
+    <div class="stat-card"><div class="stat-n">${mgrCount}</div><div class="stat-l">管理員補登</div></div>`;
+  const el=document.getElementById('mgrList');el.innerHTML='';
+  const refreshBtn=document.createElement('button');
   refreshBtn.style.cssText='width:100%;padding:9px;font-size:13px;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:8px;cursor:pointer;margin-bottom:12px;font-family:inherit';
-  refreshBtn.textContent='🔄 重新整理（讀取最新資料）';
-  refreshBtn.onclick = ()=>renderMgr();
-  el.appendChild(refreshBtn);
-
-  // 排班表編輯區
-  const schedLabel = document.createElement('p');
-  schedLabel.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;margin:4px 0 8px';
-  schedLabel.textContent='📅 排班表管理（點✏️可修改人員）';
-  el.appendChild(schedLabel);
+  refreshBtn.textContent='🔄 重新整理（讀取最新資料）';refreshBtn.onclick=()=>renderMgr();el.appendChild(refreshBtn);
+  // 排班管理
+  const sl=document.createElement('p');sl.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:4px 0 8px';sl.textContent='📅 排班表管理（點✏️可修改人員）';el.appendChild(sl);
   SCHED_DATA.forEach(d=>{
-    const srow = document.createElement('div');
+    const srow=document.createElement('div');
     srow.style.cssText='background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px';
-    srow.innerHTML=`
-      <div>
-        <span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span>
-        <div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.m1}、${d.m2}</div>
-      </div>
+    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.members.join('、')}</div></div>
       <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 修改</button>`;
     el.appendChild(srow);
   });
-  const divider = document.createElement('div');
-  divider.style.cssText='border-top:1px solid var(--border);margin:14px 0 10px';
-  el.appendChild(divider);
-  const memberLabel = document.createElement('p');
-  memberLabel.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);letter-spacing:.06em;margin:0 0 8px';
-  memberLabel.textContent='👥 學員個別狀況';
-  el.appendChild(memberLabel);
-
+  const divider=document.createElement('div');divider.style.cssText='border-top:1px solid var(--border);margin:14px 0 10px';el.appendChild(divider);
+  const ml=document.createElement('p');ml.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:0 0 8px';ml.textContent='👥 學員個別狀況';el.appendChild(ml);
   MEMBERS.forEach(m=>{
-    const personRows = rows.filter(r=>r.signer===m.name);
-    const schedTotal = m.future?0:SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
-    const schedDone = personRows.filter(r=>r.type==='排班簽到'||r.type==='管理員補登').length;
-    const pct = schedTotal?Math.round(schedDone/schedTotal*100):0;
-    const row=document.createElement('div'); row.className='person-row';
-    row.innerHTML=`
-      <div class="av${m.future?' fut':''}">${m.name[0]}</div>
-      <div class="info">
-        <div class="pname">${m.no}. ${m.name}${m.future?' <span style="font-size:10px;color:var(--gray-400);font-weight:400">（未來）</span>':''}</div>
-        <div class="psub">${m.future?'尚未加入':`排班${schedDone}/${schedTotal}｜共${personRows.length}筆`}</div>
-      </div>
-      <div class="pbar-wrap">
-        <div class="pct">${m.future?'—':pct+'%'}</div>
-        <div class="pbar"><div class="pbar-f" style="width:${pct}%"></div></div>
-      </div>`;
-    if(!m.future) row.onclick=()=>openMgrPerson(m.name, rows);
-    el.appendChild(row);
+    const personRows=rows.filter(r=>r.signer===m.name);
+    const schedTotal=SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedDone=personRows.filter(r=>r.type==='排班簽到'||r.type==='管理員補登').length;
+    const pct=schedTotal?Math.round(schedDone/schedTotal*100):0;
+    const row=document.createElement('div');row.className='person-row';
+    row.innerHTML=`<div class="av">${m.name[0]}</div>
+      <div class="info"><div class="pname">${m.no}. ${m.name}</div><div class="psub">排班${schedDone}/${schedTotal}｜共${personRows.length}筆</div></div>
+      <div class="pbar-wrap"><div class="pct">${pct}%</div><div class="pbar"><div class="pbar-f" style="width:${pct}%"></div></div></div>`;
+    row.onclick=()=>openMgrPerson(m.name,rows);el.appendChild(row);
   });
 }
 
-function openMgrPerson(name, rows){
-  const personRows = rows.filter(r=>r.signer===name);
-  const schedTotal = SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
-  document.getElementById('mgrPersonAv').textContent = name[0];
-  document.getElementById('mgrPersonName').textContent = name;
-  document.getElementById('mgrPersonSub').textContent = `共 ${personRows.length} 筆記錄（含排班、自由練習、補登）`;
-  const el = document.getElementById('mgrPersonRecs');
-  if(!personRows.length){
-    el.innerHTML='<div class="empty">📋 尚無記錄</div>';
-  } else {
+function openMgrPerson(name,rows){
+  const personRows=rows.filter(r=>r.signer===name);
+  document.getElementById('mgrPersonAv').textContent=name[0];
+  document.getElementById('mgrPersonName').textContent=name;
+  document.getElementById('mgrPersonSub').textContent=`共 ${personRows.length} 筆記錄`;
+  const el=document.getElementById('mgrPersonRecs');
+  if(!personRows.length){el.innerHTML='<div class="empty">📋 尚無記錄</div>';}
+  else{
     el.innerHTML='';
     personRows.forEach(r=>{
       const card=document.createElement('div');
-      let badgeClass='badge-sched', badgeTxt='📋 排班';
+      let badgeClass='badge-sched',badgeTxt='📋 排班';
       if(r.type==='自由練習'){badgeClass='badge-free';badgeTxt='🟣 自由練習';}
       if(r.type==='管理員補登'){badgeClass='badge-mgr';badgeTxt='🛠 補登';}
-      if(r.type==='紙本記錄'){badgeClass='badge-hist';badgeTxt='📄 紙本';}
       card.className='rec-card';
-      card.innerHTML=`
-        <div class="rec-top">
-          <span class="rec-date">${r.date} ${r.label}</span>
-          <span class="rec-time">${r.t1} – ${r.t2}</span>
-        </div>
+      card.innerHTML=`<div class="rec-top"><span class="rec-date">${r.date} ${r.label}</span><span class="rec-time">${r.t1} – ${r.t2}</span></div>
         <div style="margin-bottom:5px"><span class="rec-type-badge ${badgeClass}">${badgeTxt}</span></div>
         <div class="rec-mat">📦 ${r.mats||'—'}</div>
         ${r.note?`<div class="rec-mat" style="margin-top:2px">📝 ${r.note}</div>`:''}
@@ -1068,16 +865,14 @@ function openMgrPerson(name, rows){
   go('mgr-person');
 }
 
-// ── 編輯 & 刪除（管理者） ──
-function editRec(key, ts) {
-  let r, isFree=false, freeIdx=-1;
-  if(key){r=sigRec[key];}
-  else{freeIdx=freeRec.findIndex(x=>x.ts===ts);r=freeRec[freeIdx];isFree=true;}
+function editRec(key,ts){
+  let r,isFree=false,freeIdx=-1;
+  if(key){r=sigRec[key];}else{freeIdx=freeRec.findIndex(x=>x.ts===ts);r=freeRec[freeIdx];isFree=true;}
   if(!r)return;
-  const newT1=prompt(`修改開始時間（目前：${r.t1}）`,r.t1); if(newT1===null)return;
-  const newT2=prompt(`修改結束時間（目前：${r.t2}）`,r.t2); if(newT2===null)return;
-  const newMats=prompt(`修改料件（目前：${r.mats}）`,r.mats); if(newMats===null)return;
-  const newNote=prompt(`修改備註（目前：${r.note||'無'}）`,r.note||''); if(newNote===null)return;
+  const newT1=prompt(`修改開始時間（目前：${r.t1}）`,r.t1);if(newT1===null)return;
+  const newT2=prompt(`修改結束時間（目前：${r.t2}）`,r.t2);if(newT2===null)return;
+  const newMats=prompt(`修改料件（目前：${r.mats}）`,r.mats);if(newMats===null)return;
+  const newNote=prompt(`修改備註（目前：${r.note||'無'}）`,r.note||'');if(newNote===null)return;
   const edited={...r,t1:newT1,t2:newT2,mats:newMats,note:newNote,ts:r.ts+'（管理員修改 '+new Date().toLocaleString('zh-TW')+'）'};
   if(isFree){freeRec[freeIdx]=edited;}else{sigRec[key]=edited;}
   save();
@@ -1085,26 +880,17 @@ function editRec(key, ts) {
   openPerson(name,true);
 }
 
-function deleteRec(key, ts, name) {
+function deleteRec(key,ts,name){
   if(!confirm('確定要刪除這筆記錄嗎？'))return;
-  if(key){delete sigRec[key];}
-  else{const idx=freeRec.findIndex(x=>x.ts===ts);if(idx>-1)freeRec.splice(idx,1);}
-  save();
-  openPerson(name,true);
+  if(key){delete sigRec[key];}else{const idx=freeRec.findIndex(x=>x.ts===ts);if(idx>-1)freeRec.splice(idx,1);}
+  save();openPerson(name,true);
 }
 
-// ── Google Sheets ──
-function pushSheet(payload, noteId) {
+function pushSheet(payload,noteId){
   if(!gasUrl)return;
   fetch(gasUrl,{method:'POST',body:JSON.stringify(payload)})
-    .then(()=>{
-      const el=document.getElementById(noteId);
-      if(el){el.className='alert a-ok';el.textContent='✅ 已即時同步到 Google Sheets！';el.style.display='block';}
-    })
-    .catch(()=>{
-      const el=document.getElementById(noteId);
-      if(el){el.className='alert a-warn';el.textContent='⚠️ 同步失敗，資料已存本機';el.style.display='block';}
-    });
+    .then(()=>{const el=document.getElementById(noteId);if(el){el.className='alert a-ok';el.textContent='✅ 已即時同步到 Google Sheets！';el.style.display='block';}})
+    .catch(()=>{const el=document.getElementById(noteId);if(el){el.className='alert a-warn';el.textContent='⚠️ 同步失敗，資料已存本機';el.style.display='block';}});
 }
 
 function showSucc(ico,name,detail){
@@ -1114,21 +900,28 @@ function showSucc(ico,name,detail){
   go('success');
 }
 
-// ── 設定 ──
 function saveCfg(){
   gasUrl=document.getElementById('gasIn').value.trim();
   localStorage.setItem('gasUrl',gasUrl);
   const el=document.getElementById('cfgOk');el.style.display='block';
   setTimeout(()=>el.style.display='none',3000);
 }
-function cpCode(){
-  navigator.clipboard.writeText(document.getElementById('gasCode').textContent)
-    .then(()=>alert('✅ 程式碼已複製！'));
+
+function loadSchedFromSheets(){
+  if(!gasUrl)return;
+  fetch(gasUrl+'?action=getSched').then(r=>r.json()).then(data=>{
+    if(data.sched&&data.sched.length>0){
+      localStorage.setItem('schedOverride8',JSON.stringify(data.sched));
+      data.sched.forEach(s=>{
+        const idx=SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
+        if(idx>-1){if(s.m1)SCHED_DATA[idx].m1=s.m1;if(s.m2)SCHED_DATA[idx].m2=s.m2;}
+      });
+      renderCal();renderGrid();
+    }
+  }).catch(()=>{});
 }
 
-// ── 初始化 ──
-renderList();
-renderGrid();
+renderCal();renderGrid();
 loadSchedFromSheets();
 setTimeout(()=>{initSig('sigCanvas');initSig('freeSigCanvas');},300);
 </script>
