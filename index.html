@@ -321,7 +321,7 @@ function loginSuccess(name, isAdmin){
   document.getElementById('modal').classList.add('show');
   sessionStorage.setItem('user', JSON.stringify({name, isAdmin}));
   setTimeout(()=>{
-    window.location.href = isAdmin ? 'admin.html' : 'home.html';
+    window.location.href = isAdmin ? '/zhujiangas/admin.html' : '/zhujiangas/home.html';
   }, 1500);
 }
 
