@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>學習主頁 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
+.nav{background:#fff;border-bottom:3px solid #FFB830;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.brand-name{font-size:18px;font-weight:700;color:#1a5c2a;}
+.brand-name span{color:#FF8C00;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.user-pill{background:#e8f5ec;color:#2d8a42;font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;}
+.logout-btn{background:transparent;border:1.5px solid #ddd;color:#888;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;}
+.logout-btn:hover{border-color:#e53935;color:#e53935;}
+.page{max-width:680px;margin:0 auto;padding:1.5rem;}
+.welcome{background:linear-gradient(135deg,#1a5c2a,#2d8a42);border-radius:16px;padding:1.5rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.welcome::after{content:'🌱';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:48px;opacity:0.3;}
+.welcome-sub{font-size:12px;color:#a8d5b5;letter-spacing:1px;margin-bottom:4px;}
+.welcome-name{font-size:22px;font-weight:700;margin-bottom:4px;}
+.welcome-msg{font-size:13px;color:#c8e6c9;}
+.progress-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;}
+.prog-card{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1rem 1.2rem;}
+.prog-card-label{font-size:11px;color:#aaa;letter-spacing:1px;margin-bottom:6px;}
+.prog-card-num{font-size:1.6rem;font-weight:700;color:#1a5c2a;margin-bottom:6px;}
+.prog-card-num span{font-size:14px;color:#aaa;font-weight:400;}
+.prog-bar{height:6px;background:#e8e8e8;border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:#2d8a42;border-radius:3px;transition:width 0.5s;}
+.prog-fill.orange{background:#FF8C00;}
+.bulletin{background:#fff7e6;border-radius:14px;border:2px dashed #FFB830;padding:1.1rem 1.2rem;margin-bottom:1.5rem;}
+.bulletin-title{font-size:13px;font-weight:700;color:#854F0B;margin-bottom:6px;}
+.bulletin-text{font-size:13px;color:#5a4a30;line-height:1.8;}
+.section-label{font-size:14px;font-weight:700;color:#555;margin-bottom:10px;letter-spacing:1px;}
+.cards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.5rem;}
+.card{background:#fff;border-radius:14px;padding:1.2rem;border:1.5px solid #e8f3ec;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;display:flex;align-items:center;gap:12px;}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,0.08);}
+.card-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.card-name{font-size:14px;font-weight:700;color:#1a3a1a;}
+.card-sub{font-size:11px;color:#aaa;margin-top:2px;}
+.schedule{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;overflow:hidden;margin-bottom:1.5rem;}
+.sched-header{background:#2d8a42;color:#fff;padding:0.7rem 1rem;font-size:13px;font-weight:700;}
+.sched-row{display:flex;align-items:center;gap:10px;padding:0.7rem 1rem;border-bottom:1px solid #f0f0f0;}
+.sched-row:last-child{border-bottom:none;}
+.sched-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.dot-done{background:#ccc;}
+.dot-now{background:#FF8C00;box-shadow:0 0 6px rgba(255,140,0,0.5);}
+.dot-next{background:#e8f5ec;border:2px solid #2d8a42;}
+.sched-date{font-size:13px;font-weight:700;color:#333;min-width:95px;}
+.sched-label{font-size:12px;color:#666;flex:1;}
+.sched-tag{font-size:11px;padding:3px 10px;border-radius:8px;font-weight:700;}
+.t-done{background:#f5f5f5;color:#999;}
+.t-now{background:#fff3e0;color:#e65100;}
+.t-next{background:#e8f5e9;color:#2d8a42;}
+footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">
+    <svg width="30" height="30" viewBox="0 0 32 32">
+      <polygon points="16,1 30,8 30,24 16,31 2,24 2,8" fill="none" stroke="rgba(74,222,128,0.5)" stroke-width="1.5"/>
+      <polygon points="16,6 26,11 26,21 16,26 6,21 6,11" fill="#2d8a42"/>
+      <polygon points="16,11 21,14 21,18 16,21 11,18 11,14" fill="#FFB830"/>
+    </svg>
+    <div class="brand-name">竹建<span>學習網</span></div>
+  </div>
+  <div class="nav-right">
+    <div class="user-pill" id="userPill">👤 載入中...</div>
+    <button class="logout-btn" onclick="logout()">登出</button>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="welcome">
+    <div class="welcome-sub">WELCOME BACK</div>
+    <div class="welcome-name" id="welcomeName">歡迎回來！</div>
+    <div class="welcome-msg" id="welcomeMsg">今天也要繼續加油！💪</div>
+  </div>
+
+  <div class="progress-cards">
+    <div class="prog-card">
+      <div class="prog-card-label">📺 影片進度</div>
+      <div class="prog-card-num" id="videoNum">0<span> / 12</span></div>
+      <div class="prog-bar"><div class="prog-fill" id="videoFill" style="width:0%"></div></div>
+    </div>
+    <div class="prog-card">
+      <div class="prog-card-label">🧩 遊戲挑戰</div>
+      <div class="prog-card-num" id="gameNum">0<span> 次</span></div>
+      <div class="prog-bar"><div class="prog-fill orange" id="gameFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="bulletin">
+    <div class="bulletin-title">📢 公告欄</div>
+    <div class="bulletin-text">
+      🎉 第二次上課（115/04/24）已順利完成！<br/>
+      📺 4/24 課程影片已上傳，快去複習吧！<br/>
+      🧩 組裝排序遊戲開放挑戰，看誰最快！
+    </div>
+  </div>
+
+  <div class="section-label">學習功能</div>
+  <div class="cards-grid" id="cardsGrid">
+    <div class="card" onclick="location.href='videos.html'">
+      <div class="card-icon" style="background:#e8f5ec;">🎬</div>
+      <div><div class="card-name">訓練影片</div><div class="card-sub">12 部課程影片</div></div>
+    </div>
+    <div class="card" onclick="location.href='game.html'">
+      <div class="card-icon" style="background:#fff3e0;">🧩</div>
+      <div><div class="card-name">排序遊戲</div><div class="card-sub">組裝順序挑戰</div></div>
+    </div>
+    <div class="card" onclick="location.href='photos.html'">
+      <div class="card-icon" style="background:#fff8e1;">📸</div>
+      <div><div class="card-name">實作照片</div><div class="card-sub">課程記錄照片</div></div>
+    </div>
+    <div class="card" onclick="location.href='progress.html'">
+      <div class="card-icon" style="background:#e3f2fd;">📊</div>
+      <div><div class="card-name">我的進度</div><div class="card-sub">學習記錄統計</div></div>
+    </div>
+  </div>
+
+  <div class="schedule">
+    <div class="sched-header">📅 課程梯次</div>
+    <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 03 / 17</div><div class="sched-label">第一次上課</div><div class="sched-tag t-done">已結束</div></div>
+    <div class="sched-row"><div class="sched-dot dot-now"></div><div class="sched-date">115 / 04 / 24</div><div class="sched-label">第二次上課</div><div class="sched-tag t-now">已完成</div></div>
+    <div class="sched-row"><div class="sched-dot dot-next"></div><div class="sched-date">待定</div><div class="sched-label">第三次上課</div><div class="sched-tag t-next">即將到來</div></div>
+    <div class="sched-row"><div class="sched-dot dot-next"></div><div class="sched-date">待定</div><div class="sched-label">第四次上課</div><div class="sched-tag t-next">即將到來</div></div>
+  </div>
+</div>
+
+<footer>竹建瓦斯股份有限公司　|　350苗栗縣竹南鎮環市路二段163號　|　037-462871</footer>
+
+<script>
+// 檢查登入狀態
+const userStr = sessionStorage.getItem('user');
+if(!userStr){
+  window.location.href = 'index.html';
+}
+const user = JSON.parse(userStr || '{"name":"訪客","isAdmin":false}');
+
+document.getElementById('userPill').textContent = '👤 ' + user.name;
+document.getElementById('welcomeName').textContent = '歡迎回來，' + user.name + '！';
+
+const hour = new Date().getHours();
+let msg = hour < 12 ? '早安！今天也要元氣滿滿 ☀️' : hour < 18 ? '午安！繼續加油！💪' : '晚安！今天辛苦了 🌙';
+document.getElementById('welcomeMsg').textContent = msg;
+
+// 管理者額外按鈕
+if(user.isAdmin){
+  const btn = document.createElement('div');
+  btn.className = 'card';
+  btn.style.borderColor = '#FFB830';
+  btn.innerHTML = '<div class="card-icon" style="background:#fff3e0;">⚙️</div><div><div class="card-name">管理者後台</div><div class="card-sub">內容管理</div></div>';
+  btn.onclick = function(){ location.href = 'admin.html'; };
+  document.getElementById('cardsGrid').appendChild(btn);
+}
+
+// 讀取進度
+const watchKey = 'watched_' + user.name;
+const watched = JSON.parse(localStorage.getItem(watchKey) || '[]').length;
+document.getElementById('videoNum').innerHTML = watched + '<span> / 12</span>';
+document.getElementById('videoFill').style.width = (watched/12*100) + '%';
+
+const gameCount = parseInt(localStorage.getItem('game_' + user.name) || '0');
+document.getElementById('gameNum').innerHTML = gameCount + '<span> 次</span>';
+document.getElementById('gameFill').style.width = Math.min(gameCount/10*100, 100) + '%';
+
+function logout(){
+  if(confirm('確定要登出嗎？')){
+    sessionStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+}
+</script>
+</body>
+</html>
