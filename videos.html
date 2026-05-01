@@ -68,7 +68,7 @@ footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-si
 <div class="page">
   <div class="overall-progress">
     <div class="op-stat"><div class="op-num" id="watchedCount">0</div><div class="op-label">已看完</div></div>
-    <div class="op-stat"><div class="op-num" style="color:#aaa;">12</div><div class="op-label">全部影片</div></div>
+    <div class="op-stat"><div class="op-num" style="color:#aaa;">13</div><div class="op-label">全部影片</div></div>
     <div class="op-bar-wrap">
       <div class="op-bar-label">整體觀看進度</div>
       <div class="op-bar"><div class="op-fill" id="opFill" style="width:0%"></div></div>
@@ -136,6 +136,11 @@ const 影片清單 = [
     標題:'【乙級配管實戰】老師親自示範！每一個動作都是關鍵細節-01',
     說明:'這部影片紀錄了老師示範「乙級導管配管」完整組裝過程。這不僅是技術的展現，更是一場關於精準度的藝術。'
   },
+  {
+    編號:'13',名稱:'1150424-07',連結:'https://youtu.be/VQ8ZYuQXQCU',分類:'4/24',
+    標題:'【乙級配管實戰】老師親自示範！每一個動作都是關鍵細節-02',
+    說明:'老師親自示範乙級導管配管完整組裝過程第二集，每一個動作都是關鍵細節，值得反覆觀看學習。'
+  },
 ];
 
 const userStr = sessionStorage.getItem('user');
@@ -180,7 +185,7 @@ function updateVideoItem(id) {
 function updateProgress() {
   const w = watchedSet.size;
   document.getElementById('watchedCount').textContent = w;
-  document.getElementById('opFill').style.width = (w/12*100)+'%';
+  document.getElementById('opFill').style.width = (w/13*100)+'%';
   const w1 = 影片清單.filter(v=>v.分類==='3/17'&&watchedSet.has(v.編號)).length;
   const w2 = 影片清單.filter(v=>v.分類==='4/24'&&watchedSet.has(v.編號)).length;
   document.getElementById('count1').textContent = `${w1} / 6 部已看`;
