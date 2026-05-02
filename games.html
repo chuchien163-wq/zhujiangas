@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>遊戲挑戰 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
+.header{background:#fff;border-bottom:3px solid #FFB830;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.back-btn{background:#f0f0f0;border:none;padding:8px 18px;border-radius:20px;font-size:14px;cursor:pointer;color:#555;font-family:inherit;}
+.htitle{font-size:20px;font-weight:700;color:#1a5c2a;}
+.htitle span{color:#FF8C00;}
+
+.page{max-width:680px;margin:0 auto;padding:1.5rem;}
+
+.banner{background:linear-gradient(135deg,#1a5c2a,#2d8a42);border-radius:16px;padding:1.5rem;color:#fff;margin-bottom:1.5rem;text-align:center;}
+.banner-emoji{font-size:48px;margin-bottom:8px;}
+.banner-title{font-size:22px;font-weight:700;margin-bottom:6px;}
+.banner-sub{font-size:14px;color:#c8e6c9;}
+
+.games-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.5rem;}
+.game-card{background:#fff;border-radius:16px;border:2px solid #e8f3ec;padding:1.5rem;text-align:center;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;}
+.game-card:hover{transform:translateY(-5px);box-shadow:0 8px 24px rgba(0,0,0,0.1);border-color:#2d8a42;}
+.game-icon{font-size:48px;margin-bottom:12px;}
+.game-name{font-size:18px;font-weight:700;color:#1a3a1a;margin-bottom:6px;}
+.game-desc{font-size:13px;color:#888;line-height:1.6;margin-bottom:1rem;}
+.game-btn{background:#2d8a42;color:#fff;border:none;padding:10px 24px;border-radius:20px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;width:100%;}
+.game-card:nth-child(2) .game-btn{background:#c0392b;}
+.game-card:nth-child(2):hover{border-color:#c0392b;}
+
+.tips{background:#fff7e6;border-radius:14px;border:2px dashed #FFB830;padding:1.2rem;margin-bottom:1.5rem;}
+.tips-title{font-size:14px;font-weight:700;color:#854F0B;margin-bottom:8px;}
+.tips-text{font-size:13px;color:#5a4a30;line-height:1.8;}
+
+footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='home.html'">← 返回</button>
+  <div class="htitle">🎮 遊戲<span>挑戰</span></div>
+</div>
+
+<div class="page">
+
+  <div class="banner">
+    <div class="banner-emoji">🏆</div>
+    <div class="banner-title">選擇你的挑戰！</div>
+    <div class="banner-sub">透過遊戲加強組裝順序記憶，看誰最厲害！</div>
+  </div>
+
+  <div class="games-grid">
+    <div class="game-card" onclick="location.href='game.html'">
+      <div class="game-icon">🧩</div>
+      <div class="game-name">排序遊戲</div>
+      <div class="game-desc">把7個零件照片拖拉排成正確的組裝順序，計時挑戰！</div>
+      <button class="game-btn">開始挑戰 →</button>
+    </div>
+    <div class="game-card" onclick="location.href='memory.html'">
+      <div class="game-icon">🃏</div>
+      <div class="game-name">翻牌配對</div>
+      <div class="game-desc">翻開零件照片，找到對應的步驟說明，全部配對完成！</div>
+      <button class="game-btn">開始挑戰 →</button>
+    </div>
+  </div>
+
+  <div class="tips">
+    <div class="tips-title">💡 學習小提醒</div>
+    <div class="tips-text">
+      🧩 排序遊戲 — 考驗你對組裝「順序」的記憶<br/>
+      🃏 翻牌配對 — 考驗你對每個步驟「零件清單」的記憶<br/>
+      兩個遊戲都玩，學習效果最好！💪
+    </div>
+  </div>
+
+</div>
+
+<footer>竹建瓦斯股份有限公司　|　乙級導管配管培訓課程</footer>
+
+<script>
+(function(){
+  const u = sessionStorage.getItem('user');
+  if(!u){ window.location.href='index.html'; }
+})();
+</script>
+</body>
+</html>
