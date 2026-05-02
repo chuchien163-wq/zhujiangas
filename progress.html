@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>我的進度 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
+.header{background:#fff;border-bottom:3px solid #FFB830;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.back-btn{background:#f0f0f0;border:none;padding:8px 18px;border-radius:20px;font-size:14px;cursor:pointer;color:#555;font-family:inherit;}
+.htitle{font-size:20px;font-weight:700;color:#1a5c2a;}
+.htitle span{color:#FF8C00;}
+.user-tag{margin-left:auto;background:#e8f5ec;color:#2d8a42;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;}
+
+.page{max-width:680px;margin:0 auto;padding:1.5rem;}
+
+/* 歡迎卡 */
+.welcome{background:linear-gradient(135deg,#1a5c2a,#2d8a42);border-radius:16px;padding:1.5rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;}
+.welcome::after{content:'📊';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:52px;opacity:0.25;}
+.welcome-name{font-size:20px;font-weight:700;margin-bottom:4px;}
+.welcome-sub{font-size:13px;color:#c8e6c9;}
+
+/* 整體進度 */
+.overall{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.overall-title{font-size:14px;font-weight:700;color:#555;margin-bottom:1rem;}
+.overall-bar-wrap{margin-bottom:0.8rem;}
+.overall-bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
+.overall-bar-label span:first-child{color:#555;font-weight:700;}
+.overall-bar-label span:last-child{color:#2d8a42;font-weight:700;}
+.bar{height:12px;background:#e8e8e8;border-radius:6px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:6px;transition:width 0.8s ease;}
+.bar-green{background:linear-gradient(90deg,#2d8a42,#4ade80);}
+.bar-orange{background:linear-gradient(90deg,#FF8C00,#FFB830);}
+
+/* 統計格子 */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.2rem;}
+.stat-card{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1rem;text-align:center;}
+.stat-num{font-size:1.8rem;font-weight:700;color:#1a5c2a;}
+.stat-label{font-size:12px;color:#aaa;margin-top:4px;}
+
+/* 影片清單 */
+.section{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;overflow:hidden;margin-bottom:1.2rem;}
+.section-header{background:#2d8a42;color:#fff;padding:0.8rem 1.2rem;font-size:14px;font-weight:700;}
+.section-header.orange{background:#FF8C00;}
+.video-row{display:flex;align-items:center;gap:10px;padding:0.8rem 1.2rem;border-bottom:1px solid #f0f0f0;}
+.video-row:last-child{border-bottom:none;}
+.video-num{font-size:11px;color:#aaa;min-width:28px;font-weight:700;}
+.video-name{flex:1;font-size:14px;color:#333;}
+.video-status{font-size:13px;font-weight:700;}
+.status-done{color:#2d8a42;}
+.status-none{color:#ccc;}
+
+/* 遊戲記錄 */
+.game-card{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.game-title{font-size:14px;font-weight:700;color:#555;margin-bottom:1rem;}
+.game-best{text-align:center;padding:1rem;}
+.game-best-num{font-size:2.4rem;font-weight:700;color:#FF8C00;}
+.game-best-label{font-size:12px;color:#aaa;margin-top:4px;}
+.game-empty{text-align:center;padding:1rem;color:#aaa;font-size:14px;}
+
+/* 鼓勵訊息 */
+.encourage{background:#fff7e6;border:2px dashed #FFB830;border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:1.2rem;}
+.encourage-emoji{font-size:36px;margin-bottom:8px;}
+.encourage-text{font-size:14px;color:#854F0B;font-weight:700;line-height:1.6;}
+
+footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:0.5rem;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='home.html'">← 返回</button>
+  <div class="htitle">📊 我的<span>進度</span></div>
+  <div class="user-tag" id="userTag">載入中...</div>
+</div>
+
+<div class="page">
+
+  <!-- 歡迎卡 -->
+  <div class="welcome">
+    <div class="welcome-name" id="welcomeName">我的學習進度</div>
+    <div class="welcome-sub" id="welcomeSub">載入中...</div>
+  </div>
+
+  <!-- 整體進度 -->
+  <div class="overall">
+    <div class="overall-title">📈 整體學習進度</div>
+    <div class="overall-bar-wrap">
+      <div class="overall-bar-label">
+        <span>📺 影片觀看</span>
+        <span id="videoLabel">0 / 13</span>
+      </div>
+      <div class="bar"><div class="bar-fill bar-green" id="videoBar" style="width:0%"></div></div>
+    </div>
+    <div class="overall-bar-wrap">
+      <div class="overall-bar-label">
+        <span>🧩 遊戲挑戰</span>
+        <span id="gameLabel">0 次</span>
+      </div>
+      <div class="bar"><div class="bar-fill bar-orange" id="gameBar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- 統計 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="statVideo">0</div>
+      <div class="stat-label">看完影片</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statGame">0</div>
+      <div class="stat-label">遊戲次數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statPct">0%</div>
+      <div class="stat-label">完成率</div>
+    </div>
+  </div>
+
+  <!-- 鼓勵訊息 -->
+  <div class="encourage" id="encourage">
+    <div class="encourage-emoji">💪</div>
+    <div class="encourage-text" id="encourageText">加油！繼續學習！</div>
+  </div>
+
+  <!-- 遊戲最佳記錄 -->
+  <div class="game-card">
+    <div class="game-title">🏆 排序遊戲最佳紀錄</div>
+    <div id="gameBest"></div>
+  </div>
+
+  <!-- 3/17 影片 -->
+  <div class="section">
+    <div class="section-header">📅 第一次上課 115/03/17</div>
+    <div id="list317"></div>
+  </div>
+
+  <!-- 4/24 影片 -->
+  <div class="section">
+    <div class="section-header orange">📅 第二次上課 115/04/24</div>
+    <div id="list424"></div>
+  </div>
+
+</div>
+
+<footer>竹建瓦斯股份有限公司　|　乙級導管配管培訓課程</footer>
+
+<script>
+const 影片清單 = [
+  {編號:'01', 名稱:'1150317-01', 分類:'3/17'},
+  {編號:'02', 名稱:'1150317-02', 分類:'3/17'},
+  {編號:'03', 名稱:'1150317-03', 分類:'3/17'},
+  {編號:'04', 名稱:'1150317-04', 分類:'3/17'},
+  {編號:'05', 名稱:'1150317-05', 分類:'3/17'},
+  {編號:'06', 名稱:'1150317-06', 分類:'3/17'},
+  {編號:'07', 名稱:'1150424-01 汗水與鋼管的交響樂', 分類:'4/24'},
+  {編號:'08', 名稱:'1150424-02 揭秘組裝藝術-01', 分類:'4/24'},
+  {編號:'09', 名稱:'1150424-03 揭秘組裝藝術-02', 分類:'4/24'},
+  {編號:'10', 名稱:'1150424-04 揭秘組裝藝術-03', 分類:'4/24'},
+  {編號:'11', 名稱:'1150424-05 揭秘組裝藝術-04', 分類:'4/24'},
+  {編號:'12', 名稱:'1150424-06 老師示範關鍵細節-01', 分類:'4/24'},
+  {編號:'13', 名稱:'1150424-07 老師示範關鍵細節-02', 分類:'4/24'},
+];
+
+// 取得使用者
+const userStr = sessionStorage.getItem('user');
+if(!userStr){ window.location.href='index.html'; }
+const user = JSON.parse(userStr||'{}');
+
+document.getElementById('userTag').textContent = '👤 ' + user.name;
+document.getElementById('welcomeName').textContent = user.name + ' 的學習進度';
+
+// 讀取觀看記錄
+const watchKey = 'watched_' + user.name;
+const watched = new Set(JSON.parse(localStorage.getItem(watchKey)||'[]'));
+const watchedCount = watched.size;
+
+// 讀取遊戲記錄
+const gameKey = 'game_' + user.name;
+const gameCount = parseInt(localStorage.getItem(gameKey)||'0');
+const gameBestKey = 'gameBest_' + user.name;
+const gameBestSec = parseInt(localStorage.getItem(gameBestKey)||'0');
+
+// 更新進度條
+const pct = Math.round(watchedCount/13*100);
+document.getElementById('videoBar').style.width = pct + '%';
+document.getElementById('videoLabel').textContent = watchedCount + ' / 13';
+document.getElementById('gameBar').style.width = Math.min(gameCount/10*100,100) + '%';
+document.getElementById('gameLabel').textContent = gameCount + ' 次';
+document.getElementById('statVideo').textContent = watchedCount;
+document.getElementById('statGame').textContent = gameCount;
+document.getElementById('statPct').textContent = pct + '%';
+
+// 鼓勵訊息
+let emoji = '💪', msg = '';
+if(pct === 100){ emoji='🏆'; msg='太厲害了！13部影片全部看完！你是最認真的學員！'; }
+else if(pct >= 80){ emoji='🌟'; msg='快完成了！再加把勁！只差一點點！'; }
+else if(pct >= 50){ emoji='👍'; msg='已經過半了！繼續保持！你做得很好！'; }
+else if(pct > 0){ emoji='🌱'; msg='已經開始了！每天進步一點點，持續學習！'; }
+else{ emoji='🎯'; msg='趕快開始看影片吧！學習從現在開始！'; }
+document.getElementById('encourage').querySelector('.encourage-emoji').textContent = emoji;
+document.getElementById('encourageText').textContent = msg;
+document.getElementById('welcomeSub').textContent = `已完成 ${pct}% · 看完 ${watchedCount}/13 部影片`;
+
+// 遊戲最佳紀錄
+const gameBestEl = document.getElementById('gameBest');
+if(gameBestSec > 0){
+  const m = String(Math.floor(gameBestSec/60)).padStart(2,'0');
+  const s = String(gameBestSec%60).padStart(2,'0');
+  gameBestEl.innerHTML = `<div class="game-best">
+    <div class="game-best-num">${m}:${s}</div>
+    <div class="game-best-label">最佳完成時間　挑戰了 ${gameCount} 次</div>
+  </div>`;
+} else {
+  gameBestEl.innerHTML = '<div class="game-empty">還沒挑戰過！快去試試看！🧩</div>';
+}
+
+// 建立影片清單
+function buildList(分類, elId){
+  const el = document.getElementById(elId);
+  const videos = 影片清單.filter(v=>v.分類===分類);
+  let html = '';
+  videos.forEach(v=>{
+    const done = watched.has(v.編號);
+    html += `<div class="video-row">
+      <div class="video-num">NO.${v.編號}</div>
+      <div class="video-name">${v.名稱}</div>
+      <div class="video-status ${done?'status-done':'status-none'}">${done?'✅ 看完':'⬜ 未看'}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+buildList('3/17','list317');
+buildList('4/24','list424');
+</script>
+</body>
+</html>
