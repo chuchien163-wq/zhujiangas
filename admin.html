@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>管理者後台 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f5;}
+.nav{background:#1a5c2a;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-title{color:#fff;font-size:18px;font-weight:700;}
+.nav-title span{color:#FFB830;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-tag{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:4px 12px;border-radius:20px;}
+.logout-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.4);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;}
+
+.page{max-width:900px;margin:0 auto;padding:1.5rem;}
+
+/* 統計卡片 */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.stat-card{background:#fff;border-radius:14px;padding:1.2rem;text-align:center;border:1.5px solid #e8e8e8;}
+.stat-num{font-size:2rem;font-weight:700;color:#1a5c2a;}
+.stat-label{font-size:12px;color:#aaa;margin-top:4px;}
+
+/* 分頁 */
+.tabs{display:flex;gap:4px;margin-bottom:1.2rem;background:#fff;border-radius:12px;padding:6px;border:1.5px solid #e8e8e8;}
+.tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#888;border:none;background:transparent;font-family:inherit;transition:all 0.2s;}
+.tab.active{background:#1a5c2a;color:#fff;}
+
+/* 表格 */
+.section{background:#fff;border-radius:14px;border:1.5px solid #e8e8e8;overflow:hidden;}
+.section-header{background:#1a5c2a;color:#fff;padding:0.8rem 1.2rem;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.refresh-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#f9f9f9;padding:10px 12px;text-align:left;font-weight:700;color:#555;border-bottom:1px solid #eee;}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0;color:#333;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f9f9f9;}
+.badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;}
+.badge-done{background:#e8f5ec;color:#2d8a42;}
+.badge-none{background:#f5f5f5;color:#aaa;}
+.rank-1{color:#FFB830;font-weight:700;}
+.rank-2{color:#888;font-weight:700;}
+.rank-3{color:#CD7F32;font-weight:700;}
+
+/* 公告編輯 */
+.announce-box{padding:1.2rem;}
+.announce-label{font-size:13px;font-weight:700;color:#555;margin-bottom:8px;}
+.announce-textarea{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:120px;outline:none;line-height:1.7;}
+.announce-textarea:focus{border-color:#2d8a42;}
+.announce-btn{background:#2d8a42;color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;}
+.announce-note{font-size:12px;color:#aaa;margin-top:8px;}
+.save-ok{color:#2d8a42;font-size:13px;font-weight:700;display:none;margin-top:8px;}
+
+.loading{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
+
+footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:1rem;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">⚙️ 竹建學習網 <span>管理後台</span></div>
+  <div class="nav-right">
+    <div class="nav-tag" id="adminName">管理者</div>
+    <button class="logout-btn" onclick="logout()">登出</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- 統計卡片 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="statEmployee">-</div>
+      <div class="stat-label">👥 員工人數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statActive">-</div>
+      <div class="stat-label">📺 有看影片</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statGame">-</div>
+      <div class="stat-label">🧩 玩過遊戲</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="statVideo">13</div>
+      <div class="stat-label">🎬 影片總數</div>
+    </div>
+  </div>
+
+  <!-- 分頁 -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('progress')">📊 學員進度</button>
+    <button class="tab" onclick="switchTab('game')">🏆 遊戲排行</button>
+    <button class="tab" onclick="switchTab('videos')">📺 觀看記錄</button>
+    <button class="tab" onclick="switchTab('announce')">📢 公告欄</button>
+  </div>
+
+  <!-- 學員進度 -->
+  <div id="tab-progress" class="section">
+    <div class="section-header">
+      📊 學員觀看進度
+      <button class="refresh-btn" onclick="loadProgress()">🔄 重新整理</button>
+    </div>
+    <div id="progressContent"><div class="loading">載入中...</div></div>
+  </div>
+
+  <!-- 遊戲排行 -->
+  <div id="tab-game" class="section" style="display:none;">
+    <div class="section-header">
+      🏆 排序遊戲排行榜
+      <button class="refresh-btn" onclick="loadGame()">🔄 重新整理</button>
+    </div>
+    <div id="gameContent"><div class="loading">載入中...</div></div>
+  </div>
+
+  <!-- 觀看記錄 -->
+  <div id="tab-videos" class="section" style="display:none;">
+    <div class="section-header">
+      📺 影片觀看記錄
+      <button class="refresh-btn" onclick="loadVideos()">🔄 重新整理</button>
+    </div>
+    <div id="videosContent"><div class="loading">載入中...</div></div>
+  </div>
+
+  <!-- 公告欄 -->
+  <div id="tab-announce" class="section" style="display:none;">
+    <div class="section-header">📢 公告欄管理</div>
+    <div class="announce-box">
+      <div class="announce-label">目前公告內容：</div>
+      <textarea class="announce-textarea" id="announceText" placeholder="輸入公告內容..."></textarea>
+      <br/>
+      <button class="announce-btn" onclick="saveAnnounce()">💾 儲存公告</button>
+      <div class="announce-note">⚠️ 儲存後需要重新上傳 home.html 才會生效</div>
+      <div class="save-ok" id="saveOk">✅ 已複製到剪貼簿！請貼到 home.html 的公告欄位置</div>
+    </div>
+  </div>
+
+</div>
+
+<footer>竹建瓦斯股份有限公司　|　管理者後台　|　僅限授權人員使用</footer>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzYOYilJM0lEGcp7-_O0Nn1hG5eUA2OuJBnzA2jCuTC3eFxtdlaux8PeZo4qcERFaFn/exec';
+
+// 驗證管理者
+const userStr = sessionStorage.getItem('user');
+if(!userStr){window.location.href='index.html';}
+const user = JSON.parse(userStr||'{}');
+if(!user.isAdmin){window.location.href='home.html';}
+document.getElementById('adminName').textContent = '👤 ' + user.name;
+
+// 初始化公告
+document.getElementById('announceText').value = '🎉 第二次上課（115/04/24）已順利完成！\n📺 4/24 課程影片已上傳，快去複習吧！\n🧩 組裝排序遊戲開放挑戰，看誰最快！';
+
+function switchTab(tab) {
+  ['progress','game','videos','announce'].forEach(t => {
+    document.getElementById('tab-'+t).style.display = t===tab?'block':'none';
+  });
+  document.querySelectorAll('.tab').forEach((btn,i) => {
+    btn.classList.toggle('active', ['progress','game','videos','announce'][i]===tab);
+  });
+  if(tab==='progress') loadProgress();
+  if(tab==='game') loadGame();
+  if(tab==='videos') loadVideos();
+}
+
+async function fetchGAS(action) {
+  try {
+    const res = await fetch(`${GAS_URL}?action=${encodeURIComponent(action)}`);
+    const data = await res.json();
+    return data.data || [];
+  } catch(e) {
+    return null;
+  }
+}
+
+async function loadProgress() {
+  document.getElementById('progressContent').innerHTML = '<div class="loading">載入中...</div>';
+  const data = await fetchGAS('取得學員進度');
+  if(!data || data.length === 0) {
+    document.getElementById('progressContent').innerHTML = '<div class="empty">尚無學員資料</div>';
+    // 更新統計
+    document.getElementById('statEmployee').textContent = '15';
+    document.getElementById('statActive').textContent = '0';
+    return;
+  }
+  const active = data.filter(r => r['看完影片數'] > 0).length;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statEmployee').textContent = '15';
+
+  let html = '<table><thead><tr><th>姓名</th><th>部門</th><th>看完影片</th><th>完成率</th><th>最後登入</th></tr></thead><tbody>';
+  data.forEach(r => {
+    const pct = parseInt(r['影片完成率']) || 0;
+    const color = pct >= 80 ? '#2d8a42' : pct >= 50 ? '#FF8C00' : '#e53935';
+    html += `<tr>
+      <td><strong>${r['姓名']}</strong></td>
+      <td>${r['部門']||'-'}</td>
+      <td>${r['看完影片數']||0} / 13</td>
+      <td style="color:${color};font-weight:700;">${r['影片完成率']||'0%'}</td>
+      <td style="font-size:12px;color:#aaa;">${r['最後登入時間']||'-'}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('progressContent').innerHTML = html;
+}
+
+async function loadGame() {
+  document.getElementById('gameContent').innerHTML = '<div class="loading">載入中...</div>';
+  const data = await fetchGAS('取得遊戲排行');
+  if(!data || data.length === 0) {
+    document.getElementById('gameContent').innerHTML = '<div class="empty">尚無遊戲記錄</div>';
+    document.getElementById('statGame').textContent = '0';
+    return;
+  }
+  document.getElementById('statGame').textContent = data.length;
+  let html = '<table><thead><tr><th>名次</th><th>姓名</th><th>最佳時間</th><th>日期</th></tr></thead><tbody>';
+  data.forEach((r,i) => {
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
+    const cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
+    html += `<tr>
+      <td class="${cls}" style="font-size:18px;">${medal}</td>
+      <td><strong>${r['姓名']}</strong></td>
+      <td style="font-size:16px;font-weight:700;color:#FF8C00;">${r['時間']||'-'}</td>
+      <td style="font-size:12px;color:#aaa;">${String(r['日期']).split(' ')[0]||'-'}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('gameContent').innerHTML = html;
+}
+
+async function loadVideos() {
+  document.getElementById('videosContent').innerHTML = '<div class="loading">載入中...</div>';
+  const data = await fetchGAS('取得觀看記錄');
+  if(!data || data.length === 0) {
+    document.getElementById('videosContent').innerHTML = '<div class="empty">尚無觀看記錄</div>';
+    return;
+  }
+  // 最新50筆
+  const recent = data.slice(-50).reverse();
+  let html = '<table><thead><tr><th>時間</th><th>姓名</th><th>影片</th><th>狀態</th></tr></thead><tbody>';
+  recent.forEach(r => {
+    html += `<tr>
+      <td style="font-size:12px;color:#aaa;">${String(r['時間']).substring(0,16)}</td>
+      <td><strong>${r['姓名']}</strong></td>
+      <td style="font-size:12px;">${r['影片名稱']||r['影片編號']}</td>
+      <td><span class="badge badge-done">${r['完成狀態']}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('videosContent').innerHTML = html;
+}
+
+function saveAnnounce() {
+  const text = document.getElementById('announceText').value;
+  navigator.clipboard.writeText(text).then(()=>{
+    document.getElementById('saveOk').style.display = 'block';
+    setTimeout(()=>document.getElementById('saveOk').style.display='none', 3000);
+  });
+}
+
+function logout() {
+  if(confirm('確定要登出嗎？')) {
+    sessionStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+}
+
+// 初始載入
+loadProgress();
+</script>
+</body>
+</html>

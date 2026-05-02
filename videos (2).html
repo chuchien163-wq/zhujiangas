@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>訓練影片 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
+.header{background:#fff;border-bottom:3px solid #FFB830;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.back-btn{background:#f0f0f0;border:none;padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;color:#555;font-family:inherit;}
+.back-btn:hover{background:#e0e0e0;}
+.htitle{font-size:18px;font-weight:700;color:#1a5c2a;}
+.htitle span{color:#FF8C00;}
+.user-tag{margin-left:auto;background:#e8f5ec;color:#2d8a42;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.page{max-width:900px;margin:0 auto;padding:1.5rem;}
+.overall-progress{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.op-stat{text-align:center;}
+.op-num{font-size:1.8rem;font-weight:700;color:#1a5c2a;}
+.op-label{font-size:13px;color:#aaa;margin-top:2px;}
+.op-bar-wrap{flex:1;min-width:200px;}
+.op-bar-label{font-size:12px;color:#555;margin-bottom:6px;font-weight:700;}
+.op-bar{height:12px;background:#e8e8e8;border-radius:6px;overflow:hidden;}
+.op-fill{height:100%;background:linear-gradient(90deg,#2d8a42,#4ade80);border-radius:6px;transition:width 0.5s;}
+.section{margin-bottom:2.5rem;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:2px solid #e8f3ec;}
+.section-badge{background:#1a5c2a;color:#fff;font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:1px;}
+.section-badge.orange{background:#FF8C00;}
+.section-title{font-size:16px;font-weight:700;color:#2a3a2a;}
+.section-count{font-size:14px;color:#aaa;margin-left:auto;}
+.video-list{display:flex;flex-direction:column;gap:12px;}
+.video-item{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;overflow:hidden;transition:box-shadow 0.2s;}
+.video-item:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
+.video-item.watched{border-color:#c8e6c9;}
+.video-top{display:flex;gap:0;}
+.video-embed{flex-shrink:0;width:280px;position:relative;background:#000;}
+.video-embed iframe{width:280px;height:158px;border:none;display:block;}
+.watched-badge{position:absolute;top:8px;left:8px;background:rgba(45,138,66,0.9);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;}
+.video-info{flex:1;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:5px;overflow:hidden;}
+.video-num{font-size:13px;color:#aaa;letter-spacing:1px;}
+.video-name{font-size:14px;font-weight:700;color:#1a3a1a;line-height:1.4;}
+.video-desc{font-size:14px;color:#666;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.no-desc{font-size:12px;color:#bbb;font-style:italic;}
+.video-date{font-size:13px;color:#aaa;}
+.video-status{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;}
+.status-dot.watching{background:#FF8C00;animation:pulse 1.2s infinite;}
+.status-dot.watched{background:#2d8a42;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.status-text{font-size:14px;color:#aaa;}
+.status-text.watching{color:#FF8C00;font-weight:700;}
+.status-text.watched{color:#2d8a42;font-weight:700;}
+.progress-bar-wrap{padding:0.6rem 1.2rem;background:#f9f9f9;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:10px;}
+.progress-bar{flex:1;height:4px;background:#e8e8e8;border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:#2d8a42;border-radius:2px;transition:width 0.3s;}
+.progress-label{font-size:13px;color:#aaa;white-space:nowrap;}
+footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:1rem;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="back-btn" onclick="location.href='home.html'">← 返回</button>
+  <div class="htitle">🎬 訓練<span>影片</span></div>
+  <div class="user-tag" id="userTag">載入中...</div>
+</div>
+
+<div class="page">
+  <div class="overall-progress">
+    <div class="op-stat"><div class="op-num" id="watchedCount">0</div><div class="op-label">已看完</div></div>
+    <div class="op-stat"><div class="op-num" style="color:#aaa;">13</div><div class="op-label">全部影片</div></div>
+    <div class="op-bar-wrap">
+      <div class="op-bar-label">整體觀看進度</div>
+      <div class="op-bar"><div class="op-fill" id="opFill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-badge">第一次上課</div>
+      <div class="section-title">115 / 03 / 17</div>
+      <div class="section-count" id="count1">0 / 6 部已看</div>
+    </div>
+    <div class="video-list" id="list1"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <div class="section-badge orange">第二次上課</div>
+      <div class="section-title">115 / 04 / 24</div>
+      <div class="section-count" id="count2">0 / 6 部已看</div>
+    </div>
+    <div class="video-list" id="list2"></div>
+  </div>
+</div>
+
+<footer>竹建瓦斯股份有限公司　|　乙級導管配管培訓課程</footer>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzYOYilJM0lEGcp7-_O0Nn1hG5eUA2OuJBnzA2jCuTC3eFxtdlaux8PeZo4qcERFaFn/exec';
+
+const 影片清單 = [
+  {編號:'01',名稱:'1150317-01',連結:'https://youtu.be/SrgsYD3dFMM',分類:'3/17',標題:'1150317-01',說明:''},
+  {編號:'02',名稱:'1150317-02',連結:'https://youtu.be/Sv75VPYGHSk',分類:'3/17',標題:'1150317-02',說明:''},
+  {編號:'03',名稱:'1150317-03',連結:'https://youtu.be/L_E5QMMEnGs',分類:'3/17',標題:'1150317-03',說明:''},
+  {編號:'04',名稱:'1150317-04',連結:'https://youtu.be/uGOVCqyGz2k',分類:'3/17',標題:'1150317-04',說明:''},
+  {編號:'05',名稱:'1150317-05',連結:'https://youtu.be/R5GV9UKWFOw',分類:'3/17',標題:'1150317-05',說明:''},
+  {編號:'06',名稱:'1150317-06',連結:'https://youtu.be/FpoOq_Z5XvE',分類:'3/17',標題:'1150317-06',說明:''},
+  {
+    編號:'07',名稱:'1150424-01',連結:'https://youtu.be/sBvazzn_g5M',分類:'4/24',
+    標題:'汗水與鋼管的交響樂！乙級導管配管練習日誌',
+    說明:'邁向專業技術士之路！本影片紀錄了「乙級導管配管」實作練習過程。從管路量測、套絲加工到最終組裝，每一個直角與彎度都必須精準到位。'
+  },
+  {
+    編號:'08',名稱:'1150424-02',連結:'https://youtu.be/F0FW94nZMpM',分類:'4/24',
+    標題:'【職人現場】乙級配管必看：揭秘組裝藝術與關鍵細節-01',
+    說明:'本影片帶您直擊「乙級導管配管」實作解說現場。專業講師深入剖析管路組裝的關鍵技巧：從管徑的微小偏差到螺紋加工的嚴格要求，每一個步驟都是對「職人精神」的極致追求。'
+  },
+  {
+    編號:'09',名稱:'1150424-03',連結:'https://youtu.be/Uwj_bRT6KVo',分類:'4/24',
+    標題:'【職人現場】乙級配管必看：揭秘組裝藝術與關鍵細節-02',
+    說明:'展示了講師針對乙級導管配管的關鍵解說，特別強調了「三通」與「大彎」位置不對所產生的連鎖反應，這對考生來說是非常寶貴的「避坑指南」。'
+  },
+  {
+    編號:'10',名稱:'1150424-04',連結:'https://youtu.be/BGevh9zcyyI',分類:'4/24',
+    標題:'【職人現場】乙級配管必看：揭秘組裝藝術與關鍵細節-03',
+    說明:'本片紀錄了實作現場講師針對「組裝順序」與「空間位移」的精闢解析。當三通位置偏離 1 公分，整線高度會產生多大的連鎖誤差？這部影片將為你解答！'
+  },
+  {
+    編號:'11',名稱:'1150424-05',連結:'https://youtu.be/Y8MH45ygubE',分類:'4/24',
+    標題:'【職人現場】乙級配管必看：揭秘組裝藝術與關鍵細節-04',
+    說明:'本系列帶您直擊實作教學現場，由專業講師解說組裝關鍵眉角與常見錯誤。「不要摔工具！」維護器材的精準度，就是維護你的專業。'
+  },
+  {
+    編號:'12',名稱:'1150424-06',連結:'https://youtu.be/7NjWLH8so8Q',分類:'4/24',
+    標題:'【乙級配管實戰】老師親自示範！每一個動作都是關鍵細節-01',
+    說明:'這部影片紀錄了老師示範「乙級導管配管」完整組裝過程。這不僅是技術的展現，更是一場關於精準度的藝術。'
+  },
+  {
+    編號:'13',名稱:'1150424-07',連結:'https://youtu.be/VQ8ZYuQXQCU',分類:'4/24',
+    標題:'【乙級配管實戰】老師親自示範！每一個動作都是關鍵細節-02',
+    說明:'老師親自示範乙級導管配管完整組裝過程第二集，每一個動作都是關鍵細節，值得反覆觀看學習。'
+  },
+];
+
+const userStr = sessionStorage.getItem('user');
+const user = userStr ? JSON.parse(userStr) : {name:'測試用戶'};
+document.getElementById('userTag').textContent = '👤 ' + user.name;
+
+const watchKey = 'watched_' + user.name;
+let watchedSet = new Set(JSON.parse(localStorage.getItem(watchKey) || '[]'));
+
+function getYouTubeId(url) {
+  const m = url.match(/youtu\.be\/([^?]+)/) || url.match(/v=([^&]+)/);
+  return m ? m[1] : '';
+}
+
+function saveWatched(videoId, videoName) {
+  if (watchedSet.has(videoId)) return;
+  watchedSet.add(videoId);
+  localStorage.setItem(watchKey, JSON.stringify([...watchedSet]));
+  updateProgress();
+  updateVideoItem(videoId);
+  if (GAS_URL !== 'YOUR_GAS_URL_HERE') {
+    fetch(GAS_URL, {method:'POST', body:JSON.stringify({
+      action:'記錄觀看', 姓名:user.name, 工號:user.工號||'',
+      影片編號:videoId, 影片名稱:videoName, 完成狀態:'✅ 完成',
+      時間:new Date().toLocaleString('zh-TW')
+    })}).catch(()=>{});
+  }
+}
+
+function updateVideoItem(id) {
+  const item = document.getElementById('item_'+id);
+  if (!item) return;
+  item.classList.add('watched');
+  const dot = item.querySelector('.status-dot');
+  const text = item.querySelector('.status-text');
+  const badge = item.querySelector('.watched-badge');
+  if (dot) dot.className = 'status-dot watched';
+  if (text) { text.className='status-text watched'; text.textContent='✅ 已看完'; }
+  if (badge) badge.style.display = 'block';
+}
+
+function updateProgress() {
+  const w = watchedSet.size;
+  document.getElementById('watchedCount').textContent = w;
+  document.getElementById('opFill').style.width = (w/13*100)+'%';
+  const w1 = 影片清單.filter(v=>v.分類==='3/17'&&watchedSet.has(v.編號)).length;
+  const w2 = 影片清單.filter(v=>v.分類==='4/24'&&watchedSet.has(v.編號)).length;
+  document.getElementById('count1').textContent = `${w1} / 6 部已看`;
+  document.getElementById('count2').textContent = `${w2} / 6 部已看`;
+  const f1=document.getElementById('fill_section_1');
+  const f2=document.getElementById('fill_section_2');
+  if(f1)f1.style.width=(w1/6*100)+'%';
+  if(f2)f2.style.width=(w2/6*100)+'%';
+}
+
+function buildVideoItem(video) {
+  const ytId = getYouTubeId(video.連結);
+  const isWatched = watchedSet.has(video.編號);
+  const item = document.createElement('div');
+  item.className = 'video-item'+(isWatched?' watched':'');
+  item.id = 'item_'+video.編號;
+  const descHtml = video.說明
+    ? `<div class="video-desc">${video.說明}</div>`
+    : `<div class="no-desc">說明待補充</div>`;
+  item.innerHTML = `
+    <div class="video-top">
+      <div class="video-embed">
+        <iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&enablejsapi=1"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="${video.標題}"></iframe>
+        <div class="watched-badge" style="display:${isWatched?'block':'none'}">✅ 已看完</div>
+      </div>
+      <div class="video-info">
+        <div class="video-num">NO. ${video.編號}</div>
+        <div class="video-name">${video.標題}</div>
+        ${descHtml}
+        <div class="video-date">${video.分類==='3/17'?'115/03/17 第一次上課':'115/04/24 第二次上課'}</div>
+        <div class="video-status">
+          <div class="status-dot ${isWatched?'watched':''}"></div>
+          <div class="status-text ${isWatched?'watched':''}">${isWatched?'✅ 已看完':'尚未觀看'}</div>
+        </div>
+      </div>
+    </div>`;
+  if (!isWatched) {
+    window.addEventListener('message', function handler(e) {
+      try {
+        const d = JSON.parse(e.data);
+        if (d.event==='onStateChange'&&d.info===1) {
+          const dot=item.querySelector('.status-dot');
+          const text=item.querySelector('.status-text');
+          if(dot)dot.className='status-dot watching';
+          if(text){text.className='status-text watching';text.textContent='▶ 觀看中...';}
+        }
+        if (d.event==='onStateChange'&&d.info===0) {
+          saveWatched(video.編號, video.標題);
+          window.removeEventListener('message', handler);
+        }
+      } catch(err){}
+    });
+  }
+  return item;
+}
+
+function buildSection(分類, listId, sectionNum) {
+  const list = document.getElementById(listId);
+  const videos = 影片清單.filter(v=>v.分類===分類);
+  videos.forEach(v=>list.appendChild(buildVideoItem(v)));
+  const w = videos.filter(v=>watchedSet.has(v.編號)).length;
+  const bar = document.createElement('div');
+  bar.className = 'progress-bar-wrap';
+  bar.innerHTML = `
+    <div class="progress-bar">
+      <div class="progress-fill" id="fill_section_${sectionNum}" style="width:${w/videos.length*100}%"></div>
+    </div>
+    <div class="progress-label">${w}/${videos.length} 已看完</div>`;
+  list.appendChild(bar);
+}
+
+buildSection('3/17','list1','1');
+buildSection('4/24','list2','2');
+updateProgress();
+</script>
+</body>
+</html>
