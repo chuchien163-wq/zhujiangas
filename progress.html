@@ -147,6 +147,12 @@ footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-si
 <footer>竹建瓦斯股份有限公司　|　乙級導管配管培訓課程</footer>
 
 <script>
+// 檢查登入狀態
+(function(){
+  const u = sessionStorage.getItem('user');
+  if(!u){ window.location.href='index.html'; }
+})();
+
 const 影片清單 = [
   {編號:'01', 名稱:'1150317-01', 分類:'3/17'},
   {編號:'02', 名稱:'1150317-02', 分類:'3/17'},
