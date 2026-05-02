@@ -55,6 +55,10 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .progress-fill{height:100%;background:#2d8a42;border-radius:2px;transition:width 0.3s;}
 .progress-label{font-size:13px;color:#aaa;white-space:nowrap;}
 footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:1rem;}
+.done-btn{width:100%;background:#2d8a42;color:#fff;border:none;padding:10px;border-radius:0 0 12px 12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;}
+.done-btn:hover{background:#1a5c2a;}
+.done-btn.already{background:#c8e6c9;color:#2d8a42;cursor:default;}
+.done-btn.already:hover{background:#c8e6c9;}
 </style>
 </head>
 <body>
@@ -211,10 +215,12 @@ function buildVideoItem(video) {
   const descHtml = video.說明
     ? `<div class="video-desc">${video.說明}</div>`
     : `<div class="no-desc">說明待補充</div>`;
+  const btnLabel = isWatched ? '✅ 已看完' : '✅ 我已看完此影片';
+  const btnClass = isWatched ? 'done-btn already' : 'done-btn';
   item.innerHTML = `
     <div class="video-top">
       <div class="video-embed">
-        <iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1&enablejsapi=1"
+        <iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen title="${video.標題}"></iframe>
         <div class="watched-badge" style="display:${isWatched?'block':'none'}">✅ 已看完</div>
@@ -229,7 +235,8 @@ function buildVideoItem(video) {
           <div class="status-text ${isWatched?'watched':''}">${isWatched?'✅ 已看完':'尚未觀看'}</div>
         </div>
       </div>
-    </div>`;
+    </div>
+    <button class="${btnClass}" id="btn_${video.編號}" onclick="markWatched('${video.編號}','${video.標題}')" ${isWatched?'disabled':''}>${btnLabel}</button>`;
   if (!isWatched) {
     window.addEventListener('message', function handler(e) {
       try {
@@ -248,6 +255,18 @@ function buildVideoItem(video) {
     });
   }
   return item;
+}
+
+function markWatched(videoId, videoName){
+  if(watchedSet.has(videoId)) return;
+  saveWatched(videoId, videoName);
+  // 更新按鈕
+  const btn = document.getElementById('btn_'+videoId);
+  if(btn){
+    btn.textContent = '✅ 已看完';
+    btn.className = 'done-btn already';
+    btn.disabled = true;
+  }
 }
 
 function buildSection(分類, listId, sectionNum) {
