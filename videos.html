@@ -215,7 +215,7 @@ function buildVideoItem(video) {
   const descHtml = video.說明
     ? `<div class="video-desc">${video.說明}</div>`
     : `<div class="no-desc">說明待補充</div>`;
-  const btnLabel = isWatched ? '✅ 已看完' : '✅ 我已看完此影片';
+  const btnLabel = isWatched ? '✅ 已看完' : '☐ 我已看完此影片';
   const btnClass = isWatched ? 'done-btn already' : 'done-btn';
   item.innerHTML = `
     <div class="video-top">
