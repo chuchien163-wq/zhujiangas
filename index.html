@@ -9,75 +9,71 @@
 body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#000;color:#fff;min-height:100vh;}
 
 .nav{background:rgba(0,0,0,0.95);border-bottom:1px solid #222;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.nav-brand{display:flex;align-items:center;gap:12px;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
 .brand-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;}
 .brand-name span{color:#c9a84c;}
-.brand-tag{background:#111;color:#666;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #333;letter-spacing:1px;}
-.nav-btn{background:#c9a84c;color:#000;border:none;padding:10px 22px;border-radius:4px;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:1px;}
+.brand-tag{background:#111;color:#888;font-size:18px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #333;letter-spacing:1px;}
+.nav-btn{background:#c9a84c;color:#000;border:none;padding:10px 22px;border-radius:4px;font-size:18px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:1px;}
 .nav-btn:hover{opacity:0.85;}
 
+@keyframes spin-blade{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
 .hero{min-height:calc(100vh - 64px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;text-align:center;position:relative;overflow:hidden;}
-
-/* 配管背景裝飾 */
-.pipe-bg{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.07;pointer-events:none;}
-@keyframes flow{0%{stroke-dashoffset:30}100%{stroke-dashoffset:0}}
-.fl{stroke:#c9a84c;stroke-width:2;fill:none;stroke-dasharray:6 10;animation:flow 1.5s linear infinite;}
-
 .hero-content{position:relative;z-index:2;max-width:440px;width:100%;}
-.hero-badge{display:inline-block;background:#111;border:1px solid #8a7030;color:#c9a84c;font-size:13px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:2px;margin-bottom:1.8rem;}
-.hero-title{font-size:4rem;font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;color:#fff;}
+.hero-badge{display:inline-block;background:#111;border:1px solid #8a7030;color:#c9a84c;font-size:19px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:2px;margin-bottom:1.8rem;}
+.hero-title{font-size:4.5rem;font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;color:#fff;}
 .hero-title span{color:#c9a84c;}
-.hero-sub{font-size:17px;color:#666;line-height:1.8;margin-bottom:2.5rem;}
+.hero-sub{font-size:20px;color:#888;line-height:1.8;margin-bottom:2.5rem;}
 
 .login-box{background:#111;border:1px solid #222;padding:2rem;text-align:left;width:100%;}
-.login-label{font-size:12px;color:#555;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
+.login-label{font-size:18px;color:#787878;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
 .input-group{margin-bottom:1rem;}
-.input-group label{display:block;font-size:14px;color:#777;margin-bottom:6px;font-weight:700;}
-.login-input{width:100%;background:#000;border:1px solid #2a2a2a;color:#fff;padding:12px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s;}
+.input-group label{display:block;font-size:20px;color:#999;margin-bottom:6px;font-weight:700;}
+.login-input{width:100%;background:#000;border:1px solid #2a2a2a;color:#fff;padding:12px 16px;font-size:19px;font-family:inherit;outline:none;transition:border-color 0.2s;}
 .login-input:focus{border-color:#c9a84c;}
-.login-input::placeholder{color:#3a3a3a;}
-.login-btn{width:100%;background:#c9a84c;color:#000;border:none;padding:14px;font-size:16px;font-weight:900;font-family:inherit;cursor:pointer;margin-top:0.5rem;letter-spacing:1px;transition:opacity 0.2s;}
+.login-input::placeholder{color:#585858;}
+.login-btn{width:100%;background:#c9a84c;color:#000;border:none;padding:14px;font-size:19px;font-weight:900;font-family:inherit;cursor:pointer;margin-top:0.5rem;letter-spacing:1px;}
 .login-btn:hover{opacity:0.9;}
-.login-error{display:none;color:#ff453a;font-size:14px;margin-top:10px;padding:10px 14px;background:#1a0000;border:1px solid #3a0000;}
+.login-error{display:none;color:#ff453a;font-size:20px;margin-top:10px;padding:10px 14px;background:#1a0000;border:1px solid #3a0000;}
 .login-error.show{display:block;}
 
 .bulletin{background:#0a0a0a;border-left:3px solid #c9a84c;padding:1.2rem 1.5rem;width:100%;margin-top:1.2rem;text-align:left;}
-.bulletin-title{font-size:12px;color:#c9a84c;font-weight:700;letter-spacing:2px;margin-bottom:10px;}
-.bulletin-text{font-size:15px;color:#666;line-height:1.8;}
+.bulletin-title{font-size:18px;color:#c9a84c;font-weight:700;letter-spacing:2px;margin-bottom:10px;}
+.bulletin-text{font-size:18px;color:#888;line-height:1.8;}
 
 .cards-section{padding:4rem 2rem;max-width:680px;margin:0 auto;}
-.cards-label{font-size:12px;color:#333;letter-spacing:3px;font-weight:700;text-align:center;margin-bottom:2rem;}
+.cards-label{font-size:18px;color:#585858;letter-spacing:3px;font-weight:700;text-align:center;margin-bottom:2rem;}
 .cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;}
 .card{background:#000;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:background 0.2s;}
 .card:hover{background:#0d0d0d;}
 .card-emoji{font-size:26px;margin-bottom:8px;}
-.card-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
-.card-sub{font-size:13px;color:#444;}
-.card-badge{display:inline-block;background:#c9a84c;color:#000;font-size:11px;font-weight:900;padding:2px 8px;margin-bottom:6px;}
+.card-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;}
+.card-sub{font-size:19px;color:#686868;}
+.card-badge{display:inline-block;background:#c9a84c;color:#000;font-size:20px;font-weight:900;padding:2px 8px;margin-bottom:6px;}
 
 .schedule-section{padding:0 2rem 4rem;max-width:680px;margin:0 auto;}
-.schedule-label{font-size:12px;color:#333;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
+.schedule-label{font-size:18px;color:#585858;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
 .sched-row{display:flex;align-items:center;gap:16px;padding:1rem 0;border-bottom:1px solid #111;}
 .sched-row:last-child{border-bottom:none;}
-.sched-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
-.num-done{background:#111;color:#444;}
+.sched-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;flex-shrink:0;}
+.num-done{background:#111;color:#686868;}
 .num-now{background:#c9a84c;color:#000;}
-.num-next{background:#000;border:1px solid #333;color:#333;}
-.sched-date{font-size:15px;font-weight:700;color:#777;min-width:110px;}
-.sched-label-text{font-size:14px;color:#555;flex:1;}
-.sched-tag{font-size:12px;padding:4px 12px;font-weight:700;}
-.t-done{background:#111;color:#444;}
+.num-next{background:#000;border:1px solid #333;color:#585858;}
+.sched-date{font-size:18px;font-weight:700;color:#999;min-width:110px;}
+.sched-label-text{font-size:20px;color:#787878;flex:1;}
+.sched-tag{font-size:18px;padding:4px 12px;font-weight:700;}
+.t-done{background:#111;color:#686868;}
 .t-now{background:#1a1200;color:#c9a84c;border:1px solid #8a7030;}
-.t-next{background:#111;color:#444;border:1px solid #222;}
+.t-next{background:#111;color:#686868;border:1px solid #222;}
 
-footer{background:#000;border-top:1px solid #111;color:#333;text-align:center;padding:1.5rem;font-size:13px;letter-spacing:1px;}
+footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center;padding:1.5rem;font-size:19px;letter-spacing:1px;}
 
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;}
 .modal.show{display:flex;}
 .modal-box{background:#111;border:1px solid #c9a84c;padding:3rem;text-align:center;max-width:300px;width:90%;}
 .modal-icon{font-size:48px;margin-bottom:1rem;color:#c9a84c;}
 .modal-title{font-size:20px;font-weight:900;color:#c9a84c;margin-bottom:0.5rem;letter-spacing:1px;}
-.modal-sub{font-size:14px;color:#555;}
+.modal-sub{font-size:20px;color:#787878;}
 </style>
 </head>
 <body>
@@ -85,9 +81,54 @@ footer{background:#000;border-top:1px solid #111;color:#333;text-align:center;pa
 <nav class="nav">
   <div class="nav-brand">
     <img src="data:image/png;base64,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" width="36" height="36" style="object-fit:contain;"/>
-    <div>
-      <div class="brand-name">竹建<span>學習網</span></div>
-    </div>
+    <div class="brand-name">竹建<span>學習網</span></div>
+    <!-- 縮小版風車+花 -->
+    <svg viewBox="0 0 120 90" width="90" height="68" xmlns="http://www.w3.org/2000/svg" style="margin-left:4px;">
+      <!-- 草地 -->
+      <ellipse cx="60" cy="84" rx="42" ry="5" fill="#1a1a1a"/>
+      <!-- 鬱金香左 -->
+      <line x1="18" y1="84" x2="18" y2="62" stroke="#2d6a2d" stroke-width="1.5"/>
+      <ellipse cx="18" cy="56" rx="5" ry="7" fill="#922b21"/>
+      <ellipse cx="13" cy="58" rx="3.5" ry="6" fill="#c0392b"/>
+      <ellipse cx="23" cy="58" rx="3.5" ry="6" fill="#c0392b"/>
+      <!-- 鬱金香左2 -->
+      <line x1="34" y1="84" x2="33" y2="66" stroke="#2d6a2d" stroke-width="1.5"/>
+      <ellipse cx="33" cy="61" rx="4" ry="6" fill="#7b241c"/>
+      <ellipse cx="29" cy="63" rx="3" ry="5" fill="#922b21"/>
+      <ellipse cx="37" cy="63" rx="3" ry="5" fill="#922b21"/>
+      <!-- 風車柱子 -->
+      <polygon points="55,86 67,86 63,42 59,42" fill="#c9a84c"/>
+      <ellipse cx="61" cy="42" rx="9" ry="4" fill="#8a7030"/>
+      <rect x="52" y="38" width="18" height="8" rx="2" fill="#8a7030"/>
+      <!-- 風車葉片 -->
+      <g style="transform-origin:61px 40px;animation:spin-blade 4s linear infinite;">
+        <polygon points="61,40 58,14 64,14" fill="#c9a84c"/>
+        <line x1="61" y1="40" x2="61" y2="14" stroke="#8a7030" stroke-width="1.5"/>
+        <polygon points="61,40 86,37 86,43" fill="#c9a84c"/>
+        <line x1="61" y1="40" x2="86" y2="40" stroke="#8a7030" stroke-width="1.5"/>
+        <polygon points="61,40 58,66 64,66" fill="#c9a84c"/>
+        <line x1="61" y1="40" x2="61" y2="66" stroke="#8a7030" stroke-width="1.5"/>
+        <polygon points="61,40 36,37 36,43" fill="#c9a84c"/>
+        <line x1="61" y1="40" x2="36" y2="40" stroke="#8a7030" stroke-width="1.5"/>
+      </g>
+      <circle cx="61" cy="40" r="5" fill="#c9a84c"/>
+      <circle cx="61" cy="40" r="2" fill="#000"/>
+      <!-- 鬱金香右 -->
+      <line x1="88" y1="84" x2="87" y2="65" stroke="#2d6a2d" stroke-width="1.5"/>
+      <ellipse cx="87" cy="60" rx="4" ry="6" fill="#922b21"/>
+      <ellipse cx="83" cy="62" rx="3" ry="5" fill="#c0392b"/>
+      <ellipse cx="91" cy="62" rx="3" ry="5" fill="#c0392b"/>
+      <!-- 鬱金香右2 -->
+      <line x1="103" y1="84" x2="102" y2="68" stroke="#2d6a2d" stroke-width="1.5"/>
+      <ellipse cx="102" cy="63" rx="4" ry="6" fill="#7b241c"/>
+      <ellipse cx="98" cy="65" rx="3" ry="5" fill="#922b21"/>
+      <ellipse cx="106" cy="65" rx="3" ry="5" fill="#922b21"/>
+      <!-- 小草 -->
+      <line x1="47" y1="84" x2="44" y2="76" stroke="#2d6a2d" stroke-width="1"/>
+      <line x1="47" y1="84" x2="50" y2="77" stroke="#2d6a2d" stroke-width="1"/>
+      <line x1="76" y1="84" x2="73" y2="77" stroke="#2d6a2d" stroke-width="1"/>
+      <line x1="76" y1="84" x2="79" y2="78" stroke="#2d6a2d" stroke-width="1"/>
+    </svg>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <span class="brand-tag">員工專屬</span>
@@ -96,32 +137,6 @@ footer{background:#000;border-top:1px solid #111;color:#333;text-align:center;pa
 </nav>
 
 <div class="hero">
-  <!-- 配管背景裝飾 -->
-  <svg class="pipe-bg" viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
-    <line x1="0" y1="200" x2="800" y2="200" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
-    <line x1="0" y1="520" x2="800" y2="520" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
-    <line x1="160" y1="200" x2="160" y2="0" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
-    <line x1="420" y1="200" x2="420" y2="520" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
-    <line x1="660" y1="200" x2="660" y2="0" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
-    <line x1="260" y1="520" x2="260" y2="700" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
-    <line x1="580" y1="520" x2="580" y2="700" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
-    <circle cx="160" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
-    <circle cx="160" cy="200" r="11" fill="#c9a84c"/>
-    <circle cx="660" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
-    <circle cx="660" cy="200" r="11" fill="#c9a84c"/>
-    <circle cx="420" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
-    <circle cx="420" cy="200" r="11" fill="#c9a84c"/>
-    <circle cx="420" cy="520" r="18" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
-    <rect x="340" y="186" width="70" height="28" rx="3" fill="#0a0a0a" stroke="#c9a84c" stroke-width="2"/>
-    <rect x="371" y="170" width="8" height="18" rx="2" fill="#c9a84c"/>
-    <rect x="364" y="167" width="22" height="6" rx="2" fill="#c9a84c"/>
-    <rect x="110" y="186" width="54" height="28" rx="3" fill="#0a0a0a" stroke="#c9a84c" stroke-width="2"/>
-    <rect x="133" y="170" width="8" height="18" rx="2" fill="#c9a84c"/>
-    <rect x="127" y="167" width="20" height="6" rx="2" fill="#c9a84c"/>
-    <line x1="0" y1="200" x2="800" y2="200" class="fl"/>
-    <line x1="160" y1="200" x2="160" y2="0" class="fl"/>
-  </svg>
-
   <div class="hero-content">
     <div class="hero-badge">乙級導管配管培訓</div>
     <div class="hero-title">竹建<span>學習網</span></div>
@@ -211,7 +226,6 @@ function scrollToLogin(){
   document.getElementById('loginArea').scrollIntoView({behavior:'smooth'});
   document.getElementById('nameInput').focus();
 }
-
 function doLogin(){
   const name=document.getElementById('nameInput').value.trim();
   const pw=document.getElementById('pwInput').value.trim();
@@ -222,19 +236,16 @@ function doLogin(){
   if(found){loginSuccess(found.姓名,管理者工號.includes(pw));}
   else{error.classList.add('show');document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}
 }
-
 function loginSuccess(name,isAdmin){
   document.getElementById('modalName').textContent='歡迎回來，'+name+'！';
   document.getElementById('modal').classList.add('show');
   sessionStorage.setItem('user',JSON.stringify({name,isAdmin}));
   setTimeout(()=>{window.location.href='home.html';},1500);
 }
-
 function goPage(page){
   if(!sessionStorage.getItem('user')){alert('請先登入！');scrollToLogin();return;}
   window.location.href=page;
 }
-
 document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 </script>
 </body>
