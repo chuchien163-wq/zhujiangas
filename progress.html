@@ -6,12 +6,12 @@
 <title>我的進度 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
-.header{background:#fff;border-bottom:3px solid #FFB830;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
-.back-btn{background:#f0f0f0;border:none;padding:8px 18px;border-radius:20px;font-size:14px;cursor:pointer;color:#555;font-family:inherit;}
-.htitle{font-size:20px;font-weight:700;color:#1a5c2a;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;}
+.header{background:#2c2c2e;border-bottom:2px solid #FFD60A;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.back-btn{background:#3a3a3c;border:none;padding:8px 18px;border-radius:20px;font-size:20px;cursor:pointer;color:#9a9a9a;font-family:inherit;}
+.htitle{font-size:20px;font-weight:700;color:#d4a843;}
 .htitle span{color:#FF8C00;}
-.user-tag{margin-left:auto;background:#e8f5ec;color:#2d8a42;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;}
+.user-tag{margin-left:auto;background:#e8f5ec;color:#d4a843;font-size:17px;font-weight:700;padding:5px 14px;border-radius:20px;}
 
 .page{max-width:680px;margin:0 auto;padding:1.5rem;}
 
@@ -19,15 +19,15 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .welcome{background:linear-gradient(135deg,#1a5c2a,#2d8a42);border-radius:16px;padding:1.5rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;}
 .welcome::after{content:'📊';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:52px;opacity:0.25;}
 .welcome-name{font-size:20px;font-weight:700;margin-bottom:4px;}
-.welcome-sub{font-size:13px;color:#c8e6c9;}
+.welcome-sub{font-size:17px;color:#c8e6c9;}
 
 /* 整體進度 */
-.overall{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
-.overall-title{font-size:14px;font-weight:700;color:#555;margin-bottom:1rem;}
+.overall{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.overall-title{font-size:20px;font-weight:700;color:#9a9a9a;margin-bottom:1rem;}
 .overall-bar-wrap{margin-bottom:0.8rem;}
-.overall-bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;}
-.overall-bar-label span:first-child{color:#555;font-weight:700;}
-.overall-bar-label span:last-child{color:#2d8a42;font-weight:700;}
+.overall-bar-label{display:flex;justify-content:space-between;font-size:17px;margin-bottom:6px;}
+.overall-bar-label span:first-child{color:#9a9a9a;font-weight:700;}
+.overall-bar-label span:last-child{color:#d4a843;font-weight:700;}
 .bar{height:12px;background:#e8e8e8;border-radius:6px;overflow:hidden;}
 .bar-fill{height:100%;border-radius:6px;transition:width 0.8s ease;}
 .bar-green{background:linear-gradient(90deg,#2d8a42,#4ade80);}
@@ -35,36 +35,36 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 統計格子 */
 .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.2rem;}
-.stat-card{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1rem;text-align:center;}
-.stat-num{font-size:1.8rem;font-weight:700;color:#1a5c2a;}
-.stat-label{font-size:12px;color:#aaa;margin-top:4px;}
+.stat-card{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1rem;text-align:center;}
+.stat-num{font-size:1.8rem;font-weight:700;color:#d4a843;}
+.stat-label{font-size:20px;color:#606060;margin-top:4px;}
 
 /* 影片清單 */
-.section{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;overflow:hidden;margin-bottom:1.2rem;}
-.section-header{background:#2d8a42;color:#fff;padding:0.8rem 1.2rem;font-size:14px;font-weight:700;}
+.section{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;overflow:hidden;margin-bottom:1.2rem;}
+.section-header{background:#3a3a3c;color:#d4a843;padding:0.8rem 1.2rem;font-size:20px;font-weight:700;}
 .section-header.orange{background:#FF8C00;}
-.video-row{display:flex;align-items:center;gap:10px;padding:0.8rem 1.2rem;border-bottom:1px solid #f0f0f0;}
+.video-row{display:flex;align-items:center;gap:10px;padding:0.8rem 1.2rem;border-bottom:1px solid #3a3a3c;}
 .video-row:last-child{border-bottom:none;}
-.video-num{font-size:11px;color:#aaa;min-width:28px;font-weight:700;}
-.video-name{flex:1;font-size:14px;color:#333;}
-.video-status{font-size:13px;font-weight:700;}
-.status-done{color:#2d8a42;}
+.video-num{font-size:17px;color:#606060;min-width:28px;font-weight:700;}
+.video-name{flex:1;font-size:20px;color:#d0d0d0;}
+.video-status{font-size:17px;font-weight:700;}
+.status-done{color:#d4a843;}
 .status-none{color:#ccc;}
 
 /* 遊戲記錄 */
-.game-card{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
-.game-title{font-size:14px;font-weight:700;color:#555;margin-bottom:1rem;}
+.game-card{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.game-title{font-size:20px;font-weight:700;color:#9a9a9a;margin-bottom:1rem;}
 .game-best{text-align:center;padding:1rem;}
 .game-best-num{font-size:2.4rem;font-weight:700;color:#FF8C00;}
-.game-best-label{font-size:12px;color:#aaa;margin-top:4px;}
-.game-empty{text-align:center;padding:1rem;color:#aaa;font-size:14px;}
+.game-best-label{font-size:20px;color:#606060;margin-top:4px;}
+.game-empty{text-align:center;padding:1rem;color:#606060;font-size:20px;}
 
 /* 鼓勵訊息 */
 .encourage{background:#fff7e6;border:2px dashed #FFB830;border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:1.2rem;}
 .encourage-emoji{font-size:36px;margin-bottom:8px;}
-.encourage-text{font-size:14px;color:#854F0B;font-weight:700;line-height:1.6;}
+.encourage-text{font-size:20px;color:#854F0B;font-weight:700;line-height:1.6;}
 
-footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:0.5rem;}
+footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:17px;margin-top:0.5rem;}
 </style>
 </head>
 <body>

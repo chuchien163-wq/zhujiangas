@@ -6,58 +6,58 @@
 <title>訓練影片 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#fff9f0;}
-.header{background:#fff;border-bottom:3px solid #FFB830;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
-.back-btn{background:#f0f0f0;border:none;padding:7px 16px;border-radius:20px;font-size:13px;cursor:pointer;color:#555;font-family:inherit;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;}
+.header{background:#2c2c2e;border-bottom:2px solid #FFD60A;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
+.back-btn{background:#3a3a3c;border:none;padding:7px 16px;border-radius:20px;font-size:17px;cursor:pointer;color:#9a9a9a;font-family:inherit;}
 .back-btn:hover{background:#e0e0e0;}
-.htitle{font-size:18px;font-weight:700;color:#1a5c2a;}
+.htitle{font-size:20px;font-weight:700;color:#d4a843;}
 .htitle span{color:#FF8C00;}
-.user-tag{margin-left:auto;background:#e8f5ec;color:#2d8a42;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.user-tag{margin-left:auto;background:#e8f5ec;color:#d4a843;font-size:20px;font-weight:700;padding:4px 12px;border-radius:20px;}
 .page{max-width:900px;margin:0 auto;padding:1.5rem;}
-.overall-progress{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.overall-progress{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
 .op-stat{text-align:center;}
-.op-num{font-size:1.8rem;font-weight:700;color:#1a5c2a;}
-.op-label{font-size:13px;color:#aaa;margin-top:2px;}
+.op-num{font-size:1.8rem;font-weight:700;color:#d4a843;}
+.op-label{font-size:17px;color:#606060;margin-top:2px;}
 .op-bar-wrap{flex:1;min-width:200px;}
-.op-bar-label{font-size:12px;color:#555;margin-bottom:6px;font-weight:700;}
+.op-bar-label{font-size:20px;color:#9a9a9a;margin-bottom:6px;font-weight:700;}
 .op-bar{height:12px;background:#e8e8e8;border-radius:6px;overflow:hidden;}
 .op-fill{height:100%;background:linear-gradient(90deg,#2d8a42,#4ade80);border-radius:6px;transition:width 0.5s;}
 .section{margin-bottom:2.5rem;}
-.section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:2px solid #e8f3ec;}
-.section-badge{background:#1a5c2a;color:#fff;font-size:12px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:1px;}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid #3a3a3c;}
+.section-badge{background:#3a3a3c;color:#d4a843;font-size:20px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:1px;}
 .section-badge.orange{background:#FF8C00;}
-.section-title{font-size:16px;font-weight:700;color:#2a3a2a;}
-.section-count{font-size:14px;color:#aaa;margin-left:auto;}
+.section-title{font-size:20px;font-weight:700;color:#2a3a2a;}
+.section-count{font-size:20px;color:#606060;margin-left:auto;}
 .video-list{display:flex;flex-direction:column;gap:12px;}
-.video-item{background:#fff;border-radius:14px;border:1.5px solid #e8f3ec;overflow:hidden;transition:box-shadow 0.2s;}
+.video-item{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;overflow:hidden;transition:box-shadow 0.2s;}
 .video-item:hover{box-shadow:0 4px 16px rgba(0,0,0,0.08);}
 .video-item.watched{border-color:#c8e6c9;}
 .video-top{display:flex;gap:0;}
 .video-embed{flex-shrink:0;width:280px;position:relative;background:#000;}
 .video-embed iframe{width:280px;height:158px;border:none;display:block;}
-.watched-badge{position:absolute;top:8px;left:8px;background:rgba(45,138,66,0.9);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px;}
+.watched-badge{position:absolute;top:8px;left:8px;background:rgba(45,138,66,0.9);color:#fff;font-size:17px;font-weight:700;padding:3px 10px;border-radius:8px;}
 .video-info{flex:1;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:5px;overflow:hidden;}
-.video-num{font-size:13px;color:#aaa;letter-spacing:1px;}
-.video-name{font-size:14px;font-weight:700;color:#1a3a1a;line-height:1.4;}
-.video-desc{font-size:14px;color:#666;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.no-desc{font-size:12px;color:#bbb;font-style:italic;}
-.video-date{font-size:13px;color:#aaa;}
+.video-num{font-size:17px;color:#606060;letter-spacing:1px;}
+.video-name{font-size:20px;font-weight:700;color:#e0e0e0;line-height:1.4;}
+.video-desc{font-size:20px;color:#8a8a8a;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.no-desc{font-size:20px;color:#bbb;font-style:italic;}
+.video-date{font-size:17px;color:#606060;}
 .video-status{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px;}
 .status-dot{width:8px;height:8px;border-radius:50%;background:#ddd;flex-shrink:0;}
 .status-dot.watching{background:#FF8C00;animation:pulse 1.2s infinite;}
 .status-dot.watched{background:#2d8a42;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.status-text{font-size:14px;color:#aaa;}
+.status-text{font-size:20px;color:#606060;}
 .status-text.watching{color:#FF8C00;font-weight:700;}
-.status-text.watched{color:#2d8a42;font-weight:700;}
-.progress-bar-wrap{padding:0.6rem 1.2rem;background:#f9f9f9;border-top:1px solid #f0f0f0;display:flex;align-items:center;gap:10px;}
+.status-text.watched{color:#d4a843;font-weight:700;}
+.progress-bar-wrap{padding:0.6rem 1.2rem;background:#3a3a3c;border-top:1px solid #3a3a3c;display:flex;align-items:center;gap:10px;}
 .progress-bar{flex:1;height:4px;background:#e8e8e8;border-radius:2px;overflow:hidden;}
 .progress-fill{height:100%;background:#2d8a42;border-radius:2px;transition:width 0.3s;}
-.progress-label{font-size:13px;color:#aaa;white-space:nowrap;}
-footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:1rem;}
-.done-btn{width:100%;background:#2d8a42;color:#fff;border:none;padding:10px;border-radius:0 0 12px 12px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;}
+.progress-label{font-size:17px;color:#606060;white-space:nowrap;}
+footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:17px;margin-top:1rem;}
+.done-btn{width:100%;background:#3a3a3c;color:#d4a843;border:none;padding:10px;border-radius:0 0 12px 12px;font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;transition:background 0.2s;}
 .done-btn:hover{background:#1a5c2a;}
-.done-btn.already{background:#c8e6c9;color:#2d8a42;cursor:default;}
+.done-btn.already{background:#c8e6c9;color:#d4a843;cursor:default;}
 .done-btn.already:hover{background:#c8e6c9;}
 </style>
 </head>
@@ -72,7 +72,7 @@ footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-si
 <div class="page">
   <div class="overall-progress">
     <div class="op-stat"><div class="op-num" id="watchedCount">0</div><div class="op-label">已看完</div></div>
-    <div class="op-stat"><div class="op-num" style="color:#aaa;">13</div><div class="op-label">全部影片</div></div>
+    <div class="op-stat"><div class="op-num" style="color:#606060;">13</div><div class="op-label">全部影片</div></div>
     <div class="op-bar-wrap">
       <div class="op-bar-label">整體觀看進度</div>
       <div class="op-bar"><div class="op-fill" id="opFill" style="width:0%"></div></div>

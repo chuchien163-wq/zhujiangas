@@ -6,56 +6,56 @@
 <title>管理者後台 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f5;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;}
 .nav{background:#1a5c2a;padding:0 1.5rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.nav-title{color:#fff;font-size:18px;font-weight:700;}
+.nav-title{color:#fff;font-size:20px;font-weight:700;}
 .nav-title span{color:#FFB830;}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-tag{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:4px 12px;border-radius:20px;}
-.logout-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.4);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-family:inherit;}
+.nav-tag{background:rgba(255,255,255,0.2);color:#fff;font-size:20px;padding:4px 12px;border-radius:20px;}
+.logout-btn{background:transparent;border:1.5px solid rgba(255,255,255,0.4);color:#fff;padding:6px 14px;border-radius:20px;font-size:20px;cursor:pointer;font-family:inherit;}
 
 .page{max-width:900px;margin:0 auto;padding:1.5rem;}
 
 /* 統計卡片 */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
-.stat-card{background:#fff;border-radius:14px;padding:1.2rem;text-align:center;border:1.5px solid #e8e8e8;}
-.stat-num{font-size:2rem;font-weight:700;color:#1a5c2a;}
-.stat-label{font-size:12px;color:#aaa;margin-top:4px;}
+.stat-card{background:#2c2c2e;border-radius:14px;padding:1.2rem;text-align:center;border:1.5px solid #e8e8e8;}
+.stat-num{font-size:2rem;font-weight:700;color:#d4a843;}
+.stat-label{font-size:20px;color:#606060;margin-top:4px;}
 
 /* 分頁 */
-.tabs{display:flex;gap:4px;margin-bottom:1.2rem;background:#fff;border-radius:12px;padding:6px;border:1.5px solid #e8e8e8;}
-.tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:14px;font-weight:700;color:#888;border:none;background:transparent;font-family:inherit;transition:all 0.2s;}
-.tab.active{background:#1a5c2a;color:#fff;}
+.tabs{display:flex;gap:4px;margin-bottom:1.2rem;background:#2c2c2e;border-radius:12px;padding:6px;border:1.5px solid #e8e8e8;}
+.tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:20px;font-weight:700;color:#707070;border:none;background:transparent;font-family:inherit;transition:all 0.2s;}
+.tab.active{background:#3a3a3c;color:#d4a843;}
 
 /* 表格 */
-.section{background:#fff;border-radius:14px;border:1.5px solid #e8e8e8;overflow:hidden;}
-.section-header{background:#1a5c2a;color:#fff;padding:0.8rem 1.2rem;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
-.refresh-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-th{background:#f9f9f9;padding:10px 12px;text-align:left;font-weight:700;color:#555;border-bottom:1px solid #eee;}
-td{padding:10px 12px;border-bottom:1px solid #f0f0f0;color:#333;}
+.section{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;overflow:hidden;}
+.section-header{background:#3a3a3c;color:#d4a843;padding:0.8rem 1.2rem;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.refresh-btn{background:rgba(255,255,255,0.2);border:none;color:#fff;padding:5px 12px;border-radius:8px;font-size:20px;cursor:pointer;font-family:inherit;}
+table{width:100%;border-collapse:collapse;font-size:17px;}
+th{background:#3a3a3c;padding:10px 12px;text-align:left;font-weight:700;color:#9a9a9a;border-bottom:1px solid #3a3a3c;}
+td{padding:10px 12px;border-bottom:1px solid #3a3a3c;color:#d0d0d0;}
 tr:last-child td{border-bottom:none;}
-tr:hover td{background:#f9f9f9;}
-.badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;}
-.badge-done{background:#e8f5ec;color:#2d8a42;}
-.badge-none{background:#f5f5f5;color:#aaa;}
+tr:hover td{background:#3a3a3c;}
+.badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:17px;font-weight:700;}
+.badge-done{background:#e8f5ec;color:#d4a843;}
+.badge-none{background:#1c1c1e;color:#606060;}
 .rank-1{color:#FFB830;font-weight:700;}
-.rank-2{color:#888;font-weight:700;}
+.rank-2{color:#707070;font-weight:700;}
 .rank-3{color:#CD7F32;font-weight:700;}
 
 /* 公告編輯 */
 .announce-box{padding:1.2rem;}
-.announce-label{font-size:13px;font-weight:700;color:#555;margin-bottom:8px;}
-.announce-textarea{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:120px;outline:none;line-height:1.7;}
-.announce-textarea:focus{border-color:#2d8a42;}
-.announce-btn{background:#2d8a42;color:#fff;border:none;padding:10px 24px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;}
-.announce-note{font-size:12px;color:#aaa;margin-top:8px;}
-.save-ok{color:#2d8a42;font-size:13px;font-weight:700;display:none;margin-top:8px;}
+.announce-label{font-size:17px;font-weight:700;color:#9a9a9a;margin-bottom:8px;}
+.announce-textarea{width:100%;border:1.5px solid #e8e8e8;border-radius:10px;padding:10px;font-size:20px;font-family:inherit;resize:vertical;min-height:120px;outline:none;line-height:1.7;}
+.announce-textarea:focus{border-color:#d4a843;}
+.announce-btn{background:#3a3a3c;color:#d4a843;border:none;padding:10px 24px;border-radius:10px;font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;}
+.announce-note{font-size:20px;color:#606060;margin-top:8px;}
+.save-ok{color:#d4a843;font-size:17px;font-weight:700;display:none;margin-top:8px;}
 
-.loading{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
-.empty{text-align:center;padding:2rem;color:#aaa;font-size:14px;}
+.loading{text-align:center;padding:2rem;color:#606060;font-size:20px;}
+.empty{text-align:center;padding:2rem;color:#606060;font-size:20px;}
 
-footer{background:#1a5c2a;color:#a8d5b5;text-align:center;padding:1.2rem;font-size:11px;margin-top:1rem;}
+footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:17px;margin-top:1rem;}
 </style>
 </head>
 <body>
@@ -201,7 +201,7 @@ async function loadProgress() {
       <td>${r['部門']||'-'}</td>
       <td>${r['看完影片數']||0} / 13</td>
       <td style="color:${color};font-weight:700;">${r['影片完成率']||'0%'}</td>
-      <td style="font-size:12px;color:#aaa;">${r['最後登入時間']||'-'}</td>
+      <td style="font-size:20px;color:#606060;">${r['最後登入時間']||'-'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
@@ -222,10 +222,10 @@ async function loadGame() {
     const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}`;
     const cls = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'';
     html += `<tr>
-      <td class="${cls}" style="font-size:18px;">${medal}</td>
+      <td class="${cls}" style="font-size:20px;">${medal}</td>
       <td><strong>${r['姓名']}</strong></td>
-      <td style="font-size:16px;font-weight:700;color:#FF8C00;">${r['時間']||'-'}</td>
-      <td style="font-size:12px;color:#aaa;">${String(r['日期']).split(' ')[0]||'-'}</td>
+      <td style="font-size:20px;font-weight:700;color:#FF8C00;">${r['時間']||'-'}</td>
+      <td style="font-size:20px;color:#606060;">${String(r['日期']).split(' ')[0]||'-'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
@@ -244,9 +244,9 @@ async function loadVideos() {
   let html = '<table><thead><tr><th>時間</th><th>姓名</th><th>影片</th><th>狀態</th></tr></thead><tbody>';
   recent.forEach(r => {
     html += `<tr>
-      <td style="font-size:12px;color:#aaa;">${String(r['時間']).substring(0,16)}</td>
+      <td style="font-size:20px;color:#606060;">${String(r['時間']).substring(0,16)}</td>
       <td><strong>${r['姓名']}</strong></td>
-      <td style="font-size:12px;">${r['影片名稱']||r['影片編號']}</td>
+      <td style="font-size:20px;">${r['影片名稱']||r['影片編號']}</td>
       <td><span class="badge badge-done">${r['完成狀態']}</span></td>
     </tr>`;
   });
