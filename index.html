@@ -8,84 +8,76 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#000;color:#fff;min-height:100vh;}
 
-/* NAV */
-.nav{background:rgba(0,0,0,0.95);border-bottom:1px solid #222;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px);}
+.nav{background:rgba(0,0,0,0.95);border-bottom:1px solid #222;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .nav-brand{display:flex;align-items:center;gap:12px;}
-.brand-name{font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;}
+.brand-name{font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;}
 .brand-name span{color:#c9a84c;}
-.brand-tag{background:#111;color:#888;font-size:17px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #333;letter-spacing:1px;}
-.nav-btn{background:#c9a84c;color:#000;border:none;padding:10px 22px;border-radius:4px;font-size:17px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
+.brand-tag{background:#111;color:#666;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid #333;letter-spacing:1px;}
+.nav-btn{background:#c9a84c;color:#000;border:none;padding:10px 22px;border-radius:4px;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:1px;}
 .nav-btn:hover{opacity:0.85;}
 
-/* HERO */
 .hero{min-height:calc(100vh - 64px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;text-align:center;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center top, #1a1200 0%, #000 70%);}
-.hero-content{position:relative;z-index:2;max-width:600px;}
-.hero-badge{display:inline-block;background:#111;border:1px solid #8a7030;color:#c9a84c;font-size:18px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:2px;margin-bottom:2rem;}
-.hero-title{font-size:4rem;font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;}
-.hero-title span{color:#c9a84c;}
-.hero-sub{font-size:19px;color:#888;line-height:1.8;margin-bottom:3rem;}
 
-/* 登入框 */
-.login-box{background:#111;border:1px solid #222;border-radius:8px;padding:2rem;text-align:left;max-width:400px;margin:0 auto;}
-.login-label{font-size:19px;color:#888;letter-spacing:2px;font-weight:700;margin-bottom:1.5rem;}
+/* 配管背景裝飾 */
+.pipe-bg{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.07;pointer-events:none;}
+@keyframes flow{0%{stroke-dashoffset:30}100%{stroke-dashoffset:0}}
+.fl{stroke:#c9a84c;stroke-width:2;fill:none;stroke-dasharray:6 10;animation:flow 1.5s linear infinite;}
+
+.hero-content{position:relative;z-index:2;max-width:440px;width:100%;}
+.hero-badge{display:inline-block;background:#111;border:1px solid #8a7030;color:#c9a84c;font-size:13px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:2px;margin-bottom:1.8rem;}
+.hero-title{font-size:4rem;font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;color:#fff;}
+.hero-title span{color:#c9a84c;}
+.hero-sub{font-size:17px;color:#666;line-height:1.8;margin-bottom:2.5rem;}
+
+.login-box{background:#111;border:1px solid #222;padding:2rem;text-align:left;width:100%;}
+.login-label{font-size:12px;color:#555;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
 .input-group{margin-bottom:1rem;}
-.input-group label{display:block;font-size:19px;color:#888;margin-bottom:6px;font-weight:700;}
-.login-input{width:100%;background:#000;border:1px solid #333;color:#fff;padding:12px 16px;font-size:19px;font-family:inherit;outline:none;border-radius:4px;transition:border-color 0.2s;}
+.input-group label{display:block;font-size:14px;color:#777;margin-bottom:6px;font-weight:700;}
+.login-input{width:100%;background:#000;border:1px solid #2a2a2a;color:#fff;padding:12px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color 0.2s;}
 .login-input:focus{border-color:#c9a84c;}
-.login-input::placeholder{color:#686868;}
-.login-btn{width:100%;background:#c9a84c;color:#000;border:none;padding:14px;font-size:19px;font-weight:900;font-family:inherit;cursor:pointer;border-radius:4px;margin-top:0.5rem;letter-spacing:1px;transition:opacity 0.2s;}
+.login-input::placeholder{color:#3a3a3a;}
+.login-btn{width:100%;background:#c9a84c;color:#000;border:none;padding:14px;font-size:16px;font-weight:900;font-family:inherit;cursor:pointer;margin-top:0.5rem;letter-spacing:1px;transition:opacity 0.2s;}
 .login-btn:hover{opacity:0.9;}
-.login-error{display:none;color:#ff453a;font-size:17px;margin-top:10px;padding:10px 14px;background:#1a0000;border:1px solid #3a0000;border-radius:4px;}
+.login-error{display:none;color:#ff453a;font-size:14px;margin-top:10px;padding:10px 14px;background:#1a0000;border:1px solid #3a0000;}
 .login-error.show{display:block;}
 
-/* 公告 */
-.bulletin{background:#111;border:1px solid #222;border-left:3px solid #d4a843;padding:1.2rem 1.5rem;max-width:600px;margin:2rem auto 0;text-align:left;}
-.bulletin-title{font-size:19px;color:#c9a84c;font-weight:700;letter-spacing:2px;margin-bottom:10px;}
-.bulletin-text{font-size:18px;color:#888;line-height:1.8;}
+.bulletin{background:#0a0a0a;border-left:3px solid #c9a84c;padding:1.2rem 1.5rem;width:100%;margin-top:1.2rem;text-align:left;}
+.bulletin-title{font-size:12px;color:#c9a84c;font-weight:700;letter-spacing:2px;margin-bottom:10px;}
+.bulletin-text{font-size:15px;color:#666;line-height:1.8;}
 
-/* 功能卡片 */
-.cards-section{padding:4rem 2rem;max-width:700px;margin:0 auto;}
-.cards-label{font-size:18px;color:#686868;letter-spacing:3px;font-weight:700;text-align:center;margin-bottom:2rem;}
-.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#222;border:1px solid #222;}
+.cards-section{padding:4rem 2rem;max-width:680px;margin:0 auto;}
+.cards-label{font-size:12px;color:#333;letter-spacing:3px;font-weight:700;text-align:center;margin-bottom:2rem;}
+.cards-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;border:1px solid #1a1a1a;}
 .card{background:#000;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:background 0.2s;}
-.card:hover{background:#111;}
-.card-emoji{font-size:24px;margin-bottom:8px;}
-.card-name{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
-.card-sub{font-size:18px;color:#686868;}
-.card-badge{display:inline-block;background:#c9a84c;color:#000;font-size:19px;font-weight:900;padding:2px 6px;border-radius:2px;margin-bottom:6px;}
+.card:hover{background:#0d0d0d;}
+.card-emoji{font-size:26px;margin-bottom:8px;}
+.card-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.card-sub{font-size:13px;color:#444;}
+.card-badge{display:inline-block;background:#c9a84c;color:#000;font-size:11px;font-weight:900;padding:2px 8px;margin-bottom:6px;}
 
-/* 課程梯次 */
-.schedule-section{padding:0 2rem 4rem;max-width:700px;margin:0 auto;}
-.schedule-label{font-size:18px;color:#686868;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
+.schedule-section{padding:0 2rem 4rem;max-width:680px;margin:0 auto;}
+.schedule-label{font-size:12px;color:#333;letter-spacing:3px;font-weight:700;margin-bottom:1.5rem;}
 .sched-row{display:flex;align-items:center;gap:16px;padding:1rem 0;border-bottom:1px solid #111;}
 .sched-row:last-child{border-bottom:none;}
-.sched-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
-.num-done{background:#1a1a1a;color:#686868;}
+.sched-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.num-done{background:#111;color:#444;}
 .num-now{background:#c9a84c;color:#000;}
-.num-next{background:#000;border:1px solid #333;color:#686868;}
-.sched-date{font-size:18px;font-weight:700;color:#888;min-width:100px;}
-.sched-label-text{font-size:17px;color:#787878;flex:1;}
-.sched-tag{font-size:18px;padding:3px 12px;border-radius:2px;font-weight:700;}
-.t-done{background:#111;color:#686868;}
+.num-next{background:#000;border:1px solid #333;color:#333;}
+.sched-date{font-size:15px;font-weight:700;color:#777;min-width:110px;}
+.sched-label-text{font-size:14px;color:#555;flex:1;}
+.sched-tag{font-size:12px;padding:4px 12px;font-weight:700;}
+.t-done{background:#111;color:#444;}
 .t-now{background:#1a1200;color:#c9a84c;border:1px solid #8a7030;}
-.t-next{background:#111;color:#787878;border:1px solid #222;}
+.t-next{background:#111;color:#444;border:1px solid #222;}
 
-footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center;padding:1.5rem;font-size:18px;letter-spacing:1px;}
+footer{background:#000;border-top:1px solid #111;color:#333;text-align:center;padding:1.5rem;font-size:13px;letter-spacing:1px;}
 
-
-/* 風車動畫 */
-.windmill-wrap{position:absolute;left:3%;top:10%;opacity:1;pointer-events:none;}
-@keyframes spin-blade{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@media(max-width:768px){.windmill-wrap{display:none;}}
-
-/* 登入成功 */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;align-items:center;justify-content:center;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;}
 .modal.show{display:flex;}
-.modal-box{background:#111;border:1px solid #8a7030;padding:3rem;text-align:center;max-width:300px;width:90%;}
-.modal-icon{font-size:48px;margin-bottom:1rem;}
-.modal-title{font-size:22px;font-weight:900;color:#c9a84c;margin-bottom:0.5rem;letter-spacing:1px;}
-.modal-sub{font-size:17px;color:#888;}
+.modal-box{background:#111;border:1px solid #c9a84c;padding:3rem;text-align:center;max-width:300px;width:90%;}
+.modal-icon{font-size:48px;margin-bottom:1rem;color:#c9a84c;}
+.modal-title{font-size:20px;font-weight:900;color:#c9a84c;margin-bottom:0.5rem;letter-spacing:1px;}
+.modal-sub{font-size:14px;color:#555;}
 </style>
 </head>
 <body>
@@ -104,78 +96,36 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
 </nav>
 
 <div class="hero">
-  
-  <div class="windmill-wrap">
-    <svg viewBox="0 0 220 280" width="220" xmlns="http://www.w3.org/2000/svg">
-      <!-- 草地 -->
-      <ellipse cx="110" cy="268" rx="70" ry="8" fill="#1a1a1a"/>
+  <!-- 配管背景裝飾 -->
+  <svg class="pipe-bg" viewBox="0 0 800 700" xmlns="http://www.w3.org/2000/svg">
+    <line x1="0" y1="200" x2="800" y2="200" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
+    <line x1="0" y1="520" x2="800" y2="520" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
+    <line x1="160" y1="200" x2="160" y2="0" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
+    <line x1="420" y1="200" x2="420" y2="520" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
+    <line x1="660" y1="200" x2="660" y2="0" stroke="#c9a84c" stroke-width="14" stroke-linecap="square"/>
+    <line x1="260" y1="520" x2="260" y2="700" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
+    <line x1="580" y1="520" x2="580" y2="700" stroke="#c9a84c" stroke-width="10" stroke-linecap="square"/>
+    <circle cx="160" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
+    <circle cx="160" cy="200" r="11" fill="#c9a84c"/>
+    <circle cx="660" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
+    <circle cx="660" cy="200" r="11" fill="#c9a84c"/>
+    <circle cx="420" cy="200" r="22" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
+    <circle cx="420" cy="200" r="11" fill="#c9a84c"/>
+    <circle cx="420" cy="520" r="18" fill="#5a4a20" stroke="#c9a84c" stroke-width="2"/>
+    <rect x="340" y="186" width="70" height="28" rx="3" fill="#0a0a0a" stroke="#c9a84c" stroke-width="2"/>
+    <rect x="371" y="170" width="8" height="18" rx="2" fill="#c9a84c"/>
+    <rect x="364" y="167" width="22" height="6" rx="2" fill="#c9a84c"/>
+    <rect x="110" y="186" width="54" height="28" rx="3" fill="#0a0a0a" stroke="#c9a84c" stroke-width="2"/>
+    <rect x="133" y="170" width="8" height="18" rx="2" fill="#c9a84c"/>
+    <rect x="127" y="167" width="20" height="6" rx="2" fill="#c9a84c"/>
+    <line x1="0" y1="200" x2="800" y2="200" class="fl"/>
+    <line x1="160" y1="200" x2="160" y2="0" class="fl"/>
+  </svg>
 
-      <!-- 鬱金香1（左） -->
-      <line x1="30" y1="268" x2="30" y2="220" stroke="#2d6a2d" stroke-width="2.5"/>
-      <line x1="30" y1="245" x2="18" y2="235" stroke="#2d6a2d" stroke-width="1.5"/>
-      <ellipse cx="30" cy="210" rx="8" ry="12" fill="#c0392b"/>
-      <ellipse cx="23" cy="213" rx="6" ry="10" fill="#e74c3c"/>
-      <ellipse cx="37" cy="213" rx="6" ry="10" fill="#e74c3c"/>
-      <ellipse cx="30" cy="208" rx="5" ry="9" fill="#c0392b"/>
-
-      <!-- 鬱金香2（左2） -->
-      <line x1="55" y1="268" x2="58" y2="228" stroke="#2d6a2d" stroke-width="2"/>
-      <line x1="57" y1="250" x2="45" y2="242" stroke="#2d6a2d" stroke-width="1.5"/>
-      <ellipse cx="58" cy="218" rx="7" ry="11" fill="#922b21"/>
-      <ellipse cx="52" cy="221" rx="5" ry="9" fill="#c0392b"/>
-      <ellipse cx="64" cy="221" rx="5" ry="9" fill="#c0392b"/>
-      <ellipse cx="58" cy="217" rx="4" ry="8" fill="#922b21"/>
-
-      <!-- 風車柱子 -->
-      <polygon points="96,272 126,272 118,128 104,128" fill="#c9a84c"/>
-      <ellipse cx="111" cy="128" rx="18" ry="6" fill="#8a7030"/>
-      <rect x="93" y="122" width="36" height="12" rx="4" fill="#8a7030"/>
-
-      <!-- 風車葉片 -->
-      <g style="transform-origin:111px 126px;animation:spin-blade 4s linear infinite;">
-        <polygon points="111,126 106,52 116,52" fill="#c9a84c"/>
-        <line x1="111" y1="126" x2="111" y2="52" stroke="#8a7030" stroke-width="2"/>
-        <polygon points="111,126 178,120 178,132" fill="#c9a84c"/>
-        <line x1="111" y1="126" x2="178" y2="126" stroke="#8a7030" stroke-width="2"/>
-        <polygon points="111,126 106,200 116,200" fill="#c9a84c"/>
-        <line x1="111" y1="126" x2="111" y2="200" stroke="#8a7030" stroke-width="2"/>
-        <polygon points="111,126 44,120 44,132" fill="#c9a84c"/>
-        <line x1="111" y1="126" x2="44" y2="126" stroke="#8a7030" stroke-width="2"/>
-      </g>
-      <circle cx="111" cy="126" r="8" fill="#c9a84c"/>
-      <circle cx="111" cy="126" r="3.5" fill="#1a1a1a"/>
-
-      <!-- 鬱金香3（右） -->
-      <line x1="168" y1="268" x2="165" y2="225" stroke="#2d6a2d" stroke-width="2"/>
-      <line x1="166" y1="248" x2="178" y2="238" stroke="#2d6a2d" stroke-width="1.5"/>
-      <ellipse cx="165" cy="215" rx="7" ry="11" fill="#c0392b"/>
-      <ellipse cx="159" cy="218" rx="5" ry="9" fill="#e74c3c"/>
-      <ellipse cx="171" cy="218" rx="5" ry="9" fill="#e74c3c"/>
-      <ellipse cx="165" cy="214" rx="4" ry="8" fill="#922b21"/>
-
-      <!-- 鬱金香4（右2） -->
-      <line x1="192" y1="268" x2="190" y2="232" stroke="#2d6a2d" stroke-width="2"/>
-      <ellipse cx="190" cy="222" rx="6" ry="10" fill="#922b21"/>
-      <ellipse cx="185" cy="225" rx="5" ry="8" fill="#c0392b"/>
-      <ellipse cx="195" cy="225" rx="5" ry="8" fill="#c0392b"/>
-      <ellipse cx="190" cy="221" rx="4" ry="7" fill="#7b241c"/>
-
-      <!-- 小草 -->
-      <line x1="78" y1="268" x2="74" y2="252" stroke="#2d6a2d" stroke-width="1.5"/>
-      <line x1="78" y1="268" x2="82" y2="254" stroke="#2d6a2d" stroke-width="1.5"/>
-      <line x1="148" y1="268" x2="144" y2="255" stroke="#2d6a2d" stroke-width="1.5"/>
-      <line x1="148" y1="268" x2="152" y2="256" stroke="#2d6a2d" stroke-width="1.5"/>
-    </svg>
-  </div>
-<div class="hero-content">
+  <div class="hero-content">
     <div class="hero-badge">乙級導管配管培訓</div>
-    <div class="hero-title">
-      竹建<span>學習網</span>
-    </div>
-    <div class="hero-sub">
-      專屬員工線上學習平台<br/>
-      看影片、玩遊戲、記錄進度
-    </div>
+    <div class="hero-title">竹建<span>學習網</span></div>
+    <div class="hero-sub">專屬員工線上學習平台<br/>看影片、玩遊戲、記錄進度</div>
 
     <div class="login-box" id="loginArea">
       <div class="login-label">MEMBER LOGIN</div>
@@ -247,25 +197,15 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
 </div>
 
 <script>
-const 員工名單 = [
-  {姓名:'總經理', 工號:'001'},
-  {姓名:'黃晨晞', 工號:'023'},
-  {姓名:'陳儒彥', 工號:'007'},
-  {姓名:'陳炳宏', 工號:'008'},
-  {姓名:'白沛豫', 工號:'060'},
-  {姓名:'林孟賢', 工號:'061'},
-  {姓名:'陳人豪', 工號:'066'},
-  {姓名:'張鈞豪', 工號:'070'},
-  {姓名:'劉建彣', 工號:'071'},
-  {姓名:'黃禹竣', 工號:'072'},
-  {姓名:'劉德泓', 工號:'074'},
-  {姓名:'王璽凱', 工號:'075'},
-  {姓名:'林琮炫', 工號:'077'},
-  {姓名:'蔡凱程', 工號:'078'},
-  {姓名:'陳東彥', 工號:'079'},
+const 員工名單=[
+  {姓名:'總經理',工號:'001'},{姓名:'黃晨晞',工號:'023'},{姓名:'陳儒彥',工號:'007'},
+  {姓名:'陳炳宏',工號:'008'},{姓名:'白沛豫',工號:'060'},{姓名:'林孟賢',工號:'061'},
+  {姓名:'陳人豪',工號:'066'},{姓名:'張鈞豪',工號:'070'},{姓名:'劉建彣',工號:'071'},
+  {姓名:'黃禹竣',工號:'072'},{姓名:'劉德泓',工號:'074'},{姓名:'王璽凱',工號:'075'},
+  {姓名:'林琮炫',工號:'077'},{姓名:'蔡凱程',工號:'078'},{姓名:'陳東彥',工號:'079'},
 ];
-const 管理者工號 = ['001','060'];
-const 管理者密碼 = '1688';
+const 管理者工號=['001','060'];
+const 管理者密碼='1688';
 
 function scrollToLogin(){
   document.getElementById('loginArea').scrollIntoView({behavior:'smooth'});
@@ -273,40 +213,29 @@ function scrollToLogin(){
 }
 
 function doLogin(){
-  const name = document.getElementById('nameInput').value.trim();
-  const pw = document.getElementById('pwInput').value.trim();
-  const error = document.getElementById('loginError');
+  const name=document.getElementById('nameInput').value.trim();
+  const pw=document.getElementById('pwInput').value.trim();
+  const error=document.getElementById('loginError');
   error.classList.remove('show');
-  if(pw === 管理者密碼){
-    loginSuccess(name||'管理者', true); return;
-  }
-  const found = 員工名單.find(e=>e.姓名===name&&e.工號===pw);
-  if(found){
-    loginSuccess(found.姓名, 管理者工號.includes(pw));
-  } else {
-    error.classList.add('show');
-    document.getElementById('pwInput').value='';
-    document.getElementById('pwInput').focus();
-  }
+  if(pw===管理者密碼){loginSuccess(name||'管理者',true);return;}
+  const found=員工名單.find(e=>e.姓名===name&&e.工號===pw);
+  if(found){loginSuccess(found.姓名,管理者工號.includes(pw));}
+  else{error.classList.add('show');document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}
 }
 
-function loginSuccess(name, isAdmin){
-  document.getElementById('modalName').textContent = '歡迎回來，'+name+'！';
+function loginSuccess(name,isAdmin){
+  document.getElementById('modalName').textContent='歡迎回來，'+name+'！';
   document.getElementById('modal').classList.add('show');
-  sessionStorage.setItem('user', JSON.stringify({name, isAdmin}));
-  setTimeout(()=>{ window.location.href = 'home.html'; }, 1500);
+  sessionStorage.setItem('user',JSON.stringify({name,isAdmin}));
+  setTimeout(()=>{window.location.href='home.html';},1500);
 }
 
 function goPage(page){
-  if(!sessionStorage.getItem('user')){
-    alert('請先登入！');
-    scrollToLogin();
-    return;
-  }
-  window.location.href = page;
+  if(!sessionStorage.getItem('user')){alert('請先登入！');scrollToLogin();return;}
+  window.location.href=page;
 }
 
-document.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 </script>
 </body>
 </html>
