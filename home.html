@@ -114,6 +114,23 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .t-next{background:#0a1a0a;color:#30d158;border:1px solid #1a5c1a;}
 
 /* RWD 手機版 */
+
+@media(max-width:700px){
+  .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .feat-name{font-size:14px !important;white-space:nowrap !important;}
+  .feat-sub{font-size:11px !important;}
+  .feat-icon{font-size:22px !important;}
+  .sched-row{gap:6px !important;}
+  .sched-date{font-size:12px !important;min-width:80px !important;white-space:nowrap !important;}
+  .sched-label{font-size:12px !important;white-space:nowrap !important;}
+  .sched-tag{font-size:11px !important;padding:3px 8px !important;white-space:nowrap !important;}
+  .stats-row{grid-template-columns:repeat(2,1fr) !important;}
+  .row2{grid-template-columns:1fr !important;}
+  .cd-grid{grid-template-columns:1fr 1fr !important;}
+  .main{padding:1rem !important;}
+  .main-title{font-size:18px !important;}
+  .wb-greeting{font-size:18px !important;}
+}
 @media(max-width:700px){
   .sidebar{display:none;}
   .main{max-width:100%;padding:1rem;}

@@ -40,10 +40,10 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .lb-tag{font-size:17px;color:#4ade80;letter-spacing:2px;}
 .lb-close{background:rgba(255,255,255,0.1);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer;}
 .lb-close:hover{background:rgba(255,255,255,0.25);}
-.lbimg{max-width:92vw;max-height:70vh;border-radius:10px;object-fit:contain;}
+.lbimg{max-width:92vw;max-height:55vh;border-radius:10px;object-fit:contain;}
 .lb-bottom{position:absolute;bottom:0;left:0;right:0;padding:1rem 1.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.9));}
-.lb-cap{font-size:17px;font-weight:700;color:#FFB830;letter-spacing:2px;margin-bottom:4px;}
-.lb-sub{font-size:17px;color:#707070;letter-spacing:1px;margin-bottom:10px;}
+.lb-cap{font-size:15px;font-weight:700;color:#FFB830;letter-spacing:1px;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-sub{font-size:13px;color:#707070;letter-spacing:0px;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lb-ctrl{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .lb-btn{background:rgba(255,255,255,0.12);border:none;color:#fff;width:42px;height:42px;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
 .lb-btn:hover{background:rgba(255,255,255,0.25);}
@@ -57,6 +57,81 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .st:hover{opacity:0.85;}
 
 footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:20px;letter-spacing:2px;margin-top:0.5rem;}
+
+/* ===== RWD 手機版 ===== */
+@media(max-width:600px){
+  /* 首頁 */
+  .hero-title{font-size:2.5rem !important;}
+  .hero-sub{font-size:15px !important;}
+  .login-box{padding:1.2rem !important;}
+  .cards-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .sched-date{min-width:80px !important;font-size:13px !important;}
+
+  /* Nav */
+  .nav{padding:0 1rem !important;}
+  .brand-name{font-size:16px !important;}
+  .brand-tag{display:none !important;}
+  .nav-btn{padding:7px 14px !important;font-size:13px !important;}
+
+  /* home */
+  .banner-name{font-size:24px !important;}
+  .banner-msg{font-size:15px !important;}
+  .prog-row{grid-template-columns:1fr 1fr !important;}
+  .prog-num{font-size:1.5rem !important;}
+  .countdown-grid{grid-template-columns:1fr 1fr !important;}
+  .cd-num{font-size:2.2rem !important;}
+  .cd-label{font-size:15px !important;}
+  .cd-date{font-size:13px !important;}
+  .cards-grid{grid-template-columns:1fr 1fr !important;}
+  .card-name{font-size:15px !important;}
+  .card-sub{font-size:12px !important;}
+  .enc-text{font-size:14px !important;}
+
+  /* videos */
+  .video-top{flex-direction:column !important;}
+  .video-embed{width:100% !important;}
+  .video-embed iframe{width:100% !important;height:200px !important;}
+  .overall-progress{flex-direction:column !important;gap:0.8rem !important;}
+  .section-count{display:none !important;}
+
+  /* admin */
+  .stats-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .tabs{flex-wrap:wrap !important;}
+  .tab{font-size:13px !important;padding:8px 6px !important;}
+  table{font-size:13px !important;}
+  th,td{padding:8px 6px !important;}
+
+  /* games */
+  .games-grid{grid-template-columns:1fr !important;}
+
+  /* progress */
+  .stats-grid{grid-template-columns:repeat(3,1fr) !important;}
+  .stat-num{font-size:1.5rem !important;}
+
+  /* header */
+  .header{padding:0.8rem 1rem !important;}
+  .htitle{font-size:17px !important;}
+  .back-btn{padding:7px 12px !important;font-size:13px !important;}
+
+  /* game */
+  .drop-row{gap:4px !important;}
+  .slot{min-height:55px !important;}
+  .board{gap:5px !important;}
+
+  /* 通用 */
+  .page{padding:1rem !important;}
+  .game{padding:0.8rem !important;}
+  .section-title{font-size:15px !important;}
+  footer{font-size:12px !important;padding:1rem !important;}
+}
+
+@media(max-width:600px){
+  .lbimg{max-height:50vh !important;max-width:95vw !important;}
+  .lb-cap{font-size:14px !important;}
+  .lb-sub{font-size:12px !important;}
+  .lb-bottom{padding:0.7rem 1rem !important;}
+  .lb-top{padding:0.7rem 1rem !important;}
+}
 </style>
 </head>
 <body>
