@@ -91,17 +91,80 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .t-next{background:#0a2018;color:#30d158;}
 
 footer{background:#2c2c2e;color:#707070;text-align:center;padding:1.2rem;font-size:12px;border-top:1px solid #3a3a3c;}
+
+/* ===== RWD 手機版 ===== */
+@media(max-width:600px){
+  /* 首頁 */
+  .hero-title{font-size:2.5rem !important;}
+  .hero-sub{font-size:15px !important;}
+  .login-box{padding:1.2rem !important;}
+  .cards-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .sched-date{min-width:80px !important;font-size:13px !important;}
+
+  /* Nav */
+  .nav{padding:0 1rem !important;}
+  .brand-name{font-size:16px !important;}
+  .brand-tag{display:none !important;}
+  .nav-btn{padding:7px 14px !important;font-size:13px !important;}
+
+  /* home */
+  .banner-name{font-size:24px !important;}
+  .banner-msg{font-size:15px !important;}
+  .prog-row{grid-template-columns:1fr 1fr !important;}
+  .prog-num{font-size:1.5rem !important;}
+  .countdown-grid{grid-template-columns:1fr 1fr !important;}
+  .cd-num{font-size:2.2rem !important;}
+  .cd-label{font-size:15px !important;}
+  .cd-date{font-size:13px !important;}
+  .cards-grid{grid-template-columns:1fr 1fr !important;}
+  .card-name{font-size:15px !important;}
+  .card-sub{font-size:12px !important;}
+  .enc-text{font-size:14px !important;}
+
+  /* videos */
+  .video-top{flex-direction:column !important;}
+  .video-embed{width:100% !important;}
+  .video-embed iframe{width:100% !important;height:200px !important;}
+  .overall-progress{flex-direction:column !important;gap:0.8rem !important;}
+  .section-count{display:none !important;}
+
+  /* admin */
+  .stats-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .tabs{flex-wrap:wrap !important;}
+  .tab{font-size:13px !important;padding:8px 6px !important;}
+  table{font-size:13px !important;}
+  th,td{padding:8px 6px !important;}
+
+  /* games */
+  .games-grid{grid-template-columns:1fr !important;}
+
+  /* progress */
+  .stats-grid{grid-template-columns:repeat(3,1fr) !important;}
+  .stat-num{font-size:1.5rem !important;}
+
+  /* header */
+  .header{padding:0.8rem 1rem !important;}
+  .htitle{font-size:17px !important;}
+  .back-btn{padding:7px 12px !important;font-size:13px !important;}
+
+  /* game */
+  .drop-row{gap:4px !important;}
+  .slot{min-height:55px !important;}
+  .board{gap:5px !important;}
+
+  /* 通用 */
+  .page{padding:1rem !important;}
+  .game{padding:0.8rem !important;}
+  .section-title{font-size:15px !important;}
+  footer{font-size:12px !important;padding:1rem !important;}
+}
 </style>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-brand">
-    <svg width="30" height="30" viewBox="0 0 32 32">
-      <polygon points="16,1 30,8 30,24 16,31 2,24 2,8" fill="none" stroke="#FFD60A" stroke-width="1.5"/>
-      <polygon points="16,6 26,11 26,21 16,26 6,21 6,11" fill="#FFD60A"/>
-      <polygon points="16,11 21,14 21,18 16,21 11,18 11,14" fill="#1c1c1e"/>
-    </svg>
+    <img src="data:image/png;base64,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" width="36" height="36" style="object-fit:contain;"/>
     <div class="brand-name">竹建<span>學習網</span></div>
   </div>
   <div class="nav-right">
@@ -194,6 +257,14 @@ footer{background:#2c2c2e;color:#707070;text-align:center;padding:1.2rem;font-si
     <div class="card" onclick="location.href='progress.html'">
       <div class="card-icon">📊</div>
       <div><div class="card-name">我的進度</div><div class="card-sub">學習記錄統計</div></div>
+    </div>
+    <div class="card" onclick="location.href='notes.html'">
+      <div class="card-icon">📝</div>
+      <div><div class="card-name">上課筆記</div><div class="card-sub">老師重點整理</div></div>
+    </div>
+    <div class="card" onclick="location.href='signin.html'" style="border-color:#ff453a;">
+      <div class="card-icon" style="background:#2a0a0a;">✍️</div>
+      <div><div class="card-name" style="color:#ff453a;">訓練簽到</div><div class="card-sub">練習出席記錄</div></div>
     </div>
   </div>
 
