@@ -816,12 +816,13 @@ function renderMgrWithData(rows){
   refreshBtn.style.cssText='width:100%;padding:9px;font-size:13px;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:8px;cursor:pointer;margin-bottom:12px;font-family:inherit';
   refreshBtn.textContent='🔄 重新整理（讀取最新資料）';refreshBtn.onclick=()=>renderMgr();el.appendChild(refreshBtn);
   // 排班管理
-  const sl=document.createElement('p');sl.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:4px 0 8px';sl.textContent='📅 排班表管理（點✏️可修改人員）';el.appendChild(sl);
+  const sl=document.createElement('p');sl.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:4px 0 8px';sl.textContent='📅 排班表管理（點「調班」可修改人員）';el.appendChild(sl);
+  const slNote=document.createElement('p');slNote.style.cssText='font-size:11px;color:var(--amber);background:var(--amber-l);padding:6px 10px;border-radius:7px;margin-bottom:10px';slNote.textContent='💡 若有人要調班，點右側「調班」按鈕即可修改當場人員名稱！';el.appendChild(slNote);
   SCHED_DATA.forEach(d=>{
     const srow=document.createElement('div');
     srow.style.cssText='background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px';
-    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.members.join('、')}</div></div>
-      <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 修改</button>`;
+    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.m1}、${d.m2}</div></div>
+      <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 調班</button>`;
     el.appendChild(srow);
   });
   const divider=document.createElement('div');divider.style.cssText='border-top:1px solid var(--border);margin:14px 0 10px';el.appendChild(divider);
