@@ -21,7 +21,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .hero{min-height:calc(100vh - 64px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;text-align:center;position:relative;overflow:hidden;}
 .hero-content{position:relative;z-index:2;max-width:440px;width:100%;}
 .hero-badge{display:inline-block;background:#111;border:1px solid #8a7030;color:#c9a84c;font-size:19px;font-weight:700;padding:6px 16px;border-radius:4px;letter-spacing:2px;margin-bottom:1.8rem;}
-.hero-title{font-size:4.5rem;font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;color:#fff;}
+.hero-title{font-size:clamp(2rem, 4vw, 3.5rem);font-weight:900;line-height:1.1;margin-bottom:1rem;letter-spacing:-1px;color:#fff;white-space:nowrap;}
 .hero-title span{color:#c9a84c;}
 .hero-sub{font-size:20px;color:#888;line-height:1.8;margin-bottom:2.5rem;}
 
@@ -74,6 +74,9 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
 .modal-icon{font-size:48px;margin-bottom:1rem;color:#c9a84c;}
 .modal-title{font-size:20px;font-weight:900;color:#c9a84c;margin-bottom:0.5rem;letter-spacing:1px;}
 .modal-sub{font-size:20px;color:#787878;}
+
+
+
 
 /* ===== RWD 手機版 ===== */
 @media(max-width:600px){
