@@ -52,7 +52,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .v-num{font-size:12px;color:#aaa;font-weight:700;}
 .v-check{font-size:16px;color:#bf5af2;font-weight:700;}
 .v-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
-.v-date{font-size:13px;color:#777;margin-bottom:10px;}
+.v-date{font-size:13px;color:#777;margin-bottom:6px;}
+.v-desc{font-size:13px;color:#999;margin-bottom:10px;line-height:1.5;}
 .btn-done{padding:7px 18px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid;transition:all 0.15s;}
 .btn-watched{background:transparent;color:#bf5af2;border-color:#bf5af2;}
 .btn-unwatched{background:transparent;color:#ccc;border-color:#3a3a3c;}
@@ -134,7 +135,7 @@ document.getElementById('sbAv').textContent=user.name?user.name[0]:'?';
 document.getElementById('sbName').textContent=user.name||'訪客';
 document.getElementById('sbRole').textContent=user.isAdmin?'管理者':'學員';
 
-const VIDEOS=[{"no": "01", "name": "1150317-01", "url": "https://youtu.be/SrgsYD3dFMM", "cat": "317", "date": "115/03/17"}, {"no": "02", "name": "1150317-02", "url": "https://youtu.be/Sv75VPYGHSk", "cat": "317", "date": "115/03/17"}, {"no": "03", "name": "1150317-03", "url": "https://youtu.be/L_E5QMMEnGs", "cat": "317", "date": "115/03/17"}, {"no": "04", "name": "1150317-04", "url": "https://youtu.be/uGOVCqyGz2k", "cat": "317", "date": "115/03/17"}, {"no": "05", "name": "1150317-05", "url": "https://youtu.be/R5GV9UKWFOw", "cat": "317", "date": "115/03/17"}, {"no": "06", "name": "1150317-06", "url": "https://youtu.be/FpoOq_Z5XvE", "cat": "317", "date": "115/03/17"}, {"no": "07", "name": "1150424-01", "url": "https://youtu.be/sBvazzn_g5M", "cat": "424", "date": "115/04/24"}, {"no": "08", "name": "1150424-02", "url": "https://youtu.be/F0FW94nZMpM", "cat": "424", "date": "115/04/24"}, {"no": "09", "name": "1150424-03", "url": "https://youtu.be/Uwj_bRT6KVo", "cat": "424", "date": "115/04/24"}, {"no": "10", "name": "1150424-04", "url": "https://youtu.be/BGevh9zcyyI", "cat": "424", "date": "115/04/24"}, {"no": "11", "name": "1150424-05", "url": "https://youtu.be/Y8MH45ygubE", "cat": "424", "date": "115/04/24"}, {"no": "12", "name": "1150424-06", "url": "https://youtu.be/7NjWLH8so8Q", "cat": "424", "date": "115/04/24"}, {"no": "13", "name": "1150424-07", "url": "https://youtu.be/VQ8ZYuQXQCU", "cat": "424", "date": "115/04/24"}];
+const VIDEOS=[{"no": "01", "name": "1150317-01", "url": "https://youtu.be/SrgsYD3dFMM", "cat": "317", "date": "115/03/17"}, {"no": "02", "name": "1150317-02", "url": "https://youtu.be/Sv75VPYGHSk", "cat": "317", "date": "115/03/17"}, {"no": "03", "name": "1150317-03", "url": "https://youtu.be/L_E5QMMEnGs", "cat": "317", "date": "115/03/17"}, {"no": "04", "name": "1150317-04", "url": "https://youtu.be/uGOVCqyGz2k", "cat": "317", "date": "115/03/17"}, {"no": "05", "name": "1150317-05", "url": "https://youtu.be/R5GV9UKWFOw", "cat": "317", "date": "115/03/17"}, {"no": "06", "name": "1150317-06", "url": "https://youtu.be/FpoOq_Z5XvE", "cat": "317", "date": "115/03/17"}, {"no": "07", "name": "1150424-01", "url": "https://youtu.be/sBvazzn_g5M", "cat": "424", "date": "115/04/24", "title": "汗水與鋼管的交響樂！乙級導管配管練習日誌", "desc": "邁向專業技術士之路！紀錄乙級導管配管實作練習過程。從管路量測、套絲加工到最終組裝，每一個直角與彎度都必須精準到位。"}, {"no": "08", "name": "1150424-02", "url": "https://youtu.be/F0FW94nZMpM", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-01", "desc": "直擊實作解說現場。講師剖析管路組裝關鍵技巧：管徑偏差、螺紋加工嚴格要求，每一步驟都是職人精神的極致追求。"}, {"no": "09", "name": "1150424-03", "url": "https://youtu.be/Uwj_bRT6KVo", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-02", "desc": "講師解說「三通」與「大彎」位置不對所產生的連鎖反應，考生必看的避坑指南！"}, {"no": "10", "name": "1150424-04", "url": "https://youtu.be/BGevh9zcyyI", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-03", "desc": "講師解析「組裝順序」與「空間位移」：三通位置偏離1公分，整線高度會產生多大的連鎖誤差？"}, {"no": "11", "name": "1150424-05", "url": "https://youtu.be/Y8MH45ygubE", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-04", "desc": "位移連鎖效應、鎖緊的藝術、職人素養叮嚀：不要摔工具！利用水平儀與P型夾進行動態校正心法。"}, {"no": "12", "name": "1150424-06", "url": "https://youtu.be/7NjWLH8so8Q", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-01", "desc": "老師示範乙級導管配管完整組裝過程，不只是技術的展現，更是一場關於精準度的藝術。"}, {"no": "13", "name": "1150424-07", "url": "https://youtu.be/VQ8ZYuQXQCU", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-02", "desc": "老師示範乙級導管配管完整組裝過程，每一個動作都是關鍵細節，精準度的極致展現。"}];
 const watchKey='watched_'+user.name;
 let watchedSet=new Set(JSON.parse(localStorage.getItem(watchKey)||'[]'));
 let curFilter='all';
@@ -174,7 +175,8 @@ function render(){
           <div class="v-num">NO. ${v.no}</div>
           <div class="v-check">${watched?'✓':''}</div>
         </div>
-        <div class="v-name">${v.name}</div>
+        <div class="v-name">${v.title||v.name}</div>
+        ${v.desc?`<div class="v-desc">${v.desc}</div>`:''}
         <div class="v-date">📅 ${v.date}</div>
         <button class="btn-done ${watched?'btn-watched':'btn-unwatched'}" id="btn_${v.no}" onclick="markWatched('${v.no}',this)">
           ${watched?'✅ 已看完':'☐ 我已看完此影片'}
