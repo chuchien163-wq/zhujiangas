@@ -14,18 +14,18 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 /* 左側導覽 */
 .sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
-.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:14px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-brand{font-size:16px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
+.sb-sub{font-size:13px;color:#aaa;margin-top:3px;}
+.sb-section{font-size:13px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.7rem 1rem;font-size:16px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
 .sb-item:hover{background:#1c1c1e;color:#e0e0e0;}
 .sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
 .sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
 .sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
-.sb-role{font-size:11px;color:#777;}
+.sb-uname{font-size:15px;font-weight:700;color:#e0e0e0;}
+.sb-role{font-size:13px;color:#777;}
 .sb-logout{background:transparent;border:none;color:#555;font-size:11px;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;}
 .sb-logout:hover{color:#ff453a;}
 
@@ -56,8 +56,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;}
 .cd-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
 .cd-box-title{font-size:13px;font-weight:700;color:#8e8e93;margin-bottom:8px;}
-.legend{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:4px;font-size:11px;color:#8e8e93;}
+.legend{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:4px;font-size:15px;color:#fff;}
 .leg-dot{width:8px;height:8px;border-radius:50%;}
 .cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cd{background:#1c1c1e;border-radius:8px;padding:0.7rem;border-left:3px solid #3a3a3c;}
@@ -74,7 +74,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 進度 */
 .prog-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
-.prog-title{font-size:13px;font-weight:700;color:#8e8e93;margin-bottom:10px;}
+.prog-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;}
 .prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .prog-label{font-size:14px;color:#fff;width:65px;flex-shrink:0;}
 .prog-bar{flex:1;height:5px;background:#3a3a3c;border-radius:3px;overflow:hidden;}
@@ -94,8 +94,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 公告 */
 .bul-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;margin-bottom:1.5rem;}
-.bul-title{font-size:13px;font-weight:700;color:#FFD60A;margin-bottom:8px;}
-.bul-item{font-size:15px;color:#fff;line-height:1.9;}
+.bul-title{font-size:16px;font-weight:700;color:#FFD60A;margin-bottom:8px;}
+.bul-item{font-size:15px;color:#fff;line-height:2;}
 
 /* 課程梯次 */
 .sched-box{background:#2c2c2e;border-radius:10px;border:1px solid #3a3a3c;overflow:hidden;margin-bottom:1.5rem;}
@@ -116,7 +116,18 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 /* RWD 手機版 */
 
 @media(max-width:700px){
+  .sidebar{display:none;}
+  .main{max-width:100%;padding:1rem !important;}
   .stats-row{grid-template-columns:repeat(2,1fr) !important;}
+  .row2{grid-template-columns:1fr !important;}
+  .cd-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .cd-num{font-size:2rem !important;}
+  .stat-num{font-size:30px !important;}
+  .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .wb-greeting{font-size:20px !important;}
+  .main-title{font-size:18px !important;}
+  .sched-row{flex-wrap:wrap !important;gap:4px !important;}
+
   .row2{grid-template-columns:1fr !important;}
   .cd-grid{grid-template-columns:repeat(2,1fr) !important;}
   .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
@@ -249,8 +260,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
           <div style="font-size:12px;font-weight:700;width:36px;text-align:right;color:#ff9f0a;" id="gameVal">0次</div>
         </div>
         <div style="margin-top:14px;border-top:1px solid #3a3a3c;padding-top:12px;">
-          <div class="bul-title" style="font-size:12px;color:#FFD60A;margin-bottom:6px;">📢 公告</div>
-          <div class="bul-item" style="font-size:12px;">🎉 第二次上課（115/04/24）已完成！<br/>📺 13部影片已上傳，快去複習！<br/>🎮 遊戲挑戰開放中！</div>
+          <div class="bul-title" style="font-size:16px;color:#FFD60A;margin-bottom:8px;font-weight:700;">📢 公告</div>
+          <div class="bul-item">🎉 第二次上課（115/04/24）已完成！<br/>📺 13部影片已上傳，快去複習！<br/>🎮 遊戲挑戰開放中！</div>
         </div>
       </div>
     </div>
