@@ -6,240 +6,201 @@
 <title>我的進度 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;}
-.header{background:#2c2c2e;border-bottom:2px solid #FFD60A;padding:0.8rem 1.5rem;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;}
-.back-btn{background:#3a3a3c;border:none;padding:8px 18px;border-radius:20px;font-size:20px;cursor:pointer;color:#9a9a9a;font-family:inherit;}
-.htitle{font-size:20px;font-weight:700;color:#d4a843;}
-.htitle span{color:#FF8C00;}
-.user-tag{margin-left:auto;background:#e8f5ec;color:#d4a843;font-size:17px;font-weight:700;padding:5px 14px;border-radius:20px;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
+.wrap{display:flex;min-height:100vh;}
+.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
+.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
+.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:2px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:14px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#1c1c1e;color:#e0e0e0;}
+.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-flex{flex:1;}
+.sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
+.sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
+.sb-role{font-size:11px;color:#777;}
+.main{flex:1;padding:1.5rem;overflow:auto;}
+.main-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:1.5rem;}
 
-.page{max-width:680px;margin:0 auto;padding:1.5rem;}
+/* 統計卡 */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.stat{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;text-align:center;}
+.stat-num{font-size:24px;font-weight:700;margin-bottom:4px;}
+.stat-label{font-size:12px;color:#8e8e93;}
+.stat.g .stat-num{color:#30d158;}
+.stat.o .stat-num{color:#ff9f0a;}
+.stat.b .stat-num{color:#0a84ff;}
+.stat.p .stat-num{color:#bf5af2;}
 
-/* 歡迎卡 */
-.welcome{background:linear-gradient(135deg,#1a5c2a,#2d8a42);border-radius:16px;padding:1.5rem;color:#fff;margin-bottom:1.5rem;position:relative;overflow:hidden;}
-.welcome::after{content:'📊';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:52px;opacity:0.25;}
-.welcome-name{font-size:20px;font-weight:700;margin-bottom:4px;}
-.welcome-sub{font-size:17px;color:#c8e6c9;}
+/* 進度條 */
+.prog-box{background:#2c2c2e;border-radius:12px;padding:1.2rem;border:1px solid #3a3a3c;margin-bottom:1rem;}
+.prog-box-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:1rem;}
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.prog-label{font-size:13px;color:#8e8e93;width:70px;flex-shrink:0;}
+.prog-bar{flex:1;height:6px;background:#3a3a3c;border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+.fill-g{background:#30d158;}
+.fill-o{background:#ff9f0a;}
+.prog-val{font-size:13px;font-weight:700;width:45px;text-align:right;}
 
-/* 整體進度 */
-.overall{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
-.overall-title{font-size:20px;font-weight:700;color:#9a9a9a;margin-bottom:1rem;}
-.overall-bar-wrap{margin-bottom:0.8rem;}
-.overall-bar-label{display:flex;justify-content:space-between;font-size:17px;margin-bottom:6px;}
-.overall-bar-label span:first-child{color:#9a9a9a;font-weight:700;}
-.overall-bar-label span:last-child{color:#d4a843;font-weight:700;}
-.bar{height:12px;background:#e8e8e8;border-radius:6px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:6px;transition:width 0.8s ease;}
-.bar-green{background:linear-gradient(90deg,#2d8a42,#4ade80);}
-.bar-orange{background:linear-gradient(90deg,#FF8C00,#FFB830);}
-
-/* 統計格子 */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.2rem;}
-.stat-card{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1rem;text-align:center;}
-.stat-num{font-size:1.8rem;font-weight:700;color:#d4a843;}
-.stat-label{font-size:20px;color:#606060;margin-top:4px;}
-
-/* 影片清單 */
-.section{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;overflow:hidden;margin-bottom:1.2rem;}
-.section-header{background:#3a3a3c;color:#d4a843;padding:0.8rem 1.2rem;font-size:20px;font-weight:700;}
-.section-header.orange{background:#FF8C00;}
-.video-row{display:flex;align-items:center;gap:10px;padding:0.8rem 1.2rem;border-bottom:1px solid #3a3a3c;}
+/* 影片明細 */
+.video-box{background:#2c2c2e;border-radius:12px;border:1px solid #3a3a3c;overflow:hidden;margin-bottom:1rem;}
+.video-box-title{font-size:15px;font-weight:700;color:#fff;padding:1rem 1.2rem;border-bottom:1px solid #3a3a3c;}
+.video-row{display:flex;align-items:center;gap:12px;padding:0.8rem 1.2rem;border-bottom:1px solid #2a2a2a;transition:background 0.15s;}
 .video-row:last-child{border-bottom:none;}
-.video-num{font-size:17px;color:#606060;min-width:28px;font-weight:700;}
-.video-name{flex:1;font-size:20px;color:#d0d0d0;}
-.video-status{font-size:17px;font-weight:700;}
-.status-done{color:#d4a843;}
-.status-none{color:#ccc;}
+.video-row:hover{background:#3a3a3c;}
+.v-num{font-size:12px;color:#8e8e93;width:28px;font-weight:700;flex-shrink:0;}
+.v-name{font-size:14px;color:#e0e0e0;flex:1;}
+.v-date{font-size:12px;color:#8e8e93;width:80px;text-align:right;flex-shrink:0;}
+.v-tag{font-size:11px;padding:2px 8px;border-radius:4px;flex-shrink:0;font-weight:700;}
+.v-done{background:#0a2a0a;color:#30d158;}
+.v-wait{background:#2a2a2a;color:#555;}
+.v-done-check{color:#30d158;font-size:16px;flex-shrink:0;}
+.v-wait-check{color:#3a3a3c;font-size:16px;flex-shrink:0;}
 
 /* 遊戲記錄 */
-.game-card{background:#2c2c2e;border-radius:14px;border:1.5px solid #3a3a3c;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
-.game-title{font-size:20px;font-weight:700;color:#9a9a9a;margin-bottom:1rem;}
-.game-best{text-align:center;padding:1rem;}
-.game-best-num{font-size:2.4rem;font-weight:700;color:#FF8C00;}
-.game-best-label{font-size:20px;color:#606060;margin-top:4px;}
-.game-empty{text-align:center;padding:1rem;color:#606060;font-size:20px;}
+.game-box{background:#2c2c2e;border-radius:12px;padding:1.2rem;border:1px solid #3a3a3c;margin-bottom:1rem;}
+.game-empty{text-align:center;padding:2rem;color:#555;font-size:14px;}
 
-/* 鼓勵訊息 */
-.encourage{background:#fff7e6;border:2px dashed #FFB830;border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:1.2rem;}
-.encourage-emoji{font-size:36px;margin-bottom:8px;}
-.encourage-text{font-size:20px;color:#854F0B;font-weight:700;line-height:1.6;}
-
-footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:17px;margin-top:0.5rem;}
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .main{padding:1rem;}
+  .stats-row{grid-template-columns:repeat(2,1fr) !important;}
+}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="header">
-  <button class="back-btn" onclick="location.href='home.html'">← 返回</button>
-  <div class="htitle">📊 我的<span>進度</span></div>
-  <div class="user-tag" id="userTag">載入中...</div>
-</div>
-
-<div class="page">
-
-  <!-- 歡迎卡 -->
-  <div class="welcome">
-    <div class="welcome-name" id="welcomeName">我的學習進度</div>
-    <div class="welcome-sub" id="welcomeSub">載入中...</div>
-  </div>
-
-  <!-- 整體進度 -->
-  <div class="overall">
-    <div class="overall-title">📈 整體學習進度</div>
-    <div class="overall-bar-wrap">
-      <div class="overall-bar-label">
-        <span>📺 影片觀看</span>
-        <span id="videoLabel">0 / 13</span>
+  <div class="sidebar">
+    <div class="sb-logo">
+      <img src="data:image/png;base64,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" width="28" height="28" style="object-fit:contain;flex-shrink:0;"/>
+      <div>
+        <div class="sb-brand">竹建學習網</div>
+        <div class="sb-sub">乙級導管配管培訓</div>
       </div>
-      <div class="bar"><div class="bar-fill bar-green" id="videoBar" style="width:0%"></div></div>
     </div>
-    <div class="overall-bar-wrap">
-      <div class="overall-bar-label">
-        <span>🧩 遊戲挑戰</span>
-        <span id="gameLabel">0 次</span>
+    <div class="sb-section">學習</div>
+    <a class="sb-item" href="home.html"><span class="sb-icon">🏠</span>首頁</a>
+    <a class="sb-item" href="videos.html"><span class="sb-icon">🎬</span>訓練影片</a>
+    <a class="sb-item" href="games.html"><span class="sb-icon">🎮</span>遊戲挑戰</a>
+    <a class="sb-item" href="notes.html"><span class="sb-icon">📝</span>上課筆記</a>
+    <a class="sb-item" href="photos.html"><span class="sb-icon">📸</span>實作照片</a>
+    <div class="sb-section">個人</div>
+    <a class="sb-item active"><span class="sb-icon">📊</span>我的進度</a>
+    <a class="sb-item" href="signin.html"><span class="sb-icon">✍️</span>訓練簽到</a>
+    <div class="sb-flex"></div>
+    <div class="sb-user">
+      <div class="sb-av" id="sbAv">?</div>
+      <div>
+        <div class="sb-uname" id="sbName">載入中</div>
+        <div class="sb-role" id="sbRole">—</div>
       </div>
-      <div class="bar"><div class="bar-fill bar-orange" id="gameBar" style="width:0%"></div></div>
     </div>
   </div>
+  <div class="main">
+    <div class="main-title">📊 我的進度</div>
 
-  <!-- 統計 -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-num" id="statVideo">0</div>
-      <div class="stat-label">看完影片</div>
+    <div class="stats-row">
+      <div class="stat g">
+        <div class="stat-num" id="statVideo">0<span style="font-size:15px;color:#555;font-weight:400;">/13</span></div>
+        <div class="stat-label">已看影片</div>
+      </div>
+      <div class="stat b">
+        <div class="stat-num" id="statPct">0<span style="font-size:15px;color:#555;font-weight:400;">%</span></div>
+        <div class="stat-label">完成率</div>
+      </div>
+      <div class="stat o">
+        <div class="stat-num" id="statGame">0<span style="font-size:15px;color:#555;font-weight:400;">次</span></div>
+        <div class="stat-label">遊戲挑戰</div>
+      </div>
+      <div class="stat p">
+        <div class="stat-num" id="statRemain">13<span style="font-size:15px;color:#555;font-weight:400;">部</span></div>
+        <div class="stat-label">剩餘影片</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statGame">0</div>
-      <div class="stat-label">遊戲次數</div>
+
+    <div class="prog-box">
+      <div class="prog-box-title">學習進度</div>
+      <div class="prog-row">
+        <div class="prog-label">影片觀看</div>
+        <div class="prog-bar"><div class="prog-fill fill-g" id="videoFill" style="width:0%"></div></div>
+        <div class="prog-val" style="color:#30d158;" id="videoVal">0/13</div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-label">遊戲挑戰</div>
+        <div class="prog-bar"><div class="prog-fill fill-o" id="gameFill" style="width:0%"></div></div>
+        <div class="prog-val" style="color:#ff9f0a;" id="gameVal">0次</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stat-num" id="statPct">0%</div>
-      <div class="stat-label">完成率</div>
+
+    <div class="video-box">
+      <div class="video-box-title">影片觀看明細</div>
+      <div id="videoList"></div>
+    </div>
+
+    <div class="game-box">
+      <div class="prog-box-title">🎮 遊戲記錄</div>
+      <div id="gameRecord"></div>
     </div>
   </div>
-
-  <!-- 鼓勵訊息 -->
-  <div class="encourage" id="encourage">
-    <div class="encourage-emoji">💪</div>
-    <div class="encourage-text" id="encourageText">加油！繼續學習！</div>
-  </div>
-
-  <!-- 遊戲最佳記錄 -->
-  <div class="game-card">
-    <div class="game-title">🏆 排序遊戲最佳紀錄</div>
-    <div id="gameBest"></div>
-  </div>
-
-  <!-- 3/17 影片 -->
-  <div class="section">
-    <div class="section-header">📅 第一次上課 115/03/17</div>
-    <div id="list317"></div>
-  </div>
-
-  <!-- 4/24 影片 -->
-  <div class="section">
-    <div class="section-header orange">📅 第二次上課 115/04/24</div>
-    <div id="list424"></div>
-  </div>
-
 </div>
-
-<footer>竹建瓦斯股份有限公司　|　乙級導管配管培訓課程</footer>
 
 <script>
-// 檢查登入狀態
-(function(){
-  const u = sessionStorage.getItem('user');
-  if(!u){ window.location.href='index.html'; }
-})();
+(function(){const u=sessionStorage.getItem('user');if(!u)window.location.href='index.html';})();
+const user=JSON.parse(sessionStorage.getItem('user')||'{}');
+document.getElementById('sbAv').textContent=user.name?user.name[0]:'?';
+document.getElementById('sbName').textContent=user.name||'訪客';
+document.getElementById('sbRole').textContent=user.isAdmin?'管理者':'學員';
 
-const 影片清單 = [
-  {編號:'01', 名稱:'1150317-01', 分類:'3/17'},
-  {編號:'02', 名稱:'1150317-02', 分類:'3/17'},
-  {編號:'03', 名稱:'1150317-03', 分類:'3/17'},
-  {編號:'04', 名稱:'1150317-04', 分類:'3/17'},
-  {編號:'05', 名稱:'1150317-05', 分類:'3/17'},
-  {編號:'06', 名稱:'1150317-06', 分類:'3/17'},
-  {編號:'07', 名稱:'1150424-01 汗水與鋼管的交響樂', 分類:'4/24'},
-  {編號:'08', 名稱:'1150424-02 揭秘組裝藝術-01', 分類:'4/24'},
-  {編號:'09', 名稱:'1150424-03 揭秘組裝藝術-02', 分類:'4/24'},
-  {編號:'10', 名稱:'1150424-04 揭秘組裝藝術-03', 分類:'4/24'},
-  {編號:'11', 名稱:'1150424-05 揭秘組裝藝術-04', 分類:'4/24'},
-  {編號:'12', 名稱:'1150424-06 老師示範關鍵細節-01', 分類:'4/24'},
-  {編號:'13', 名稱:'1150424-07 老師示範關鍵細節-02', 分類:'4/24'},
+const VIDEOS=[
+  {no:'01',name:'1150317-01',date:'115/03/17'},{no:'02',name:'1150317-02',date:'115/03/17'},
+  {no:'03',name:'1150317-03',date:'115/03/17'},{no:'04',name:'1150317-04',date:'115/03/17'},
+  {no:'05',name:'1150317-05',date:'115/03/17'},{no:'06',name:'1150317-06',date:'115/03/17'},
+  {no:'07',name:'1150424-01',date:'115/04/24'},{no:'08',name:'1150424-02',date:'115/04/24'},
+  {no:'09',name:'1150424-03',date:'115/04/24'},{no:'10',name:'1150424-04',date:'115/04/24'},
+  {no:'11',name:'1150424-05',date:'115/04/24'},{no:'12',name:'1150424-06',date:'115/04/24'},
+  {no:'13',name:'1150424-07',date:'115/04/24'},
 ];
 
-// 取得使用者
-const userStr = sessionStorage.getItem('user');
-if(!userStr){ window.location.href='index.html'; }
-const user = JSON.parse(userStr||'{}');
+const watched=JSON.parse(localStorage.getItem('watched_'+user.name)||'[]');
+const watchedSet=new Set(watched);
+const pct=Math.round(watched.length/13*100);
 
-document.getElementById('userTag').textContent = '👤 ' + user.name;
-document.getElementById('welcomeName').textContent = user.name + ' 的學習進度';
+document.getElementById('statVideo').innerHTML=watched.length+'<span style="font-size:15px;color:#555;font-weight:400;">/13</span>';
+document.getElementById('statPct').innerHTML=pct+'<span style="font-size:15px;color:#555;font-weight:400;">%</span>';
+document.getElementById('statRemain').innerHTML=(13-watched.length)+'<span style="font-size:15px;color:#555;font-weight:400;">部</span>';
+document.getElementById('videoFill').style.width=pct+'%';
+document.getElementById('videoVal').textContent=watched.length+'/13';
 
-// 讀取觀看記錄
-const watchKey = 'watched_' + user.name;
-const watched = new Set(JSON.parse(localStorage.getItem(watchKey)||'[]'));
-const watchedCount = watched.size;
+const gameCount=parseInt(localStorage.getItem('game_'+user.name)||'0');
+document.getElementById('statGame').innerHTML=gameCount+'<span style="font-size:15px;color:#555;font-weight:400;">次</span>';
+document.getElementById('gameFill').style.width=Math.min(gameCount/10*100,100)+'%';
+document.getElementById('gameVal').textContent=gameCount+'次';
 
-// 讀取遊戲記錄
-const gameKey = 'game_' + user.name;
-const gameCount = parseInt(localStorage.getItem(gameKey)||'0');
-const gameBestKey = 'gameBest_' + user.name;
-const gameBestSec = parseInt(localStorage.getItem(gameBestKey)||'0');
+const list=document.getElementById('videoList');
+VIDEOS.forEach(v=>{
+  const done=watchedSet.has(v.no)||watchedSet.has(Number(v.no))||watchedSet.has(v.name);
+  const row=document.createElement('div');
+  row.className='video-row';
+  row.innerHTML=`
+    <div class="v-num">${v.no}</div>
+    <div class="v-name">${v.name}</div>
+    <div class="v-date">${v.date}</div>
+    <div class="v-tag ${done?'v-done':'v-wait'}">${done?'已看完':'未觀看'}</div>
+    <div class="${done?'v-done-check':'v-wait-check'}">${done?'✓':'○'}</div>`;
+  list.appendChild(row);
+});
 
-// 更新進度條
-const pct = Math.round(watchedCount/13*100);
-document.getElementById('videoBar').style.width = pct + '%';
-document.getElementById('videoLabel').textContent = watchedCount + ' / 13';
-document.getElementById('gameBar').style.width = Math.min(gameCount/10*100,100) + '%';
-document.getElementById('gameLabel').textContent = gameCount + ' 次';
-document.getElementById('statVideo').textContent = watchedCount;
-document.getElementById('statGame').textContent = gameCount;
-document.getElementById('statPct').textContent = pct + '%';
-
-// 鼓勵訊息
-let emoji = '💪', msg = '';
-if(pct === 100){ emoji='🏆'; msg='太厲害了！13部影片全部看完！你是最認真的學員！'; }
-else if(pct >= 80){ emoji='🌟'; msg='快完成了！再加把勁！只差一點點！'; }
-else if(pct >= 50){ emoji='👍'; msg='已經過半了！繼續保持！你做得很好！'; }
-else if(pct > 0){ emoji='🌱'; msg='已經開始了！每天進步一點點，持續學習！'; }
-else{ emoji='🎯'; msg='趕快開始看影片吧！學習從現在開始！'; }
-document.getElementById('encourage').querySelector('.encourage-emoji').textContent = emoji;
-document.getElementById('encourageText').textContent = msg;
-document.getElementById('welcomeSub').textContent = `已完成 ${pct}% · 看完 ${watchedCount}/13 部影片`;
-
-// 遊戲最佳紀錄
-const gameBestEl = document.getElementById('gameBest');
-if(gameBestSec > 0){
-  const m = String(Math.floor(gameBestSec/60)).padStart(2,'0');
-  const s = String(gameBestSec%60).padStart(2,'0');
-  gameBestEl.innerHTML = `<div class="game-best">
-    <div class="game-best-num">${m}:${s}</div>
-    <div class="game-best-label">最佳完成時間　挑戰了 ${gameCount} 次</div>
-  </div>`;
-} else {
-  gameBestEl.innerHTML = '<div class="game-empty">還沒挑戰過！快去試試看！🧩</div>';
+const gameEl=document.getElementById('gameRecord');
+if(gameCount===0){
+  gameEl.innerHTML='<div class="game-empty">尚未挑戰過遊戲，快去試試看！🎮</div>';
+}else{
+  gameEl.innerHTML=`<div style="font-size:15px;color:#e0e0e0;">共挑戰 <span style="color:#ff9f0a;font-weight:700;">${gameCount}</span> 次！繼續加油！💪</div>`;
 }
-
-// 建立影片清單
-function buildList(分類, elId){
-  const el = document.getElementById(elId);
-  const videos = 影片清單.filter(v=>v.分類===分類);
-  let html = '';
-  videos.forEach(v=>{
-    const done = watched.has(v.編號);
-    html += `<div class="video-row">
-      <div class="video-num">NO.${v.編號}</div>
-      <div class="video-name">${v.名稱}</div>
-      <div class="video-status ${done?'status-done':'status-none'}">${done?'✅ 看完':'⬜ 未看'}</div>
-    </div>`;
-  });
-  el.innerHTML = html;
-}
-
-buildList('3/17','list317');
-buildList('4/24','list424');
 </script>
 </body>
 </html>

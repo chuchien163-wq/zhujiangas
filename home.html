@@ -15,9 +15,9 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:10px;color:#555;margin-top:2px;}
-.sb-section{font-size:10px;color:#555;font-weight:700;letter-spacing:2px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:14px;color:#8e8e93;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
+.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:14px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
 .sb-item:hover{background:#1c1c1e;color:#e0e0e0;}
 .sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
@@ -25,7 +25,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
 .sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
-.sb-role{font-size:11px;color:#555;}
+.sb-role{font-size:11px;color:#777;}
 .sb-logout{background:transparent;border:none;color:#555;font-size:11px;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;}
 .sb-logout:hover{color:#ff453a;}
 
@@ -288,7 +288,8 @@ const msgs=[
   '今天多看一部影片，考試多一分把握！',
   '職人精神，從認真學習開始！',
 ];
-document.getElementById('wbGreeting').textContent='歡迎回來，'+user.name+'！';
+const shortName = user.name.length >= 2 ? user.name.slice(-2) : user.name;
+document.getElementById('wbGreeting').textContent='歡迎回來，'+shortName+'！';
 document.getElementById('wbMsg').textContent=msgs[Math.floor(Math.random()*msgs.length)];
 const badge=hour<12?'☀️ 早安！'+user.name:hour<18?'🌤 午安！'+user.name:'🌙 晚安！'+user.name;
 document.getElementById('timeBadge').textContent=badge;
