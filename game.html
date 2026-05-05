@@ -69,6 +69,73 @@ body{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;background:#1
 .detail-title{font-size:17px;font-weight:700;color:#d4a843;margin-bottom:6px;}
 .detail-text{font-size:17px;color:#9a9a9a;line-height:1.8;word-break:break-all;}
 footer{background:#2c2c2e;color:#606060;border-top:1px solid #3a3a3c;text-align:center;padding:1.2rem;font-size:17px;margin-top:1rem;}
+
+/* ===== RWD 手機版 ===== */
+@media(max-width:600px){
+  /* 首頁 */
+  .hero-title{font-size:2.5rem !important;}
+  .hero-sub{font-size:15px !important;}
+  .login-box{padding:1.2rem !important;}
+  .cards-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .sched-date{min-width:80px !important;font-size:13px !important;}
+
+  /* Nav */
+  .nav{padding:0 1rem !important;}
+  .brand-name{font-size:16px !important;}
+  .brand-tag{display:none !important;}
+  .nav-btn{padding:7px 14px !important;font-size:13px !important;}
+
+  /* home */
+  .banner-name{font-size:24px !important;}
+  .banner-msg{font-size:15px !important;}
+  .prog-row{grid-template-columns:1fr 1fr !important;}
+  .prog-num{font-size:1.5rem !important;}
+  .countdown-grid{grid-template-columns:1fr 1fr !important;}
+  .cd-num{font-size:2.2rem !important;}
+  .cd-label{font-size:15px !important;}
+  .cd-date{font-size:13px !important;}
+  .cards-grid{grid-template-columns:1fr 1fr !important;}
+  .card-name{font-size:15px !important;}
+  .card-sub{font-size:12px !important;}
+  .enc-text{font-size:14px !important;}
+
+  /* videos */
+  .video-top{flex-direction:column !important;}
+  .video-embed{width:100% !important;}
+  .video-embed iframe{width:100% !important;height:200px !important;}
+  .overall-progress{flex-direction:column !important;gap:0.8rem !important;}
+  .section-count{display:none !important;}
+
+  /* admin */
+  .stats-grid{grid-template-columns:repeat(2,1fr) !important;}
+  .tabs{flex-wrap:wrap !important;}
+  .tab{font-size:13px !important;padding:8px 6px !important;}
+  table{font-size:13px !important;}
+  th,td{padding:8px 6px !important;}
+
+  /* games */
+  .games-grid{grid-template-columns:1fr !important;}
+
+  /* progress */
+  .stats-grid{grid-template-columns:repeat(3,1fr) !important;}
+  .stat-num{font-size:1.5rem !important;}
+
+  /* header */
+  .header{padding:0.8rem 1rem !important;}
+  .htitle{font-size:17px !important;}
+  .back-btn{padding:7px 12px !important;font-size:13px !important;}
+
+  /* game */
+  .drop-row{gap:4px !important;}
+  .slot{min-height:55px !important;}
+  .board{gap:5px !important;}
+
+  /* 通用 */
+  .page{padding:1rem !important;}
+  .game{padding:0.8rem !important;}
+  .section-title{font-size:15px !important;}
+  footer{font-size:12px !important;padding:1rem !important;}
+}
 </style>
 </head>
 <body>
@@ -255,6 +322,8 @@ function checkDone(){
   });
   if(ok){
     clearInterval(iv);started=false;
+    const u=JSON.parse(sessionStorage.getItem('user')||'{}');
+    if(u.name){const k='game_'+u.name;localStorage.setItem(k,String(parseInt(localStorage.getItem(k)||'0')+1));}
     document.getElementById('doneTime').textContent=fmt(sec);
     document.getElementById('doneMsg').textContent=sec<30?'超級神速！天才！':sec<60?'非常厲害！':sec<120?'答對了！繼續加油！':'完成了！熟練後會更快！';
     document.getElementById('doneOverlay').classList.add('show');
