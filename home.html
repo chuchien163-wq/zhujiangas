@@ -44,13 +44,13 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 /* 統計卡 */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
 .stat{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
-.stat-label{font-size:15px;color:#8e8e93;margin-bottom:8px;}
-.stat-num{font-size:22px;font-weight:700;}
-.stat-sub{font-size:14px;color:#555;margin-top:6px;}
-.stat.g .stat-num{color:#30d158;}
-.stat.o .stat-num{color:#ff9f0a;}
-.stat.b .stat-num{color:#0a84ff;}
-.stat.p .stat-num{color:#bf5af2;}
+.stat-label{font-size:17px;color:#fff;margin-bottom:10px;font-weight:500;}
+.stat-num{font-size:40px;font-weight:700;line-height:1;}
+.stat-sub{font-size:15px;color:#fff;margin-top:8px;}
+.stat.g .stat-num{font-size:40px;font-weight:700;line-height:1;}
+.stat.o .stat-num{font-size:40px;font-weight:700;line-height:1;}
+.stat.b .stat-num{font-size:40px;font-weight:700;line-height:1;}
+.stat.p .stat-num{font-size:40px;font-weight:700;line-height:1;}
 
 /* 倒數 */
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;}
@@ -61,16 +61,16 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .leg-dot{width:8px;height:8px;border-radius:50%;}
 .cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .cd{background:#1c1c1e;border-radius:8px;padding:0.7rem;border-left:3px solid #3a3a3c;}
-.cd-lbl{font-size:14px;color:#8e8e93;margin-bottom:4px;}
-.cd-num{font-size:2.2rem;font-weight:700;line-height:1;color:#fff;}
+.cd-lbl{font-size:15px;color:#fff;margin-bottom:6px;font-weight:500;}
+.cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
 .cd-date{font-size:14px;color:#fff;margin-top:6px;}
 .cd.urgent{border-left-color:#ff453a;background:#1a0a0a;}
-.cd.urgent .cd-num{color:#ff453a;}
-.cd.urgent .cd-lbl{color:#ff7070;}
+.cd.urgent .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
+.cd.urgent .cd-lbl{font-size:15px;color:#fff;margin-bottom:6px;font-weight:500;}
 .cd.warning{border-left-color:#ff9f0a;background:#1a1200;}
-.cd.warning .cd-num{color:#ff9f0a;}
+.cd.warning .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
 .cd.done{border-left-color:#555;}
-.cd.done .cd-num{color:#555;font-size:1rem;}
+.cd.done .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
 
 /* 進度 */
 .prog-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
@@ -106,8 +106,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .dot-done{background:#3a3a3c;}
 .dot-now{background:#ff9f0a;}
 .dot-next{background:#3a3a3c;border:2px solid #30d158;}
-.sched-date{font-size:13px;font-weight:700;color:#aeaeb2;min-width:95px;}
-.sched-label{font-size:13px;color:#555;flex:1;}
+.sched-date{font-size:15px;font-weight:700;color:#fff;min-width:95px;}
+.sched-label{font-size:15px;color:#fff;flex:1;}
 .sched-tag{font-size:12px;padding:3px 10px;font-weight:700;border-radius:4px;}
 .t-done{background:#2a2a2a;color:#555;}
 .t-now{background:#1a1200;color:#ff9f0a;border:1px solid #8a5a00;}
@@ -119,8 +119,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   .stats-row{grid-template-columns:repeat(2,1fr) !important;}
   .row2{grid-template-columns:1fr !important;}
   .cd-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .cd-num{font-size:2rem !important;}
-  .stat-num{font-size:30px !important;}
+  .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
+  .stat-num{font-size:40px;font-weight:700;line-height:1;}
   .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
   .wb-greeting{font-size:20px !important;}
   .main-title{font-size:18px !important;}
@@ -130,8 +130,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   .feat-sub{font-size:11px !important;}
   .feat-icon{font-size:22px !important;}
   .sched-row{gap:6px !important;}
-  .sched-date{font-size:12px !important;min-width:80px !important;white-space:nowrap !important;}
-  .sched-label{font-size:12px !important;white-space:nowrap !important;}
+  .sched-date{font-size:15px;font-weight:700;color:#fff;min-width:95px;}
+  .sched-label{font-size:15px;color:#fff;flex:1;}
   .sched-tag{font-size:11px !important;padding:3px 8px !important;white-space:nowrap !important;}
   .stats-row{grid-template-columns:repeat(2,1fr) !important;}
   .row2{grid-template-columns:1fr !important;}
