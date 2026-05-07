@@ -159,6 +159,63 @@ select { cursor: pointer; }
 .success .icon { font-size: 60px; margin-bottom: 16px; }
 .success h2 { font-size: 22px; color: #1a1a2e; margin-bottom: 12px; }
 .success p { color: #666; font-size: 14px; line-height: 1.9; white-space: pre-line; }
+
+/* ── RWD 手機優化 ── */
+@media (max-width: 480px) {
+  body { padding: 0; align-items: flex-start; }
+
+  .card {
+    border-radius: 0;
+    box-shadow: none;
+    max-width: 100%;
+    min-height: 100vh;
+  }
+
+  .header { padding: 24px 20px 20px; }
+  .logo-text { font-size: 17px; letter-spacing: 2px; }
+  .header h1 { font-size: 18px; }
+
+  .info-bar { padding: 12px 20px; font-size: 12px; line-height: 2; }
+
+  .body { padding: 20px 16px; }
+
+  /* 出席意願兩欄保留，但縮小padding */
+  .intention-btn { padding: 12px 8px; font-size: 13px; }
+  .intention-btn .icon { font-size: 20px; }
+
+  /* 出席人：姓名職稱改為單欄 */
+  .attendee-grid { grid-template-columns: 1fr; gap: 10px; }
+
+  /* 聯絡人：單欄 */
+  .contact-grid { grid-template-columns: 1fr; gap: 10px; }
+  .contact-grid .field { margin-bottom: 10px; }
+  .contact-grid .field:last-child { margin-bottom: 0; }
+
+  /* 飲食選項wrap已ok，確保字夠大 */
+  .diet-chip { font-size: 13px; padding: 7px 14px; }
+
+  /* 送出按鈕更大更好點 */
+  .submit-btn { padding: 18px; font-size: 16px; }
+
+  /* 移除hover動畫（手機沒hover） */
+  .intention-btn:hover { transform: none; box-shadow: none; }
+
+  /* input更大更好輸入 */
+  input[type=text], select {
+    padding: 13px 14px;
+    font-size: 16px; /* 避免iOS自動縮放 */
+  }
+
+  .add-attendee-btn { padding: 14px; font-size: 13px; }
+
+  .footer-note { font-size: 12px; padding: 0 4px; }
+}
+
+@media (max-width: 360px) {
+  .logo-text { font-size: 14px; letter-spacing: 1px; }
+  .header h1 { font-size: 16px; }
+  .intention-row { gap: 8px; }
+}
 </style>
 </head>
 <body>
