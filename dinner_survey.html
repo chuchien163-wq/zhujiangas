@@ -482,7 +482,7 @@ function showSuccess(data) {
 }
 
 // ── 截止時間檢查 ──
-const DEADLINE = new Date('2025-05-11T00:00:00');
+const DEADLINE = new Date('2026-05-11T00:00:00');
 
 function checkDeadline() {
   if (new Date() >= DEADLINE) {
@@ -498,15 +498,5 @@ buildNameGrid();
 checkDeadline();
 </script>
 
-<!-- 截止後顯示的畫面（預設隱藏） -->
-<div id="closedBox" style="display:none;text-align:center;padding:48px 24px;">
-  <div style="font-size:56px;margin-bottom:16px;">🔒</div>
-  <h2 style="font-size:20px;color:#1B3A6B;margin-bottom:10px;">填寫截止</h2>
-  <p style="color:#666;font-size:14px;line-height:1.8;">
-    本次餐敘意願調查已於<br>
-    <strong>2025年5月11日 00:00</strong> 截止。<br><br>
-    如有疑問請洽管理部。
-  </p>
-</div>
 </body>
 </html>
