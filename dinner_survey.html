@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>115年餐敘意願調查</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+    background: linear-gradient(135deg, #1B3A6B 0%, #2d5f8e 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    width: 100%;
+    max-width: 480px;
+    overflow: hidden;
+  }
+  .header {
+    background: linear-gradient(135deg, #1B3A6B, #2d6a9f);
+    color: #fff;
+    padding: 28px 24px 20px;
+    text-align: center;
+  }
+  .header h1 { font-size: 20px; font-weight: bold; margin-bottom: 6px; }
+  .header p { font-size: 13px; opacity: 0.85; line-height: 1.6; }
+  .deadline {
+    background: #fff3cd;
+    border-left: 4px solid #f0a500;
+    margin: 0 24px;
+    margin-top: 18px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #7a5200;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .body { padding: 24px; }
+
+  /* 步驟一：選姓名 */
+  .step { margin-bottom: 20px; }
+  .step-label {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 8px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+  .dept-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .dept-tab {
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid #1B3A6B;
+    background: #fff;
+    color: #1B3A6B;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .dept-tab.active {
+    background: #1B3A6B;
+    color: #fff;
+  }
+  .name-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .name-btn {
+    padding: 10px 6px;
+    border-radius: 8px;
+    border: 1.5px solid #ddd;
+    background: #fafafa;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    color: #333;
+  }
+  .name-btn:hover { border-color: #1B3A6B; background: #eef3fa; }
+  .name-btn.selected {
+    background: #1B3A6B;
+    color: #fff;
+    border-color: #1B3A6B;
+    font-weight: bold;
+  }
+  .name-btn.hidden { display: none; }
+
+  /* 選擇後顯示 */
+  .selected-name {
+    display: none;
+    background: #eef3fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #1B3A6B;
+    font-weight: bold;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .selected-name.show { display: flex; }
+  .change-btn {
+    font-size: 12px;
+    color: #888;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: normal;
+  }
+
+  /* 意願選擇 */
+  .intention-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .intention-btn {
+    padding: 16px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    background: #fafafa;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .intention-btn .icon { font-size: 24px; display: block; margin-bottom: 4px; }
+  .intention-btn.yes.selected { border-color: #2E7D32; background: #e8f5e9; color: #2E7D32; }
+  .intention-btn.no.selected { border-color: #C62828; background: #fdecea; color: #C62828; }
+  .intention-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+  /* 不參加原因 */
+  .reason-area {
+    display: none;
+    margin-top: 16px;
+  }
+  .reason-area.show { display: block; }
+  .reason-area label { font-size: 13px; color: #555; margin-bottom: 6px; display: block; }
+  .reason-options { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .reason-chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #ddd;
+    background: #fafafa;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #555;
+  }
+  .reason-chip.selected { border-color: #C62828; background: #fdecea; color: #C62828; }
+  .reason-other {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    margin-top: 4px;
+  }
+  .reason-other:focus { outline: none; border-color: #1B3A6B; }
+
+  /* 送出按鈕 */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #1B3A6B, #2d6a9f);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .submit-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+  .submit-btn:disabled { background: #bbb; cursor: not-allowed; transform: none; }
+
+  /* 完成畫面 */
+  .success {
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+  }
+  .success .icon { font-size: 64px; margin-bottom: 16px; }
+  .success h2 { font-size: 22px; color: #1B3A6B; margin-bottom: 10px; }
+  .success p { color: #666; font-size: 14px; line-height: 1.7; }
+
+  .divider { height: 1px; background: #eee; margin: 20px 0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>🥂 誠摯邀請您共襄盛舉</h1>
+    <p>115年苗栗縣公用事業管線聯繫會報<br>會後餐敘・敬邀全體同仁共同參與</p>
+  </div>
+
+  <!-- 活動資訊 -->
+  <div style="padding: 16px 24px 0;">
+    <div style="background:#f0f4ff;border-radius:10px;padding:14px 16px;font-size:13px;color:#333;line-height:2;">
+      <div>📅 <strong>日期：</strong>114年6月10日（二）</div>
+      <div>🕐 <strong>時間：</strong>17:30 或 18:00（時間確認後另行通知）</div>
+      <div>📍 <strong>地點：</strong>千璽會館</div>
+      <div style="color:#666;padding-left:22px;font-size:12px;">苗栗市福麗里國華路947號</div>
+      <!-- Google Maps 嵌入 -->
+      <div style="margin-top:10px;border-radius:8px;overflow:hidden;border:1px solid #ddd;">
+        <iframe
+          src="https://maps.google.com/maps?q=360苗栗縣苗栗市國華路947號&hl=zh-TW&z=16&output=embed"
+          width="100%" height="160" style="border:0;display:block;" allowfullscreen loading="lazy">
+        </iframe>
+      </div>
+      <div style="margin-top:6px;text-align:right;">
+        <a href="https://maps.google.com/?q=360苗栗縣苗栗市國華路947號" target="_blank"
+           style="font-size:11px;color:#1B3A6B;">📌 點此開啟導航</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="deadline" style="margin-top:12px;">
+    📝 本次餐敘意義重大，公司誠摯期盼全體同仁共同參與，請於 <strong>3天內</strong> 完成回覆，謝謝！
+  </div>
+
+  <div class="body" id="formBody">
+
+    <!-- 步驟一：選姓名 -->
+    <div class="step" id="stepName">
+      <div class="step-label">STEP 1 &nbsp;請選擇您的姓名</div>
+
+      <div class="dept-tabs" id="deptTabs">
+        <div class="dept-tab active" data-dept="all" onclick="filterDept(this)">全部</div>
+        <div class="dept-tab" data-dept="總經理室" onclick="filterDept(this)">總經理室</div>
+        <div class="dept-tab" data-dept="業務部" onclick="filterDept(this)">業務部</div>
+        <div class="dept-tab" data-dept="管理部" onclick="filterDept(this)">管理部</div>
+        <div class="dept-tab" data-dept="工務部" onclick="filterDept(this)">工務部</div>
+        <div class="dept-tab" data-dept="財務部" onclick="filterDept(this)">財務部</div>
+        <div class="dept-tab" data-dept="資訊室" onclick="filterDept(this)">資訊室</div>
+      </div>
+
+      <div class="name-grid" id="nameGrid"></div>
+    </div>
+
+    <!-- 已選姓名顯示 -->
+    <div class="selected-name" id="selectedNameBox">
+      <span id="selectedNameText"></span>
+      <span class="change-btn" onclick="changeName()">重新選擇</span>
+    </div>
+
+    <div class="divider" id="divider1" style="display:none"></div>
+
+    <!-- 步驟二：意願 -->
+    <div class="step" id="stepIntention" style="display:none">
+      <div class="step-label">STEP 2 &nbsp;出席意願確認</div>
+      <div class="intention-row">
+        <div class="intention-btn yes" onclick="selectIntention('yes')">
+          <span class="icon">🙋</span>出席參加
+        </div>
+        <div class="intention-btn no" onclick="selectIntention('no')">
+          <span class="icon">🙏</span>敬謝不克
+        </div>
+      </div>
+
+      <!-- 不參加原因 -->
+      <div class="reason-area" id="reasonArea">
+        <div class="divider"></div>
+        <label>無法出席原因（選填）</label>
+        <div class="reason-options">
+          <div class="reason-chip" onclick="toggleChip(this)">身體不適</div>
+          <div class="reason-chip" onclick="toggleChip(this)">家庭因素</div>
+          <div class="reason-chip" onclick="toggleChip(this)">出差/公務</div>
+          <div class="reason-chip" onclick="toggleChip(this)">其他</div>
+        </div>
+        <textarea class="reason-other" id="reasonOther" rows="2" placeholder="如有其他說明請填寫..."></textarea>
+      </div>
+    </div>
+
+    <div class="divider" id="divider2" style="display:none"></div>
+
+    <!-- 送出 -->
+    <button class="submit-btn" id="submitBtn" onclick="submitForm()" disabled style="display:none">
+      確認送出
+    </button>
+
+  </div>
+
+  <!-- 完成畫面 -->
+  <div class="success" id="successBox">
+    <div class="icon">✅</div>
+    <h2>填寫完成，謝謝！</h2>
+    <p id="successMsg"></p>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL'; // 部署後替換
+
+const employees = [
+  // 經理
+  { name: '林昭偉', dept: '總經理室', title: '經理' },
+  { name: '李志倉', dept: '業務部',   title: '經理' },
+  { name: '陳儒彥', dept: '管理部',   title: '經理' },
+  { name: '陳炳宏', dept: '工務部',   title: '經理' },
+  { name: '蕭惠萍', dept: '財務部',   title: '經理' },
+  // 副理
+  { name: '陳淑貞', dept: '業務部',   title: '副理' },
+  { name: '邱育生', dept: '工務部',   title: '副理' },
+  { name: '黃美月', dept: '財務部',   title: '副理' },
+  { name: '黃晨晞', dept: '資訊室',   title: '副理' },
+  // 課長
+  { name: '彭敬文', dept: '工務部',   title: '課長' },
+  { name: '林曉琪', dept: '管理部',   title: '課長' },
+  { name: '陳郁夫', dept: '業務部',   title: '課長' },
+  { name: '鍾興翰', dept: '管理部',   title: '課長' },
+  { name: '廖珮雯', dept: '業務部',   title: '課長' },
+  // 代理課長
+  { name: '廖偉村', dept: '管理部',   title: '代理課長' },
+  // 專員
+  { name: '白沛豫', dept: '管理部',   title: '專員' },
+  { name: '林孟賢', dept: '業務部',   title: '專員' },
+  // 代理專員
+  { name: '陳人豪', dept: '工務部',   title: '代理專員' },
+  { name: '洪姝筠', dept: '財務部',   title: '代理專員' },
+  // 秘書
+  { name: '陳朝鑫', dept: '總經理室', title: '秘書' },
+  // 工務員
+  { name: '張鈞豪', dept: '工務部',   title: '工務員' },
+  { name: '劉建彣', dept: '工務部',   title: '工務員' },
+  // 助理員
+  { name: '黃禹竣', dept: '業務部',   title: '助理員' },
+  { name: '劉德泓', dept: '工務部',   title: '助理員' },
+  { name: '王璽凱', dept: '工務部',   title: '助理員' },
+  { name: '林琮炫', dept: '業務部',   title: '助理員' },
+  // 雇員
+  { name: '蔡凱程', dept: '業務部',   title: '雇員' },
+  { name: '陳東彥', dept: '工務部',   title: '雇員' },
+];
+
+let selectedName = '';
+let selectedDept = '';
+let selectedIntention = '';
+
+// 建立姓名按鈕
+function buildNameGrid() {
+  const grid = document.getElementById('nameGrid');
+  grid.innerHTML = '';
+  employees.forEach(emp => {
+    const btn = document.createElement('div');
+    btn.className = 'name-btn';
+    btn.innerHTML = emp.name + '<br><span style="font-size:10px;opacity:0.7;">' + emp.title + '</span>';
+    btn.dataset.dept = emp.dept;
+    btn.onclick = () => selectName(emp.name, emp.dept, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function filterDept(tab) {
+  document.querySelectorAll('.dept-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  const dept = tab.dataset.dept;
+  document.querySelectorAll('.name-btn').forEach(btn => {
+    if (dept === 'all' || btn.dataset.dept === dept) {
+      btn.classList.remove('hidden');
+    } else {
+      btn.classList.add('hidden');
+    }
+  });
+}
+
+function selectName(name, dept, btn) {
+  selectedName = name;
+  selectedDept = dept;
+  document.querySelectorAll('.name-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  // 顯示已選
+  document.getElementById('selectedNameText').textContent = name + '　' + dept;
+  document.getElementById('selectedNameBox').classList.add('show');
+  document.getElementById('stepName').style.display = 'none';
+  document.getElementById('divider1').style.display = 'block';
+  document.getElementById('stepIntention').style.display = 'block';
+  document.getElementById('divider2').style.display = 'block';
+  document.getElementById('submitBtn').style.display = 'block';
+  checkSubmit();
+}
+
+function changeName() {
+  selectedName = '';
+  selectedDept = '';
+  selectedIntention = '';
+  document.getElementById('selectedNameBox').classList.remove('show');
+  document.getElementById('stepName').style.display = 'block';
+  document.getElementById('stepIntention').style.display = 'none';
+  document.getElementById('divider1').style.display = 'none';
+  document.getElementById('divider2').style.display = 'none';
+  document.getElementById('submitBtn').style.display = 'none';
+  document.querySelectorAll('.name-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.intention-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('reasonArea').classList.remove('show');
+  checkSubmit();
+}
+
+function selectIntention(val) {
+  selectedIntention = val;
+  document.querySelectorAll('.intention-btn').forEach(b => b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  if (val === 'no') {
+    document.getElementById('reasonArea').classList.add('show');
+  } else {
+    document.getElementById('reasonArea').classList.remove('show');
+  }
+  checkSubmit();
+}
+
+function toggleChip(chip) {
+  chip.classList.toggle('selected');
+}
+
+function checkSubmit() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = !(selectedName && selectedIntention);
+}
+
+async function submitForm() {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '送出中…';
+
+  // 收集不參加原因
+  let reason = '';
+  if (selectedIntention === 'no') {
+    const chips = [...document.querySelectorAll('.reason-chip.selected')].map(c => c.textContent);
+    const other = document.getElementById('reasonOther').value.trim();
+    reason = [...chips, other].filter(Boolean).join('、');
+  }
+
+  const payload = {
+    name: selectedName,
+    dept: selectedDept,
+    intention: selectedIntention === 'yes' ? '參加' : '不參加',
+    reason: reason,
+    timestamp: new Date().toLocaleString('zh-TW')
+  };
+
+  try {
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    showSuccess(payload);
+  } catch(e) {
+    alert('送出失敗，請稍後再試。');
+    btn.disabled = false;
+    btn.textContent = '確認送出';
+  }
+}
+
+function showSuccess(data) {
+  document.getElementById('formBody').style.display = 'none';
+  document.getElementById('successBox').style.display = 'block';
+  const msg = data.intention === '出席參加'
+    ? `${data.name} 的填寫已收到 🎉\n非常期待與您共享這次餐敘！`
+    : `${data.name} 的填寫已收到。\n感謝您的回覆，期待日後有機會共聚！`;
+  document.getElementById('successMsg').textContent = msg;
+}
+
+// ── 截止時間檢查 ──
+const DEADLINE = new Date('2025-05-11T00:00:00');
+
+function checkDeadline() {
+  if (new Date() >= DEADLINE) {
+    // 隱藏表單，顯示截止畫面
+    document.getElementById('formBody').style.display = 'none';
+    document.querySelector('.deadline') && (document.querySelector('.deadline').style.display = 'none');
+    const closed = document.getElementById('closedBox');
+    closed.style.display = 'block';
+  }
+}
+
+buildNameGrid();
+checkDeadline();
+</script>
+
+<!-- 截止後顯示的畫面（預設隱藏） -->
+<div id="closedBox" style="display:none;text-align:center;padding:48px 24px;">
+  <div style="font-size:56px;margin-bottom:16px;">🔒</div>
+  <h2 style="font-size:20px;color:#1B3A6B;margin-bottom:10px;">填寫截止</h2>
+  <p style="color:#666;font-size:14px;line-height:1.8;">
+    本次餐敘意願調查已於<br>
+    <strong>2025年5月11日 00:00</strong> 截止。<br><br>
+    如有疑問請洽管理部。
+  </p>
+</div>
+</body>
+</html>
