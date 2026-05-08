@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竹建瓦斯｜餐會管理系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --sidebar: #1c1c1a;
+  --sidebar-accent: #c9a84c;
+  --sidebar-text: rgba(255,255,255,0.6);
+  --sidebar-active: rgba(255,255,255,0.08);
+  --text: #1c1c1a;
+  --text-muted: #6b6960;
+  --text-hint: #a09e97;
+  --border: rgba(0,0,0,0.08);
+  --border-md: rgba(0,0,0,0.14);
+  --gold: #c9a84c;
+  --gold-light: #f5ecd4;
+  --gold-dark: #9c7c2e;
+  --green: #3d7a4e;
+  --green-light: #e8f3ec;
+  --red: #a83232;
+  --red-light: #faeaea;
+  --amber: #8a5c1a;
+  --amber-light: #fdf0d8;
+  --blue: #1a4f8a;
+  --blue-light: #e8f0fa;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── Layout ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px;
+  background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sb-brand {
+  padding: 22px 18px 16px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+}
+.sb-brand-sub { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-bottom: 3px; }
+.sb-brand-name { font-family: 'Noto Serif TC', serif; font-size: 15px; color: #fff; font-weight: 500; }
+
+.sb-activity {
+  margin: 12px 10px;
+  background: rgba(201,168,76,0.12);
+  border: 0.5px solid rgba(201,168,76,0.25);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+}
+.sb-activity-label { font-size: 10px; color: var(--gold); letter-spacing: 1px; margin-bottom: 5px; }
+.sb-activity-name { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.6; }
+.sb-activity-date { font-size: 11px; color: var(--gold); margin-top: 4px; }
+.sb-activity-select {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 11px;
+  background: rgba(255,255,255,0.08);
+  border: 0.5px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.7);
+  padding: 5px 8px;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+}
+.sb-activity-select option { background: #2a2a28; color: #fff; }
+
+.sb-nav { padding: 8px 0; flex: 1; }
+.sb-section {
+  font-size: 10px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 1.5px;
+  padding: 14px 18px 5px;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 18px;
+  font-size: 13px;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.sb-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.04); }
+.sb-item.active { color: #fff; background: var(--sidebar-active); border-left-color: var(--gold); }
+.sb-item i { font-size: 16px; width: 16px; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto;
+  background: #a83232;
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.sb-bottom {
+  padding: 14px 18px;
+  border-top: 0.5px solid rgba(255,255,255,0.07);
+}
+.sb-user { display: flex; align-items: center; gap: 9px; }
+.sb-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #1c1c1a;
+  font-size: 11px;
+  font-weight: 500;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sb-uname { font-size: 12px; color: rgba(255,255,255,0.75); }
+.sb-urole { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 1px; }
+
+/* ── Main ── */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 13px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-title { font-size: 15px; font-weight: 500; }
+.topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.topbar-right { display: flex; gap: 8px; align-items: center; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 0.5px solid var(--border-md);
+  background: transparent;
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: background 0.12s;
+}
+.btn:hover { background: var(--bg); }
+.btn i { font-size: 15px; }
+.btn-gold { background: var(--gold); color: #fff; border-color: var(--gold); }
+.btn-gold:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+.btn-dark { background: var(--sidebar); color: #fff; border-color: var(--sidebar); }
+.btn-dark:hover { background: #2c2c2a; }
+.btn-green { background: var(--green); color: #fff; border-color: var(--green); }
+.btn-red { background: var(--red); color: #fff; border-color: var(--red); }
+
+.content { padding: 20px 24px; flex: 1; }
+
+/* ── Loading ── */
+.loading {
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px;
+  color: var(--text-muted);
+  font-size: 13px;
+  gap: 8px;
+}
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 狀態橫幅 ── */
+.status-banner {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 13px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.status-left { display: flex; align-items: center; gap: 10px; }
+.status-text { font-size: 13px; font-weight: 500; }
+.status-sub { font-size: 12px; color: var(--text-muted); }
+.status-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  font-size: 11px; padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.chip-amber { background: var(--amber-light); color: var(--amber); }
+.chip-blue { background: var(--blue-light); color: var(--blue); }
+.chip-green { background: var(--green-light); color: var(--green); }
+.chip-gray { background: #f1efe8; color: #5f5e5a; }
+.chip-red { background: var(--red-light); color: var(--red); }
+
+/* ── 統計卡 ── */
+.stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+.stat-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
+.stat-val { font-size: 24px; font-weight: 500; line-height: 1; }
+.stat-note { font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+.stat-note .hi { color: var(--green); font-weight: 500; }
+.stat-note .warn { color: var(--amber); font-weight: 500; }
+
+/* ── 兩欄 ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+/* ── Panel ── */
+.panel {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+}
+.panel-title {
+  font-size: 13px; font-weight: 500;
+  margin-bottom: 13px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-link { font-size: 11px; color: var(--text-muted); font-weight: 400; cursor: pointer; }
+.panel-link:hover { color: var(--text); }
+
+/* ── 菜單卡 ── */
+.menu-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.menu-card {
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.menu-card:hover { border-color: var(--border-md); }
+.menu-card.selected { border: 2px solid var(--gold); background: var(--gold-light); }
+.menu-card.selected-boss { border: 2px solid var(--green); background: var(--green-light); }
+.menu-tag {
+  font-size: 10px; font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 7px;
+}
+.tag-a { background: var(--blue-light); color: var(--blue); }
+.tag-b { background: var(--green-light); color: var(--green); }
+.tag-c { background: var(--amber-light); color: var(--amber); }
+.menu-price { font-size: 20px; font-weight: 500; }
+.menu-unit { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.menu-range { font-size: 11px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); line-height: 1.8; }
+.menu-range strong { color: var(--text); }
+.menu-boss-badge {
+  font-size: 10px; background: var(--green); color: #fff;
+  padding: 2px 8px; border-radius: 20px; margin-top: 6px; display: inline-block;
+}
+.menu-pending-badge {
+  font-size: 10px; background: var(--amber-light); color: var(--amber);
+  padding: 2px 8px; border-radius: 20px; margin-top: 6px; display: inline-block;
+}
+
+/* ── 待辦清單 ── */
+.todo-list { display: flex; flex-direction: column; gap: 6px; }
+.todo-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+}
+.todo-check {
+  width: 17px; height: 17px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-md);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+}
+.todo-check.done { background: var(--green); border-color: var(--green); color: #fff; }
+.todo-text { font-size: 12px; flex: 1; }
+.todo-text.done { color: var(--text-muted); text-decoration: line-through; }
+.todo-tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+.tt-urgent { background: var(--red-light); color: var(--red); }
+.tt-warn { background: var(--amber-light); color: var(--amber); }
+.tt-done { background: var(--green-light); color: var(--green); }
+.tt-gray { background: #f1efe8; color: #5f5e5a; }
+
+/* ── 出席表格 ── */
+.attend-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.attend-table th {
+  font-size: 11px; color: var(--text-muted); font-weight: 500;
+  padding: 6px 10px; border-bottom: 0.5px solid var(--border);
+  text-align: left;
+}
+.attend-table td { padding: 8px 10px; border-bottom: 0.5px solid var(--border); }
+.attend-table tr:last-child td { border-bottom: none; }
+.attend-table tr:hover td { background: var(--bg); }
+.status-tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
+.st-yes { background: var(--green-light); color: var(--green); }
+.st-no { background: var(--red-light); color: var(--red); }
+.st-pd { background: var(--amber-light); color: var(--amber); }
+.st-host { background: var(--blue-light); color: var(--blue); }
+
+/* ── 費用摘要 ── */
+.fee-rows { display: flex; flex-direction: column; gap: 8px; }
+.fee-row { display: flex; justify-content: space-between; font-size: 13px; }
+.fee-lbl { color: var(--text-muted); }
+.fee-val { font-weight: 500; }
+.fee-warn { color: var(--amber); }
+.fee-divider { border: none; border-top: 0.5px solid var(--border); margin: 6px 0; }
+.fee-total-box {
+  background: var(--blue-light);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.fee-total-lbl { font-size: 13px; font-weight: 500; color: var(--blue); }
+.fee-total-val { font-size: 17px; font-weight: 500; color: var(--blue); }
+.fee-range-box {
+  background: var(--amber-light);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+.fee-range-title { font-size: 11px; color: var(--amber); font-weight: 500; margin-bottom: 5px; }
+.fee-range-row { font-size: 12px; color: var(--amber); margin-bottom: 2px; }
+
+/* ── 進度條 ── */
+.prog-list { display: flex; flex-direction: column; gap: 11px; }
+.prog-item {}
+.prog-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.prog-lbl { color: var(--text-muted); }
+.prog-pct { font-weight: 500; color: var(--text); }
+.prog-bar { height: 5px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.pf-green { background: var(--green); }
+.pf-amber { background: #d4891a; }
+.pf-red { background: var(--red); }
+
+/* ── 邀請卡 ── */
+.invite-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.invite-card {
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  position: relative;
+}
+.invite-card:hover { border-color: var(--border-md); }
+.invite-card.boss-pick { border: 2px solid var(--gold); }
+.invite-img {
+  width: 100%; aspect-ratio: 3/4;
+  object-fit: cover; object-position: top;
+  display: block;
+  background: var(--bg);
+}
+.invite-footer { padding: 8px 10px; background: var(--surface); }
+.invite-ver { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
+.invite-name { font-size: 12px; font-weight: 500; }
+.invite-style-tag {
+  font-size: 10px; padding: 2px 6px; border-radius: 20px; margin-top: 4px; display: inline-block;
+}
+.invite-pick-btn {
+  width: 100%; margin-top: 7px; padding: 5px;
+  font-size: 11px; border-radius: 6px;
+  border: 0.5px solid var(--border-md);
+  background: transparent; cursor: pointer; color: var(--text-muted);
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: all 0.12s;
+}
+.invite-pick-btn:hover { background: var(--bg); color: var(--text); }
+.invite-pick-btn.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+.invite-boss-badge {
+  position: absolute; top: 7px; left: 7px;
+  background: var(--gold); color: #fff;
+  font-size: 10px; font-weight: 500;
+  padding: 3px 8px; border-radius: 20px;
+}
+.invite-pending-badge {
+  position: absolute; top: 7px; left: 7px;
+  background: var(--amber-light); color: var(--amber);
+  font-size: 10px; padding: 2px 7px; border-radius: 20px;
+}
+.invite-result-bar {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+  font-size: 13px;
+}
+.invite-result-lbl { color: var(--text-muted); flex-shrink: 0; }
+.invite-result-val { font-weight: 500; color: var(--gold-dark); }
+.invite-result-none { color: var(--text-muted); }
+
+/* ── 出席管理頁 ── */
+.attend-section-title {
+  font-size: 13px; font-weight: 500;
+  margin-bottom: 10px; margin-top: 18px;
+  display: flex; align-items: center; gap: 8px; color: var(--text);
+}
+.attend-section-title:first-child { margin-top: 0; }
+.attend-add-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; padding: 4px 10px;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  background: transparent; cursor: pointer; color: var(--text-muted);
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.attend-add-btn:hover { background: var(--bg); color: var(--text); }
+select.inline-sel {
+  font-size: 12px;
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+}
+
+/* ── 歷史記錄頁 ── */
+.history-card {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.history-card:hover { border-color: var(--border-md); }
+.hc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.hc-date { font-size: 11px; color: var(--text-muted); }
+.hc-name { font-size: 14px; font-weight: 500; flex: 1; }
+.hc-status { font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+.hc-done { background: var(--green-light); color: var(--green); }
+.hc-progress { background: var(--amber-light); color: var(--amber); }
+.hc-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.hc-stat { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+.hc-stat-label { font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+.hc-stat-val { font-size: 14px; font-weight: 500; }
+
+/* ── 新增活動 Modal ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-title { font-size: 15px; font-weight: 500; margin-bottom: 18px; }
+.form-field { margin-bottom: 13px; }
+.form-label { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; display: block; }
+.form-input {
+  width: 100%; font-size: 14px;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  padding: 8px 11px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.form-input:focus { outline: none; border-color: var(--gold); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+
+/* ── 訊息提示 ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--sidebar); color: #fff;
+  font-size: 13px; padding: 10px 18px;
+  border-radius: var(--radius);
+  z-index: 200;
+  opacity: 0; transform: translateY(8px);
+  transition: all 0.25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── 空狀態 ── */
+.empty-state {
+  text-align: center; padding: 36px;
+  color: var(--text-muted); font-size: 13px;
+}
+.empty-state i { font-size: 32px; display: block; margin-bottom: 8px; }
+
+/* ── 分頁切換 ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── 輸入框編輯 ── */
+.editable {
+  border: none; background: transparent;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; color: var(--text);
+  width: 100%; padding: 1px 4px;
+  border-radius: 4px;
+}
+.editable:focus { outline: none; background: var(--bg); }
+
+/* ── 儲存按鈕列 ── */
+.save-bar {
+  display: flex; gap: 8px; justify-content: flex-end;
+  margin-top: 14px; padding-top: 14px;
+  border-top: 0.5px solid var(--border);
+}
+
+/* ── 匯入區塊 ── */
+.import-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.import-method {
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.import-method.active { border: 2px solid var(--gold); background: var(--gold-light); }
+.im-icon { font-size: 22px; color: var(--text-muted); margin-bottom: 8px; }
+.import-method.active .im-icon { color: var(--gold-dark); }
+.im-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+.im-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.upload-zone {
+  border: 1.5px dashed var(--border-md);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.upload-zone:hover { background: var(--bg); }
+.upload-zone i { font-size: 28px; color: var(--text-hint); margin-bottom: 8px; display: block; }
+.upload-zone-text { font-size: 13px; color: var(--text-muted); }
+.upload-zone-sub { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
+.paste-box {
+  width: 100%; min-height: 110px; resize: vertical;
+  font-size: 13px; font-family: monospace;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  padding: 10px;
+  background: var(--bg);
+  color: var(--text);
+}
+.paste-box:focus { outline: none; border-color: var(--gold); }
+.format-hint {
+  background: #f1efe8; border-radius: var(--radius);
+  padding: 10px 12px; margin-bottom: 12px;
+  font-size: 12px; line-height: 1.8; color: #5f5e5a;
+}
+.preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.preview-table th { font-size: 11px; color: var(--text-muted); font-weight: 500; padding: 6px 8px; border-bottom: 0.5px solid var(--border); text-align: left; }
+.preview-table td { padding: 7px 8px; border-bottom: 0.5px solid var(--border); }
+.preview-table tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-brand-sub">ZHUJIAN GAS</div>
+    <div class="sb-brand-name">餐會管理系統</div>
+  </div>
+
+  <div class="sb-activity">
+    <div class="sb-activity-label">當前活動</div>
+    <div class="sb-activity-name" id="sb-act-name">載入中...</div>
+    <div class="sb-activity-date" id="sb-act-date"></div>
+    <select class="sb-activity-select" id="activitySelect" onchange="switchActivity(this.value)">
+      <option>載入中...</option>
+    </select>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section">主選單</div>
+    <div class="sb-item" onclick="showPage('venue')"><i class="ti ti-building-store"></i> 場地資訊</div>
+    <div class="sb-item" onclick="showPage('menu')"><i class="ti ti-clipboard-list"></i> 菜單比較</div>
+    <div class="sb-item" onclick="showPage('fee')"><i class="ti ti-calculator"></i> 費用試算</div>
+    <div class="sb-section">邀請管理</div>
+    <div class="sb-item" id="nav-invite" onclick="showPage('invite')"><i class="ti ti-mail"></i> 邀請卡版本<span class="sb-badge" id="invite-badge">待裁示</span></div>
+    <div class="sb-item" onclick="showPage('attend')"><i class="ti ti-users"></i> 出席管理</div>
+    <div class="sb-section">記錄</div>
+    <div class="sb-item" onclick="showPage('history')"><i class="ti ti-history"></i> 歷史紀錄</div>
+    <div class="sb-item" onclick="showPage('staff')"><i class="ti ti-id-badge"></i> 公司人員</div>
+  </nav>
+
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar">YU</div>
+      <div>
+        <div class="sb-uname">行政管理</div>
+        <div class="sb-urole">竹建瓦斯</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">儀錶板</div>
+      <div class="topbar-sub" id="topbar-sub">載入中...</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn" onclick="openNewActivity()"><i class="ti ti-plus"></i> 新增活動</button>
+      <button class="btn btn-gold" onclick="exportReport()"><i class="ti ti-file-export"></i> 匯出報告</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── 儀錶板 ── -->
+    <div id="page-dashboard" class="page active">
+      <div class="loading" id="dash-loading"><i class="ti ti-loader spin"></i> 載入資料中...</div>
+      <div id="dash-content" style="display:none">
+
+        <div class="status-banner">
+          <div class="status-left">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-text" id="dash-status-text">籌備進行中</div>
+              <div class="status-sub" id="dash-status-sub"></div>
+            </div>
+          </div>
+          <div class="status-chips" id="dash-chips"></div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-users" style="font-size:13px"></i> 邀請單位</div>
+            <div class="stat-val" id="stat-units">—</div>
+            <div class="stat-note">外部受邀單位數</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-armchair" style="font-size:13px"></i> 規劃桌數</div>
+            <div class="stat-val" id="stat-tables">—</div>
+            <div class="stat-note warn" id="stat-tables-note">桌數待確認</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-receipt" style="font-size:13px"></i> 費用區間</div>
+            <div class="stat-val" id="stat-fee" style="font-size:16px">—</div>
+            <div class="stat-note" id="stat-fee-note">依方案及桌數</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><i class="ti ti-progress" style="font-size:13px"></i> 籌備進度</div>
+            <div class="stat-val" id="stat-progress">—</div>
+            <div class="stat-note" id="stat-progress-note"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-title">菜單方案 <span class="panel-link" onclick="showPage('menu')">查看詳細 →</span></div>
+            <div class="menu-cards" id="dash-menu-cards"></div>
+            <div style="margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-muted)">
+              服務費：每桌×10%｜包廂費及卡拉OK另計
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">籌備待辦清單</div>
+            <div class="todo-list" id="dash-todos"></div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <div class="panel-title">邀請單位出席狀況 <span class="panel-link" onclick="showPage('attend')">管理 →</span></div>
+            <div id="dash-attend"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-title">費用摘要 <span class="panel-link" onclick="showPage('fee')">試算 →</span></div>
+            <div class="fee-rows" id="dash-fee"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title">整體籌備進度</div>
+          <div class="prog-list" id="dash-progress"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 場地資訊 ── -->
+    <div id="page-venue" class="page">
+      <div class="panel">
+        <div class="panel-title">場地資訊</div>
+        <div id="venue-content" class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>
+      </div>
+    </div>
+
+    <!-- ── 菜單比較 ── -->
+    <div id="page-menu" class="page">
+      <div class="panel">
+        <div class="panel-title">菜單方案比較（老闆裁示）</div>
+        <div id="menu-content" class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>
+      </div>
+    </div>
+
+    <!-- ── 費用試算 ── -->
+    <div id="page-fee" class="page">
+      <div class="panel">
+        <div class="panel-title">費用試算</div>
+        <div id="fee-content"></div>
+      </div>
+    </div>
+
+    <!-- ── 邀請卡 ── -->
+    <div id="page-invite" class="page">
+      <div class="panel">
+        <div class="panel-title">邀請卡版本選擇（老闆裁示）</div>
+        <div class="invite-result-bar">
+          <span class="invite-result-lbl">老闆選定：</span>
+          <span id="invite-result-txt" class="invite-result-none">尚未選定</span>
+        </div>
+        <div class="invite-grid" id="invite-grid"></div>
+        <div class="save-bar">
+          <button class="btn btn-gold" onclick="saveInviteDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 出席管理 ── -->
+    <div id="page-attend" class="page">
+      <div class="panel">
+
+        <!-- 匯入區 -->
+        <div id="import-area">
+          <div class="panel-title">匯入名單</div>
+          <div class="import-methods">
+            <div class="import-method active" id="im-excel" onclick="switchImport('excel')">
+              <div class="im-icon"><i class="ti ti-file-spreadsheet"></i></div>
+              <div class="im-title">Excel 範本上傳</div>
+              <div class="im-desc">下載範本 → 工務部填寫 → 上傳回來自動匯入</div>
+            </div>
+            <div class="import-method" id="im-paste" onclick="switchImport('paste')">
+              <div class="im-icon"><i class="ti ti-clipboard-text"></i></div>
+              <div class="im-title">文字貼上解析</div>
+              <div class="im-desc">把 Line / Email 傳來的名單直接貼進來</div>
+            </div>
+          </div>
+
+          <div id="area-excel">
+            <div style="display:flex;align-items:center;gap:14px;background:var(--bg);border-radius:var(--radius);padding:12px 16px;margin-bottom:12px">
+              <i class="ti ti-file-spreadsheet" style="font-size:28px;color:var(--green)"></i>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:500">出席名單範本.xlsx</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px">已預填7個邀請單位，工務部直接填代表姓名、職稱、人數即可</div>
+              </div>
+              <button class="btn btn-green" onclick="downloadTemplate()"><i class="ti ti-download"></i> 下載範本</button>
+            </div>
+            <div class="upload-zone" onclick="document.getElementById('xlsxInput').click()">
+              <input type="file" id="xlsxInput" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXlsx(this.files[0])">
+              <i class="ti ti-cloud-upload"></i>
+              <div class="upload-zone-text">點此上傳填好的 Excel，或拖曳到這裡</div>
+              <div class="upload-zone-sub">支援 .xlsx / .xls / .csv</div>
+            </div>
+          </div>
+
+          <div id="area-paste" style="display:none">
+            <div class="format-hint">
+              <strong style="font-size:11px">支援格式（任一種皆可）：</strong><br>
+              格式一（Tab）：台灣電力公司　王大明　副處長　2<br>
+              格式二（頓號）：台灣自來水公司、李小花、工程師、1<br>
+              格式三（空白）：中華電信 陳志遠 主任 1
+            </div>
+            <textarea class="paste-box" id="pasteBox" placeholder="把名單貼在這裡，每行一筆..."></textarea>
+            <div style="margin-top:8px">
+              <button class="btn btn-gold" onclick="parsePaste()"><i class="ti ti-wand"></i> 自動解析名單</button>
+            </div>
+          </div>
+
+          <div id="import-preview" style="display:none;margin-top:16px">
+            <div style="font-size:13px;font-weight:500;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              解析結果預覽 <span id="preview-count" style="font-size:12px;color:var(--text-muted);font-weight:400"></span>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="preview-table"><thead><tr>
+                <th>邀請單位</th><th>代表姓名</th><th>職稱</th><th>出席人數</th><th>狀態</th>
+              </tr></thead><tbody id="preview-body"></tbody></table>
+            </div>
+            <div class="save-bar">
+              <button class="btn" onclick="document.getElementById('import-preview').style.display='none'">取消</button>
+              <button class="btn btn-dark" onclick="confirmImport()"><i class="ti ti-check"></i> 確認匯入</button>
+            </div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:0.5px solid var(--border);margin:18px 0">
+
+        <!-- 外部出席 -->
+        <div class="attend-section-title">
+          <i class="ti ti-building" style="font-size:15px"></i> 外部受邀單位
+          <span style="font-size:11px;color:var(--text-muted);font-weight:400">（邀請卡寄送對象）</span>
+          <button class="attend-add-btn" onclick="addExternalRow()"><i class="ti ti-plus"></i> 新增</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="attend-table">
+            <thead><tr>
+              <th style="width:180px">邀請單位</th>
+              <th style="width:80px">代表姓名</th>
+              <th style="width:100px">職稱</th>
+              <th style="width:60px">人數</th>
+              <th style="width:90px">出席狀態</th>
+              <th style="width:80px">來源</th>
+              <th>由誰帶來</th>
+              <th style="width:120px">備註</th>
+            </tr></thead>
+            <tbody id="external-tbody"></tbody>
+          </table>
+        </div>
+
+        <hr style="border:none;border-top:0.5px solid var(--border);margin:18px 0">
+
+        <!-- 內部出席 -->
+        <div class="attend-section-title">
+          <i class="ti ti-building-community" style="font-size:15px"></i> 竹建內部人員
+          <span style="font-size:11px;color:var(--text-muted);font-weight:400">（含工作人員角色）</span>
+          <button class="attend-add-btn" onclick="addInternalFromStaff()"><i class="ti ti-user-plus"></i> 從人員名單新增</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="attend-table">
+            <thead><tr>
+              <th style="width:80px">姓名</th>
+              <th style="width:90px">部門</th>
+              <th style="width:100px">職稱</th>
+              <th style="width:130px">活動角色</th>
+              <th style="width:90px">是否出席</th>
+              <th>備註</th>
+            </tr></thead>
+            <tbody id="internal-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="save-bar">
+          <button class="btn btn-gold" onclick="saveAllAttend()"><i class="ti ti-device-floppy"></i> 儲存出席名單</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 歷史紀錄 ── -->
+    <div id="page-history" class="page">
+      <div id="history-content" class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>
+    </div>
+
+    <!-- ── 公司人員 ── -->
+    <div id="page-staff" class="page">
+      <div class="panel">
+        <div class="panel-title">公司人員名單</div>
+        <div style="overflow-x:auto">
+          <table class="attend-table" id="staff-table">
+            <thead><tr><th>姓名</th><th>部門</th><th>課別</th><th>職稱</th><th>備註</th></tr></thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- ── 新增活動 Modal ── -->
+<div class="modal-overlay" id="newActModal">
+  <div class="modal">
+    <div class="modal-title">新增活動</div>
+    <div class="form-field">
+      <label class="form-label">活動名稱 *</label>
+      <input class="form-input" id="new-name" placeholder="例：115年第2次苗栗縣公用事業管線聯繫會報餐敘">
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">日期（民國）*</label>
+        <input class="form-input" id="new-date" placeholder="115/12/10">
+      </div>
+      <div class="form-field">
+        <label class="form-label">星期</label>
+        <input class="form-input" id="new-week" placeholder="星期三">
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">地點（含地址）</label>
+      <input class="form-input" id="new-place" placeholder="千璽會館 苗栗縣苗栗市國華路947號">
+    </div>
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label">廳別/包廂</label>
+        <input class="form-input" id="new-hall" placeholder="呈祥廳">
+      </div>
+      <div class="form-field">
+        <label class="form-label">桌數範圍</label>
+        <input class="form-input" id="new-tables" placeholder="7-9桌">
+      </div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">承辦聯絡人</label>
+      <input class="form-input" id="new-contact" placeholder="江副總 03-736-9288">
+    </div>
+    <div class="form-field">
+      <label class="form-label">備註</label>
+      <input class="form-input" id="new-note" placeholder="卡拉OK、停車等">
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-gold" onclick="submitNewActivity()"><i class="ti ti-check"></i> 新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbyBC78Yt9F3zKzWUmqjTDi_4stDbz5puLeCBG7Gyk07TfuCLet_mFKwFjHQathRGG8C/exec';
+const IMG_BASE = 'https://chuchien163-wq.github.io/zhujiangas/invite-cards/';
+
+let currentActId = 'EVT001';
+let allActivities = [];
+let allStaff = [];
+let externalData = [];
+let internalData = [];
+let menuData = [];
+let inviteData = [];
+let pickedInvite = null;
+let importMethod = 'excel';
+let importRows = [];
+
+// ── API ──
+async function api(params) {
+  const url = API + '?' + new URLSearchParams(params);
+  const res = await fetch(url);
+  return res.json();
+}
+async function apiPost(body) {
+  const res = await fetch(API, {
+    method: 'POST',
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ── 頁面切換 ──
+const pageTitles = {
+  dashboard:'儀錶板', venue:'場地資訊', menu:'菜單比較',
+  fee:'費用試算', invite:'邀請卡版本', attend:'出席管理',
+  history:'歷史紀錄', staff:'公司人員'
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const items = document.querySelectorAll('.sb-item');
+  items.forEach(item => {
+    if(item.getAttribute('onclick') && item.getAttribute('onclick').includes("'"+id+"'"))
+      item.classList.add('active');
+  });
+  document.getElementById('topbar-title').textContent = pageTitles[id] || id;
+  if(id === 'menu') renderMenuPage();
+  if(id === 'fee') renderFeePage();
+  if(id === 'invite') renderInvitePage();
+  if(id === 'attend') renderAttendPage();
+  if(id === 'history') renderHistoryPage();
+  if(id === 'staff') renderStaffPage();
+  if(id === 'venue') renderVenuePage();
+}
+
+// ── 初始化 ──
+async function init() {
+  try {
+    allActivities = await api({action:'getActivities'});
+    allStaff = await api({action:'getStaff'});
+    populateActivitySelect();
+    await loadActivityData(currentActId);
+  } catch(e) {
+    showToast('⚠️ 無法連接後端，請確認網路或重新整理');
+  }
+}
+
+function populateActivitySelect() {
+  const sel = document.getElementById('activitySelect');
+  sel.innerHTML = allActivities.map(a =>
+    `<option value="${a['活動ID']}" ${a['活動ID']===currentActId?'selected':''}>
+      ${a['活動ID']} ${a['活動名稱'].substring(0,12)}...
+    </option>`
+  ).join('');
+}
+
+async function loadActivityData(actId) {
+  currentActId = actId;
+  const act = allActivities.find(a => a['活動ID'] === actId) || {};
+  document.getElementById('sb-act-name').textContent = act['活動名稱'] || '—';
+  document.getElementById('sb-act-date').textContent =
+    (act['日期'] || '') + (act['星期'] ? '（'+act['星期']+'）' : '');
+  document.getElementById('topbar-sub').textContent =
+    (act['日期']||'') + '　' + (act['地點']||'').split(' ')[0] + '　' + (act['廳別']||'');
+
+  const [ext, intAtt, menu, inv] = await Promise.all([
+    api({action:'getExternal', actId}),
+    api({action:'getInternal', actId}),
+    api({action:'getMenu', actId}),
+    api({action:'getInviteCards', actId})
+  ]);
+  externalData = ext;
+  internalData = intAtt;
+  menuData = menu;
+  inviteData = inv;
+  pickedInvite = inv.find(i => i['老闆選定'] === '✓') || null;
+
+  renderDashboard();
+}
+
+async function switchActivity(actId) {
+  document.getElementById('dash-loading').style.display = 'flex';
+  document.getElementById('dash-content').style.display = 'none';
+  await loadActivityData(actId);
+}
+
+// ── 儀錶板 ──
+function renderDashboard() {
+  document.getElementById('dash-loading').style.display = 'none';
+  document.getElementById('dash-content').style.display = 'block';
+
+  const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
+
+  // 距離活動天數
+  const dateStr = act['日期'] || '';
+  const parts = dateStr.split('/');
+  let daysLeft = '—';
+  if(parts.length === 3) {
+    const rocYear = parseInt(parts[0]);
+    const adYear = rocYear + 1911;
+    const actDate = new Date(adYear, parseInt(parts[1])-1, parseInt(parts[2]));
+    const today = new Date();
+    const diff = Math.ceil((actDate - today) / (1000*60*60*24));
+    daysLeft = diff > 0 ? `距離活動還有 ${diff} 天` : diff === 0 ? '今天！' : `已結束 ${Math.abs(diff)} 天前`;
+  }
+  document.getElementById('dash-status-text').textContent =
+    act['狀態'] === '已完成' ? '活動已完成' : '籌備進行中';
+  document.getElementById('dash-status-sub').textContent = daysLeft;
+
+  // 狀態chips
+  const chips = [];
+  const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
+  if(!menuPicked) chips.push(['菜單待裁示','chip-amber']);
+  else chips.push([menuPicked['方案名稱']+'已選定','chip-green']);
+  if(!pickedInvite) chips.push(['邀請卡待裁示','chip-amber']);
+  else chips.push([pickedInvite['版本名稱']+'已選定','chip-green']);
+  const pendingExt = externalData.filter(e => e['出席狀態']==='待確認').length;
+  if(pendingExt > 0) chips.push([`出席確認中(${pendingExt})`, 'chip-blue']);
+  if(act['備註'] && act['備註'].includes('待確認')) chips.push(['KTV費待確認','chip-gray']);
+  document.getElementById('dash-chips').innerHTML =
+    chips.map(([t,c]) => `<span class="chip ${c}">${t}</span>`).join('');
+
+  // 統計
+  document.getElementById('stat-units').textContent = externalData.length;
+  document.getElementById('stat-tables').textContent = act['桌數範圍'] || '—';
+  const tables = [7,8,9];
+  const minA = 7*8000*1.1, maxA = 9*8000*1.1;
+  const minB = 7*10000*1.1, maxB = 9*10000*1.1;
+  if(!menuPicked) {
+    document.getElementById('stat-fee').textContent = '待裁示';
+    document.getElementById('stat-fee-note').textContent = 'A方案: $'+Math.round(minA/1000)+'K~$'+Math.round(maxA/1000)+'K';
+  } else {
+    const price = parseInt(menuPicked['每桌單價'])||8000;
+    document.getElementById('stat-fee').textContent = '$'+(price*8*1.1).toLocaleString();
+    document.getElementById('stat-fee-note').textContent = menuPicked['方案名稱']+'×8桌（含服務費）';
+  }
+
+  let progress = 0;
+  if(act['地點']) progress += 20;
+  if(externalData.length > 0) progress += 10;
+  if(menuPicked) progress += 20;
+  if(pickedInvite) progress += 20;
+  const confirmed = externalData.filter(e=>e['出席狀態']==='確認出席').length;
+  if(confirmed > 0) progress += Math.min(20, Math.round(confirmed/externalData.length*20));
+  if(progress < 10) progress = 10;
+  document.getElementById('stat-progress').textContent = progress + '%';
+  document.getElementById('stat-progress-note').innerHTML =
+    `<span class="${progress>=80?'hi':'warn'}">${progress>=80?'即將完成':'進行中'}</span>`;
+
+  // 菜單卡
+  document.getElementById('dash-menu-cards').innerHTML = menuData.slice(0,2).map(m => {
+    const price = parseInt(m['每桌單價'])||0;
+    const isBoss = m['老闆選定'] === '✓';
+    return `<div class="menu-card ${isBoss?'selected-boss':''}">
+      <div class="menu-tag ${m['方案名稱']==='方案A'?'tag-a':'tag-b'}">${m['方案名稱']}</div>
+      <div class="menu-price">$${price.toLocaleString()}</div>
+      <div class="menu-unit">每桌單價</div>
+      <div class="menu-range">
+        7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong><br>
+        8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong><br>
+        9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
+      </div>
+      ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : '<div class="menu-pending-badge">待裁示</div>'}
+    </div>`;
+  }).join('');
+
+  // 待辦
+  const todos = [
+    {done: !!(act['地點']), text: '確認場地及廳別檔期', tag: '完成'},
+    {done: externalData.length > 0, text: '盤點邀請單位名單', tag: externalData.length>0?'完成':'未開始'},
+    {done: !!menuPicked, text: '老闆裁示菜單方案', tag: menuPicked?'完成':'待裁示', urgent: !menuPicked},
+    {done: !!pickedInvite, text: '老闆選定邀請卡版本', tag: pickedInvite?'完成':'待裁示', urgent: !pickedInvite},
+    {done: false, text: '確認卡拉OK等額外費用', tag: '待確認'},
+    {done: confirmed===externalData.length && externalData.length>0,
+     text: '發送邀請卡並收回回覆', tag: confirmed>0?`${confirmed}/${externalData.length}已確認`:'未開始'},
+  ];
+  document.getElementById('dash-todos').innerHTML = todos.map(t => `
+    <div class="todo-item">
+      <div class="todo-check ${t.done?'done'}">${t.done?'✓':''}</div>
+      <span class="todo-text ${t.done?'done'}">${t.text}</span>
+      <span class="todo-tag ${t.done?'tt-done':t.urgent?'tt-urgent':'tt-gray'}">${t.tag}</span>
+    </div>`).join('');
+
+  // 出席
+  document.getElementById('dash-attend').innerHTML = `
+    <table class="attend-table">
+      <thead><tr><th>#</th><th>邀請單位</th><th>代表</th><th>狀態</th></tr></thead>
+      <tbody>${externalData.map((e,i) => `
+        <tr>
+          <td style="color:var(--text-muted)">${i+1}</td>
+          <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e['邀請單位']}</td>
+          <td>${e['代表姓名']||'<span style="color:var(--text-hint)">待填</span>'}</td>
+          <td><span class="status-tag ${e['出席狀態']==='確認出席'?'st-yes':e['出席狀態']==='無法出席'?'st-no':'st-pd'}">${e['出席狀態']||'待確認'}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+
+  // 費用
+  const mPicked = menuData.find(m=>m['老闆選定']==='✓');
+  const fPrice = mPicked ? parseInt(mPicked['每桌單價'])||8000 : null;
+  document.getElementById('dash-fee').innerHTML = `
+    <div class="fee-row"><span class="fee-lbl">菜單方案</span><span class="fee-val ${mPicked?'':'fee-warn'}">${mPicked?mPicked['方案名稱']+'（$'+parseInt(mPicked['每桌單價']).toLocaleString()+'/桌）':'待老闆裁示'}</span></div>
+    <div class="fee-row"><span class="fee-lbl">桌數</span><span class="fee-val fee-warn">${act['桌數範圍']||'待確認'}</span></div>
+    <div class="fee-row"><span class="fee-lbl">服務費</span><span class="fee-val">每桌×10%</span></div>
+    <div class="fee-row"><span class="fee-lbl">包廂費</span><span class="fee-val fee-warn">待確認</span></div>
+    <div class="fee-row"><span class="fee-lbl">卡拉OK</span><span class="fee-val fee-warn">待確認</span></div>
+    <hr class="fee-divider">
+    <div class="fee-range-box">
+      <div class="fee-range-title">費用區間試算（含服務費）</div>
+      <div class="fee-range-row">方案A：$${Math.round(7*8000*1.1).toLocaleString()} ~ $${Math.round(9*8000*1.1).toLocaleString()}</div>
+      <div class="fee-range-row">方案B：$${Math.round(7*10000*1.1).toLocaleString()} ~ $${Math.round(9*10000*1.1).toLocaleString()}</div>
+    </div>`;
+
+  // 進度條
+  const progItems = [
+    {label:'場地確認', pct: act['地點']?100:0},
+    {label:'菜單規劃（方案已備，待裁示）', pct: menuPicked?100:60},
+    {label:'邀請卡製作（版本已備，待裁示）', pct: pickedInvite?100:75},
+    {label:'出席名單確認', pct: externalData.length>0 ? Math.round(confirmed/externalData.length*100)||5 : 5},
+    {label:'費用確認', pct: menuPicked?40:20},
+  ];
+  document.getElementById('dash-progress').innerHTML = progItems.map(p => `
+    <div class="prog-item">
+      <div class="prog-header"><span class="prog-lbl">${p.label}</span><span class="prog-pct">${p.pct}%</span></div>
+      <div class="prog-bar"><div class="prog-fill ${p.pct===100?'pf-green':p.pct>=50?'pf-amber':'pf-red'}" style="width:${p.pct}%"></div></div>
+    </div>`).join('');
+}
+
+// ── 場地頁 ──
+function renderVenuePage() {
+  const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
+  const fields = [
+    ['活動名稱','活動名稱'],['日期','日期'],['星期','星期'],
+    ['地點','地點'],['廳別','廳別'],['承辦聯絡人','承辦聯絡人'],
+    ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
+  ];
+  document.getElementById('venue-content').innerHTML = `
+    <table class="attend-table">
+      <tbody>${fields.map(([label,key]) => `
+        <tr>
+          <td style="width:120px;color:var(--text-muted);font-size:12px">${label}</td>
+          <td><input class="editable" id="venue-${key}" value="${act[key]||''}"></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="save-bar">
+      <button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button>
+    </div>`;
+}
+
+async function saveVenue() {
+  showToast('場地資訊已儲存（本版本儲存至 Sheets 功能開發中）');
+}
+
+// ── 菜單頁 ──
+function renderMenuPage() {
+  const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
+  document.getElementById('menu-content').innerHTML = `
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
+      請老闆選擇方案後按「儲存裁示結果」，選定結果將記錄至試算表。
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px">
+      ${menuData.map((m,i) => {
+        const price = parseInt(m['每桌單價'])||0;
+        const isBoss = m['老闆選定'] === '✓';
+        const tagClass = i===0?'tag-a':i===1?'tag-b':'tag-c';
+        return `<div class="menu-card ${isBoss?'selected-boss':''}" id="menu-opt-${i}" onclick="selectMenu(${i})">
+          <div class="menu-tag ${tagClass}">${m['方案名稱']}</div>
+          <div class="menu-price">$${price.toLocaleString()}</div>
+          <div class="menu-unit">每桌單價（含服務費 $${Math.round(price*0.1).toLocaleString()}/桌）</div>
+          <div class="menu-range">
+            7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong><br>
+            8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong><br>
+            9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
+          </div>
+          <div class="menu-range" style="margin-top:8px;border-top:none;padding-top:0">
+            <strong>菜色明細：</strong><br>
+            ${m['菜色明細']||'（待千璽確認後填入）'}
+          </div>
+          ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : ''}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="save-bar">
+      <span style="font-size:12px;color:var(--text-muted)" id="menu-pick-hint">
+        ${menuPicked ? '目前選定：'+menuPicked['方案名稱'] : '請點選方案後儲存'}
+      </span>
+      <button class="btn btn-gold" onclick="saveMenuDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
+    </div>`;
+}
+
+let selectedMenuIdx = null;
+function selectMenu(idx) {
+  selectedMenuIdx = idx;
+  document.querySelectorAll('.menu-card').forEach((c,i) => {
+    c.classList.toggle('selected', i === idx);
+    c.classList.remove('selected-boss');
+  });
+  document.getElementById('menu-pick-hint').textContent = '已選：' + menuData[idx]['方案名稱'];
+}
+
+async function saveMenuDecision() {
+  if(selectedMenuIdx === null) { showToast('請先點選方案'); return; }
+  const m = menuData[selectedMenuIdx];
+  const res = await apiPost({action:'updateMenuDecision', actId:currentActId, 方案名稱:m['方案名稱']});
+  if(res.status === 'ok') {
+    menuData.forEach(m2 => m2['老闆選定'] = '');
+    m['老闆選定'] = '✓';
+    document.getElementById('invite-badge') && (document.getElementById('invite-badge').style.display='none');
+    showToast('✓ 已儲存：老闆選定 ' + m['方案名稱']);
+    renderMenuPage();
+  } else showToast('儲存失敗：' + (res.error||''));
+}
+
+// ── 費用試算頁 ──
+function renderFeePage() {
+  const menuPicked = menuData.find(m=>m['老闆選定']==='✓');
+  const act = allActivities.find(a=>a['活動ID']===currentActId)||{};
+  document.getElementById('fee-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-field">
+        <label class="form-label">桌數</label>
+        <select class="form-input" id="fee-tables" onchange="calcFee()">
+          <option value="7">7桌</option>
+          <option value="8" selected>8桌</option>
+          <option value="9">9桌</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">菜單方案</label>
+        <select class="form-input" id="fee-plan" onchange="calcFee()">
+          ${menuData.map(m=>`<option value="${m['每桌單價']}" ${m['老闆選定']==='✓'?'selected':''}>${m['方案名稱']} - $${parseInt(m['每桌單價']).toLocaleString()}/桌</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">服務費模式</label>
+        <select class="form-input" id="fee-svc" onchange="calcFee()">
+          <option value="per">每桌各算10%</option>
+          <option value="total">全部合計×10%</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="form-field">
+        <label class="form-label">包廂費</label>
+        <select class="form-input" id="fee-hasroom" onchange="calcFee()">
+          <option value="0">不收包廂費</option>
+          <option value="1">收包廂費</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">包廂費金額 (NT$)</label>
+        <input type="number" class="form-input" id="fee-room" value="0" oninput="calcFee()">
+      </div>
+      <div class="form-field">
+        <label class="form-label">卡拉OK費 (NT$)</label>
+        <input type="number" class="form-input" id="fee-ktv" value="0" placeholder="待確認" oninput="calcFee()">
+      </div>
+    </div>
+    <div class="fee-rows" id="fee-result-rows"></div>
+    <div class="fee-total-box" id="fee-total-box" style="margin-top:10px">
+      <span class="fee-total-lbl">預估總費用</span>
+      <span class="fee-total-val" id="fee-grand">—</span>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:8px" id="fee-ktv-note"></div>`;
+  calcFee();
+}
+
+function calcFee() {
+  const t = parseInt(document.getElementById('fee-tables')?.value||8);
+  const price = parseInt(document.getElementById('fee-plan')?.value||8000);
+  const svcMode = document.getElementById('fee-svc')?.value||'per';
+  const hasRoom = parseInt(document.getElementById('fee-hasroom')?.value||0);
+  const room = hasRoom ? parseInt(document.getElementById('fee-room')?.value||0) : 0;
+  const ktv = parseInt(document.getElementById('fee-ktv')?.value||0);
+  const base = price * t;
+  const svc = svcMode==='per' ? price*0.1*t : base*0.1;
+  const total = base + svc + room;
+  const rows = document.getElementById('fee-result-rows');
+  if(!rows) return;
+  rows.innerHTML = `
+    <div class="fee-row"><span class="fee-lbl">桌費（$${price.toLocaleString()}×${t}桌）</span><span class="fee-val">NT$ ${base.toLocaleString()}</span></div>
+    <div class="fee-row"><span class="fee-lbl">服務費（${svcMode==='per'?'每桌×10%':'合計×10%'}）</span><span class="fee-val">NT$ ${Math.round(svc).toLocaleString()}</span></div>
+    <div class="fee-row"><span class="fee-lbl">包廂費</span><span class="fee-val ${room?'':'fee-warn'}">${room?'NT$ '+room.toLocaleString():'—'}</span></div>
+    <hr class="fee-divider">`;
+  document.getElementById('fee-grand').textContent = 'NT$ ' + Math.round(total).toLocaleString() + (ktv===0?' ＋KTV待確認':'');
+  document.getElementById('fee-ktv-note').textContent = ktv>0?'卡拉OK：NT$ '+ktv.toLocaleString():'＊卡拉OK費用待確認，尚未計入合計';
+}
+
+// ── 邀請卡頁 ──
+function renderInvitePage() {
+  const imgNames = ['0.png','1.png','2.png','3.png','4.png','5.png','6.png','7.png'];
+  const styles = ['金色牡丹','金色梅花','銀杏水墨','青花瓷','綠葉植物','青綠渲染','粉藍花卉','極簡現代'];
+  const styleColors = ['chip-amber','chip-amber','chip-gray','chip-blue','chip-green','chip-blue','chip-blue','chip-gray'];
+
+  document.getElementById('invite-grid').innerHTML = inviteData.map((card,i) => {
+    const isBoss = card['老闆選定'] === '✓';
+    return `<div class="invite-card ${isBoss?'boss-pick':''}" id="icard-${i}">
+      ${isBoss ? '<div class="invite-boss-badge">✓ 老闆選定</div>' : '<div class="invite-pending-badge">待裁示</div>'}
+      <img class="invite-img" src="${IMG_BASE}${imgNames[i]||i+'.png'}"
+        onerror="this.style.background='var(--bg)';this.style.height='160px'"
+        alt="${card['版本名稱']}">
+      <div class="invite-footer">
+        <div class="invite-ver">${card['版本編號']}</div>
+        <div class="invite-name">${card['版本名稱']}</div>
+        <div><span class="chip ${styleColors[i]} invite-style-tag">${styles[i]||''}</span></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">${card['風格說明']}</div>
+        <button class="invite-pick-btn ${isBoss?'active':''}" onclick="pickInviteCard(${i})">
+          ${isBoss ? '✓ 已選定' : '老闆選定此版本'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const picked = inviteData.find(c=>c['老闆選定']==='✓');
+  const resultEl = document.getElementById('invite-result-txt');
+  if(picked) {
+    resultEl.className = 'invite-result-val';
+    resultEl.textContent = picked['版本編號'] + '　' + picked['版本名稱'];
+  } else {
+    resultEl.className = 'invite-result-none';
+    resultEl.textContent = '尚未選定';
+  }
+  const badge = document.getElementById('invite-badge');
+  if(badge) badge.style.display = picked ? 'none' : '';
+}
+
+function pickInviteCard(idx) {
+  inviteData.forEach((c,i) => c['老闆選定'] = i===idx ? '✓' : '');
+  pickedInvite = inviteData[idx];
+  renderInvitePage();
+}
+
+async function saveInviteDecision() {
+  const picked = inviteData.find(c=>c['老闆選定']==='✓');
+  if(!picked) { showToast('請先選擇版本'); return; }
+  const res = await apiPost({action:'updateInviteDecision', actId:currentActId, 版本編號:picked['版本編號']});
+  if(res.status==='ok') showToast('✓ 已儲存：老闆選定 ' + picked['版本名稱']);
+  else showToast('儲存失敗：'+(res.error||''));
+}
+
+// ── 出席管理 ──
+function renderAttendPage() {
+  renderExternalTable();
+  renderInternalTable();
+}
+
+function renderExternalTable() {
+  const tbody = document.getElementById('external-tbody');
+  tbody.innerHTML = externalData.map((row,i) => `
+    <tr>
+      <td>${row['邀請單位']}</td>
+      <td><input class="editable" value="${row['代表姓名']||''}" onchange="externalData[${i}]['代表姓名']=this.value" placeholder="待填"></td>
+      <td><input class="editable" value="${row['職稱']||''}" onchange="externalData[${i}]['職稱']=this.value" placeholder="—"></td>
+      <td><input class="editable" type="number" value="${row['出席人數']||1}" onchange="externalData[${i}]['出席人數']=this.value" style="width:40px"></td>
+      <td>
+        <select class="inline-sel" onchange="externalData[${i}]['出席狀態']=this.value">
+          ${['待確認','確認出席','無法出席'].map(s=>`<option ${row['出席狀態']===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><input class="editable" value="${row['來源']||'邀請卡'}" onchange="externalData[${i}]['來源']=this.value"></td>
+      <td><input class="editable" value="${row['由誰帶來']||''}" onchange="externalData[${i}]['由誰帶來']=this.value" placeholder="—"></td>
+      <td><input class="editable" value="${row['備註']||''}" onchange="externalData[${i}]['備註']=this.value" placeholder="—"></td>
+    </tr>`).join('');
+  if(!externalData.length) tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><i class="ti ti-users"></i>尚無資料，請先匯入名單</div></td></tr>';
+}
+
+function renderInternalTable() {
+  const tbody = document.getElementById('internal-tbody');
+  tbody.innerHTML = internalData.map((row,i) => `
+    <tr>
+      <td>${row['姓名']}</td>
+      <td>${row['部門']}</td>
+      <td>${row['職稱']}</td>
+      <td>
+        <select class="inline-sel" onchange="internalData[${i}]['活動角色']=this.value">
+          ${['','主持人','司儀','接待','攝影','總務','工作人員','出席'].map(r=>
+            `<option ${row['活動角色']===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <select class="inline-sel" onchange="internalData[${i}]['是否出席']=this.value">
+          ${['待確認','出席','不出席'].map(s=>`<option ${row['是否出席']===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </td>
+      <td><input class="editable" value="${row['備註']||''}" onchange="internalData[${i}]['備註']=this.value" placeholder="—"></td>
+    </tr>`).join('');
+  if(!internalData.length) tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-user-plus"></i>尚未新增內部人員，請點「從人員名單新增」</div></td></tr>';
+}
+
+function addExternalRow() {
+  const unit = prompt('邀請單位名稱：');
+  if(!unit) return;
+  externalData.push({
+    '活動ID': currentActId, '邀請單位': unit, '代表姓名': '',
+    '職稱': '', '出席人數': '1', '出席狀態': '待確認',
+    '來源': '邀請卡', '由誰帶來': '', '備註': ''
+  });
+  renderExternalTable();
+}
+
+function addInternalFromStaff() {
+  const existing = new Set(internalData.map(r=>r['姓名']));
+  const available = allStaff.filter(s => !existing.has(s['姓名']));
+  if(!available.length) { showToast('所有人員已加入'); return; }
+  const names = available.map((s,i)=>`${i+1}. ${s['姓名']}（${s['部門']} ${s['職稱']}）`).join('\n');
+  const input = prompt('請輸入要加入的人員編號（可輸入多個，用逗號分隔）：\n\n'+names);
+  if(!input) return;
+  input.split(',').forEach(n => {
+    const idx = parseInt(n.trim()) - 1;
+    if(idx >= 0 && idx < available.length) {
+      const s = available[idx];
+      internalData.push({
+        '活動ID': currentActId, '姓名': s['姓名'], '部門': s['部門'],
+        '職稱': s['職稱'], '活動角色': '', '是否出席': '待確認', '備註': ''
+      });
+    }
+  });
+  renderInternalTable();
+}
+
+async function saveAllAttend() {
+  let ok = 0;
+  for(const row of externalData) {
+    const res = await apiPost({action:'saveExternal', ...row});
+    if(res.status) ok++;
+  }
+  for(const row of internalData) {
+    const res = await apiPost({action:'saveInternal', ...row});
+    if(res.status) ok++;
+  }
+  showToast(`✓ 已儲存 ${ok} 筆出席資料`);
+  renderDashboard();
+}
+
+// ── 匯入名單 ──
+function switchImport(method) {
+  importMethod = method;
+  document.getElementById('im-excel').classList.toggle('active', method==='excel');
+  document.getElementById('im-paste').classList.toggle('active', method==='paste');
+  document.getElementById('area-excel').style.display = method==='excel'?'block':'none';
+  document.getElementById('area-paste').style.display = method==='paste'?'block':'none';
+}
+
+function downloadTemplate() {
+  if(typeof XLSX === 'undefined') { showToast('請稍後再試'); return; }
+  const headers = ['單位名稱','代表姓名','職稱','出席人數','備註'];
+  const units = ['台灣電力公司','台灣自來水公司','中華電信',
+    '台灣中油股份有限公司探採事業部','台灣中油股份有限公司公用天然氣事業處',
+    '裕苗天然氣股份有限公司','苗栗縣政府'];
+  const rows = units.map(u=>[u,'','','1','']);
+  const ws = XLSX.utils.aoa_to_sheet([headers,...rows]);
+  ws['!cols'] = [{wch:30},{wch:10},{wch:14},{wch:8},{wch:20}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '出席名單');
+  XLSX.writeFile(wb, `出席名單範本_${currentActId}.xlsx`);
+  showToast('範本已下載');
+}
+
+function handleXlsx(file) {
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, {type:'binary'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      importRows = rows.slice(1).filter(r=>r[0]).map(r=>({
+        unit: String(r[0]).trim(), name: String(r[1]||'').trim(),
+        title: String(r[2]||'').trim(), count: parseInt(r[3])||1,
+        note: String(r[4]||'').trim(), ok: !!(r[0])
+      }));
+      showImportPreview(importRows);
+    } catch(err) { showToast('檔案讀取失敗，請確認格式'); }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function parsePaste() {
+  const text = document.getElementById('pasteBox').value.trim();
+  if(!text) { showToast('請先貼上名單文字'); return; }
+  importRows = text.split('\n').filter(l=>l.trim()).map(line => {
+    line = line.trim();
+    let parts = line.includes('\t') ? line.split('\t') :
+                line.includes('、') ? line.split('、') :
+                line.split(/[\s　]+/);
+    parts = parts.map(s=>s.trim()).filter(Boolean);
+    return {
+      unit: parts[0]||'', name: parts[1]||'', title: parts[2]||'',
+      count: parseInt((parts[3]||'1').replace(/[^0-9]/g,''))||1,
+      note: '', ok: !!(parts[0])
+    };
+  });
+  showImportPreview(importRows);
+}
+
+function showImportPreview(rows) {
+  const area = document.getElementById('import-preview');
+  const valid = rows.filter(r=>r.ok).length;
+  document.getElementById('preview-count').textContent = `共 ${rows.length} 筆，有效 ${valid} 筆`;
+  document.getElementById('preview-body').innerHTML = rows.map(r=>`
+    <tr>
+      <td>${r.unit||'<span style="color:var(--red)">空白</span>'}</td>
+      <td>${r.name||'<span style="color:var(--amber)">待填</span>'}</td>
+      <td>${r.title||'—'}</td>
+      <td style="text-align:center">${r.count}</td>
+      <td><span class="status-tag ${r.ok&&r.name?'st-yes':r.ok?'st-pd':'st-no'}">${r.ok&&r.name?'正常':r.ok?'待補姓名':'缺單位'}</span></td>
+    </tr>`).join('');
+  area.style.display = 'block';
+}
+
+function confirmImport() {
+  const valid = importRows.filter(r=>r.ok);
+  valid.forEach(r => {
+    const existing = externalData.findIndex(e=>e['邀請單位']===r.unit);
+    const newRow = {
+      '活動ID': currentActId, '邀請單位': r.unit, '代表姓名': r.name,
+      '職稱': r.title, '出席人數': String(r.count),
+      '出席狀態': '待確認', '來源': '邀請卡', '由誰帶來': '', '備註': r.note
+    };
+    if(existing >= 0) externalData[existing] = newRow;
+    else externalData.push(newRow);
+  });
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('pasteBox') && (document.getElementById('pasteBox').value = '');
+  renderExternalTable();
+  showToast(`✓ 已匯入 ${valid.length} 筆，記得按「儲存出席名單」`);
+}
+
+// ── 歷史紀錄頁 ──
+function renderHistoryPage() {
+  document.getElementById('history-content').innerHTML = allActivities.map(act => {
+    return `<div class="history-card" onclick="switchActivity('${act['活動ID']}');showPage('dashboard')">
+      <div class="hc-header">
+        <div>
+          <div class="hc-date">${act['活動ID']} ｜ ${act['日期']} ${act['星期']||''}</div>
+          <div class="hc-name">${act['活動名稱']}</div>
+        </div>
+        <span class="hc-status ${act['狀態']==='已完成'?'hc-done':'hc-progress'}">${act['狀態']||'籌備中'}</span>
+      </div>
+      <div class="hc-grid">
+        <div class="hc-stat"><div class="hc-stat-label">地點</div><div class="hc-stat-val" style="font-size:12px">${(act['地點']||'—').split(' ')[0]}</div></div>
+        <div class="hc-stat"><div class="hc-stat-label">廳別</div><div class="hc-stat-val" style="font-size:12px">${act['廳別']||'—'}</div></div>
+        <div class="hc-stat"><div class="hc-stat-label">桌數</div><div class="hc-stat-val" style="font-size:12px">${act['桌數範圍']||'—'}</div></div>
+        <div class="hc-stat"><div class="hc-stat-label">承辦</div><div class="hc-stat-val" style="font-size:12px">${(act['承辦聯絡人']||'—').split(' ')[0]}</div></div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state"><i class="ti ti-history"></i>尚無歷史紀錄</div>';
+}
+
+// ── 公司人員頁 ──
+function renderStaffPage() {
+  document.getElementById('staff-tbody').innerHTML = allStaff.map(s=>`
+    <tr>
+      <td style="font-weight:500">${s['姓名']}</td>
+      <td>${s['部門']}</td>
+      <td>${s['課別']||'—'}</td>
+      <td>${s['職稱']}</td>
+      <td>${s['備註']||'—'}</td>
+    </tr>`).join('');
+}
+
+// ── 新增活動 ──
+function openNewActivity() { document.getElementById('newActModal').classList.add('open'); }
+function closeModal() { document.getElementById('newActModal').classList.remove('open'); }
+
+async function submitNewActivity() {
+  const name = document.getElementById('new-name').value.trim();
+  if(!name) { showToast('請填寫活動名稱'); return; }
+  const body = {
+    action: 'addActivity',
+    活動名稱: name,
+    日期: document.getElementById('new-date').value,
+    星期: document.getElementById('new-week').value,
+    地點: document.getElementById('new-place').value,
+    廳別: document.getElementById('new-hall').value,
+    桌數範圍: document.getElementById('new-tables').value,
+    承辦聯絡人: document.getElementById('new-contact').value,
+    備註: document.getElementById('new-note').value,
+    狀態: '籌備中'
+  };
+  const res = await apiPost(body);
+  if(res.actId) {
+    showToast('✓ 已新增活動：' + res.actId);
+    closeModal();
+    allActivities = await api({action:'getActivities'});
+    populateActivitySelect();
+    await loadActivityData(res.actId);
+    showPage('dashboard');
+  } else showToast('新增失敗：'+(res.error||''));
+}
+
+// ── 匯出報告 ──
+function exportReport() {
+  const act = allActivities.find(a=>a['活動ID']===currentActId)||{};
+  const menuPicked = menuData.find(m=>m['老闆選定']==='✓');
+  const invPicked = inviteData.find(c=>c['老闆選定']==='✓');
+  let txt = `【竹建瓦斯 餐會管理報告】\n`;
+  txt += `活動：${act['活動名稱']}\n`;
+  txt += `日期：${act['日期']} ${act['星期']||''}\n`;
+  txt += `地點：${act['地點']} ${act['廳別']}\n`;
+  txt += `承辦：${act['承辦聯絡人']}\n`;
+  txt += `桌數：${act['桌數範圍']}\n\n`;
+  txt += `【菜單裁示】${menuPicked?menuPicked['方案名稱']+'（$'+parseInt(menuPicked['每桌單價']).toLocaleString()+'/桌）':'待裁示'}\n`;
+  txt += `【邀請卡】${invPicked?invPicked['版本編號']+' '+invPicked['版本名稱']:'待裁示'}\n\n`;
+  txt += `【邀請單位出席】\n`;
+  externalData.forEach((e,i)=>{ txt += `${i+1}. ${e['邀請單位']}　${e['代表姓名']||'待填'}　${e['職稱']||''}　${e['出席狀態']}\n`; });
+  txt += `\n【內部工作人員】\n`;
+  internalData.forEach((r,i)=>{ txt += `${i+1}. ${r['姓名']}　${r['活動角色']||''}　${r['是否出席']}\n`; });
+  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `餐會報告_${currentActId}_${act['日期']||''}.txt`.replace(/\//g,'-');
+  a.click();
+  showToast('報告已匯出');
+}
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── 啟動 ──
+init();
+</script>
+</body>
+</html>
+```
