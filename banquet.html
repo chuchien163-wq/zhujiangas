@@ -1136,7 +1136,7 @@ function renderDashboard() {
   if(progress < 10) progress = 10;
   document.getElementById('stat-progress').textContent = progress + '%';
   document.getElementById('stat-progress-note').innerHTML =
-    `<span class="${progress>=80?'hi':'warn'}">${progress>=80?'即將完成':'進行中'}</span>`;
+    '<span class="' + (progress>=80?'hi':'warn') + '">' + (progress>=80?'即將完成':'進行中') + '</span>';
 
   // 菜單卡
   document.getElementById('dash-menu-cards').innerHTML = menuData.slice(0,2).map(m => {
@@ -1165,12 +1165,16 @@ function renderDashboard() {
     {done: confirmed===externalData.length && externalData.length>0,
      text: '發送邀請卡並收回回覆', tag: confirmed>0?`${confirmed}/${externalData.length}已確認`:'未開始'},
   ];
-  document.getElementById('dash-todos').innerHTML = todos.map(t => `
-    <div class="todo-item">
-      <div class="todo-check ${t.done?'done'}">${t.done?'✓':''}</div>
-      <span class="todo-text ${t.done?'done'}">${t.text}</span>
-      <span class="todo-tag ${t.done?'tt-done':t.urgent?'tt-urgent':'tt-gray'}">${t.tag}</span>
-    </div>`).join('');
+  document.getElementById('dash-todos').innerHTML = todos.map(t => {
+    const chk = t.done ? 'done' : '';
+    const tag = t.done ? 'tt-done' : (t.urgent ? 'tt-urgent' : 'tt-gray');
+    const ico = t.done ? '&#10003;' : '';
+    return '<div class="todo-item">' +
+      '<div class="todo-check ' + chk + '">' + ico + '</div>' +
+      '<span class="todo-text ' + chk + '">' + t.text + '</span>' +
+      '<span class="todo-tag ' + tag + '">' + t.tag + '</span>' +
+      '</div>';
+  }).join('');
 
   // 出席
   document.getElementById('dash-attend').innerHTML = `
