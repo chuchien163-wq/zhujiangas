@@ -976,15 +976,19 @@ let importRows = [];
 // ── API ──
 async function api(params) {
   const url = API + '?' + new URLSearchParams(params);
-  const res = await fetch(url);
-  return res.json();
+  const res = await fetch(url, {redirect:'follow'});
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { console.error(text); return {error:text}; }
 }
 async function apiPost(body) {
-  const res = await fetch(API, {
-    method: 'POST',
-    body: JSON.stringify(body)
-  });
-  return res.json();
+  const pairs = Object.entries(body).map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(String(v))).join('&');
+  const res = await fetch(API+'?'+pairs, {redirect:'follow'});
+  const text = await res.text();
+  try { return JSON.parse(text); } catch(e) { return {error:text}; }
+}
+function fixDate(d) {
+  if(!d) return '';
+  return String(d).replace(/^0+(\d)/, '$1');
 }
 
 // ── 頁面切換 ──
@@ -1039,7 +1043,7 @@ async function loadActivityData(actId) {
   const act = allActivities.find(a => a['活動ID'] === actId) || {};
   document.getElementById('sb-act-name').textContent = act['活動名稱'] || '—';
   document.getElementById('sb-act-date').textContent =
-    (act['日期'] || '') + (act['星期'] ? '（'+act['星期']+'）' : '');
+    fixDate(act['日期'] || '') + (act['星期'] ? '（'+act['星期']+'）' : '');
   document.getElementById('topbar-sub').textContent =
     (act['日期']||'') + '　' + (act['地點']||'').split(' ')[0] + '　' + (act['廳別']||'');
 
@@ -1072,7 +1076,7 @@ function renderDashboard() {
   const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
 
   // 距離活動天數
-  const dateStr = act['日期'] || '';
+  const dateStr = (act['日期'] || '').replace(/^0+(\d)/, '$1');
   const parts = dateStr.split('/');
   let daysLeft = '—';
   if(parts.length === 3) {
