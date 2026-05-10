@@ -291,6 +291,58 @@ body {
   padding: 2px 8px; border-radius: 20px; margin-top: 6px; display: inline-block;
 }
 
+/* ── 菜單圖片上傳 ── */
+.menu-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: var(--bg);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  border: 0.5px solid var(--border);
+}
+.menu-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.menu-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--text-hint); font-size: 12px; gap: 6px;
+  cursor: pointer;
+}
+.menu-img-placeholder i { font-size: 26px; }
+.menu-img-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.menu-img-wrap:hover .menu-img-overlay { display: flex; }
+.menu-img-action {
+  font-size: 11px; color: #fff;
+  background: rgba(255,255,255,0.15);
+  border: 0.5px solid rgba(255,255,255,0.4);
+  border-radius: 6px; padding: 5px 10px;
+  cursor: pointer; backdrop-filter: blur(4px);
+}
+.menu-img-action:hover { background: rgba(255,255,255,0.28); }
+.menu-detail-textarea {
+  width: 100%; font-size: 12px;
+  font-family: 'Noto Sans TC', sans-serif;
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--radius);
+  padding: 7px 9px;
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical; min-height: 70px;
+  line-height: 1.7;
+}
+.menu-detail-textarea:focus { outline: none; border-color: var(--gold); }
+
 /* ── 待辦清單 ── */
 .todo-list { display: flex; flex-direction: column; gap: 6px; }
 .todo-item {
@@ -1248,31 +1300,72 @@ async function saveVenue() {
 }
 
 // ── 菜單頁 ──
+function getMenuImgKey(actId, planName) {
+  return `menu_img_${actId}_${planName}`;
+}
+function getMenuDetailKey(actId, planName) {
+  return `menu_detail_${actId}_${planName}`;
+}
+
 function renderMenuPage() {
   const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
   document.getElementById('menu-content').innerHTML = `
     <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-      請老闆選擇方案後按「儲存裁示結果」，選定結果將記錄至試算表。
+      請老闆選擇方案後按「儲存裁示結果」，選定結果將記錄至試算表。可為每個方案上傳菜單照片。
     </p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:16px">
       ${menuData.map((m,i) => {
         const price = parseInt(m['每桌單價'])||0;
         const isBoss = m['老闆選定'] === '✓';
         const tagClass = i===0?'tag-a':i===1?'tag-b':'tag-c';
-        return `<div class="menu-card ${isBoss?'selected-boss':''}" id="menu-opt-${i}" onclick="selectMenu(${i})">
-          <div class="menu-tag ${tagClass}">${m['方案名稱']}</div>
+        const imgKey = getMenuImgKey(currentActId, m['方案名稱']);
+        const detailKey = getMenuDetailKey(currentActId, m['方案名稱']);
+        const savedImg = localStorage.getItem(imgKey) || '';
+        const savedDetail = localStorage.getItem(detailKey) || m['菜色明細'] || '';
+        return `<div class="menu-card ${isBoss?'selected-boss':''}" id="menu-opt-${i}">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <div class="menu-tag ${tagClass}">${m['方案名稱']}</div>
+            ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : ''}
+          </div>
           <div class="menu-price">$${price.toLocaleString()}</div>
           <div class="menu-unit">每桌單價（含服務費 $${Math.round(price*0.1).toLocaleString()}/桌）</div>
           <div class="menu-range">
-            7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong><br>
-            8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong><br>
+            7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong>　
+            8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong>　
             9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
           </div>
-          <div class="menu-range" style="margin-top:8px;border-top:none;padding-top:0">
-            <strong>菜色明細：</strong><br>
-            ${m['菜色明細']||'（待千璽確認後填入）'}
+
+          <!-- 菜單圖片 -->
+          <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜單照片</div>
+          <div class="menu-img-wrap" id="menu-imgwrap-${i}">
+            ${savedImg
+              ? `<img src="${savedImg}" id="menu-img-${i}" alt="菜單照片">`
+              : `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${i}').click()">
+                  <i class="ti ti-camera"></i>
+                  <span>點此上傳菜單照片</span>
+                </div>`
+            }
+            <div class="menu-img-overlay">
+              <div class="menu-img-action" onclick="document.getElementById('menu-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
+              <div class="menu-img-action" onclick="removeMenuImg(${i},'${m['方案名稱']}')"><i class="ti ti-trash"></i> 刪除</div>
+            </div>
           </div>
-          ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : ''}
+          <input type="file" id="menu-file-${i}" accept="image/*" style="display:none"
+            onchange="handleMenuImg(this,${i},'${m['方案名稱']}')">
+
+          <!-- 菜色明細文字 -->
+          <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜色明細</div>
+          <textarea class="menu-detail-textarea" id="menu-detail-${i}"
+            placeholder="輸入菜色內容，例：佛跳牆、龍蝦沙拉..."
+            onchange="saveMenuDetail(${i},'${m['方案名稱']}')"
+            oninput="saveMenuDetail(${i},'${m['方案名稱']}')">${savedDetail}</textarea>
+
+          <div style="margin-top:10px">
+            <button class="btn ${isBoss?'btn-green':'btn-gold'}" style="width:100%;justify-content:center"
+              onclick="selectMenu(${i})">
+              ${isBoss ? '✓ 已選定此方案' : '選擇此方案'}
+            </button>
+          </div>
         </div>`;
       }).join('')}
     </div>
@@ -1282,6 +1375,44 @@ function renderMenuPage() {
       </span>
       <button class="btn btn-gold" onclick="saveMenuDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
     </div>`;
+}
+
+function handleMenuImg(input, idx, planName) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    localStorage.setItem(getMenuImgKey(currentActId, planName), base64);
+    const wrap = document.getElementById('menu-imgwrap-' + idx);
+    // 移除placeholder，換成img
+    wrap.innerHTML = `<img src="${base64}" id="menu-img-${idx}" alt="菜單照片">
+      <div class="menu-img-overlay">
+        <div class="menu-img-action" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
+        <div class="menu-img-action" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
+      </div>`;
+    showToast('✓ 照片已上傳：' + planName);
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeMenuImg(idx, planName) {
+  localStorage.removeItem(getMenuImgKey(currentActId, planName));
+  const wrap = document.getElementById('menu-imgwrap-' + idx);
+  wrap.innerHTML = `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${idx}').click()">
+    <i class="ti ti-camera"></i>
+    <span>點此上傳菜單照片</span>
+  </div>
+  <div class="menu-img-overlay">
+    <div class="menu-img-action" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
+    <div class="menu-img-action" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
+  </div>`;
+  showToast('照片已刪除');
+}
+
+function saveMenuDetail(idx, planName) {
+  const val = document.getElementById('menu-detail-' + idx)?.value || '';
+  localStorage.setItem(getMenuDetailKey(currentActId, planName), val);
 }
 
 let selectedMenuIdx = null;
