@@ -420,6 +420,35 @@ body {
 .pf-amber { background: #d4891a; }
 .pf-red { background: var(--red); }
 
+
+/* ── 邀請卡圖片上傳 ── */
+.invite-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: var(--bg);
+  overflow: hidden;
+}
+.invite-img-wrap .invite-img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  display: block;
+}
+.invite-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--text-hint); font-size: 12px; gap: 6px;
+  cursor: pointer; min-height: 120px;
+}
+.invite-img-placeholder i { font-size: 26px; }
+.invite-img-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.invite-img-wrap:hover .invite-img-overlay { display: flex; }
 /* ── 邀請卡 ── */
 .invite-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
 .invite-card {
@@ -1113,10 +1142,25 @@ async function loadActivityData(actId) {
     api({action:'getInviteCards', actId})
   ]);
   externalData = ext;
-  internalData = intAtt;
   menuData = menu;
   inviteData = inv;
   pickedInvite = inv.find(i => i['老闆選定'] === '✓') || null;
+
+  // 若後端尚無內部人員資料，自動帶入全體公司人員（預設出席）
+  if(!intAtt || intAtt.length === 0) {
+    internalData = allStaff.map(s => ({
+      '活動ID': actId, '姓名': s['姓名'], '部門': s['部門'],
+      '職稱': s['職稱'], '活動角色': '', '是否出席': '出席', '備註': ''
+    }));
+  } else {
+    // 已有資料：補上名單裡新增但尚未加入的人
+    const existing = new Set(intAtt.map(r => r['姓名']));
+    const missing = allStaff.filter(s => !existing.has(s['姓名'])).map(s => ({
+      '活動ID': actId, '姓名': s['姓名'], '部門': s['部門'],
+      '職稱': s['職稱'], '活動角色': '', '是否出席': '出席', '備註': ''
+    }));
+    internalData = [...intAtt, ...missing];
+  }
 
   renderDashboard();
 }
@@ -1514,23 +1558,40 @@ function calcFee() {
 }
 
 // ── 邀請卡頁 ──
+function getInviteImgKey(actId, ver) {
+  return `invite_img_${actId}_${ver}`;
+}
+
 function renderInvitePage() {
-  const imgNames = ['0.png','1.png','2.png','3.png','4.png','5.png','6.png','7.png'];
   const styles = ['金色牡丹','金色梅花','銀杏水墨','青花瓷','綠葉植物','青綠渲染','粉藍花卉','極簡現代'];
   const styleColors = ['chip-amber','chip-amber','chip-gray','chip-blue','chip-green','chip-blue','chip-blue','chip-gray'];
 
   document.getElementById('invite-grid').innerHTML = inviteData.map((card,i) => {
     const isBoss = card['老闆選定'] === '✓';
+    const imgKey = getInviteImgKey(currentActId, card['版本編號']||i);
+    const savedImg = localStorage.getItem(imgKey) || '';
     return `<div class="invite-card ${isBoss?'boss-pick':''}" id="icard-${i}">
       ${isBoss ? '<div class="invite-boss-badge">✓ 老闆選定</div>' : '<div class="invite-pending-badge">待裁示</div>'}
-      <img class="invite-img" src="${IMG_BASE}${imgNames[i]||i+'.png'}"
-        onerror="this.style.background='var(--bg)';this.style.height='160px'"
-        alt="${card['版本名稱']}">
+      <div class="invite-img-wrap" id="invite-imgwrap-${i}">
+        ${savedImg
+          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}">`
+          : `<div class="invite-img-placeholder" onclick="document.getElementById('invite-file-${i}').click()">
+              <i class="ti ti-camera"></i>
+              <span>點此上傳邀請卡圖片</span>
+            </div>`
+        }
+        <div class="invite-img-overlay">
+          <div class="menu-img-action" onclick="document.getElementById('invite-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
+          <div class="menu-img-action" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i> 刪除</div>
+        </div>
+      </div>
+      <input type="file" id="invite-file-${i}" accept="image/*" style="display:none"
+        onchange="handleInviteImg(this,${i},'${card['版本編號']||i}')">
       <div class="invite-footer">
         <div class="invite-ver">${card['版本編號']}</div>
         <div class="invite-name">${card['版本名稱']}</div>
-        <div><span class="chip ${styleColors[i]} invite-style-tag">${styles[i]||''}</span></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">${card['風格說明']}</div>
+        <div><span class="chip ${styleColors[i]||'chip-gray'} invite-style-tag">${styles[i]||card['版本名稱']||''}</span></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">${card['風格說明']||''}</div>
         <button class="invite-pick-btn ${isBoss?'active':''}" onclick="pickInviteCard(${i})">
           ${isBoss ? '✓ 已選定' : '老闆選定此版本'}
         </button>
@@ -1549,6 +1610,39 @@ function renderInvitePage() {
   }
   const badge = document.getElementById('invite-badge');
   if(badge) badge.style.display = picked ? 'none' : '';
+}
+
+function handleInviteImg(input, idx, ver) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    localStorage.setItem(getInviteImgKey(currentActId, ver), base64);
+    const wrap = document.getElementById('invite-imgwrap-' + idx);
+    const ph = wrap.querySelector('.invite-img-placeholder');
+    if(ph) ph.remove();
+    let img = wrap.querySelector('img');
+    if(!img) { img = document.createElement('img'); img.className = 'invite-img'; wrap.insertBefore(img, wrap.firstChild); }
+    img.src = base64;
+    showToast('✓ 邀請卡照片已上傳');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeInviteImg(idx, ver) {
+  localStorage.removeItem(getInviteImgKey(currentActId, ver));
+  const wrap = document.getElementById('invite-imgwrap-' + idx);
+  const img = wrap.querySelector('img');
+  if(img) img.remove();
+  if(!wrap.querySelector('.invite-img-placeholder')) {
+    const ph = document.createElement('div');
+    ph.className = 'invite-img-placeholder';
+    ph.onclick = () => document.getElementById('invite-file-' + idx).click();
+    ph.innerHTML = '<i class="ti ti-camera"></i><span>點此上傳邀請卡圖片</span>';
+    wrap.insertBefore(ph, wrap.firstChild);
+  }
+  showToast('照片已刪除');
 }
 
 function pickInviteCard(idx) {
@@ -1611,7 +1705,7 @@ function renderInternalTable() {
       </td>
       <td><input class="editable" value="${row['備註']||''}" onchange="internalData[${i}]['備註']=this.value" placeholder="—"></td>
     </tr>`).join('');
-  if(!internalData.length) tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-user-plus"></i>尚未新增內部人員，請點「從人員名單新增」</div></td></tr>';
+  if(!internalData.length) tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="ti ti-user-plus"></i>尚無內部人員資料</div></td></tr>';
 }
 
 function addExternalRow() {
