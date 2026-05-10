@@ -604,6 +604,42 @@ select.inline-sel {
 }
 .toast.show { opacity: 1; transform: translateY(0); }
 
+
+/* ── 場地照片格 ── */
+.venue-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.venue-photo-slot {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+}
+.venue-photo-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.venue-photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--text-hint); font-size: 11px; gap: 5px;
+  cursor: pointer;
+}
+.venue-photo-placeholder i { font-size: 22px; }
+.venue-photo-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none; align-items: center; justify-content: center;
+  gap: 6px;
+}
+.venue-photo-slot:hover .venue-photo-overlay { display: flex; }
 /* ── 空狀態 ── */
 .empty-state {
   text-align: center; padding: 36px;
@@ -676,9 +712,104 @@ select.inline-sel {
 .preview-table th { font-size: 11px; color: var(--text-muted); font-weight: 500; padding: 6px 8px; border-bottom: 0.5px solid var(--border); text-align: left; }
 .preview-table td { padding: 7px 8px; border-bottom: 0.5px solid var(--border); }
 .preview-table tr:last-child td { border-bottom: none; }
+
+/* ── 密碼鎖定畫面 ── */
+.lock-screen {
+  position: fixed; inset: 0;
+  background: var(--sidebar);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+}
+.lock-box {
+  background: #252523;
+  border: 0.5px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 36px 40px;
+  width: 340px;
+  text-align: center;
+}
+.lock-logo {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 13px; color: rgba(255,255,255,0.35);
+  letter-spacing: 2px; margin-bottom: 6px;
+}
+.lock-title {
+  font-size: 18px; color: #fff; font-weight: 500;
+  margin-bottom: 6px;
+}
+.lock-sub {
+  font-size: 12px; color: rgba(255,255,255,0.35);
+  margin-bottom: 28px;
+}
+.lock-icon {
+  font-size: 36px; color: var(--gold);
+  margin-bottom: 20px; display: block;
+}
+.lock-input {
+  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border: 0.5px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 22px;
+  text-align: center;
+  letter-spacing: 6px;
+  padding: 12px;
+  font-family: monospace;
+  margin-bottom: 14px;
+  outline: none;
+}
+.lock-input:focus { border-color: var(--gold); }
+.lock-btn {
+  width: 100%;
+  background: var(--gold);
+  color: #1c1c1a;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.lock-btn:hover { background: var(--gold-dark); color: #fff; }
+.lock-error {
+  font-size: 12px; color: #e57373;
+  margin-top: 10px; min-height: 18px;
+}
+.lock-view-btn {
+  margin-top: 14px;
+  background: transparent;
+  border: 0.5px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  padding: 8px;
+  width: 100%;
+  cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.lock-view-btn:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
 </style>
 </head>
 <body>
+
+<!-- ── 密碼鎖定畫面 ── -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-logo">ZHUJIAN GAS</div>
+    <div class="lock-title">餐會管理系統</div>
+    <div class="lock-sub">竹建瓦斯股份有限公司</div>
+    <i class="ti ti-lock lock-icon"></i>
+    <input class="lock-input" id="lockInput" type="password" maxlength="10"
+      placeholder="••••" onkeydown="if(event.key==='Enter')tryUnlock()">
+    <button class="lock-btn" onclick="tryUnlock()">進入系統</button>
+    <div class="lock-error" id="lockError"></div>
+    <button class="lock-view-btn" onclick="enterViewMode()">僅供瀏覽（無法編輯）</button>
+  </div>
+</div>
+
 
 <div class="layout">
 
@@ -1318,6 +1449,10 @@ function renderDashboard() {
 }
 
 // ── 場地頁 ──
+function getVenueImgKey(actId, idx) {
+  return `venue_img_${actId}_${idx}`;
+}
+
 function renderVenuePage() {
   const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
   const fields = [
@@ -1325,8 +1460,30 @@ function renderVenuePage() {
     ['地點','地點'],['廳別','廳別'],['承辦聯絡人','承辦聯絡人'],
     ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
   ];
+
+  // 產生8格圖片
+  const photoSlots = Array.from({length:8}, (_,i) => {
+    const key = getVenueImgKey(currentActId, i);
+    const img = localStorage.getItem(key) || '';
+    return `<div class="venue-photo-slot" id="venue-slot-${i}">
+      ${img
+        ? `<img src="${img}" class="venue-photo-img" alt="場地照片${i+1}">`
+        : `<div class="venue-photo-placeholder" onclick="document.getElementById('venue-file-${i}').click()">
+            <i class="ti ti-camera"></i>
+            <span>上傳照片</span>
+          </div>`
+      }
+      <div class="venue-photo-overlay">
+        <div class="menu-img-action" onclick="document.getElementById('venue-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
+        <div class="menu-img-action" onclick="removeVenueImg(${i})"><i class="ti ti-trash"></i> 刪除</div>
+      </div>
+      <input type="file" id="venue-file-${i}" accept="image/*" style="display:none"
+        onchange="handleVenueImg(this,${i})">
+    </div>`;
+  }).join('');
+
   document.getElementById('venue-content').innerHTML = `
-    <table class="attend-table">
+    <table class="attend-table" style="margin-bottom:18px">
       <tbody>${fields.map(([label,key]) => `
         <tr>
           <td style="width:120px;color:var(--text-muted);font-size:12px">${label}</td>
@@ -1334,9 +1491,47 @@ function renderVenuePage() {
         </tr>`).join('')}
       </tbody>
     </table>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      <i class="ti ti-photo" style="font-size:15px"></i> 場地照片
+      <span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳</span>
+    </div>
+    <div class="venue-photo-grid">${photoSlots}</div>
     <div class="save-bar">
       <button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button>
     </div>`;
+}
+
+function handleVenueImg(input, idx) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const base64 = e.target.result;
+    localStorage.setItem(getVenueImgKey(currentActId, idx), base64);
+    const slot = document.getElementById('venue-slot-' + idx);
+    const ph = slot.querySelector('.venue-photo-placeholder');
+    if(ph) ph.remove();
+    let img = slot.querySelector('img');
+    if(!img) { img = document.createElement('img'); img.className = 'venue-photo-img'; slot.insertBefore(img, slot.firstChild); }
+    img.src = base64;
+    showToast('✓ 照片已上傳');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeVenueImg(idx) {
+  localStorage.removeItem(getVenueImgKey(currentActId, idx));
+  const slot = document.getElementById('venue-slot-' + idx);
+  const img = slot.querySelector('img');
+  if(img) img.remove();
+  if(!slot.querySelector('.venue-photo-placeholder')) {
+    const ph = document.createElement('div');
+    ph.className = 'venue-photo-placeholder';
+    ph.onclick = () => document.getElementById('venue-file-' + idx).click();
+    ph.innerHTML = '<i class="ti ti-camera"></i><span>上傳照片</span>';
+    slot.insertBefore(ph, slot.firstChild);
+  }
+  showToast('照片已刪除');
 }
 
 async function saveVenue() {
@@ -1470,6 +1665,7 @@ function selectMenu(idx) {
 }
 
 async function saveMenuDecision() {
+  if(!checkAdmin()) return;
   if(selectedMenuIdx === null) { showToast('請先點選方案'); return; }
   const m = menuData[selectedMenuIdx];
   const res = await apiPost({action:'updateMenuDecision', actId:currentActId, 方案名稱:m['方案名稱']});
@@ -1652,6 +1848,7 @@ function pickInviteCard(idx) {
 }
 
 async function saveInviteDecision() {
+  if(!checkAdmin()) return;
   const picked = inviteData.find(c=>c['老闆選定']==='✓');
   if(!picked) { showToast('請先選擇版本'); return; }
   const res = await apiPost({action:'updateInviteDecision', actId:currentActId, 版本編號:picked['版本編號']});
@@ -1740,6 +1937,7 @@ function addInternalFromStaff() {
 }
 
 async function saveAllAttend() {
+  if(!checkAdmin()) return;
   let ok = 0;
   for(const row of externalData) {
     const res = await apiPost({action:'saveExternal', ...row});
@@ -1830,6 +2028,7 @@ function showImportPreview(rows) {
 }
 
 function confirmImport() {
+  if(!checkAdmin()) return;
   const valid = importRows.filter(r=>r.ok);
   valid.forEach(r => {
     const existing = externalData.findIndex(e=>e['邀請單位']===r.unit);
@@ -1885,6 +2084,7 @@ function openNewActivity() { document.getElementById('newActModal').classList.ad
 function closeModal() { document.getElementById('newActModal').classList.remove('open'); }
 
 async function submitNewActivity() {
+  if(!checkAdmin()) return;
   const name = document.getElementById('new-name').value.trim();
   if(!name) { showToast('請填寫活動名稱'); return; }
   const body = {
@@ -1944,7 +2144,43 @@ function showToast(msg) {
 }
 
 // ── 啟動 ──
-init();
+
+// ── 密碼 / 權限控制 ──
+const ADMIN_PWD = '1688';
+let isAdmin = false;
+
+function tryUnlock() {
+  const val = document.getElementById('lockInput').value;
+  if(val === ADMIN_PWD) {
+    isAdmin = true;
+    document.getElementById('lockScreen').style.display = 'none';
+    init();
+  } else {
+    document.getElementById('lockError').textContent = '密碼錯誤，請再試一次';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').focus();
+  }
+}
+
+function enterViewMode() {
+  isAdmin = false;
+  document.getElementById('lockScreen').style.display = 'none';
+  init();
+  // 隱藏所有編輯/儲存按鈕
+  setTimeout(() => {
+    document.querySelectorAll('.btn-gold, .btn-dark, .btn-green, .btn-red, .attend-add-btn, .invite-pick-btn, .lock-view-btn').forEach(el => {
+      if(!el.classList.contains('lock-view-btn')) el.style.display = 'none';
+    });
+  }, 2000);
+}
+
+function checkAdmin(action) {
+  if(!isAdmin) { showToast('⚠️ 請以管理員身分登入才能編輯'); return false; }
+  return true;
+}
+
+// 等待密碼輸入後才 init
+document.getElementById("lockInput").focus();
 </script>
 </body>
 </html>
