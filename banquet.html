@@ -1536,58 +1536,70 @@ function getVenueImgKey(actId, idx) {
 
 function renderVenuePage() {
   const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
-  const fields = [
+  const fieldDefs = [
     ['活動名稱','活動名稱'],['日期','日期'],['星期','星期'],
     ['地點','地點'],['廳別','廳別'],['承辦聯絡人','承辦聯絡人'],
     ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
   ];
 
   // 產生8格圖片
-  const photoSlots = Array.from({length:8}, (_,i) => {
-    const key = getVenueImgKey(currentActId, i);
-    const capKey = key + '_cap';
-    const img = localStorage.getItem(key) || '';
-    const cap = localStorage.getItem(capKey) || '';
-    return `<div class="venue-photo-slot" id="venue-slot-${i}">
-      <div class="venue-photo-img-area" id="venue-imgarea-${i}">
-        ${img
-          ? `<img src="${img}" class="venue-photo-img" alt="場地照片${i+1}" onclick="openLightbox('${img}','${cap}')">`
-          : `<div class="venue-photo-placeholder" onclick="document.getElementById('venue-file-${i}').click()">
-              <i class="ti ti-camera"></i>
-              <span>上傳照片</span>
-            </div>`
-        }
-        <div class="venue-photo-overlay">
-          <div class="menu-img-action" onclick="openLightbox(document.querySelector('#venue-imgarea-${i} img')?.src,'')"><i class="ti ti-eye"></i> 放大</div>
-          <div class="menu-img-action" onclick="document.getElementById('venue-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
-          <div class="menu-img-action" onclick="removeVenueImg(${i})"><i class="ti ti-trash"></i> 刪除</div>
-        </div>
-      </div>
-      <input type="file" id="venue-file-${i}" accept="image/*" style="display:none"
-        onchange="handleVenueImg(this,${i})">
-      <input class="venue-caption-input" id="venue-cap-${i}" placeholder="說明文字（選填）"
-        value="${cap}" onchange="saveVenueCaption(${i})" oninput="saveVenueCaption(${i})">
-    </div>`;
+  const photoSlots = Array.from({length:8}, (_,slotIdx) => {
+    const storKey = getVenueImgKey(currentActId, slotIdx);
+    const capStorKey = storKey + '_cap';
+    const savedImg = localStorage.getItem(storKey) || '';
+    const savedCap = localStorage.getItem(capStorKey) || '';
+    return '<div class="venue-photo-slot" id="venue-slot-' + slotIdx + '">' +
+      '<div class="venue-photo-img-area" id="venue-imgarea-' + slotIdx + '">' +
+      (savedImg
+        ? '<img src="' + savedImg + '" class="venue-photo-img" alt="場地照片' + (slotIdx+1) + '" id="venue-img-' + slotIdx + '">'
+        : '<div class="venue-photo-placeholder" id="venue-ph-' + slotIdx + '"><i class="ti ti-camera"></i><span>上傳照片</span></div>'
+      ) +
+      '<div class="venue-photo-overlay">' +
+      '<div class="menu-img-action" id="venue-enlarge-' + slotIdx + '"><i class="ti ti-eye"></i> 放大</div>' +
+      '<div class="menu-img-action" id="venue-upbtn-' + slotIdx + '"><i class="ti ti-upload"></i> 換圖</div>' +
+      '<div class="menu-img-action" onclick="removeVenueImg(' + slotIdx + ')"><i class="ti ti-trash"></i> 刪除</div>' +
+      '</div></div>' +
+      '<input class="venue-caption-input" id="venue-cap-' + slotIdx + '" placeholder="說明文字（選填）" value="' + savedCap.replace(/"/g,'&quot;') + '">' +
+      '</div>';
   }).join('');
 
-  document.getElementById('venue-content').innerHTML = `
-    <div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>
-    <table class="attend-table" style="margin-bottom:24px">
-      <tbody>${fields.map(([label,key]) => `
-        <tr>
-          <td style="width:120px;color:var(--text-muted);font-size:12px">${label}</td>
-          <td><input class="editable" id="venue-${key}" value="${act[key]||''}"></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-    <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">
-      <i class="ti ti-photo" style="font-size:15px"></i> 場地照片
-      <span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span>
-    </div>
-    <div class="venue-photo-grid">${photoSlots}</div>
-    <div class="save-bar">
-      <button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button>
-    </div>`;
+  // 場地欄位表格（用 fieldDefs 避免變數名稱衝突）
+  const fieldRows = fieldDefs.map(([lbl, fk]) =>
+    '<tr>' +
+    '<td style="width:120px;color:var(--text-muted);font-size:12px">' + lbl + '</td>' +
+    '<td><input class="editable" id="vfield-' + fk + '" value="' + (act[fk]||'').replace(/"/g,'&quot;') + '"></td>' +
+    '</tr>'
+  ).join('');
+
+  document.getElementById('venue-content').innerHTML =
+    '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
+    '<table class="attend-table" style="margin-bottom:24px"><tbody>' + fieldRows + '</tbody></table>' +
+    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
+    '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
+    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span></div>' +
+    '<div class="venue-photo-grid">' + photoSlots + '</div>' +
+    '<div class="save-bar"><button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>';
+
+  // 綁定 file input 給每個格子（用 JS 建立避免 innerHTML 解析問題）
+  Array.from({length:8}, (_,slotIdx) => {
+    const storKey = getVenueImgKey(currentActId, slotIdx);
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
+    fi.onchange = () => handleVenueImg(fi, slotIdx);
+    document.body.appendChild(fi);
+
+    const ph = document.getElementById('venue-ph-' + slotIdx);
+    if(ph) ph.onclick = () => fi.click();
+    const upBtn = document.getElementById('venue-upbtn-' + slotIdx);
+    if(upBtn) upBtn.onclick = () => fi.click();
+
+    const img = document.getElementById('venue-img-' + slotIdx);
+    const capInput = document.getElementById('venue-cap-' + slotIdx);
+    const enlargeBtn = document.getElementById('venue-enlarge-' + slotIdx);
+    if(img) img.onclick = () => openLightbox(img.src, capInput?.value||'');
+    if(enlargeBtn) enlargeBtn.onclick = () => { const i = document.getElementById('venue-img-'+slotIdx); if(i) openLightbox(i.src, capInput?.value||''); };
+    if(capInput) capInput.oninput = () => localStorage.setItem(storKey+'_cap', capInput.value);
+  });
 }
 
 function handleVenueImg(input, idx) {
@@ -1635,7 +1647,16 @@ function removeVenueImg(idx) {
 }
 
 async function saveVenue() {
-  showToast('場地資訊已儲存（本版本儲存至 Sheets 功能開發中）');
+  if(!checkAdmin()) return;
+  const fieldDefs = ['活動名稱','日期','星期','地點','廳別','承辦聯絡人','桌數範圍','狀態','備註'];
+  const act = allActivities.find(a => a['活動ID'] === currentActId);
+  if(act) {
+    fieldDefs.forEach(fk => {
+      const el = document.getElementById('vfield-' + fk);
+      if(el) act[fk] = el.value;
+    });
+  }
+  showToast('✓ 場地資訊已儲存');
 }
 
 // ── 菜單頁 ──
@@ -1897,21 +1918,27 @@ function renderInvitePage() {
     </div>`;
   }).join('');
 
-  // 為每張卡建立 file input 並綁定（避免 onclick id 找不到的問題）
+  // 先清掉舊的 file input（避免重複累積）
+  document.querySelectorAll('.invite-file-input').forEach(el => el.remove());
+
+  // 為每張卡建立 file input 並綁定
   inviteData.forEach((card, i) => {
     const ver = card['版本編號']||i;
-    // placeholder 點擊
-    const ph = document.getElementById('invite-ph-' + i);
-    // 上傳按鈕
-    const upBtn = document.getElementById('invite-upbtn-' + i);
-    // 建立 input
     const fileInput = document.createElement('input');
     fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
-    fileInput.id = 'invite-file-' + i;
+    fileInput.className = 'invite-file-input';
+    fileInput.dataset.idx = i;
     fileInput.onchange = () => handleInviteImg(fileInput, i, ver);
     document.body.appendChild(fileInput);
+
+    const ph = document.getElementById('invite-ph-' + i);
+    const upBtn = document.getElementById('invite-upbtn-' + i);
     if(ph) ph.onclick = () => fileInput.click();
     if(upBtn) upBtn.onclick = () => fileInput.click();
+
+    // 已有圖片的點擊放大
+    const imgEl = document.querySelector('#invite-imgwrap-' + i + ' img');
+    if(imgEl) imgEl.onclick = () => openLightbox(imgEl.src, card['版本名稱']||'');
   });
 
   const picked = inviteData.find(c=>c['老闆選定']==='✓');
