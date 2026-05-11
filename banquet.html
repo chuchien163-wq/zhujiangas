@@ -1200,32 +1200,67 @@ select.inline-sel {
     <!-- ── 歷史紀錄 ── -->
     <!-- ── 桌位圖 ── -->
     <div id="page-seating" class="page">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
-        <div>
-          <div style="font-size:15px;font-weight:500">桌位配置圖</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">點桌子選人員；拖曳可調整位置</div>
+      <!-- 工具列 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn" onclick="addSeatingItem('main')">⊕ 主桌</button>
+          <button class="btn" onclick="addSeatingItem('table')">⊕ 一般桌</button>
+          <button class="btn" onclick="addSeatingItem('door')">🚪 門</button>
+          <button class="btn" onclick="addSeatingItem('text')">📝 文字</button>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" onclick="resetSeating()"><i class="ti ti-refresh"></i> 重置配置</button>
-          <button class="btn btn-gold" onclick="saveSeating()"><i class="ti ti-device-floppy"></i> 儲存配置</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn" onclick="resetSeating()"><i class="ti ti-refresh"></i> 重置</button>
+          <button class="btn btn-gold" onclick="saveSeating()"><i class="ti ti-device-floppy"></i> 儲存</button>
         </div>
       </div>
-      <!-- 圖例 -->
-      <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;font-size:12px;color:var(--text-muted)">
-        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#c9a84c;margin-right:5px;vertical-align:middle"></span>主桌</span>
-        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--sidebar-active);border:1.5px solid var(--gold);margin-right:5px;vertical-align:middle"></span>一般桌</span>
-        <span><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#4caf50;margin-right:5px;vertical-align:middle"></span>已分配人員</span>
+
+      <!-- 畫布 -->
+      <div id="seating-wrap" style="position:relative;width:100%;overflow:auto;background:#fff;border-radius:12px;border:0.5px solid var(--border)">
+        <canvas id="seatingCanvas" style="display:block;cursor:default"></canvas>
       </div>
-      <div id="seating-wrap" style="position:relative;width:100%;overflow:auto">
-        <canvas id="seatingCanvas" style="border-radius:12px;background:var(--bg);border:0.5px solid var(--border);display:block;max-width:100%"></canvas>
-      </div>
-      <!-- 人員分配面板 -->
-      <div id="seating-panel" style="display:none;margin-top:16px;background:var(--sidebar);border-radius:12px;padding:16px;border:0.5px solid var(--border)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div style="font-size:13px;font-weight:500;color:#fff" id="panel-table-name">選擇桌次</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.4)" id="panel-seat-count"></div>
+
+      <!-- 選取面板 -->
+      <div id="seating-panel" style="display:none;margin-top:12px;background:var(--sidebar);border-radius:12px;padding:16px;border:0.5px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:500;color:#fff" id="panel-title">選取元件</span>
+          <button class="btn btn-red" style="font-size:11px;padding:4px 10px;margin-left:auto" onclick="deleteSelected()"><i class="ti ti-trash"></i> 刪除</button>
         </div>
-        <div id="panel-members" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+
+        <!-- 桌子設定 -->
+        <div id="panel-table-opts" style="display:none">
+          <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:12px">
+            <div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">桌號名稱</div>
+              <input id="panel-label" class="editable" style="width:110px;font-size:13px" oninput="updateSelectedLabel(this.value)">
+            </div>
+            <div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">椅子數量</div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <button class="btn" style="padding:4px 10px;font-size:14px" onclick="changeChairs(-1)">－</button>
+                <span id="panel-chairs" style="font-size:14px;font-weight:500;color:#fff;min-width:24px;text-align:center">10</span>
+                <button class="btn" style="padding:4px 10px;font-size:14px" onclick="changeChairs(1)">＋</button>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">椅子大小 <span id="panel-chair-size-val" style="color:#c9a84c">18</span></div>
+              <input type="range" id="panel-chair-size" min="10" max="32" value="18" style="width:120px" oninput="updateChairSize(this.value)">
+            </div>
+          </div>
+          <!-- 人員分配 -->
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px">人員分配（點選指派座位）</div>
+          <div id="panel-members" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+
+        <!-- 文字設定 -->
+        <div id="panel-text-opts" style="display:none">
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">文字內容</div>
+          <input id="panel-text-input" class="editable" style="width:200px;font-size:13px" placeholder="例：舞台、入口、司儀台" oninput="updateSelectedLabel(this.value)">
+        </div>
+
+        <!-- 門設定 -->
+        <div id="panel-door-opts" style="display:none">
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">拖曳門到入口位置</div>
+        </div>
       </div>
     </div>
 
@@ -2384,251 +2419,377 @@ function closeLightboxOutside(e) {
 }
 
 
-// ══════════════════════════════════════
-// ── 桌位圖 ──
-// ══════════════════════════════════════
-let seatingData = {};   // { actId: { tables: [...] } }
-let selectedTableIdx = null;
-let canvas, ctx;
-let tables = [];        // 當前活動的桌次陣列
-let dragging = null, dragOffX = 0, dragOffY = 0;
 
-function getSeatingKey() { return 'seating_' + currentActId; }
+// ══════════════════════════════════════
+// ── 桌位圖（新版）──
+// ══════════════════════════════════════
+let sCanvas, sCtx;
+let sItems = [];        // 所有元件
+let sSelected = -1;     // 選取中的元件 index
+let sDragging = -1;
+let sDragOffX = 0, sDragOffY = 0;
+let sClickX = 0, sClickY = 0;
 
-function defaultTables() {
-  // 主桌居中，10張一般桌圍繞
-  const W = 720, H = 580, cx = W/2, cy = H/2;
-  const result = [];
+function getSeatingKey() { return 'seating2_' + currentActId; }
+
+function defaultItems() {
+  const W = 900, H = 650, cx = W/2, cy = H/2;
+  const items = [];
   // 主桌
-  result.push({ id: 0, label: '主桌', type: 'main', x: cx, y: cy, members: [], seats: 16 });
-  // 10張一般桌環繞（橢圓排列）
-  const rx = 240, ry = 200;
-  for(let i = 0; i < 10; i++) {
-    const angle = (i / 10) * Math.PI * 2 - Math.PI/2;
-    result.push({
-      id: i+1, label: '第'+(i+1)+'桌', type: 'normal',
-      x: Math.round(cx + rx * Math.cos(angle)),
-      y: Math.round(cy + ry * Math.sin(angle)),
-      members: [], seats: 10
-    });
-  }
-  return result;
+  items.push({ id: Date.now(), type:'main', x: cx, y: cy,
+    label:'主桌', tableR:52, chairR:18, chairCount:16, chairDist:80, members:[] });
+  // 4張一般桌
+  const pos = [
+    [cx-220, cy-160],[cx+220, cy-160],[cx-220, cy+160],[cx+220, cy+160]
+  ];
+  pos.forEach((p, i) => {
+    items.push({ id: Date.now()+i+1, type:'table', x:p[0], y:p[1],
+      label:'第'+(i+1)+'桌', tableR:38, chairR:14, chairCount:10, chairDist:58, members:[] });
+  });
+  return items;
 }
 
-function loadSeating() {
+function loadSeatingItems() {
   const saved = localStorage.getItem(getSeatingKey());
-  if(saved) { try { tables = JSON.parse(saved); return; } catch(e){} }
-  tables = defaultTables();
+  if(saved) { try { sItems = JSON.parse(saved); return; } catch(e){} }
+  sItems = defaultItems();
 }
 
 function saveSeating() {
-  localStorage.setItem(getSeatingKey(), JSON.stringify(tables));
+  localStorage.setItem(getSeatingKey(), JSON.stringify(sItems));
   showToast('✓ 桌位配置已儲存');
 }
 
 function resetSeating() {
   if(!confirm('確定要重置桌位配置？')) return;
-  tables = defaultTables();
-  selectedTableIdx = null;
-  document.getElementById('seating-panel').style.display = 'none';
+  sItems = defaultItems();
+  sSelected = -1;
+  closeSeatingPanel();
   drawSeating();
-  showToast('桌位已重置');
+  showToast('已重置');
 }
 
-function renderSeatingPage() {
-  canvas = document.getElementById('seatingCanvas');
-  loadSeating();
-  resizeCanvas();
+function addSeatingItem(type) {
+  const W = sCanvas.width, H = sCanvas.height;
+  const id = Date.now();
+  if(type === 'main') {
+    sItems.push({ id, type:'main', x:W/2, y:H/2,
+      label:'主桌', tableR:52, chairR:18, chairCount:16, chairDist:80, members:[] });
+  } else if(type === 'table') {
+    const n = sItems.filter(i=>i.type==='table').length + 1;
+    sItems.push({ id, type:'table', x:W/2+Math.random()*100-50, y:H/2+Math.random()*100-50,
+      label:'第'+n+'桌', tableR:38, chairR:14, chairCount:10, chairDist:58, members:[] });
+  } else if(type === 'door') {
+    sItems.push({ id, type:'door', x:W/2, y:H-60, label:'門', w:60, h:40 });
+  } else if(type === 'text') {
+    sItems.push({ id, type:'text', x:W/2, y:H/2, label:'文字' });
+  }
+  sSelected = sItems.length - 1;
   drawSeating();
-  canvas.onmousedown = onSeatingMouseDown;
-  canvas.onmousemove = onSeatingMouseMove;
-  canvas.onmouseup   = onSeatingMouseUp;
-  canvas.onmouseleave = onSeatingMouseUp;
-  // 觸控支援
-  canvas.ontouchstart = e => { e.preventDefault(); onSeatingMouseDown(e.touches[0]); };
-  canvas.ontouchmove  = e => { e.preventDefault(); onSeatingMouseMove(e.touches[0]); };
-  canvas.ontouchend   = e => { e.preventDefault(); onSeatingMouseUp(); };
+  openSeatingPanel(sSelected);
 }
 
-function resizeCanvas() {
-  const wrap = document.getElementById('seating-wrap');
-  const W = Math.min(wrap.clientWidth || 720, 720);
-  const H = Math.round(W * 580/720);
-  canvas.width = W; canvas.height = H;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-  ctx = canvas.getContext('2d');
+function deleteSelected() {
+  if(sSelected < 0) return;
+  sItems.splice(sSelected, 1);
+  sSelected = -1;
+  closeSeatingPanel();
+  drawSeating();
 }
 
-function tableRadius(t) { return t.type === 'main' ? 52 : 36; }
-
+// ── 繪圖 ──
 function drawSeating() {
-  if(!ctx) return;
-  const W = canvas.width, H = canvas.height;
-  const scaleX = W/720, scaleY = H/580;
+  if(!sCtx) return;
+  const W = sCanvas.width, H = sCanvas.height;
+  sCtx.clearRect(0, 0, W, H);
 
-  ctx.clearRect(0,0,W,H);
+  // 背景
+  sCtx.fillStyle = '#fafaf8';
+  sCtx.fillRect(0, 0, W, H);
 
-  // 背景格線
-  ctx.strokeStyle = 'rgba(150,130,80,0.07)';
-  ctx.lineWidth = 0.5;
-  for(let x=0;x<W;x+=40*scaleX){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
-  for(let y=0;y<H;y+=40*scaleY){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+  // 淡格線
+  sCtx.strokeStyle = 'rgba(180,170,140,0.15)';
+  sCtx.lineWidth = 0.5;
+  for(let x=0; x<W; x+=50){ sCtx.beginPath();sCtx.moveTo(x,0);sCtx.lineTo(x,H);sCtx.stroke(); }
+  for(let y=0; y<H; y+=50){ sCtx.beginPath();sCtx.moveTo(0,y);sCtx.lineTo(W,y);sCtx.stroke(); }
 
-  tables.forEach((t,i) => {
-    const tx = t.x * scaleX, ty = t.y * scaleY;
-    const r = tableRadius(t) * Math.min(scaleX,scaleY);
-    const filled = t.members.length > 0;
-    const isMain = t.type === 'main';
-    const isSelected = selectedTableIdx === i;
-
-    // 椅子小圓（座位圈）
-    const chairs = t.seats;
-    for(let c=0;c<chairs;c++){
-      const angle = (c/chairs)*Math.PI*2 - Math.PI/2;
-      const cr = r + 10 * Math.min(scaleX,scaleY);
-      const cx2 = tx + cr * Math.cos(angle);
-      const cy2 = ty + cr * Math.sin(angle);
-      const cr2 = 5 * Math.min(scaleX,scaleY);
-      ctx.beginPath(); ctx.arc(cx2,cy2,cr2,0,Math.PI*2);
-      ctx.fillStyle = isMain ? 'rgba(201,168,76,0.3)' : 'rgba(255,255,255,0.12)';
-      ctx.fill();
-      ctx.strokeStyle = isMain ? 'rgba(201,168,76,0.5)' : 'rgba(255,255,255,0.2)';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-    }
-
-    // 桌面主圓
-    ctx.beginPath(); ctx.arc(tx,ty,r,0,Math.PI*2);
-    if(isMain) {
-      const grad = ctx.createRadialGradient(tx,ty,0,tx,ty,r);
-      grad.addColorStop(0,'rgba(201,168,76,0.35)');
-      grad.addColorStop(1,'rgba(201,168,76,0.12)');
-      ctx.fillStyle = grad;
-    } else if(filled) {
-      ctx.fillStyle = 'rgba(76,175,80,0.18)';
-    } else {
-      ctx.fillStyle = 'rgba(40,40,36,0.85)';
-    }
-    ctx.fill();
-
-    // 邊框
-    ctx.strokeStyle = isSelected ? '#f0c040' : (isMain ? '#c9a84c' : (filled ? '#4caf50' : 'rgba(255,255,255,0.18)'));
-    ctx.lineWidth = isSelected ? 2.5 : 1.5;
-    ctx.stroke();
-
-    // 桌次標籤
-    ctx.fillStyle = isMain ? '#f0c040' : '#fff';
-    ctx.font = `${isMain ? 600 : 500} ${Math.round(12*Math.min(scaleX,scaleY))}px "Noto Sans TC", sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(t.label, tx, ty - r*0.15);
-
-    // 人數
-    const cnt = t.members.length + '/' + t.seats;
-    ctx.font = `${Math.round(10*Math.min(scaleX,scaleY))}px "Noto Sans TC", sans-serif`;
-    ctx.fillStyle = filled ? '#81c784' : 'rgba(255,255,255,0.35)';
-    ctx.fillText(cnt, tx, ty + r*0.32);
-
-    // 第一個人名
-    if(t.members.length > 0) {
-      const name = t.members[0].length > 4 ? t.members[0].slice(0,3)+'…' : t.members[0];
-      ctx.font = `${Math.round(9*Math.min(scaleX,scaleY))}px "Noto Sans TC", sans-serif`;
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.fillText(name + (t.members.length>1?'等':''), tx, ty + r*0.65);
+  sItems.forEach((item, idx) => {
+    const isSel = idx === sSelected;
+    if(item.type === 'main' || item.type === 'table') {
+      drawTable(item, isSel);
+    } else if(item.type === 'door') {
+      drawDoor(item, isSel);
+    } else if(item.type === 'text') {
+      drawTextItem(item, isSel);
     }
   });
 }
 
-function getTableAtPos(mx, my) {
-  const W = canvas.width, H = canvas.height;
-  const scaleX = W/720, scaleY = H/580;
-  for(let i=0;i<tables.length;i++){
-    const t = tables[i];
-    const tx = t.x*scaleX, ty = t.y*scaleY;
-    const r = (tableRadius(t)+12) * Math.min(scaleX,scaleY);
-    if((mx-tx)**2 + (my-ty)**2 <= r*r) return i;
+function drawTable(t, isSel) {
+  const { x, y, tableR, chairR, chairCount, chairDist, label, members, type } = t;
+  const isMain = type === 'main';
+
+  // 椅子（先畫在桌面下層）
+  for(let i = 0; i < chairCount; i++) {
+    const angle = (i / chairCount) * Math.PI * 2 - Math.PI / 2;
+    const cx = x + chairDist * Math.cos(angle);
+    const cy = y + chairDist * Math.sin(angle);
+    const hasPerson = members[i] && members[i] !== '';
+
+    sCtx.beginPath();
+    sCtx.arc(cx, cy, chairR, 0, Math.PI * 2);
+    sCtx.fillStyle = hasPerson ? '#d4edda' : '#ffffff';
+    sCtx.fill();
+    sCtx.strokeStyle = hasPerson ? '#5a9e5a' : '#999';
+    sCtx.lineWidth = 1.2;
+    sCtx.stroke();
+
+    // 如果有分配人員，顯示名字（最多3字）
+    if(hasPerson) {
+      sCtx.fillStyle = '#2d6a2d';
+      sCtx.font = `${Math.max(8, chairR * 0.65)}px "Noto Sans TC", sans-serif`;
+      sCtx.textAlign = 'center';
+      sCtx.textBaseline = 'middle';
+      const name = members[i].length > 3 ? members[i].slice(0,3) : members[i];
+      sCtx.fillText(name, cx, cy);
+    }
+  }
+
+  // 桌面
+  sCtx.beginPath();
+  sCtx.arc(x, y, tableR, 0, Math.PI * 2);
+  sCtx.fillStyle = isMain ? '#e8f4fd' : '#f0f4ff';
+  sCtx.fill();
+  sCtx.strokeStyle = isSel ? '#c9a84c' : (isMain ? '#5bafd6' : '#7a9abf');
+  sCtx.lineWidth = isSel ? 2.5 : 1.5;
+  sCtx.stroke();
+
+  // 桌號
+  sCtx.fillStyle = isMain ? '#1a5f7a' : '#2a4a7a';
+  sCtx.font = `500 ${Math.round(tableR * 0.36)}px "Noto Sans TC", sans-serif`;
+  sCtx.textAlign = 'center';
+  sCtx.textBaseline = 'middle';
+  sCtx.fillText(label, x, y - 6);
+
+  // 人數
+  const filled = members.filter(m => m && m !== '').length;
+  sCtx.fillStyle = '#888';
+  sCtx.font = `${Math.round(tableR * 0.26)}px "Noto Sans TC", sans-serif`;
+  sCtx.fillText(filled + '/' + chairCount, x, y + 10);
+
+  // 選取光暈
+  if(isSel) {
+    sCtx.beginPath();
+    sCtx.arc(x, y, tableR + 6, 0, Math.PI * 2);
+    sCtx.strokeStyle = 'rgba(201,168,76,0.4)';
+    sCtx.lineWidth = 3;
+    sCtx.stroke();
+  }
+}
+
+function drawDoor(d, isSel) {
+  const { x, y, w, h, label } = d;
+  // 牆壁線
+  sCtx.strokeStyle = isSel ? '#c9a84c' : '#555';
+  sCtx.lineWidth = isSel ? 3 : 4;
+  sCtx.lineCap = 'round';
+  // 左段牆
+  sCtx.beginPath(); sCtx.moveTo(x - w, y); sCtx.lineTo(x - w/4, y); sCtx.stroke();
+  // 右段牆
+  sCtx.beginPath(); sCtx.moveTo(x + w/4, y); sCtx.lineTo(x + w, y); sCtx.stroke();
+  // 門板
+  sCtx.strokeStyle = '#d4795a';
+  sCtx.lineWidth = 1.5;
+  sCtx.beginPath(); sCtx.moveTo(x - w/4, y); sCtx.lineTo(x - w/4, y - h); sCtx.stroke();
+  // 弧線
+  sCtx.beginPath();
+  sCtx.arc(x - w/4, y, h, -Math.PI/2, 0, false);
+  sCtx.strokeStyle = '#d4795a';
+  sCtx.lineWidth = 1;
+  sCtx.setLineDash([4, 3]);
+  sCtx.stroke();
+  sCtx.setLineDash([]);
+  // 門標籤
+  sCtx.fillStyle = '#d4795a';
+  sCtx.font = '12px "Noto Sans TC", sans-serif';
+  sCtx.textAlign = 'center';
+  sCtx.textBaseline = 'top';
+  sCtx.fillText(label || '門', x, y + 8);
+}
+
+function drawTextItem(t, isSel) {
+  sCtx.font = '500 14px "Noto Sans TC", sans-serif';
+  sCtx.textAlign = 'center';
+  sCtx.textBaseline = 'middle';
+  // 底框
+  const tw = sCtx.measureText(t.label).width + 20;
+  sCtx.strokeStyle = isSel ? '#c9a84c' : 'rgba(100,100,100,0.3)';
+  sCtx.lineWidth = 1;
+  sCtx.setLineDash([5, 3]);
+  sCtx.strokeRect(t.x - tw/2, t.y - 12, tw, 24);
+  sCtx.setLineDash([]);
+  sCtx.fillStyle = '#333';
+  sCtx.fillText(t.label, t.x, t.y);
+}
+
+// ── 命中測試 ──
+function hitTest(mx, my) {
+  for(let i = sItems.length - 1; i >= 0; i--) {
+    const item = sItems[i];
+    if(item.type === 'main' || item.type === 'table') {
+      const dist = Math.hypot(mx - item.x, my - item.y);
+      if(dist <= item.tableR + item.chairDist + item.chairR) return i;
+    } else if(item.type === 'door') {
+      if(Math.abs(mx - item.x) < item.w && Math.abs(my - item.y) < item.h + 20) return i;
+    } else if(item.type === 'text') {
+      if(Math.abs(mx - item.x) < 80 && Math.abs(my - item.y) < 16) return i;
+    }
   }
   return -1;
 }
 
-function getCanvasPos(e) {
-  const rect = canvas.getBoundingClientRect();
+function getPos(e) {
+  const rect = sCanvas.getBoundingClientRect();
   return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-let clickStartX=0, clickStartY=0;
-function onSeatingMouseDown(e) {
-  const {x,y} = getCanvasPos(e);
-  clickStartX=x; clickStartY=y;
-  const idx = getTableAtPos(x,y);
+function onSMouseDown(e) {
+  const {x, y} = getPos(e);
+  sClickX = x; sClickY = y;
+  const idx = hitTest(x, y);
+  sDragging = idx;
   if(idx >= 0) {
-    dragging = idx;
-    const W=canvas.width, H=canvas.height;
-    dragOffX = x - tables[idx].x*(W/720);
-    dragOffY = y - tables[idx].y*(H/580);
+    sDragOffX = x - sItems[idx].x;
+    sDragOffY = y - sItems[idx].y;
   }
 }
 
-function onSeatingMouseMove(e) {
-  if(dragging === null) return;
-  const {x,y} = getCanvasPos(e);
-  const W=canvas.width, H=canvas.height;
-  tables[dragging].x = Math.round((x - dragOffX) / (W/720));
-  tables[dragging].y = Math.round((y - dragOffY) / (H/580));
+function onSMouseMove(e) {
+  if(sDragging < 0) return;
+  const {x, y} = getPos(e);
+  sItems[sDragging].x = x - sDragOffX;
+  sItems[sDragging].y = y - sDragOffY;
   drawSeating();
 }
 
-function onSeatingMouseUp(e) {
-  if(dragging === null) return;
-  // 判斷是點擊還是拖曳
-  const dx = (e ? (e.clientX||0) : 0) - clickStartX;
-  const dy = (e ? (e.clientY||0) : 0) - clickStartY;
-  if(Math.abs(dx)<5 && Math.abs(dy)<5) {
-    // 點擊：選取桌次
-    selectedTableIdx = dragging;
+function onSMouseUp(e) {
+  if(sDragging < 0) return;
+  const {x, y} = getPos(e);
+  const moved = Math.hypot(x - sClickX, y - sClickY) > 5;
+  if(!moved) {
+    sSelected = sDragging;
     drawSeating();
-    openSeatingPanel(dragging);
+    openSeatingPanel(sSelected);
   }
-  dragging = null;
+  sDragging = -1;
 }
 
+// ── 面板 ──
 function openSeatingPanel(idx) {
-  const t = tables[idx];
+  if(idx < 0) { closeSeatingPanel(); return; }
+  const item = sItems[idx];
   const panel = document.getElementById('seating-panel');
   panel.style.display = 'block';
-  document.getElementById('panel-table-name').textContent = t.label + (t.type==='main'?' （主桌）':'');
-  document.getElementById('panel-seat-count').textContent = t.members.length + ' / ' + t.seats + ' 人';
+  document.getElementById('panel-title').textContent =
+    item.type==='main' ? '主桌設定' :
+    item.type==='table' ? '一般桌設定' :
+    item.type==='door' ? '門設定' : '文字設定';
 
-  // 收集所有可分配的人（內部+外部）
-  const allPeople = [
-    ...internalData.filter(r=>r['是否出席']==='出席').map(r=>({name:r['姓名'],type:'staff'})),
-    ...externalData.map(r=>({name:r['代表姓名']||r['邀請單位'],type:'ext'}))
-  ];
+  document.getElementById('panel-table-opts').style.display = (item.type==='main'||item.type==='table') ? 'block' : 'none';
+  document.getElementById('panel-text-opts').style.display = item.type==='text' ? 'block' : 'none';
+  document.getElementById('panel-door-opts').style.display = item.type==='door' ? 'block' : 'none';
 
-  const membersDiv = document.getElementById('panel-members');
-  membersDiv.innerHTML = allPeople.map(p => {
-    const inThis = t.members.includes(p.name);
-    const inOther = !inThis && tables.some(tb => tb.id!==t.id && tb.members.includes(p.name));
-    return '<div class="seat-chip ' + (inThis?'seat-chip-on':inOther?'seat-chip-other':'') + '" onclick="toggleSeat(' + idx + ',\'' + p.name.replace(/'/g,"\\'") + '\')">' +
-      '<span>' + (p.type==='staff' ? '' : '👤 ') + p.name + '</span>' +
-      (inThis ? '<i class="ti ti-check" style="font-size:10px;color:#4caf50"></i>' : '') +
-      (inOther ? '<i class="ti ti-transfer" style="font-size:10px;color:rgba(255,255,255,0.3)"></i>' : '') +
-      '</div>';
-  }).join('');
+  if(item.type==='main'||item.type==='table') {
+    document.getElementById('panel-label').value = item.label;
+    document.getElementById('panel-chairs').textContent = item.chairCount;
+    document.getElementById('panel-chair-size').value = item.chairR;
+    document.getElementById('panel-chair-size-val').textContent = item.chairR;
+    renderMemberPanel(idx);
+  }
+  if(item.type==='text') {
+    document.getElementById('panel-text-input').value = item.label;
+  }
 }
 
-function toggleSeat(tableIdx, name) {
-  const t = tables[tableIdx];
-  const pos = t.members.indexOf(name);
-  if(pos >= 0) {
-    t.members.splice(pos,1);
-  } else {
-    if(t.members.length >= t.seats) { showToast('⚠️ 此桌座位已滿（'+t.seats+'人）'); return; }
-    t.members.push(name);
-  }
-  document.getElementById('panel-seat-count').textContent = t.members.length + ' / ' + t.seats + ' 人';
-  openSeatingPanel(tableIdx);
+function closeSeatingPanel() {
+  document.getElementById('seating-panel').style.display = 'none';
+}
+
+function updateSelectedLabel(val) {
+  if(sSelected < 0) return;
+  sItems[sSelected].label = val;
   drawSeating();
 }
+
+function changeChairs(delta) {
+  if(sSelected < 0) return;
+  const item = sItems[sSelected];
+  item.chairCount = Math.max(1, Math.min(30, item.chairCount + delta));
+  // 調整 members 陣列長度
+  while(item.members.length < item.chairCount) item.members.push('');
+  item.members = item.members.slice(0, item.chairCount);
+  document.getElementById('panel-chairs').textContent = item.chairCount;
+  // 自動調整椅子距桌距離
+  item.chairDist = item.tableR + item.chairR + 8;
+  renderMemberPanel(sSelected);
+  drawSeating();
+}
+
+function updateChairSize(val) {
+  if(sSelected < 0) return;
+  sItems[sSelected].chairR = parseInt(val);
+  sItems[sSelected].chairDist = sItems[sSelected].tableR + parseInt(val) + 8;
+  document.getElementById('panel-chair-size-val').textContent = val;
+  drawSeating();
+}
+
+function renderMemberPanel(idx) {
+  const item = sItems[idx];
+  const allPeople = [
+    ...internalData.filter(r=>r['是否出席']==='出席').map(r=>r['姓名']),
+    ...externalData.map(r=>r['代表姓名']||r['邀請單位']).filter(Boolean)
+  ];
+  const div = document.getElementById('panel-members');
+  // 顯示每個座位
+  let html = '';
+  for(let i = 0; i < item.chairCount; i++) {
+    const name = item.members[i] || '';
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">' +
+      '<span style="font-size:11px;color:rgba(255,255,255,0.4);min-width:40px">座位'+(i+1)+'</span>' +
+      '<select style="font-size:12px;background:#2a2a28;color:#fff;border:0.5px solid rgba(255,255,255,0.2);border-radius:6px;padding:3px 6px;flex:1" ' +
+      'onchange="assignSeat('+idx+','+i+',this.value)">' +
+      '<option value="">（空位）</option>' +
+      allPeople.map(p => '<option value="'+p+'"'+(name===p?' selected':'')+'>'+p+'</option>').join('') +
+      '</select></div>';
+  }
+  div.innerHTML = html;
+}
+
+function assignSeat(tableIdx, seatIdx, name) {
+  while(sItems[tableIdx].members.length <= seatIdx) sItems[tableIdx].members.push('');
+  sItems[tableIdx].members[seatIdx] = name;
+  drawSeating();
+}
+
+function renderSeatingPage() {
+  sCanvas = document.getElementById('seatingCanvas');
+  const wrap = document.getElementById('seating-wrap');
+  const W = Math.max(wrap.clientWidth || 800, 600);
+  const H = Math.round(W * 650/900);
+  sCanvas.width = W; sCanvas.height = H;
+
+  loadSeatingItems();
+  drawSeating();
+
+  sCanvas.onmousedown = onSMouseDown;
+  sCanvas.onmousemove = onSMouseMove;
+  sCanvas.onmouseup   = onSMouseUp;
+  sCanvas.onmouseleave = () => { sDragging = -1; };
+  sCanvas.ontouchstart = e => { e.preventDefault(); onSMouseDown(e.touches[0]); };
+  sCanvas.ontouchmove  = e => { e.preventDefault(); onSMouseMove(e.touches[0]); };
+  sCanvas.ontouchend   = e => { e.preventDefault(); onSMouseUp(e.changedTouches[0]); };
+}
+
 // ── 密碼 / 權限控制 ──
 const ADMIN_PWD = '1688';
 let isAdmin = false;
