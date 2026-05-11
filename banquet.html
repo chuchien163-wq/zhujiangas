@@ -608,8 +608,8 @@ select.inline-sel {
 /* ── 場地照片格 ── */
 .venue-photo-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 16px;
 }
 .venue-photo-slot {
@@ -696,9 +696,8 @@ select.inline-sel {
 .venue-caption-input::placeholder { color: var(--text-hint); }
 .venue-photo-img-area {
   position: relative;
-  height: 120px;
+  height: 200px;
   overflow: hidden;
-  flex: 1;
 }
 .venue-photo-img-area .venue-photo-img {
   width: 100%; height: 100%;
@@ -1981,20 +1980,19 @@ function renderInvitePage() {
       ${isBoss ? '<div class="invite-boss-badge">✓ 老闆選定</div>' : '<div class="invite-pending-badge">待裁示</div>'}
       <div class="invite-img-wrap" id="invite-imgwrap-${i}">
         ${savedImg
-          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}"
-               onclick="openLightbox('${savedImg}','${card['版本名稱']}')"
-               style="cursor:zoom-in">`
-          : `<div class="invite-img-placeholder" id="invite-ph-${i}">
-              <i class="ti ti-camera"></i>
-              <span>點此上傳邀請卡圖片</span>
+          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}" style="cursor:zoom-in">`
+          : `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-hint);font-size:12px;gap:6px">
+              <i class="ti ti-camera" style="font-size:26px"></i>
+              <span>尚未上傳圖片</span>
             </div>`
         }
-        <div class="invite-img-overlay">
-          ${savedImg ? `<div class="menu-img-action" onclick="openLightbox(document.querySelector('#invite-imgwrap-${i} img')?.src,'${card['版本名稱']}')"><i class="ti ti-eye"></i> 放大</div>` : ''}
-          <div class="menu-img-action" id="invite-upbtn-${i}"><i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳'}</div>
-          ${savedImg ? `<div class="menu-img-action" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i> 刪除</div>` : ''}
-        </div>
-        ${!savedImg ? `<div id="invite-upbtn2-${i}" style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;z-index:2"><i class="ti ti-upload"></i> 上傳</div>` : ''}
+      </div>
+      <div style="display:flex;gap:6px;padding:6px 0 2px">
+        <button class="btn" style="flex:1;font-size:11px;padding:5px;justify-content:center" id="invite-upbtn-${i}">
+          <i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳圖片'}
+        </button>
+        ${savedImg ? `<button class="btn" style="font-size:11px;padding:5px 8px" onclick="openLightbox(document.querySelector('#invite-imgwrap-${i} img')?.src,'${card['版本名稱']}')"><i class="ti ti-eye"></i></button>` : ''}
+        ${savedImg ? `<button class="btn btn-red" style="font-size:11px;padding:5px 8px" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i></button>` : ''}
       </div>
       <div class="invite-footer">
         <div class="invite-ver">${card['版本編號']}</div>
@@ -2008,27 +2006,21 @@ function renderInvitePage() {
     </div>`;
   }).join('');
 
-  // 先清掉舊的 file input（避免重複累積）
+  // 清掉舊的 file input
   document.querySelectorAll('.invite-file-input').forEach(el => el.remove());
 
-  // 為每張卡建立 file input 並綁定
+  // 為每張卡建立 file input 並綁定上傳按鈕（按鈕在 wrap 外面，不受 overflow 影響）
   inviteData.forEach((card, i) => {
     const ver = card['版本編號']||i;
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
-    fileInput.className = 'invite-file-input';
-    fileInput.dataset.idx = i;
-    fileInput.onchange = () => handleInviteImg(fileInput, i, ver);
-    document.body.appendChild(fileInput);
+    const fi = document.createElement('input');
+    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
+    fi.className = 'invite-file-input';
+    fi.onchange = () => handleInviteImg(fi, i, ver);
+    document.body.appendChild(fi);
 
-    const ph = document.getElementById('invite-ph-' + i);
     const upBtn = document.getElementById('invite-upbtn-' + i);
-    const upBtn2 = document.getElementById('invite-upbtn2-' + i);
-    if(ph) ph.onclick = () => fileInput.click();
-    if(upBtn) upBtn.onclick = () => fileInput.click();
-    if(upBtn2) upBtn2.onclick = () => fileInput.click();
+    if(upBtn) upBtn.onclick = () => fi.click();
 
-    // 已有圖片的點擊放大
     const imgEl = document.querySelector('#invite-imgwrap-' + i + ' img');
     if(imgEl) imgEl.onclick = () => openLightbox(imgEl.src, card['版本名稱']||'');
   });
@@ -2482,7 +2474,12 @@ function addSeatingItem(type) {
       label:'主桌', tableR:52, chairR:18, chairCount:16, chairDist:80, members:[] });
   } else if(type === 'table') {
     const n = sItems.filter(i=>i.type==='table').length + 1;
-    sItems.push({ id, type:'table', x:W/2+Math.random()*100-50, y:H/2+Math.random()*100-50,
+    const existCount = sItems.filter(it=>it.type==='table').length;
+    const cols = 3, spacing = 180;
+    const startX = (sCanvas.width - spacing*(cols-1))/2;
+    const px = startX + (existCount % cols) * spacing;
+    const py = 160 + Math.floor(existCount/cols) * 180;
+    sItems.push({ id, type:'table', x:px, y:py,
       label:'第'+n+'桌', tableR:38, chairR:14, chairCount:10, chairDist:58, members:[] });
   } else if(type === 'door') {
     sItems.push({ id, type:'door', x:W/2, y:H-60, label:'門', w:60, h:40 });
@@ -2779,11 +2776,19 @@ function assignSeat(tableIdx, seatIdx, name) {
 function renderSeatingPage() {
   sCanvas = document.getElementById('seatingCanvas');
   const wrap = document.getElementById('seating-wrap');
-  const W = Math.max(wrap.clientWidth || 800, 600);
-  const H = Math.round(W * 650/900);
+  // 等 DOM 渲染完才取寬度
+  const W = Math.max(wrap.offsetWidth || 800, 400);
+  const H = Math.round(W * 0.65);
   sCanvas.width = W; sCanvas.height = H;
+  sCanvas.style.width = W + 'px';
+  sCanvas.style.height = H + 'px';
 
   loadSeatingItems();
+  // 把預設桌子座標縮放到實際 canvas 大小
+  sItems.forEach(item => {
+    if(item.x > W) item.x = item.x * W / 900;
+    if(item.y > H) item.y = item.y * H / 650;
+  });
   drawSeating();
 
   sCanvas.onmousedown = onSMouseDown;
