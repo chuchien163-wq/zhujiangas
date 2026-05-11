@@ -614,11 +614,12 @@ select.inline-sel {
 }
 .venue-photo-slot {
   position: relative;
-  aspect-ratio: 4/3;
   border-radius: var(--radius);
   overflow: hidden;
   border: 0.5px solid var(--border);
   background: var(--bg);
+  display: flex;
+  flex-direction: column;
 }
 .venue-photo-img {
   width: 100%; height: 100%;
@@ -695,8 +696,9 @@ select.inline-sel {
 .venue-caption-input::placeholder { color: var(--text-hint); }
 .venue-photo-img-area {
   position: relative;
-  aspect-ratio: 4/3;
+  height: 120px;
   overflow: hidden;
+  flex: 1;
 }
 .venue-photo-img-area .venue-photo-img {
   width: 100%; height: 100%;
@@ -1992,6 +1994,7 @@ function renderInvitePage() {
           <div class="menu-img-action" id="invite-upbtn-${i}"><i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳'}</div>
           ${savedImg ? `<div class="menu-img-action" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i> 刪除</div>` : ''}
         </div>
+        ${!savedImg ? `<div id="invite-upbtn2-${i}" style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.5);color:#fff;font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;z-index:2"><i class="ti ti-upload"></i> 上傳</div>` : ''}
       </div>
       <div class="invite-footer">
         <div class="invite-ver">${card['版本編號']}</div>
@@ -2020,8 +2023,10 @@ function renderInvitePage() {
 
     const ph = document.getElementById('invite-ph-' + i);
     const upBtn = document.getElementById('invite-upbtn-' + i);
+    const upBtn2 = document.getElementById('invite-upbtn2-' + i);
     if(ph) ph.onclick = () => fileInput.click();
     if(upBtn) upBtn.onclick = () => fileInput.click();
+    if(upBtn2) upBtn2.onclick = () => fileInput.click();
 
     // 已有圖片的點擊放大
     const imgEl = document.querySelector('#invite-imgwrap-' + i + ' img');
