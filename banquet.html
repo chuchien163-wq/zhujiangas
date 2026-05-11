@@ -1402,7 +1402,7 @@ function showPage(id) {
   if(id === 'history') renderHistoryPage();
   if(id === 'staff') renderStaffPage();
   if(id === 'venue') renderVenuePage();
-  if(id === 'seating') renderSeatingPage();
+  if(id === 'seating') setTimeout(renderSeatingPage, 50);
 }
 
 // ── 初始化 ──
@@ -1443,8 +1443,22 @@ async function loadActivityData(actId) {
   ]);
   externalData = ext;
   menuData = menu;
-  inviteData = inv;
-  pickedInvite = inv.find(i => i['老闆選定'] === '✓') || null;
+  // 若後端 inviteData 為空，自動填入8個預設版本
+  if(!inv || inv.length === 0) {
+    inviteData = [
+      {版本編號:'版本1', 版本名稱:'金色牡丹', 風格說明:'金色邊框＋牡丹花，附回條，最完整版本', 老闆選定:''},
+      {版本編號:'版本2', 版本名稱:'金色梅花', 風格說明:'梅花插圖，版面較簡潔', 老闆選定:''},
+      {版本編號:'版本3', 版本名稱:'銀杏水墨', 風格說明:'銀杏葉＋海浪底紋，古典東方風', 老闆選定:''},
+      {版本編號:'版本4', 版本名稱:'青花瓷', 風格說明:'深藍青花瓷風格，典雅莊重', 老闆選定:''},
+      {版本編號:'版本5', 版本名稱:'綠葉植物', 風格說明:'清新綠葉水彩，現代自然風', 老闆選定:''},
+      {版本編號:'版本6', 版本名稱:'青綠渲染', 風格說明:'青綠渲染底色，金色點綴', 老闆選定:''},
+      {版本編號:'版本7', 版本名稱:'粉藍花卉', 風格說明:'淡藍花卉插圖，清雅細緻', 老闆選定:''},
+      {版本編號:'版本8', 版本名稱:'極簡現代', 風格說明:'黑白極簡線條，現代感強', 老闆選定:''},
+    ];
+  } else {
+    inviteData = inv;
+  }
+  pickedInvite = inviteData.find(i => i['老闆選定'] === '✓') || null;
 
   // 若後端尚無內部人員資料，自動帶入全體公司人員（預設出席）
   if(!intAtt || intAtt.length === 0) {
@@ -1661,12 +1675,12 @@ function renderVenuePage() {
 
   document.getElementById('venue-content').innerHTML =
     '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
-    '<table class="attend-table" style="margin-bottom:24px"><tbody>' + fieldRows + '</tbody></table>' +
+    '<table class="attend-table" style="margin-bottom:20px"><tbody>' + fieldRows + '</tbody></table>' +
+    '<div class="save-bar" style="margin-bottom:20px"><button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>' +
     '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
     '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span></div>' +
-    '<div class="venue-photo-grid">' + photoSlots + '</div>' +
-    '<div class="save-bar"><button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>';
+    '<div class="venue-photo-grid">' + photoSlots + '</div>';
 
   // 綁定 file input 給每個格子（用 JS 建立避免 innerHTML 解析問題）
   Array.from({length:8}, (_,slotIdx) => {
