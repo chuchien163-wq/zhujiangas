@@ -640,6 +640,72 @@ select.inline-sel {
   gap: 6px;
 }
 .venue-photo-slot:hover .venue-photo-overlay { display: flex; }
+
+/* ── 燈箱 Lightbox ── */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.92);
+  align-items: center; justify-content: center; flex-direction: column;
+}
+.lightbox.show { display: flex; }
+.lightbox-img-wrap {
+  position: relative; max-width: 90vw; max-height: 82vh;
+  overflow: hidden; cursor: grab;
+  user-select: none;
+}
+.lightbox-img-wrap:active { cursor: grabbing; }
+.lightbox img {
+  max-width: 90vw; max-height: 82vh;
+  object-fit: contain; display: block;
+  transform-origin: center center;
+  transition: transform 0.1s;
+  pointer-events: none;
+}
+.lightbox-caption {
+  color: rgba(255,255,255,0.6); font-size: 13px;
+  margin-top: 12px; text-align: center;
+}
+.lightbox-toolbar {
+  display: flex; gap: 10px; margin-top: 14px;
+}
+.lb-btn {
+  background: rgba(255,255,255,0.1);
+  border: 0.5px solid rgba(255,255,255,0.2);
+  color: #fff; border-radius: 8px;
+  padding: 8px 16px; font-size: 13px;
+  cursor: pointer; font-family: "Noto Sans TC", sans-serif;
+}
+.lb-btn:hover { background: rgba(255,255,255,0.2); }
+.lightbox-close {
+  position: absolute; top: 16px; right: 20px;
+  font-size: 28px; color: rgba(255,255,255,0.5);
+  cursor: pointer; z-index: 1;
+}
+.lightbox-close:hover { color: #fff; }
+
+/* ── 場地說明欄 ── */
+.venue-caption-input {
+  width: 100%; font-size: 11px;
+  font-family: "Noto Sans TC", sans-serif;
+  border: none; border-top: 0.5px solid var(--border);
+  background: var(--bg); color: var(--text);
+  padding: 5px 8px; outline: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.venue-caption-input::placeholder { color: var(--text-hint); }
+.venue-photo-img-area {
+  position: relative;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+.venue-photo-img-area .venue-photo-img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  cursor: zoom-in;
+}
+.venue-photo-img-area .venue-photo-placeholder {
+  width: 100%; height: 100%;
+}
 /* ── 空狀態 ── */
 .empty-state {
   text-align: center; padding: 36px;
@@ -795,6 +861,21 @@ select.inline-sel {
 </head>
 <body>
 
+
+<!-- ── 燈箱 ── -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOutside(event)">
+  <span class="lightbox-close" onclick="closeLightbox()">✕</span>
+  <div class="lightbox-img-wrap" id="lbWrap">
+    <img id="lbImg" src="" alt="放大檢視">
+  </div>
+  <div class="lightbox-caption" id="lbCaption"></div>
+  <div class="lightbox-toolbar">
+    <button class="lb-btn" onclick="lbZoom(0.8)">－ 縮小</button>
+    <button class="lb-btn" onclick="lbZoom(1)">原始大小</button>
+    <button class="lb-btn" onclick="lbZoom(1.25)">＋ 放大</button>
+    <button class="lb-btn" onclick="closeLightbox()">✕ 關閉</button>
+  </div>
+</div>
 <!-- ── 密碼鎖定畫面 ── -->
 <div class="lock-screen" id="lockScreen">
   <div class="lock-box">
@@ -1464,26 +1545,34 @@ function renderVenuePage() {
   // 產生8格圖片
   const photoSlots = Array.from({length:8}, (_,i) => {
     const key = getVenueImgKey(currentActId, i);
+    const capKey = key + '_cap';
     const img = localStorage.getItem(key) || '';
+    const cap = localStorage.getItem(capKey) || '';
     return `<div class="venue-photo-slot" id="venue-slot-${i}">
-      ${img
-        ? `<img src="${img}" class="venue-photo-img" alt="場地照片${i+1}">`
-        : `<div class="venue-photo-placeholder" onclick="document.getElementById('venue-file-${i}').click()">
-            <i class="ti ti-camera"></i>
-            <span>上傳照片</span>
-          </div>`
-      }
-      <div class="venue-photo-overlay">
-        <div class="menu-img-action" onclick="document.getElementById('venue-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
-        <div class="menu-img-action" onclick="removeVenueImg(${i})"><i class="ti ti-trash"></i> 刪除</div>
+      <div class="venue-photo-img-area" id="venue-imgarea-${i}">
+        ${img
+          ? `<img src="${img}" class="venue-photo-img" alt="場地照片${i+1}" onclick="openLightbox('${img}','${cap}')">`
+          : `<div class="venue-photo-placeholder" onclick="document.getElementById('venue-file-${i}').click()">
+              <i class="ti ti-camera"></i>
+              <span>上傳照片</span>
+            </div>`
+        }
+        <div class="venue-photo-overlay">
+          <div class="menu-img-action" onclick="openLightbox(document.querySelector('#venue-imgarea-${i} img')?.src,'')"><i class="ti ti-eye"></i> 放大</div>
+          <div class="menu-img-action" onclick="document.getElementById('venue-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
+          <div class="menu-img-action" onclick="removeVenueImg(${i})"><i class="ti ti-trash"></i> 刪除</div>
+        </div>
       </div>
       <input type="file" id="venue-file-${i}" accept="image/*" style="display:none"
         onchange="handleVenueImg(this,${i})">
+      <input class="venue-caption-input" id="venue-cap-${i}" placeholder="說明文字（選填）"
+        value="${cap}" onchange="saveVenueCaption(${i})" oninput="saveVenueCaption(${i})">
     </div>`;
   }).join('');
 
   document.getElementById('venue-content').innerHTML = `
-    <table class="attend-table" style="margin-bottom:18px">
+    <div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>
+    <table class="attend-table" style="margin-bottom:24px">
       <tbody>${fields.map(([label,key]) => `
         <tr>
           <td style="width:120px;color:var(--text-muted);font-size:12px">${label}</td>
@@ -1493,7 +1582,7 @@ function renderVenuePage() {
     </table>
     <div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">
       <i class="ti ti-photo" style="font-size:15px"></i> 場地照片
-      <span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳</span>
+      <span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span>
     </div>
     <div class="venue-photo-grid">${photoSlots}</div>
     <div class="save-bar">
@@ -1508,28 +1597,39 @@ function handleVenueImg(input, idx) {
   reader.onload = e => {
     const base64 = e.target.result;
     localStorage.setItem(getVenueImgKey(currentActId, idx), base64);
-    const slot = document.getElementById('venue-slot-' + idx);
-    const ph = slot.querySelector('.venue-photo-placeholder');
+    const area = document.getElementById('venue-imgarea-' + idx);
+    const ph = area.querySelector('.venue-photo-placeholder');
     if(ph) ph.remove();
-    let img = slot.querySelector('img');
-    if(!img) { img = document.createElement('img'); img.className = 'venue-photo-img'; slot.insertBefore(img, slot.firstChild); }
+    let img = area.querySelector('img');
+    if(!img) {
+      img = document.createElement('img');
+      img.className = 'venue-photo-img';
+      img.alt = '場地照片' + (idx+1);
+      img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
+      area.insertBefore(img, area.firstChild);
+    }
     img.src = base64;
     showToast('✓ 照片已上傳');
   };
   reader.readAsDataURL(file);
 }
 
+function saveVenueCaption(idx) {
+  const val = document.getElementById('venue-cap-' + idx)?.value || '';
+  localStorage.setItem(getVenueImgKey(currentActId, idx) + '_cap', val);
+}
+
 function removeVenueImg(idx) {
   localStorage.removeItem(getVenueImgKey(currentActId, idx));
-  const slot = document.getElementById('venue-slot-' + idx);
-  const img = slot.querySelector('img');
+  const area = document.getElementById('venue-imgarea-' + idx);
+  const img = area.querySelector('img');
   if(img) img.remove();
-  if(!slot.querySelector('.venue-photo-placeholder')) {
+  if(!area.querySelector('.venue-photo-placeholder')) {
     const ph = document.createElement('div');
     ph.className = 'venue-photo-placeholder';
     ph.onclick = () => document.getElementById('venue-file-' + idx).click();
     ph.innerHTML = '<i class="ti ti-camera"></i><span>上傳照片</span>';
-    slot.insertBefore(ph, slot.firstChild);
+    area.insertBefore(ph, area.firstChild);
   }
   showToast('照片已刪除');
 }
@@ -1762,6 +1862,7 @@ function renderInvitePage() {
   const styles = ['金色牡丹','金色梅花','銀杏水墨','青花瓷','綠葉植物','青綠渲染','粉藍花卉','極簡現代'];
   const styleColors = ['chip-amber','chip-amber','chip-gray','chip-blue','chip-green','chip-blue','chip-blue','chip-gray'];
 
+  // 先把 input 附在 body 外層避免被 innerHTML 清掉
   document.getElementById('invite-grid').innerHTML = inviteData.map((card,i) => {
     const isBoss = card['老闆選定'] === '✓';
     const imgKey = getInviteImgKey(currentActId, card['版本編號']||i);
@@ -1770,19 +1871,20 @@ function renderInvitePage() {
       ${isBoss ? '<div class="invite-boss-badge">✓ 老闆選定</div>' : '<div class="invite-pending-badge">待裁示</div>'}
       <div class="invite-img-wrap" id="invite-imgwrap-${i}">
         ${savedImg
-          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}">`
-          : `<div class="invite-img-placeholder" onclick="document.getElementById('invite-file-${i}').click()">
+          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}"
+               onclick="openLightbox('${savedImg}','${card['版本名稱']}')"
+               style="cursor:zoom-in">`
+          : `<div class="invite-img-placeholder" id="invite-ph-${i}">
               <i class="ti ti-camera"></i>
               <span>點此上傳邀請卡圖片</span>
             </div>`
         }
         <div class="invite-img-overlay">
-          <div class="menu-img-action" onclick="document.getElementById('invite-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
-          <div class="menu-img-action" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i> 刪除</div>
+          ${savedImg ? `<div class="menu-img-action" onclick="openLightbox(document.querySelector('#invite-imgwrap-${i} img')?.src,'${card['版本名稱']}')"><i class="ti ti-eye"></i> 放大</div>` : ''}
+          <div class="menu-img-action" id="invite-upbtn-${i}"><i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳'}</div>
+          ${savedImg ? `<div class="menu-img-action" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i> 刪除</div>` : ''}
         </div>
       </div>
-      <input type="file" id="invite-file-${i}" accept="image/*" style="display:none"
-        onchange="handleInviteImg(this,${i},'${card['版本編號']||i}')">
       <div class="invite-footer">
         <div class="invite-ver">${card['版本編號']}</div>
         <div class="invite-name">${card['版本名稱']}</div>
@@ -1794,6 +1896,23 @@ function renderInvitePage() {
       </div>
     </div>`;
   }).join('');
+
+  // 為每張卡建立 file input 並綁定（避免 onclick id 找不到的問題）
+  inviteData.forEach((card, i) => {
+    const ver = card['版本編號']||i;
+    // placeholder 點擊
+    const ph = document.getElementById('invite-ph-' + i);
+    // 上傳按鈕
+    const upBtn = document.getElementById('invite-upbtn-' + i);
+    // 建立 input
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file'; fileInput.accept = 'image/*'; fileInput.style.display = 'none';
+    fileInput.id = 'invite-file-' + i;
+    fileInput.onchange = () => handleInviteImg(fileInput, i, ver);
+    document.body.appendChild(fileInput);
+    if(ph) ph.onclick = () => fileInput.click();
+    if(upBtn) upBtn.onclick = () => fileInput.click();
+  });
 
   const picked = inviteData.find(c=>c['老闆選定']==='✓');
   const resultEl = document.getElementById('invite-result-txt');
@@ -2144,6 +2263,46 @@ function showToast(msg) {
 }
 
 // ── 啟動 ──
+
+
+// ── 燈箱 ──
+let lbScale = 1, lbDrag = false, lbStartX = 0, lbStartY = 0, lbTransX = 0, lbTransY = 0;
+
+function openLightbox(src, caption) {
+  if(!src) return;
+  lbScale = 1; lbTransX = 0; lbTransY = 0;
+  const img = document.getElementById('lbImg');
+  img.src = src;
+  img.style.transform = 'scale(1) translate(0,0)';
+  document.getElementById('lbCaption').textContent = caption || '';
+  document.getElementById('lightbox').classList.add('show');
+
+  // 拖曳移動
+  const wrap = document.getElementById('lbWrap');
+  wrap.onmousedown = e => { lbDrag=true; lbStartX=e.clientX-lbTransX; lbStartY=e.clientY-lbTransY; };
+  wrap.onmousemove = e => {
+    if(!lbDrag) return;
+    lbTransX = e.clientX-lbStartX; lbTransY = e.clientY-lbStartY;
+    img.style.transform = `scale(${lbScale}) translate(${lbTransX/lbScale}px,${lbTransY/lbScale}px)`;
+  };
+  wrap.onmouseup = wrap.onmouseleave = () => lbDrag=false;
+  // 滾輪縮放
+  wrap.onwheel = e => { e.preventDefault(); lbZoom(e.deltaY < 0 ? 1.1 : 0.9); };
+}
+
+function lbZoom(factor) {
+  if(factor === 1) { lbScale=1; lbTransX=0; lbTransY=0; }
+  else lbScale = Math.min(5, Math.max(0.3, lbScale * factor));
+  const img = document.getElementById('lbImg');
+  img.style.transform = `scale(${lbScale}) translate(${lbTransX/lbScale}px,${lbTransY/lbScale}px)`;
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+}
+function closeLightboxOutside(e) {
+  if(e.target === document.getElementById('lightbox')) closeLightbox();
+}
 
 // ── 密碼 / 權限控制 ──
 const ADMIN_PWD = '1688';
