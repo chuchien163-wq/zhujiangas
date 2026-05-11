@@ -608,7 +608,7 @@ select.inline-sel {
 /* ── 場地照片格 ── */
 .venue-photo-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -618,8 +618,6 @@ select.inline-sel {
   overflow: hidden;
   border: 0.5px solid var(--border);
   background: var(--bg);
-  display: flex;
-  flex-direction: column;
 }
 .venue-photo-img {
   width: 100%; height: 100%;
@@ -696,7 +694,7 @@ select.inline-sel {
 .venue-caption-input::placeholder { color: var(--text-hint); }
 .venue-photo-img-area {
   position: relative;
-  height: 200px;
+  height: 140px;
   overflow: hidden;
 }
 .venue-photo-img-area .venue-photo-img {
@@ -1402,7 +1400,7 @@ function showPage(id) {
   if(id === 'history') renderHistoryPage();
   if(id === 'staff') renderStaffPage();
   if(id === 'venue') renderVenuePage();
-  if(id === 'seating') setTimeout(renderSeatingPage, 50);
+  if(id === 'seating') requestAnimationFrame(() => requestAnimationFrame(renderSeatingPage));
 }
 
 // ── 初始化 ──
@@ -1998,6 +1996,19 @@ function getInviteImgKey(actId, ver) {
 
 function renderInvitePage() {
   initInviteImages();
+  // 若 inviteData 仍為空，強制填入預設值
+  if(!inviteData || inviteData.length === 0) {
+    inviteData = [
+      {版本編號:'版本1', 版本名稱:'金色牡丹', 風格說明:'金色邊框＋牡丹花，附回條', 老闆選定:''},
+      {版本編號:'版本2', 版本名稱:'金色梅花', 風格說明:'梅花插圖，版面較簡潔', 老闆選定:''},
+      {版本編號:'版本3', 版本名稱:'銀杏水墨', 風格說明:'銀杏葉＋海浪底紋', 老闆選定:''},
+      {版本編號:'版本4', 版本名稱:'青花瓷', 風格說明:'深藍青花瓷風格', 老闆選定:''},
+      {版本編號:'版本5', 版本名稱:'綠葉植物', 風格說明:'清新綠葉水彩', 老闆選定:''},
+      {版本編號:'版本6', 版本名稱:'青綠渲染', 風格說明:'青綠渲染底色', 老闆選定:''},
+      {版本編號:'版本7', 版本名稱:'粉藍花卉', 風格說明:'淡藍花卉插圖', 老闆選定:''},
+      {版本編號:'版本8', 版本名稱:'極簡現代', 風格說明:'黑白極簡線條', 老闆選定:''},
+    ];
+  }
   const styles = ['金色牡丹','金色梅花','銀杏水墨','青花瓷','綠葉植物','青綠渲染','粉藍花卉','極簡現代'];
   const styleColors = ['chip-amber','chip-amber','chip-gray','chip-blue','chip-green','chip-blue','chip-blue','chip-gray'];
 
@@ -2805,19 +2816,21 @@ function assignSeat(tableIdx, seatIdx, name) {
 function renderSeatingPage() {
   sCanvas = document.getElementById('seatingCanvas');
   const wrap = document.getElementById('seating-wrap');
-  // 等 DOM 渲染完才取寬度
-  const W = Math.max(wrap.offsetWidth || 800, 400);
-  const H = Math.round(W * 0.65);
+  const W = Math.max(wrap.offsetWidth, wrap.clientWidth, 600);
+  const H = Math.round(W * 0.6);
   sCanvas.width = W; sCanvas.height = H;
   sCanvas.style.width = W + 'px';
   sCanvas.style.height = H + 'px';
 
   loadSeatingItems();
-  // 把預設桌子座標縮放到實際 canvas 大小
+  // 縮放座標到實際畫布
   sItems.forEach(item => {
-    if(item.x > W) item.x = item.x * W / 900;
-    if(item.y > H) item.y = item.y * H / 650;
+    if(item.x > W) item.x = Math.round(item.x * W / 900);
+    if(item.y > H) item.y = Math.round(item.y * H / 650);
+    if(item.x <= 0) item.x = W / 2;
+    if(item.y <= 0) item.y = H / 2;
   });
+  sCtx = sCanvas.getContext('2d');
   drawSeating();
 
   sCanvas.onmousedown = onSMouseDown;
