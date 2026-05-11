@@ -70,8 +70,7 @@ table.rt tr:hover td{background:#FAFAF7}
 <div class="tabs" id="tabs"></div>
 <div id="ct"></div>
 <script>
-const C={fly:"fly",drv:"drv",wlk:"wlk",boa:"boa",trn:"trn",rst:"rst"};
-const L={fly:"✈ 飛機",drv:"🚌 遊覽車",wlk:"🚶 步行",boa:"⛵ 遊船",trn:"🚃 火車/電車",rst:"🏨 入住"};
+const L={fly:"✈ 飛機",drv:"🚌 遊覽車",wlk:"🚶 步行",boa:"⛵ 遊船",trn:"🚃 火車/電車",rst:"🏨 休息/自由"};
 
 const TOURS=[
 
@@ -507,8 +506,6 @@ const TOURS=[
 
 ];// end TOURS
 
-const TC={fly:"fly",drv:"drv",wlk:"wlk",boa:"boa",trn:"trn",rst:"rst"};
-
 function buildTabs(){
   const w=document.getElementById("tabs");
   TOURS.forEach((t,i)=>{
@@ -568,7 +565,6 @@ function sw(idx){
   });
 }
 
-const L={fly:"✈ 飛機",drv:"🚌 遊覽車",wlk:"🚶 步行",boa:"⛵ 遊船",trn:"🚃 火車/電車",rst:"🏨 休息/自由"};
 buildTabs();
 buildContent();
 </script>
