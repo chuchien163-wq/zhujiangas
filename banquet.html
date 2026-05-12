@@ -1077,7 +1077,7 @@ select.inline-sel {
         </div>
         <div class="invite-grid" id="invite-grid"></div>
         <div class="save-bar">
-          <button class="btn btn-gold" onclick="saveInviteDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
+          <button class="btn btn-gold btn-decision" onclick="saveInviteDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
         </div>
       </div>
     </div>
@@ -1935,7 +1935,7 @@ function renderMenuPage() {
             oninput="saveMenuDetail(${i},'${m['方案名稱']}')">${savedDetail}</textarea>
 
           <div style="margin-top:10px">
-            <button class="btn ${isBoss?'btn-green':'btn-gold'}" style="width:100%;justify-content:center"
+            <button class="btn btn-decision ${isBoss?'btn-green':'btn-gold'}" style="width:100%;justify-content:center"
               onclick="selectMenu(${i})">
               ${isBoss ? '✓ 已選定此方案' : '選擇此方案'}
             </button>
@@ -1947,7 +1947,7 @@ function renderMenuPage() {
       <span style="font-size:12px;color:var(--text-muted)" id="menu-pick-hint">
         ${menuPicked ? '目前選定：'+menuPicked['方案名稱'] : '請點選方案後儲存'}
       </span>
-      <button class="btn btn-gold" onclick="saveMenuDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
+      <button class="btn btn-gold btn-decision" onclick="saveMenuDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
     </div>`;
 }
 
@@ -3061,7 +3061,7 @@ function enterViewMode() {
   const style = document.createElement('style');
   style.id = 'view-mode-style';
   style.textContent = `
-    .btn-gold, .btn-dark, .btn-green, .btn-red,
+    .btn-gold:not(.btn-decision), .btn-dark, .btn-green:not(.btn-decision), .btn-red,
     .attend-add-btn,
     .menu-img-action, .venue-photo-overlay,
     .invite-img-overlay, [id^="invite-upbtn"],
