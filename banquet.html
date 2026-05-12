@@ -322,6 +322,8 @@ body {
   gap: 8px;
 }
 .menu-img-wrap:hover .menu-img-overlay { display: flex; }
+.menu-img-overlay { pointer-events: none; }
+.menu-img-overlay .menu-img-action { pointer-events: all; }
 .menu-img-action {
   font-size: 11px; color: #fff;
   background: rgba(255,255,255,0.15);
@@ -1910,13 +1912,14 @@ function renderMenuPage() {
           <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜單照片</div>
           <div class="menu-img-wrap" id="menu-imgwrap-${i}">
             ${savedImg
-              ? `<img src="${savedImg}" id="menu-img-${i}" alt="菜單照片">`
+              ? `<img src="${savedImg}" id="menu-img-${i}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${m['方案名稱']}')">`
               : `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${i}').click()">
                   <i class="ti ti-camera"></i>
                   <span>點此上傳菜單照片</span>
                 </div>`
             }
             <div class="menu-img-overlay">
+              <div class="menu-img-action" onclick="openLightbox(document.getElementById('menu-img-${i}')?.src,'${m['方案名稱']}')"><i class="ti ti-eye"></i> 放大</div>
               <div class="menu-img-action" onclick="document.getElementById('menu-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
               <div class="menu-img-action" onclick="removeMenuImg(${i},'${m['方案名稱']}')"><i class="ti ti-trash"></i> 刪除</div>
             </div>
@@ -1956,11 +1959,11 @@ function handleMenuImg(input, idx, planName) {
     const base64 = e.target.result;
     localStorage.setItem(getMenuImgKey(currentActId, planName), base64);
     const wrap = document.getElementById('menu-imgwrap-' + idx);
-    // 移除placeholder，換成img
-    wrap.innerHTML = `<img src="${base64}" id="menu-img-${idx}" alt="菜單照片">
-      <div class="menu-img-overlay">
-        <div class="menu-img-action" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
-        <div class="menu-img-action" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
+    wrap.innerHTML = `<img src="${base64}" id="menu-img-${idx}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${planName}')">
+      <div class="menu-img-overlay" style="pointer-events:none">
+        <div class="menu-img-action" style="pointer-events:all" onclick="openLightbox(document.getElementById('menu-img-${idx}')?.src,'${planName}')"><i class="ti ti-eye"></i> 放大</div>
+        <div class="menu-img-action" style="pointer-events:all" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
+        <div class="menu-img-action" style="pointer-events:all" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
       </div>`;
     showToast('✓ 照片已上傳：' + planName);
   };
@@ -3059,7 +3062,7 @@ function enterViewMode() {
   style.id = 'view-mode-style';
   style.textContent = `
     .btn-gold, .btn-dark, .btn-green, .btn-red,
-    .attend-add-btn, .invite-pick-btn,
+    .attend-add-btn,
     .menu-img-action, .venue-photo-overlay,
     .invite-img-overlay, [id^="invite-upbtn"],
     .save-bar, .panel-title button,
@@ -3067,6 +3070,8 @@ function enterViewMode() {
     .invite-img-wrap:hover .invite-img-overlay { display: none !important; }
     .venue-photo-slot:hover .venue-photo-overlay { display: none !important; }
     .menu-img-wrap:hover .menu-img-overlay { display: none !important; }
+    .invite-pick-btn { display: block !important; }
+    .btn-gold.invite-boss-select { display: block !important; }
   `;
   document.head.appendChild(style);
   init();
