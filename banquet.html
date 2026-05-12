@@ -878,6 +878,78 @@ select.inline-sel {
   font-family: 'Noto Sans TC', sans-serif;
 }
 .lock-view-btn:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
+
+/* ══ RWD 手機版 ══ */
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 85%; max-width: 300px;
+    height: 100%;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+
+  .mobile-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  .mobile-overlay.show { display: block; }
+
+  .content { padding: 12px 14px; }
+
+  .topbar { padding: 10px 14px; }
+
+  .mobile-menu-btn { display: flex !important; }
+  .mobile-close-btn { display: flex !important; }
+
+  .btn { font-size: 12px; padding: 6px 10px; }
+  .menu-cards { grid-template-columns: 1fr !important; }
+  .invite-grid { grid-template-columns: 1fr 1fr !important; }
+  .venue-photo-grid { grid-template-columns: 1fr 1fr !important; }
+
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    padding: 10px 0;
+    z-index: 10;
+  }
+
+  .topbar-right .btn { font-size: 11px; padding: 5px 8px; }
+  .topbar-right .btn span { display: none; }
+}
+
+.mobile-menu-btn {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  background: transparent;
+  border: none; cursor: pointer;
+  color: var(--text);
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+.mobile-close-btn {
+  display: none;
+  align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.1);
+  border: none; cursor: pointer;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 50%;
+  position: absolute;
+  top: 14px; right: 14px;
+}
 </style>
 </head>
 <body>
@@ -915,8 +987,12 @@ select.inline-sel {
 
 <div class="layout">
 
+<!-- 手機 overlay -->
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleMobileMenu()"></div>
+
 <!-- ── Sidebar ── -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
+  <button class="mobile-close-btn" onclick="toggleMobileMenu()">✕</button>
   <div class="sb-brand">
     <div class="sb-brand-sub">ZHUJIAN GAS</div>
     <div class="sb-brand-name">餐會管理系統</div>
@@ -959,9 +1035,12 @@ select.inline-sel {
 <!-- ── Main ── -->
 <main class="main">
   <div class="topbar">
-    <div>
-      <div class="topbar-title" id="topbar-title">儀錶板</div>
-      <div class="topbar-sub" id="topbar-sub">載入中...</div>
+    <div style="display:flex;align-items:center;flex:1;min-width:0">
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="選單">☰</button>
+      <div>
+        <div class="topbar-title" id="topbar-title">儀錶板</div>
+        <div class="topbar-sub" id="topbar-sub">載入中...</div>
+      </div>
     </div>
     <div class="topbar-right">
       <button class="btn" onclick="openNewActivity()"><i class="ti ti-plus"></i> 新增活動</button>
@@ -1344,7 +1423,7 @@ select.inline-sel {
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbyBC78Yt9F3zKzWUmqjTDi_4stDbz5puLeCBG7Gyk07TfuCLet_mFKwFjHQathRGG8C/exec';
+const API = 'https://script.google.com/macros/s/AKfycbxPovUknAuT7YpKc7kvkRiQChDHj0qql5pW8Z33XLlZZY568rA1xGas_MDbDF4ptgX3/exec';
 const IMG_BASE = 'https://chuchien163-wq.github.io/zhujiangas/invite-cards/';
 
 let currentActId = 'EVT001';
@@ -1402,7 +1481,22 @@ const pageTitles = {
   history:'歷史紀錄', staff:'公司人員'
 };
 
+
+// ── 手機選單 ──
+function toggleMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  sidebar.classList.toggle('mobile-open');
+  overlay.classList.toggle('show');
+}
+
+function closeMobileMenu() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobileOverlay').classList.remove('show');
+}
+
 function showPage(id) {
+  closeMobileMenu();
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
@@ -1873,6 +1967,30 @@ async function saveVenue() {
 }
 
 // ── 菜單頁 ──
+
+// ── 菜單照片 Drive 快取 ──
+let menuPhotosCache = {};
+
+async function loadMenuPhotos() {
+  try {
+    const res = await apiPost({action:'getMenuPhotos', actId: currentActId});
+    if(res && res.success) {
+      menuPhotosCache[currentActId] = res.photos || [];
+    }
+  } catch(e) {
+    menuPhotosCache[currentActId] = [];
+  }
+}
+
+function getMenuPhotoUrl(planName) {
+  const localKey = 'menu_local_' + currentActId + '_' + planName;
+  const local = localStorage.getItem(localKey);
+  if(local) return local;
+  const photos = menuPhotosCache[currentActId] || [];
+  const found = photos.find(p => p.planName === planName);
+  return found ? found.url : '';
+}
+
 function getMenuImgKey(actId, planName) {
   return `menu_img_${actId}_${planName}`;
 }
@@ -1880,7 +1998,9 @@ function getMenuDetailKey(actId, planName) {
   return `menu_detail_${actId}_${planName}`;
 }
 
-function renderMenuPage() {
+async function renderMenuPage() {
+  document.getElementById('menu-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入照片中...</div>';
+  await loadMenuPhotos();
   const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
   document.getElementById('menu-content').innerHTML = `
     <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
@@ -1891,9 +2011,8 @@ function renderMenuPage() {
         const price = parseInt(m['每桌單價'])||0;
         const isBoss = m['老闆選定'] === '✓';
         const tagClass = i===0?'tag-a':i===1?'tag-b':'tag-c';
-        const imgKey = getMenuImgKey(currentActId, m['方案名稱']);
         const detailKey = getMenuDetailKey(currentActId, m['方案名稱']);
-        const savedImg = localStorage.getItem(imgKey) || '';
+        const savedImg = getMenuPhotoUrl(m['方案名稱']);
         const savedDetail = localStorage.getItem(detailKey) || m['菜色明細'] || '';
         return `<div class="menu-card ${isBoss?'selected-boss':''}" id="menu-opt-${i}">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -1951,27 +2070,57 @@ function renderMenuPage() {
     </div>`;
 }
 
-function handleMenuImg(input, idx, planName) {
+async function handleMenuImg(input, idx, planName) {
   const file = input.files[0];
   if(!file) return;
+  showToast('⏳ 上傳中...');
   const reader = new FileReader();
-  reader.onload = e => {
-    const base64 = e.target.result;
-    localStorage.setItem(getMenuImgKey(currentActId, planName), base64);
-    const wrap = document.getElementById('menu-imgwrap-' + idx);
-    wrap.innerHTML = `<img src="${base64}" id="menu-img-${idx}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${planName}')">
-      <div class="menu-img-overlay" style="pointer-events:none">
-        <div class="menu-img-action" style="pointer-events:all" onclick="openLightbox(document.getElementById('menu-img-${idx}')?.src,'${planName}')"><i class="ti ti-eye"></i> 放大</div>
-        <div class="menu-img-action" style="pointer-events:all" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
-        <div class="menu-img-action" style="pointer-events:all" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
-      </div>`;
-    showToast('✓ 照片已上傳：' + planName);
+  reader.onload = async e => {
+    const compressed = await compressImage(e.target.result, 800, 0.7);
+    try {
+      const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
+      const res = await apiPost({
+        action: 'uploadMenuPhoto',
+        actId: currentActId,
+        actName: act['活動名稱'] || currentActId,
+        planName: planName,
+        base64Data: compressed,
+        mimeType: 'image/jpeg'
+      });
+      if(res && res.success) {
+        // 存 localStorage 快取
+        localStorage.setItem('menu_local_' + currentActId + '_' + planName, compressed);
+        // 更新 Drive 快取
+        if(!menuPhotosCache[currentActId]) menuPhotosCache[currentActId] = [];
+        const cache = menuPhotosCache[currentActId];
+        const existing = cache.findIndex(p => p.planName === planName);
+        if(existing >= 0) cache[existing].url = res.url;
+        else cache.push({ planName, url: res.url, fileId: res.fileId });
+        // 更新畫面
+        const wrap = document.getElementById('menu-imgwrap-' + idx);
+        wrap.innerHTML = `<img src="${compressed}" id="menu-img-${idx}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${planName}')">
+          <div class="menu-img-overlay" style="pointer-events:none">
+            <div class="menu-img-action" style="pointer-events:all" onclick="openLightbox(document.getElementById('menu-img-${idx}')?.src,'${planName}')"><i class="ti ti-eye"></i> 放大</div>
+            <div class="menu-img-action" style="pointer-events:all" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
+            <div class="menu-img-action" style="pointer-events:all" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
+          </div>`;
+        showToast('✓ 菜單照片已上傳到 Google Drive');
+      } else {
+        showToast('❌ 上傳失敗：' + (res?.error||''));
+      }
+    } catch(e) {
+      showToast('❌ 上傳失敗：' + e.toString());
+    }
   };
   reader.readAsDataURL(file);
 }
 
-function removeMenuImg(idx, planName) {
-  localStorage.removeItem(getMenuImgKey(currentActId, planName));
+async function removeMenuImg(idx, planName) {
+  localStorage.removeItem('menu_local_' + currentActId + '_' + planName);
+  try { await apiPost({action:'deleteMenuPhoto', actId:currentActId, planName}); } catch(e){}
+  if(menuPhotosCache[currentActId]) {
+    menuPhotosCache[currentActId] = menuPhotosCache[currentActId].filter(p => p.planName !== planName);
+  }
   const wrap = document.getElementById('menu-imgwrap-' + idx);
   wrap.innerHTML = `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${idx}').click()">
     <i class="ti ti-camera"></i>
