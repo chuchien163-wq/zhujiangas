@@ -1721,11 +1721,17 @@ async function renderVenuePage() {
     '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span></div>' +
     '<div class="venue-photo-grid">' + photoSlots + '</div>';
 
-  // 綁定 file input 給每個格子（用 JS 建立避免 innerHTML 解析問題）
+  // 等 DOM 渲染完再綁定
+  await new Promise(r => setTimeout(r, 50));
+
+  // 清除舊的 file input
+  document.querySelectorAll('.venue-file-input').forEach(el => el.remove());
+
+  // 綁定 file input 給每個格子
   Array.from({length:8}, (_,slotIdx) => {
     const storKey = getVenueImgKey(currentActId, slotIdx);
     const fi = document.createElement('input');
-    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
+    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none'; fi.className = 'venue-file-input';
     fi.onchange = () => handleVenueImg(fi, slotIdx);
     document.body.appendChild(fi);
 
@@ -2127,7 +2133,7 @@ function renderInvitePage() {
   inviteData.forEach((card, i) => {
     const ver = card['版本編號']||i;
     const fi = document.createElement('input');
-    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none';
+    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none'; fi.className = 'venue-file-input';
     fi.className = 'invite-file-input';
     fi.onchange = () => handleInviteImg(fi, i, ver);
     document.body.appendChild(fi);
