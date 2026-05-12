@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竹建旅遊行程 點到點距離總覽</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans TC',sans-serif;background:#F5F4F0;color:#1A1A1A;font-size:15px}
+
+/* ── LAYOUT ── */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:230px;flex-shrink:0;background:#fff;border-right:1px solid #E8E6E0;overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-logo{padding:20px 16px 12px;border-bottom:1px solid #F0EEE8}
+.sidebar-logo h1{font-size:14px;font-weight:700;color:#1A1A1A;letter-spacing:.02em}
+.sidebar-logo p{font-size:11px;color:#999;margin-top:2px}
+.nav-group{padding:12px 0 4px}
+.nav-group-label{padding:0 16px 6px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#AAAAAA}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-left:3px solid transparent;transition:all .15s;position:relative}
+.nav-item:hover{background:#F8F7F3}
+.nav-item.active{background:#F8F7F3}
+.nav-item.active-au{border-left-color:#1D9E75;background:#F0FAF5}
+.nav-item.active-jp{border-left-color:#6C63D8;background:#F3F2FD}
+.nav-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nav-body{flex:1;min-width:0}
+.nav-name{font-size:13px;font-weight:500;color:#333;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item.active-au .nav-name{color:#0A6640}
+.nav-item.active-jp .nav-name{color:#4B44A8}
+.nav-agency{font-size:11px;color:#AAA;margin-top:1px}
+.nav-days{font-size:11px;font-weight:500;padding:2px 6px;border-radius:8px;flex-shrink:0}
+.nav-item.active-au .nav-days{background:#D4F0E4;color:#0A6640}
+.nav-item.active-jp .nav-days{background:#E0DEFA;color:#4B44A8}
+.nav-item:not(.active-au):not(.active-jp) .nav-days{background:#F0EEE8;color:#888}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;background:#F5F4F0}
+
+/* ── TRIP HEADER ── */
+.trip-header{background:#fff;padding:24px 32px 20px;border-bottom:1px solid #ECEAE4;position:sticky;top:0;z-index:10}
+.trip-dest-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.trip-title{font-size:22px;font-weight:700;color:#1A1A1A;margin-bottom:10px;line-height:1.3}
+.trip-meta-row{display:flex;gap:6px;flex-wrap:wrap}
+.meta-chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#666;background:#F5F4F0;padding:4px 10px;border-radius:20px}
+.warn-strip{margin:12px 32px 0;padding:10px 14px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;font-size:13px;color:#92400E;line-height:1.6}
+
+/* ── CONTENT ── */
+.content-body{padding:20px 32px 40px}
+
+/* ── DAY BLOCK ── */
+.day-block{margin-bottom:28px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.day-header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #F0EEE8}
+.day-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.06em}
+.day-title-text{font-size:14px;font-weight:500;color:#333;flex:1}
+
+/* ── DAY IMAGE ── */
+.day-img{width:100%;height:180px;object-fit:cover;display:block;background:#EEE}
+.day-img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,#E8E6E0,#D4D2CC);display:flex;align-items:center;justify-content:center;font-size:13px;color:#999}
+
+/* ── TIMELINE ── */
+.timeline{padding:16px 20px 8px}
+.tl-item{display:flex;gap:14px;padding-bottom:4px}
+.tl-left{display:flex;flex-direction:column;align-items:center;width:14px;flex-shrink:0;padding-top:4px}
+.tl-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2.5px solid #fff;box-shadow:0 0 0 1.5px currentColor}
+.tl-line{flex:1;width:2px;background:#ECEAE4;margin:3px 0}
+.tl-item:last-child .tl-line{display:none}
+.tl-right{flex:1;padding-bottom:16px}
+.tl-place{font-size:15px;font-weight:500;color:#1A1A1A;line-height:1.4;margin-bottom:5px}
+.tl-connector{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.tl-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.tl-meta{font-size:13px;color:#888}
+.tl-note{font-size:13px;color:#666;line-height:1.6;background:#F8F7F3;border-radius:8px;padding:7px 10px;margin-top:5px}
+.tl-dest{font-size:15px;font-weight:500;color:#1A1A1A;margin-top:4px}
+
+/* ── TRANSPORT BADGES ── */
+.fly{background:#EBF4FF;color:#1D5FA8}
+.drv{background:#FEF3E0;color:#92540A}
+.wlk{background:#EDFAED;color:#1A6B2E}
+.boa{background:#FDF0F5;color:#9B2457}
+.trn{background:#F3F1F8;color:#5548A8}
+.rst{background:#F3F3F3;color:#777}
+
+/* ── DEST COLORS ── */
+.au-badge{background:#D4F0E4;color:#0A6640}
+.jp-badge{background:#E0DEFA;color:#4B44A8}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <h1>竹建旅遊行程</h1>
+      <p>點到點距離 PDF核對版</p>
+    </div>
+    <div id="nav-content"></div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+
+<script>
+const TL={fly:"✈ 飛機",drv:"🚌 遊覽車",wlk:"🚶 步行",boa:"⛵ 遊船",trn:"🚃 火車/電車",rst:"🏨 自由/休息"};
+const DC={fly:"#1D5FA8",drv:"#B36B12",wlk:"#1A6B2E",boa:"#9B2457",trn:"#5548A8",rst:"#AAAAAA"};
+
+// 每天代表圖片（用景點搜尋結果的實際圖片URL）
+const DAY_IMGS={
+  // 沖繩
+  "美麗海水族館":"https://zekkei-japan.jp/wp-content/uploads/2017/06/churaumi00.jpg",
+  "名護鳳梨園":"https://klookstatic.imgix.net/featuredimagelibrary/ek17a7x42cvlxaoxjmpn.jpg",
+  "玉泉洞":"https://the-edge.photography/wp-content/uploads/2016/01/gyokusendo-okinawa-1.jpg",
+  "瀨長島":"https://assets.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_680,h_453/activities/photo/UMIKAJI_TERRACE_1.jpg",
+  "首里城":"https://loco.yahoo.co.jp/img/YOKOHAMA/SIGHTSEEING/c9f02ed95975f3399cceaac26cfb5793.jpg",
+  "波之上神宮":"https://joshellis.com/wp-content/uploads/2019/03/JoshEllis_Okinawa_1-1.jpg",
+  "北谷美國村":"https://www.japan-guide.com/g18/4573_01.jpg",
+  "系滿漁市場":"https://assets.klook.com/image/upload/fl_lossy.progressive,q_65/c_fill,w_680,h_453/activities/photo/itoman_fishermans_wharf_1.jpg",
+  // 四國
+  "葛藤橋":"https://iya-onsen-kazurabashi.jp/wp-content/uploads/2019/03/main_img.jpg",
+  "道後溫泉":"https://japanexperiences.com/wp-content/uploads/2019/10/Dogo-Onsen.jpg",
+  "松山城":"https://www.visitehime.jp/wp-content/uploads/2021/04/matsuyama-castle.jpg",
+  "栗林公園":"https://randomwire.com/wp-content/uploads/2012/12/ritsurin_garden-7.jpg",
+  "金刀比羅宮":"https://www.visitkagawa.jp/wp-content/uploads/2020/01/kotohiragu.jpg",
+  "丸龜城":"https://www.japantravel.com/img/spot/1000001/1000001_main_large.jpg",
+  // 山陰山陽
+  "出雲大社":"https://japan-by-web.com/wp-content/uploads/2019/11/Izumo_taisha.jpg",
+  "足立美術館":"https://www.adachi-museum.or.jp/assets/img/collection/garden01.jpg",
+  "倉敷美觀":"https://www.kurashiki-tabi.jp/ftp/images/spot/2.jpg",
+  "鬼太郎街道":"https://i0.wp.com/www.tourinjapan.com/wp-content/uploads/2019/02/Kitaro-Road.jpg",
+  "鳥取花迴廊":"https://www.tottori-ota.jp/wp-content/uploads/2019/04/hanamikaimichi01.jpg",
+  // 澳洲
+  "十二門徒":"https://www.hansmast.com/wp-content/uploads/2014/01/twelve-apostles-hans-mast.jpg",
+  "菲利浦島企鵝":"https://www.touristsecrets.com/wp-content/uploads/2019/06/Phillip-Island-Penguin-Parade.jpg",
+  "雪梨歌劇院":"https://journeywithmina.com/wp-content/uploads/2019/05/sydney-opera-house-1.jpg",
+  "藍山三姊妹岩":"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+  "普芬蒸汽火車":"https://www.puffingbilly.com.au/media/1118/puffing-billy-steam-train-tour.jpg",
+  "黃金海岸":"https://images.unsplash.com/photo-1524067543834-b4d69b8e7c15?w=800",
+  "塔隆加動物園":"https://www.incidentallysydney.com/wp-content/uploads/2018/06/taronga-zoo-koala.jpg",
+  "天堂鄉農莊":"https://www.paradisecountry.com.au/wp-content/uploads/2019/01/koala-holding.jpg",
+  "彩虹小屋":"https://travelwithwinny.com/wp-content/uploads/2017/01/Brighton-Bathing-Boxes-5.jpg",
+  "布里斯本故事橋":"https://www.australia.com/content/dam/australia/hero-images/queensland/story-bridge.jpg",
+  "亞拉河谷酒莊":"https://www.yarravalleywinetours.com.au/wp-content/uploads/2019/01/yarra-valley-winery.jpg",
+  "大洋路":"https://www.hansmast.com/wp-content/uploads/2014/01/twelve-apostles-hans-mast.jpg",
+};
+
+function getDayImg(title){
+  for(const[k,v] of Object.entries(DAY_IMGS)){
+    if(title.includes(k)) return v;
+  }
+  return null;
+}
+
+const TOURS=[
+{id:"c1",dest:"澳洲",label:"蔚藍沖繩5日",agency:"竹建",days:"5天",airline:"航班未載明",price:"包六餐・全程無自費",cities:"沖繩那霸",warn:"第4天全日自由活動，贈單軌電車一日券，無安排景點。",dd:[
+{day:"Day 1",title:"台北 → 沖繩 → 瀨長島",routes:[{f:"桃園國際機場",t:"沖繩那霸機場",tp:"fly",time:"約2小時",dist:"1,200km",note:"航班未載明"},{f:"那霸機場",t:"瀨長島 Umikaji Terrace",tp:"drv",time:"約15分",dist:"10km",note:"晚餐：日式火鍋+豬肉吃到飽"},{f:"瀨長島",t:"飯店（那霸市區）",tp:"drv",time:"約20分",dist:"12km",note:"Hotel Azat / Lantana Naha 或同級"}]},
+{day:"Day 2",title:"海洋博公園（美麗海水族館）→ 名護鳳梨園 → AEON來客夢",routes:[{f:"飯店",t:"海洋博公園・美麗海水族館",tp:"drv",time:"約1.5小時",dist:"100km",note:"海豚秀；中餐：日式定食¥1,950"},{f:"海洋博公園",t:"名護鳳梨園",tp:"drv",time:"約20分",dist:"15km",note:"無人鳳梨車・恐龍公園・酒莊"},{f:"鳳梨園",t:"AEON MALL 來客夢",tp:"drv",time:"約40分",dist:"30km",note:"全沖繩最大購物商城；晚餐自理¥2,000"},{f:"AEON",t:"飯店",tp:"drv",time:"約30分",dist:"20km",note:""}]},
+{day:"Day 3",title:"玉泉洞王國村 → 比嘉酒造 → OUTLET ASHIBINAA",routes:[{f:"飯店",t:"玉泉洞王國村",tp:"drv",time:"約30分",dist:"20km",note:"琉球大鼓隊表演（10:30/12:30/14:30）；中餐：自助¥1,980"},{f:"玉泉洞",t:"比嘉酒造",tp:"drv",time:"約5分",dist:"3km",note:"500年泡盛文化，免費試飲"},{f:"比嘉酒造",t:"OUTLET ASHIBINAA",tp:"drv",time:"約10分",dist:"6km",note:"COACH・MARC JACOBS等；晚餐：燒肉吃到飽"},{f:"OUTLET",t:"飯店",tp:"drv",time:"約15分",dist:"9km",note:""}]},
+{day:"Day 4",title:"全日自由活動（贈單軌電車一日券）",routes:[{f:"飯店",t:"全日自由活動",tp:"rst",time:"全日",dist:"—",note:"可前往國際通・新都心・RYUBO百貨；午晚餐自理"}]},
+{day:"Day 5",title:"銀河探險號（贈）→ 波之上神宮 → 返台",routes:[{f:"飯店",t:"銀河探險號半潛水艇（贈送）",tp:"boa",time:"約1小時",dist:"沖繩沿海",note:"天候不佳恕不退費"},{f:"碼頭",t:"波之上神宮",tp:"drv",time:"約15分",dist:"8km",note:"琉球第一神社；中餐：手打麵套餐¥1,650"},{f:"波之上神宮",t:"那霸機場（返台）",tp:"drv",time:"約10分",dist:"5km",note:""}]},
+]},
+{id:"j1",dest:"日本",label:"歡樂沖繩5日",agency:"饒姊版",days:"5天",airline:"長榮 BR186 16:25→18:55 / BR185 19:55→20:30",price:"未標示",cities:"沖繩那霸",warn:"出發日：2025/08/01。第4天全日自由活動。",dd:[
+{day:"Day 1",title:"台北 → 沖繩 → 飯店",routes:[{f:"桃園國際機場",t:"沖繩那霸機場",tp:"fly",time:"約2小時30分",dist:"1,200km",note:"BR186 16:25→18:55"},{f:"那霸機場",t:"飯店（那霸）",tp:"drv",time:"約20分",dist:"12km",note:"希爾頓逸林 或 美居 或同級"}]},
+{day:"Day 2",title:"海洋博公園（美麗海水族館）→ 北谷美國村 → 國際通大道",routes:[{f:"飯店",t:"海洋博公園・美麗海水族館",tp:"drv",time:"約1.5小時",dist:"100km",note:"海豚劇場；中餐：海洋博自助餐"},{f:"海洋博公園",t:"北谷町美國村",tp:"drv",time:"約40分",dist:"30km",note:"日美混合風情；《戀戰沖繩》拍攝場"},{f:"北谷美國村",t:"國際通大道",tp:"drv",time:"約30分",dist:"20km",note:"晚餐：海鮮火鍋阿古豬+飲料無限暢飲"},{f:"國際通",t:"飯店",tp:"wlk",time:"步行5分",dist:"300m",note:""}]},
+{day:"Day 3",title:"守禮門・首里城（外城）→ 免稅店 → 玉泉洞 → 瀨長島",routes:[{f:"飯店",t:"守禮門・首里城（外城）",tp:"drv",time:"約15分",dist:"8km",note:"琉球王朝最具代表性建築"},{f:"首里城",t:"免稅店",tp:"drv",time:"約15分",dist:"8km",note:""},{f:"免稅店",t:"玉泉洞王國村",tp:"drv",time:"約30分",dist:"20km",note:"中餐：玉泉洞自助餐"},{f:"玉泉洞",t:"瀨長島 UMIKAJI TERRACE",tp:"drv",time:"約20分",dist:"14km",note:"看夕陽・看飛機；晚餐：燒肉自助"},{f:"瀨長島",t:"飯店",tp:"drv",time:"約20分",dist:"14km",note:""}]},
+{day:"Day 4",title:"全日自由活動",routes:[{f:"飯店",t:"全日自由活動",tp:"rst",time:"全日",dist:"—",note:"可搭單軌電車：國際通・新都心・RYUBO百貨"}]},
+{day:"Day 5",title:"波之上神宮 → 系滿漁市場 → iias豊崎 → 返台",routes:[{f:"飯店",t:"波之上神宮",tp:"drv",time:"約10分",dist:"5km",note:"琉球八社之一"},{f:"波之上",t:"系滿漁市場",tp:"drv",time:"約25分",dist:"18km",note:"TripAdvisor 2019全日本第一；中餐：退代金¥2,000"},{f:"系滿",t:"iias沖繩豊崎",tp:"drv",time:"約10分",dist:"6km",note:"含水族館大型商場"},{f:"iias",t:"那霸機場（返台）",tp:"drv",time:"約20分",dist:"13km",note:"BR185 19:55→20:30"}]},
+]},
+{id:"j2",dest:"日本",label:"四國經典5日",agency:"饒姊版",days:"5天",airline:"CI178 14:30→18:05 / CI179 19:05→20:55（高松）",price:"未標示",cities:"香川・德島・愛媛・高知",warn:"適用出發日：週二・三・六・日",dd:[
+{day:"Day 1",title:"台北 → 高松 → 塩江溫泉",routes:[{f:"桃園國際機場",t:"高松空港",tp:"fly",time:"約2小時35分",dist:"1,700km",note:"CI178 14:30→18:05"},{f:"高松空港",t:"塩江溫泉（住宿）",tp:"drv",time:"約40分",dist:"25km",note:"晚餐：飯店溫泉日式套餐"}]},
+{day:"Day 2",title:"祖谷溪葛藤橋 → 大步危遊船 → 道後溫泉 → 奧道後溫泉",routes:[{f:"塩江溫泉",t:"祖谷溪・葛藤橋",tp:"drv",time:"約1.5小時",dist:"80km",note:"橋長45m・高15m"},{f:"葛藤橋",t:"大步危溪谷遊覽船",tp:"drv",time:"約20分",dist:"12km",note:"日本三大秘境；中餐：香魚定食"},{f:"大步危",t:"道後溫泉街（散策）",tp:"drv",time:"約1.5小時",dist:"100km",note:"3000年歷史，神隱少女原型"},{f:"道後溫泉",t:"奧道後溫泉（住宿）",tp:"drv",time:"約20分",dist:"12km",note:"晚餐：飯店自助餐"}]},
+{day:"Day 3",title:"松山城（纜車）→ 坂上之雲博物館 → 別子銅山",routes:[{f:"飯店",t:"松山城（含空中纜車）",tp:"drv",time:"約30分",dist:"18km",note:"日本三大連立式平山城（1627年）"},{f:"松山城",t:"坂上之雲博物館",tp:"drv",time:"約10分",dist:"2km",note:"安藤忠雄設計"},{f:"博物館",t:"別子銅山（小火車+礦坑步道）",tp:"drv",time:"約1.5小時",dist:"70km",note:"中餐：鄉土御膳；※週一休"},{f:"別子銅山",t:"高松/丸龜飯店",tp:"drv",time:"約1.5小時",dist:"80km",note:"晚餐：日式燒肉吃到飽"}]},
+{day:"Day 4",title:"滿濃公園 → 金刀比羅宮 → 免稅店 → 栗林公園",routes:[{f:"飯店",t:"國營讚岐滿濃公園",tp:"drv",time:"約40分",dist:"30km",note:"※週二休"},{f:"滿濃公園",t:"金刀比羅宮",tp:"drv",time:"約20分",dist:"15km",note:"785階石階；中餐：讚岐烏龍麵"},{f:"金刀比羅宮",t:"免稅店",tp:"drv",time:"約20分",dist:"15km",note:""},{f:"免稅店",t:"栗林公園",tp:"drv",time:"約30分",dist:"20km",note:"米其林星級庭園；晚餐：涮涮鍋吃到飽"},{f:"栗林公園",t:"飯店",tp:"drv",time:"約15分",dist:"8km",note:""}]},
+{day:"Day 5",title:"丸龜城 → 屋島展望台 → 高松商店街/AEON → 返台",routes:[{f:"飯店",t:"丸龜城",tp:"drv",time:"約30分",dist:"25km",note:"400年歷史平山城"},{f:"丸龜城",t:"屋島・獅子靈巖展望台",tp:"drv",time:"約40分",dist:"30km",note:"瀨戶內海第一觀景勝地"},{f:"屋島",t:"高松商店街 或 AEON MALL",tp:"drv",time:"約15分",dist:"7km",note:"日本最長拱廊商店街2.7km"},{f:"高松",t:"高松空港（返台）",tp:"drv",time:"約25分",dist:"18km",note:"CI179 19:05→20:55"}]},
+]},
+{id:"j3",dest:"日本",label:"山陰山陽5日",agency:"饒姊版",days:"5天",airline:"CI178 14:30→18:05 / CI179 19:05→20:55（高松）",price:"未標示",cities:"香川・岡山・島根・鳥取",warn:"",dd:[
+{day:"Day 1",title:"台北 → 高松 → 琴平/塩江溫泉",routes:[{f:"桃園國際機場",t:"高松空港",tp:"fly",time:"約2小時35分",dist:"1,700km",note:"CI178 14:30→18:05"},{f:"高松空港",t:"琴平或塩江溫泉",tp:"drv",time:"約40~60分",dist:"25~50km",note:"晚餐：飯店季節會席"}]},
+{day:"Day 2",title:"栗林公園 → 鷲羽山 → 舊野崎家住宅 → 岡山後樂園",routes:[{f:"溫泉飯店",t:"栗林公園",tp:"drv",time:"約30~60分",dist:"20~50km",note:"米其林星級庭園"},{f:"栗林公園",t:"鷲羽山展望台",tp:"drv",time:"約1小時",dist:"55km",note:"俯瞰瀨戶大橋；中餐：瀨戶內海套餐"},{f:"鷲羽山",t:"舊野崎家住宅",tp:"drv",time:"約20分",dist:"12km",note:"江戶末期鹽田王宅邸；※週一休"},{f:"舊野崎家",t:"岡山後樂園",tp:"drv",time:"約30分",dist:"20km",note:"日本三大名園"},{f:"後樂園",t:"岡山飯店",tp:"drv",time:"約10分",dist:"5km",note:"晚餐：燒肉吃到飽"}]},
+{day:"Day 3",title:"鳥取花迴廊 → 由志園 → 鬼太郎街道 → 玉造溫泉",routes:[{f:"岡山飯店",t:"鳥取花迴廊",tp:"drv",time:"約2小時",dist:"130km",note:"日本最大花卉公園50公頃；中餐：日式套餐"},{f:"花迴廊",t:"大根島由志園",tp:"drv",time:"約1小時",dist:"60km",note:"250種牡丹日式庭園"},{f:"由志園",t:"境港鬼太郎街道",tp:"drv",time:"約30分",dist:"25km",note:"水木茂故鄉・120尊妖怪銅像"},{f:"鬼太郎街道",t:"玉造溫泉（住宿）",tp:"drv",time:"約1.5小時",dist:"80km",note:"日本「美肌溫泉」第一名；晚餐：飯店季節會席"}]},
+{day:"Day 4",title:"出雲大社 → 松江堀川遊覽船 → 足立美術館 → 鳥取大山",routes:[{f:"玉造溫泉",t:"出雲大社",tp:"drv",time:"約40分",dist:"30km",note:"日本最古老神社（國寶）；中餐：鄉土御膳"},{f:"出雲大社",t:"松江堀川遊覽船",tp:"drv",time:"約45分",dist:"35km",note:"3.7km堀川・穿越16座橋"},{f:"松江堀川",t:"足立美術館",tp:"drv",time:"約40分",dist:"30km",note:"連續20+年日本最美庭園（米其林三星）"},{f:"足立美術館",t:"鳥取大山溫泉（住宿）",tp:"drv",time:"約1小時",dist:"60km",note:"晚餐：飯店自助"}]},
+{day:"Day 5",title:"倉敷美觀地區 → 免稅店 → AEON → 返台",routes:[{f:"鳥取大山飯店",t:"倉敷美觀地區",tp:"drv",time:"約2小時",dist:"130km",note:"白壁水道街景「小京都」；中餐：讚岐烏龍麵"},{f:"倉敷美觀",t:"林源十郎商店",tp:"wlk",time:"步行5分",dist:"300m",note:"360年歷史藥材店改建"},{f:"倉敷",t:"免稅店",tp:"drv",time:"約10分",dist:"5km",note:""},{f:"免稅店",t:"香川 AEON MALL",tp:"drv",time:"約1小時",dist:"70km",note:""},{f:"AEON",t:"高松空港（返台）",tp:"drv",time:"約25分",dist:"18km",note:"CI179 19:05→20:55"}]},
+]},
+{id:"a3",dest:"澳洲",label:"藍色公路 墨爾本7日",agency:"東南旅遊",days:"7天",airline:"CI57 23:30→10:45+1 / CI58 21:35→05:05+1",price:"$88,900起・20人成行",cities:"墨爾本",warn:"Day1夜宿機上，Day2早上抵達墨爾本才開始行程。",dd:[
+{day:"Day 1",title:"台北 → 墨爾本（夜宿機上）",routes:[{f:"桃園國際機場",t:"墨爾本機場（次日上午）",tp:"fly",time:"約9小時20分",dist:"7,800km",note:"CI57 23:30→10:45+1；夜宿機上"}]},
+{day:"Day 2",title:"聖派翠克教堂 → 費茲洛花園 → 庫克船長故居",routes:[{f:"墨爾本機場（抵達）",t:"聖派翠克教堂",tp:"drv",time:"約35分",dist:"28km",note:"哥德式建築103公尺高"},{f:"聖派翠克教堂",t:"費茲洛花園・庫克船長故居",tp:"wlk",time:"步行3分",dist:"250m",note:"150年歷史大公園"},{f:"費茲洛花園",t:"飯店（Doncaster）",tp:"drv",time:"約25分",dist:"18km",note:"晚餐：澳式牛排"}]},
+{day:"Day 3",title:"普芬古董蒸汽火車 → 菲利浦島神仙小企鵝歸巢",routes:[{f:"飯店",t:"Belgrave 普芬火車站",tp:"drv",time:"約40分",dist:"40km",note:"※訂不到改雅拉河遊船"},{f:"Belgrave",t:"菲利浦島企鵝觀賞區",tp:"drv",time:"約2小時",dist:"130km",note:"日落後企鵝歸巢；禁閃光燈；需保暖"},{f:"菲利浦島",t:"飯店（墨爾本）",tp:"drv",time:"約1.5小時",dist:"148km",note:"晚餐：中式海鮮料理"}]},
+{day:"Day 4",title:"維多利亞圖書館 → 城市電車 → 維多利亞市場 → 聯邦廣場 → 藝術中心",routes:[{f:"飯店",t:"維多利亞圖書館（Running Man場景）",tp:"drv",time:"約25分",dist:"18km",note:"世界前十大圖書館"},{f:"圖書館",t:"墨爾本購物中心",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"購物中心",t:"城市電車（環繞市區一圈）",tp:"trn",time:"約30分",dist:"約4km",note:"復古暗紅色路面電車"},{f:"電車",t:"維多利亞市場",tp:"drv",time:"約8分",dist:"2km",note:"南半球最大露天市場"},{f:"維多利亞市場",t:"聯邦廣場",tp:"drv",time:"約8分",dist:"2km",note:""},{f:"聯邦廣場",t:"墨爾本藝術中心",tp:"wlk",time:"步行8分",dist:"600m",note:"晚餐：肋排餐"},{f:"藝術中心",t:"飯店",tp:"drv",time:"約25分",dist:"18km",note:""}]},
+{day:"Day 5",title:"大洋路（199km）：阿波羅灣 → 阿德湖峽 → 十二門徒",routes:[{f:"飯店",t:"大洋路起點（Torquay）",tp:"drv",time:"約1小時",dist:"80km",note:"世界最美公路全長273km"},{f:"大洋路",t:"阿波羅灣（Apollo Bay）",tp:"drv",time:"約1.5小時",dist:"95km",note:"午餐：澳式炸魚餐"},{f:"阿波羅灣",t:"阿德湖峽（Loch Ard Gorge）",tp:"drv",time:"約1小時",dist:"90km",note:"沉船海岸"},{f:"阿德湖峽",t:"十二門徒（Twelve Apostles）",tp:"drv",time:"約5分",dist:"3km",note:"澳洲最著名地標"},{f:"十二門徒",t:"飯店（墨爾本）",tp:"drv",time:"約3小時",dist:"260km",note:"晚餐：德國豬腳餐"}]},
+{day:"Day 6",title:"彩虹小屋 → 尤利卡大樓 → 皇家拱廊 → 塗鴉巷 → 咖啡巷 → 夜宿機上",routes:[{f:"飯店",t:"濱海彩虹小屋（Brighton Beach）",tp:"drv",time:"約30分",dist:"22km",note:"IG打卡聖地"},{f:"彩虹小屋",t:"尤利卡大樓景觀台",tp:"drv",time:"約25分",dist:"18km",note:"南半球最高住宅大樓；午餐：韓式烤肉吃到飽"},{f:"尤利卡大樓",t:"皇家拱廊",tp:"drv",time:"約5分",dist:"1km",note:"1869年建"},{f:"皇家拱廊",t:"塗鴉巷（Hosier Lane）",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"塗鴉巷",t:"咖啡巷（Degraves St）",tp:"wlk",time:"步行3分",dist:"200m",note:"晚餐：中式七菜一湯"},{f:"咖啡巷",t:"義大利街",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"墨爾本市區",t:"墨爾本機場（夜宿機上）",tp:"drv",time:"約30分",dist:"25km",note:"CI58 21:35起飛"}]},
+{day:"Day 7",title:"抵達台北",routes:[{f:"墨爾本",t:"桃園國際機場（抵達）",tp:"fly",time:"約9小時30分",dist:"7,800km",note:"CI58 抵台05:05"}]},
+]},
+{id:"a2",dest:"澳洲",label:"酷遊雪墨8日",agency:"（不明）",days:"8天",airline:"酷航 TR（TPE→SIN→SYD / MEL→SIN→TPE）",price:"未標示",cities:"雪梨進・墨爾本出（雙點）",warn:"Day1夜宿機上（TPE→SIN），Day2凌晨飛SIN→SYD，上午抵達雪梨。",dd:[
+{day:"Day 1",title:"台北 → 新加坡（夜宿機上）",routes:[{f:"桃園國際機場",t:"新加坡樟宜機場",tp:"fly",time:"約4小時25分",dist:"3,300km",note:"TR867 16:20→20:45；夜宿機上"}]},
+{day:"Day 2",title:"新加坡 → 雪梨 → 魚市場・植物園・海德公園・QVB",routes:[{f:"新加坡",t:"雪梨機場",tp:"fly",time:"約8小時",dist:"6,300km",note:"TR010 02:10→11:45"},{f:"雪梨機場",t:"雪梨魚市場",tp:"drv",time:"約15分",dist:"10km",note:""},{f:"魚市場",t:"皇家植物園・麥覺理夫人座椅",tp:"drv",time:"約10分",dist:"5km",note:""},{f:"植物園",t:"聖瑪莉大教堂",tp:"wlk",time:"步行8分",dist:"600m",note:""},{f:"聖瑪莉大教堂",t:"海德公園",tp:"wlk",time:"步行2分",dist:"100m",note:""},{f:"海德公園",t:"QVB維多利亞女王購物中心",tp:"wlk",time:"步行5分",dist:"350m",note:"晚餐：中式料理七菜一湯"},{f:"市區",t:"飯店（Macquarie Park）",tp:"drv",time:"約20分",dist:"14km",note:""}]},
+{day:"Day 3",title:"藍山國家公園（礦坑纜車・叢林纜車・三姊妹岩）→ 奧林匹克公園",routes:[{f:"飯店",t:"藍山國家公園",tp:"drv",time:"約90分",dist:"100km",note:"礦坑纜車・叢林纜車・三姊妹岩・回音谷"},{f:"藍山",t:"奧林匹克運動公園",tp:"drv",time:"約60分",dist:"75km",note:"2000年雪梨奧運場地"},{f:"奧林匹克公園",t:"飯店",tp:"drv",time:"約15分",dist:"9km",note:""}]},
+{day:"Day 4",title:"雪梨歌劇院（入內+導覽）→ 岩石區 → 港灣大橋 → 免稅店",routes:[{f:"飯店",t:"雪梨歌劇院",tp:"drv",time:"約20分",dist:"13km",note:"入內+專人導覽"},{f:"歌劇院",t:"岩石區",tp:"wlk",time:"步行5分",dist:"400m",note:""},{f:"岩石區",t:"港灣大橋（徒步）",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"大橋",t:"免稅店",tp:"drv",time:"約5分",dist:"1km",note:""},{f:"市區",t:"飯店",tp:"drv",time:"約20分",dist:"14km",note:""}]},
+{day:"Day 5",title:"雪梨 → 墨爾本（國內班機）→ 普芬火車 → 亞拉河谷酒莊",routes:[{f:"雪梨機場",t:"墨爾本機場",tp:"fly",time:"約1小時35分",dist:"705km",note:"國內班機"},{f:"墨爾本機場",t:"Belgrave 普芬火車站",tp:"drv",time:"約1小時",dist:"55km",note:""},{f:"Belgrave",t:"Lakeside（終點站）",tp:"trn",time:"約60分（單程）",dist:"13km",note:"古董蒸汽火車"},{f:"Belgrave",t:"亞拉河谷酒莊",tp:"drv",time:"約30分",dist:"25km",note:"澳洲最古老葡萄酒產區（1838年）"},{f:"酒莊",t:"飯店（墨爾本）",tp:"drv",time:"約50分",dist:"50km",note:""}]},
+{day:"Day 6",title:"查斯頓購物中心 → 菲利浦島神仙小企鵝歸巢",routes:[{f:"飯店",t:"查斯頓購物中心（Chadstone）",tp:"drv",time:"約20分",dist:"15km",note:"南半球最大購物中心530+品牌"},{f:"查斯頓",t:"菲利浦島企鵝觀賞區",tp:"drv",time:"約1.5小時",dist:"110km",note:"日落後企鵝歸巢；禁閃光燈"},{f:"菲利浦島",t:"飯店（墨爾本）",tp:"drv",time:"約1.5小時",dist:"130km",note:""}]},
+{day:"Day 7",title:"墨爾本市區：費茲洛花園 → 咖啡巷 → 塗鴉巷 → 夜宿機上",routes:[{f:"飯店",t:"費茲洛花園・庫克船長故居",tp:"drv",time:"約10分",dist:"5km",note:""},{f:"費茲洛花園",t:"聖派翠克教堂",tp:"wlk",time:"步行3分",dist:"250m",note:""},{f:"聖派翠克教堂",t:"咖啡巷",tp:"drv",time:"約5分",dist:"1.5km",note:""},{f:"咖啡巷",t:"塗鴉巷",tp:"wlk",time:"步行3分",dist:"200m",note:"晚餐：中式七菜一湯"},{f:"墨爾本市區",t:"墨爾本機場（夜宿機上）",tp:"drv",time:"約30分",dist:"25km",note:"TR039 21:30起飛"}]},
+{day:"Day 8",title:"新加坡 → 台北（返台）",routes:[{f:"新加坡",t:"桃園國際機場",tp:"fly",time:"約4小時45分",dist:"3,300km",note:"TR874 09:30→14:15"}]},
+]},
+{id:"a4",dest:"澳洲",label:"花漾黃金雪8日",agency:"東南旅遊",days:"8天",airline:"CI53（BNE進）/ CI52（SYD出）",price:"$84,900起・20人成行",cities:"布里斯本進・雪梨出",warn:"Day1夜宿機上。Day8從雪梨返台夜宿機上。",dd:[
+{day:"Day 1",title:"台北 → 布里斯本（夜宿機上）",routes:[{f:"桃園國際機場",t:"布里斯本機場（次日）",tp:"fly",time:"約9小時5分",dist:"7,000km",note:"CI53 23:45→10:50+1；夜宿機上"}]},
+{day:"Day 2",title:"CityCat渡輪・南岸公園・市政廳（布里斯本）→ 黃金海岸",routes:[{f:"布里斯本機場（抵達）",t:"CityCat碼頭（布里斯本）",tp:"drv",time:"約30分",dist:"20km",note:""},{f:"CityCat碼頭",t:"南岸公園・市政廳・喬治王廣場",tp:"boa",time:"CityCat渡輪體驗",dist:"市區河岸",note:"午餐：百年教堂鬆餅店"},{f:"布里斯本",t:"黃金海岸飯店",tp:"drv",time:"約1小時",dist:"80km",note:"晚餐：韓式烤肉餐"}]},
+{day:"Day 3",title:"鷹高小鎮 → 西達酒莊（品酒+午餐）→ 藍光螢火蟲 → 太平洋購物中心",routes:[{f:"飯店",t:"鷹高藝術小鎮（Tamborine Mountain）",tp:"drv",time:"約45分",dist:"40km",note:"海拔580m"},{f:"鷹高小鎮",t:"西達酒莊",tp:"drv",time:"約10分",dist:"5km",note:"午餐：酒莊西式餐"},{f:"酒莊",t:"藍光螢火蟲洞穴",tp:"drv",time:"約10分",dist:"5km",note:"澳洲特有物種"},{f:"螢火蟲",t:"太平洋購物中心（Pacific Fair）",tp:"drv",time:"約50分",dist:"45km",note:"晚餐：中式七菜一湯"},{f:"太平洋",t:"飯店",tp:"drv",time:"約10分",dist:"7km",note:""}]},
+{day:"Day 4",title:"可倫賓野生動物園（贈無尾熊合照）→ 波特利國家公園",routes:[{f:"飯店",t:"可倫賓野生動物園（Currumbin）",tp:"drv",time:"約30分",dist:"22km",note:"贈無尾熊合照！午餐：自理"},{f:"可倫賓",t:"波特利國家公園",tp:"drv",time:"約15分",dist:"10km",note:"晚餐：五星賭場自助餐"},{f:"波特利",t:"飯店",tp:"drv",time:"約10分",dist:"7km",note:""}]},
+{day:"Day 5",title:"黃金海岸 → 雪梨（國內班機）→ QVB・海德公園・植物園",routes:[{f:"飯店",t:"機場",tp:"drv",time:"約30~60分",dist:"30~80km",note:""},{f:"機場",t:"雪梨機場（國內班機）",tp:"fly",time:"約1.5小時",dist:"750km",note:""},{f:"雪梨機場",t:"QVB維多利亞女王購物中心",tp:"drv",time:"約15分",dist:"11km",note:"午餐：澳式漢堡"},{f:"QVB",t:"海德公園・聖瑪莉大教堂",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"聖瑪莉大教堂",t:"皇家植物園",tp:"wlk",time:"步行8分",dist:"600m",note:"晚餐：澳式牛排餐"},{f:"市區",t:"飯店（Parramatta）",tp:"drv",time:"約30分",dist:"20km",note:""}]},
+{day:"Day 6",title:"藍山國家公園（叢林纜車+礦坑纜車+三姊妹岩+回音谷）",routes:[{f:"飯店",t:"藍山國家公園",tp:"drv",time:"約1.5小時",dist:"104km",note:"叢林纜車+礦坑纜車+觀景纜車；中餐：中式七菜一湯"},{f:"藍山",t:"飯店（雪梨）",tp:"drv",time:"約1.5小時",dist:"104km",note:"晚餐：中西式自助餐"}]},
+{day:"Day 7",title:"岩石區 → 港灣大橋 → 魚市場 → 歌劇院 → 雪梨大學 → 港灣遊船 → 夜宿機上",routes:[{f:"飯店",t:"岩石區",tp:"drv",time:"約30分",dist:"20km",note:""},{f:"岩石區",t:"港灣大橋（徒步）",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"大橋",t:"雪梨魚市場",tp:"drv",time:"約10分",dist:"3km",note:"午餐：炸魚薯條（自理）"},{f:"魚市場",t:"雪梨歌劇院",tp:"drv",time:"約10分",dist:"5km",note:"入內+中文導覽"},{f:"歌劇院",t:"雪梨大學",tp:"drv",time:"約10分",dist:"5km",note:"哈利波特魔法學院校園"},{f:"雪梨大學",t:"Circular Quay港灣遊船",tp:"drv",time:"約15分",dist:"7km",note:"晚餐：港灣遊船西式餐"},{f:"Circular Quay",t:"雪梨機場（夜宿機上）",tp:"drv",time:"約20分",dist:"15km",note:"CI52 22:10起飛"}]},
+{day:"Day 8",title:"抵達台北",routes:[{f:"雪梨",t:"桃園國際機場",tp:"fly",time:"約9小時20分",dist:"7,400km",note:"CI52 抵台04:30"}]},
+]},
+{id:"a5",dest:"澳洲",label:"IG美拍 金雪8日",agency:"旅天下",days:"8天",airline:"CI051（SYD進）/ CI054（BNE出）",price:"$94,800~98,800",cities:"雪梨進・布里斯本出",warn:"出發日：2026/06/13。Day6全程搭電車體驗，不使用遊覽車。",dd:[
+{day:"Day 1",title:"台北 → 雪梨（夜宿機上）",routes:[{f:"桃園國際機場",t:"雪梨機場（次日）",tp:"fly",time:"約9小時15分",dist:"7,400km",note:"CI051 23:30→10:45+1；夜宿機上"}]},
+{day:"Day 2",title:"QVB → 澳式下午茶 → 新南威爾斯藝術館 → 鳥籠街",routes:[{f:"雪梨機場（抵達）",t:"QVB維多利亞女王購物中心",tp:"drv",time:"約15分",dist:"11km",note:"午餐：自理"},{f:"QVB",t:"澳式下午茶廳（私藏）",tp:"drv",time:"約10分",dist:"2km",note:"特別安排"},{f:"下午茶",t:"新南威爾斯藝術館（新館）",tp:"drv",time:"約10分",dist:"2km",note:"晚餐：五星古典西式套餐"},{f:"藝術館",t:"鳥籠街（Forgotten Songs）",tp:"wlk",time:"步行8分",dist:"600m",note:"IG打卡聖地"},{f:"鳥籠街",t:"飯店（Moxy Sydney 或同級）",tp:"drv",time:"約20分",dist:"14km",note:"風格設計旅宿"}]},
+{day:"Day 3",title:"藍山（回音谷・鐵鍊車・透明纜車・叢林纜車）→ 蘿拉小鎮",routes:[{f:"飯店",t:"藍山國家公園",tp:"drv",time:"約90分",dist:"100km",note:"回音谷・鐵鍊車・Skyway高空透明纜車・叢林纜車；午餐：炸魚餐"},{f:"藍山",t:"蘿拉小鎮（Leura）",tp:"drv",time:"約10分",dist:"5km",note:"鄉村田園・精品店・藝廊；晚餐：中式七菜一湯"},{f:"蘿拉小鎮",t:"飯店（雪梨）",tp:"drv",time:"約90分",dist:"100km",note:""}]},
+{day:"Day 4",title:"塔隆加動物園（渡輪）→ 歌劇院（路過外觀）→ 雪梨 → 布里斯本（國內班機）",routes:[{f:"飯店",t:"Circular Quay碼頭",tp:"drv",time:"約15分",dist:"9km",note:""},{f:"碼頭",t:"塔隆加動物園",tp:"boa",time:"渡輪12分",dist:"2km",note:"無尾熊・袋鼠・鴨嘴獸；午餐：AUD30自選"},{f:"動物園碼頭",t:"雪梨歌劇院（路過外觀拍照）",tp:"boa",time:"渡輪10分",dist:"2km",note:""},{f:"雪梨機場",t:"布里斯本機場（國內班機）",tp:"fly",time:"約1小時35分",dist:"750km",note:"晚餐：豪華日式定食"},{f:"布里斯本機場",t:"飯店（Indigo Brisbane 或同級）",tp:"drv",time:"約30分",dist:"20km",note:""}]},
+{day:"Day 5",title:"新農場公園 → 布里斯本市政廳 → 危險角 → 黃金海岸",routes:[{f:"飯店（布里斯本）",t:"新農場公園",tp:"drv",time:"約10分",dist:"5km",note:"路過參觀"},{f:"新農場公園",t:"布里斯本市政廳",tp:"drv",time:"約10分",dist:"5km",note:"午餐：澳式肋排餐"},{f:"市政廳",t:"危險角（Point Danger）",tp:"drv",time:"約1.5小時",dist:"100km",note:"昆州/NSW州界；晚餐：海岸景觀西式餐"},{f:"危險角",t:"黃金海岸飯店",tp:"drv",time:"約25分",dist:"20km",note:""}]},
+{day:"Day 6",title:"G-Link電車體驗：太平洋購物中心 → Q1觀景台 → 衝浪者天堂",routes:[{f:"飯店",t:"G-Link輕軌起點",tp:"wlk",time:"步行5分",dist:"300m",note:"本日全程搭電車！體驗澳洲在地生活"},{f:"G-Link",t:"太平洋購物中心（Pacific Fair）",tp:"trn",time:"約15分",dist:"4km",note:"昆士蘭最大購物中心；午餐：AUD30自選"},{f:"太平洋",t:"Q1大廈 SkyPoint觀景台",tp:"trn",time:"約5分",dist:"2km",note:"昆士蘭最高建築"},{f:"Q1",t:"衝浪者天堂（Surfers Paradise）",tp:"wlk",time:"步行5分",dist:"400m",note:"晚餐：自理"},{f:"衝浪者天堂",t:"飯店",tp:"wlk",time:"步行5分",dist:"300m",note:""}]},
+{day:"Day 7",title:"HOTA藝術之家 → 布里斯本南岸公園 → CityCat渡輪 → 故事橋 → 夜宿機上",routes:[{f:"飯店（黃金海岸）",t:"HOTA藝術之家",tp:"drv",time:"約5分",dist:"2km",note:""},{f:"HOTA",t:"布里斯本南岸公園",tp:"drv",time:"約1小時",dist:"80km",note:"1988世博舊址；午餐：中式七菜一湯"},{f:"南岸公園",t:"故事橋岸邊（CityCat渡輪）",tp:"boa",time:"渡輪20分",dist:"市區河岸",note:"晚餐：AUD30自選"},{f:"故事橋",t:"布里斯本機場（夜宿機上）",tp:"drv",time:"約20分",dist:"14km",note:"CI054 22:50起飛"}]},
+{day:"Day 8",title:"抵達台北",routes:[{f:"布里斯本",t:"桃園國際機場",tp:"fly",time:"約8小時55分",dist:"7,000km",note:"CI054 抵台05:45"}]},
+]},
+{id:"a1",dest:"澳洲",label:"東澳全覽9日",agency:"竹建",days:"9天",airline:"長榮 BR315 09:10→BNE 20:00 / BR316 BNE 22:15→05:15+1",price:"未標示",cities:"布里斯本→雪梨→墨爾本→黃金海岸",warn:"Day1晚上8點才抵達布里斯本，辦理入住休息，無任何景點。",dd:[
+{day:"Day 1",title:"台北 → 布里斯本（晚上8點抵達，入住休息）",routes:[{f:"桃園國際機場",t:"布里斯本國際機場",tp:"fly",time:"約9小時",dist:"7,000km",note:"BR315 09:10→20:00"},{f:"布里斯本機場",t:"市區飯店",tp:"drv",time:"約30分",dist:"25km",note:"⚠️ 抵達已晚上8點，辦理入住休息，無景點"}]},
+{day:"Day 2",title:"布里斯本 → 雪梨（國內班機）→ 海德公園・植物園・藝術館 → 港灣遊船",routes:[{f:"布里斯本機場",t:"雪梨機場（國內班機）",tp:"fly",time:"約1小時35分",dist:"750km",note:""},{f:"雪梨機場",t:"海德公園",tp:"drv",time:"約15分",dist:"11km",note:"中餐：港式飲茶（AUD35/位）"},{f:"海德公園",t:"聖瑪莉大教堂",tp:"wlk",time:"步行2分",dist:"150m",note:""},{f:"聖瑪莉大教堂",t:"皇家植物園",tp:"wlk",time:"步行8分",dist:"600m",note:""},{f:"皇家植物園",t:"新南威爾斯藝術館",tp:"wlk",time:"步行5分",dist:"400m",note:""},{f:"新南威爾斯藝術館",t:"Circular Quay港灣遊船",tp:"wlk",time:"步行10分",dist:"800m",note:"晚餐：港灣遊船西式套餐（AUD60/位）"},{f:"Circular Quay",t:"飯店（Macquarie Park）",tp:"drv",time:"約20分",dist:"14km",note:""}]},
+{day:"Day 3",title:"藍山國家公園（礦坑纜車・叢林纜車・三姊妹岩・回音谷）→ 奧林匹克公園",routes:[{f:"飯店",t:"藍山國家公園",tp:"drv",time:"約90分",dist:"100km",note:"礦坑纜車・叢林纜車・三姊妹岩・回音谷；中餐：中華料理七菜一湯"},{f:"藍山",t:"奧林匹克運動公園",tp:"drv",time:"約60分",dist:"75km",note:"2000年雪梨奧運場地；晚餐：中西式自助餐"},{f:"奧林匹克公園",t:"飯店",tp:"drv",time:"約15分",dist:"9km",note:""}]},
+{day:"Day 4",title:"岩石區 → 港灣大橋（徒步）→ 雪梨塔旋轉餐廳（午餐）→ 歌劇院 → 免稅店",routes:[{f:"飯店",t:"岩石區（The Rocks）",tp:"drv",time:"約20分",dist:"13km",note:""},{f:"岩石區",t:"港灣大橋（徒步）",tp:"wlk",time:"步行5分",dist:"350m",note:""},{f:"大橋",t:"雪梨塔旋轉餐廳",tp:"drv",time:"約5分",dist:"1.2km",note:"午餐：旋轉餐廳自助餐（AUD80/位）"},{f:"雪梨塔",t:"雪梨歌劇院",tp:"drv",time:"約5分",dist:"1km",note:"入內+專人中文導覽；大型背包禁入"},{f:"歌劇院",t:"免稅店",tp:"drv",time:"約5分",dist:"800m",note:"晚餐：中式七菜一湯"},{f:"市區",t:"飯店",tp:"drv",time:"約20分",dist:"14km",note:""}]},
+{day:"Day 5",title:"雪梨 → 墨爾本（國內班機）→ 聖派翠克教堂・費茲洛花園・咖啡巷・塗鴉巷",routes:[{f:"雪梨機場",t:"墨爾本機場（國內班機）",tp:"fly",time:"約1小時35分",dist:"705km",note:""},{f:"墨爾本機場",t:"聖派翠克教堂",tp:"drv",time:"約30分",dist:"25km",note:"中餐：中華料理七菜一湯"},{f:"聖派翠克教堂",t:"費茲洛花園",tp:"wlk",time:"步行3分",dist:"250m",note:""},{f:"費茲洛花園",t:"咖啡巷",tp:"drv",time:"約5分",dist:"1.5km",note:"晚餐：義式料理+飲料"},{f:"咖啡巷",t:"塗鴉巷",tp:"wlk",time:"步行3分",dist:"200m",note:""},{f:"市區",t:"飯店（Southbank）",tp:"drv",time:"約5分",dist:"1km",note:""}]},
+{day:"Day 6",title:"普芬古董蒸汽火車 → 菲利浦島神仙小企鵝歸巢",routes:[{f:"飯店（墨爾本）",t:"Belgrave 普芬火車站",tp:"drv",time:"約40分",dist:"40km",note:"※2025/6起30天內確認才訂位；訂不到改雅拉河遊船退AUD30"},{f:"Belgrave",t:"菲利浦島企鵝觀賞區",tp:"drv",time:"約2小時",dist:"130km",note:"日落後企鵝歸巢；禁閃光燈；需保暖；晚餐：中華海鮮料理"},{f:"菲利浦島",t:"飯店（墨爾本）",tp:"drv",time:"約1.5小時",dist:"148km",note:""}]},
+{day:"Day 7",title:"墨爾本 → 黃金海岸（國內班機）→ 皇家遊艇 → 塘鵝餵食 → 布洛德海灘",routes:[{f:"墨爾本機場",t:"黃金海岸機場（國內班機）",tp:"fly",time:"約2小時5分",dist:"1,380km",note:""},{f:"黃金海岸機場",t:"皇家私人遊艇碼頭",tp:"drv",time:"約30分",dist:"30km",note:"市值400萬澳幣豪華遊艇；午餐：澳式炸魚（AUD25/位）"},{f:"遊艇碼頭",t:"大嘴鳥塘鵝餵食表演",tp:"drv",time:"約5分",dist:"3km",note:""},{f:"塘鵝",t:"布洛德海灘（Broadbeach）",tp:"wlk",time:"步行2分",dist:"150m",note:"晚餐：韓式烤肉吃到飽（AUD40/位）"},{f:"布洛德海灘",t:"飯店（Surfers Paradise）",tp:"drv",time:"約5分",dist:"2km",note:""}]},
+{day:"Day 8",title:"天堂鄉農莊（贈無尾熊合照）→ 海港城購物 → 布里斯本機場 → 夜宿機上",routes:[{f:"飯店（黃金海岸）",t:"天堂鄉農莊（Paradise Country）",tp:"drv",time:"約25分",dist:"25km",note:"贈無尾熊合照！牧羊犬・甩皮鞭・比利茶；午餐：澳式風味餐"},{f:"天堂鄉農莊",t:"海港城購物中心（Harbour Town）",tp:"drv",time:"約10分",dist:"8km",note:"晚餐：中華料理七菜一湯"},{f:"海港城",t:"布里斯本機場（夜宿機上）",tp:"drv",time:"約45分",dist:"60km",note:"BR316 22:15起飛"}]},
+{day:"Day 9",title:"抵達台北",routes:[{f:"布里斯本",t:"桃園國際機場",tp:"fly",time:"約9小時",dist:"7,000km",note:"BR316 抵台05:15"}]},
+]},
+];
+
+const DAY_COLORS=["#1D9E75","#185FA5","#854F0B","#A32D2D","#3C3489","#0F6E56","#633806","#3B6D11","#72243E"];
+
+function buildNav(){
+  const nav=document.getElementById("nav-content");
+  const groups=[{label:"日本行程",dest:"日本"},{label:"澳洲行程",dest:"澳洲"}];
+  let html="";
+  groups.forEach(g=>{
+    html+=`<div class="nav-group"><div class="nav-group-label">${g.label}</div>`;
+    TOURS.filter(t=>t.dest===g.dest).forEach(t=>{
+      const i=TOURS.indexOf(t);
+      const isAu=t.dest==="澳洲";
+      const c=isAu?"#1D9E75":"#6C63D8";
+      html+=`<div class="nav-item" data-i="${i}" onclick="sel(${i})">
+        <span class="nav-dot" style="background:${c}"></span>
+        <div class="nav-body">
+          <div class="nav-name">${t.label}</div>
+          <div class="nav-agency">${t.agency}</div>
+        </div>
+        <span class="nav-days">${t.days}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  nav.innerHTML=html;
+}
+
+function buildMain(idx){
+  const t=TOURS[idx];
+  const isAu=t.dest==="澳洲";
+  const c=isAu?"#0A6640":"#4B44A8";
+  const badgeCls=isAu?"au-badge":"jp-badge";
+  let h=`<div class="trip-header">
+    <div class="trip-dest-badge ${badgeCls}">${t.dest} · ${t.days}</div>
+    <div class="trip-title">${t.label}</div>
+    <div class="trip-meta-row">
+      <span class="meta-chip">📋 ${t.agency}</span>
+      <span class="meta-chip">✈ ${t.airline}</span>
+      <span class="meta-chip">🗺 ${t.cities}</span>
+      ${t.price!=="未標示"?`<span class="meta-chip">💰 ${t.price}</span>`:""}
+    </div>
+  </div>`;
+  if(t.warn) h+=`<div class="warn-strip">⚠️ ${t.warn}</div>`;
+  h+=`<div class="content-body">`;
+  t.dd.forEach((d,di)=>{
+    const dc=DAY_COLORS[di%DAY_COLORS.length];
+    const img=getDayImg(d.title);
+    h+=`<div class="day-block">
+      <div class="day-header">
+        <span class="day-badge" style="background:${dc}22;color:${dc}">${d.day}</span>
+        <span class="day-title-text">${d.title}</span>
+      </div>`;
+    if(img){
+      h+=`<img class="day-img" src="${img}" alt="${d.title}" onerror="this.style.display='none'">`;
+    }
+    h+=`<div class="timeline">`;
+    d.routes.forEach((r,ri)=>{
+      const dotC=DC[r.tp]||"#AAA";
+      const isLast=ri===d.routes.length-1;
+      h+=`<div class="tl-item">
+        <div class="tl-left">
+          <div class="tl-dot" style="background:${dotC};color:${dotC}"></div>
+          <div class="tl-line"></div>
+        </div>
+        <div class="tl-right">
+          <div class="tl-place">${r.f}</div>
+          <div class="tl-connector">
+            <span class="tl-badge ${r.tp}">${TL[r.tp]||r.tp}</span>
+            <span class="tl-meta">${r.time}${r.dist!=="—"?" &nbsp;·&nbsp; "+r.dist:""}</span>
+          </div>
+          ${isLast?`<div class="tl-dest">${r.t}</div>`:""}
+          ${r.note?`<div class="tl-note">${r.note}</div>`:""}
+        </div>
+      </div>`;
+    });
+    h+=`</div></div>`;
+  });
+  h+=`</div>`;
+  document.getElementById("main").innerHTML=h;
+  document.getElementById("main").scrollTop=0;
+}
+
+function sel(idx){
+  document.querySelectorAll(".nav-item").forEach(el=>{
+    const i=parseInt(el.dataset.i);
+    const t=TOURS[i];
+    const cls=i===idx?(t.dest==="澳洲"?"active-au":"active-jp"):"";
+    el.className="nav-item"+(cls?" "+cls:"");
+  });
+  buildMain(idx);
+}
+
+buildNav();
+sel(0);
+</script>
+</body>
+</html>
