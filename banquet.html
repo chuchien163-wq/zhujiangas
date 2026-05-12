@@ -2079,10 +2079,12 @@ async function handleMenuImg(input, idx, planName) {
     const compressed = await compressImage(e.target.result, 800, 0.7);
     try {
       const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
+      const actId = currentActId || 'EVT001';
+      const actName = act['活動名稱'] || actId;
       const res = await apiPost({
         action: 'uploadMenuPhoto',
-        actId: currentActId,
-        actName: act['活動名稱'] || currentActId,
+        actId: actId,
+        actName: actName,
         planName: planName,
         base64Data: compressed,
         mimeType: 'image/jpeg'
