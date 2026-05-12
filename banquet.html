@@ -3054,13 +3054,22 @@ function tryUnlock() {
 function enterViewMode() {
   isAdmin = false;
   document.getElementById('lockScreen').style.display = 'none';
+  // 加入全域 CSS 隱藏所有編輯元素
+  const style = document.createElement('style');
+  style.id = 'view-mode-style';
+  style.textContent = `
+    .btn-gold, .btn-dark, .btn-green, .btn-red,
+    .attend-add-btn, .invite-pick-btn,
+    .menu-img-action, .venue-photo-overlay,
+    .invite-img-overlay, [id^="invite-upbtn"],
+    .save-bar, .panel-title button,
+    .seating-panel button.btn-red { display: none !important; }
+    .invite-img-wrap:hover .invite-img-overlay { display: none !important; }
+    .venue-photo-slot:hover .venue-photo-overlay { display: none !important; }
+    .menu-img-wrap:hover .menu-img-overlay { display: none !important; }
+  `;
+  document.head.appendChild(style);
   init();
-  // 隱藏所有編輯/儲存按鈕
-  setTimeout(() => {
-    document.querySelectorAll('.btn-gold, .btn-dark, .btn-green, .btn-red, .attend-add-btn, .invite-pick-btn, .lock-view-btn').forEach(el => {
-      if(!el.classList.contains('lock-view-btn')) el.style.display = 'none';
-    });
-  }, 2000);
 }
 
 function checkAdmin(action) {
