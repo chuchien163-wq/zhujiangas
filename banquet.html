@@ -2000,7 +2000,7 @@ function selectMenu(idx) {
 }
 
 async function saveMenuDecision() {
-  if(!checkAdmin()) return;
+  // 允許訪客裁示
   if(selectedMenuIdx === null) { showToast('請先點選方案'); return; }
   const m = menuData[selectedMenuIdx];
   const res = await apiPost({action:'updateMenuDecision', actId:currentActId, 方案名稱:m['方案名稱']});
@@ -2232,7 +2232,7 @@ function pickInviteCard(idx) {
 }
 
 async function saveInviteDecision() {
-  if(!checkAdmin()) return;
+  // 允許訪客裁示
   const picked = inviteData.find(c=>c['老闆選定']==='✓');
   if(!picked) { showToast('請先選擇版本'); return; }
   const res = await apiPost({action:'updateInviteDecision', actId:currentActId, 版本編號:picked['版本編號']});
@@ -3065,7 +3065,7 @@ function enterViewMode() {
     .attend-add-btn,
     .menu-img-action, .venue-photo-overlay,
     .invite-img-overlay, [id^="invite-upbtn"],
-    .save-bar, .panel-title button,
+    .save-bar .btn:not(.btn-decision), .panel-title button,
     .seating-panel button.btn-red { display: none !important; }
     .invite-img-wrap:hover .invite-img-overlay { display: none !important; }
     .venue-photo-slot:hover .venue-photo-overlay { display: none !important; }
