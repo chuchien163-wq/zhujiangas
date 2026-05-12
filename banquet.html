@@ -1664,8 +1664,14 @@ async function loadVenuePhotos() {
 }
 
 function getVenuePhotoUrl(slotIdx) {
+  // 優先用本地快取（localStorage）
+  const localKey = 'venue_local_' + currentActId + '_' + slotIdx;
+  const local = localStorage.getItem(localKey);
+  if(local) return local;
+  // 其次用 Drive URL（需要登入 Google）
   const photos = venuePhotosCache[currentActId] || [];
   const found = photos.find(p => p.slotIdx === slotIdx);
+  if(found && found.local) return found.local;
   return found ? found.url : '';
 }
 
@@ -1789,14 +1795,14 @@ async function handleVenueImg(input, idx) {
         mimeType: 'image/jpeg'
       });
       if(res && res.success) {
-        // 更新快取
+        // 更新快取（存 Drive URL）
         if(!venuePhotosCache[currentActId]) venuePhotosCache[currentActId] = [];
         const cache = venuePhotosCache[currentActId];
         const existing = cache.findIndex(p => p.slotIdx === idx);
-        if(existing >= 0) cache[existing].url = res.url;
-        else cache.push({ slotIdx: idx, url: res.url, fileId: res.fileId });
+        if(existing >= 0) { cache[existing].url = res.url; cache[existing].local = base64; }
+        else cache.push({ slotIdx: idx, url: res.url, fileId: res.fileId, local: base64 });
 
-        // 更新畫面
+        // 更新畫面（用本地 base64 顯示，Drive URL 當備用）
         const area = document.getElementById('venue-imgarea-' + idx);
         const ph = area.querySelector('.venue-photo-placeholder');
         if(ph) ph.remove();
@@ -1808,7 +1814,9 @@ async function handleVenueImg(input, idx) {
           img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
           area.insertBefore(img, area.firstChild);
         }
-        img.src = res.url;
+        img.src = base64;
+        // 同時存到 localStorage 當快取
+        localStorage.setItem('venue_local_' + currentActId + '_' + idx, base64);
         showToast('✓ 照片已上傳到 Google Drive');
       } else {
         showToast('❌ 上傳失敗：' + (res?.error || '未知錯誤'));
