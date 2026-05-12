@@ -1372,6 +1372,17 @@ function api(params) {
   });
 }
 function apiPost(body) {
+  // 圖片上傳：先壓縮再用 fetch POST
+  if(body.base64Data || body.action === 'uploadVenuePhoto') {
+    return fetch(API, {
+      method: 'POST',
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(body)
+    }).then(r => r.text()).then(t => {
+      try { return JSON.parse(t); } catch(e) { return {success:false, error:t}; }
+    });
+  }
   return api(body);
 }
 function fixDate(d) {
@@ -1738,7 +1749,9 @@ async function handleVenueImg(input, idx) {
   showToast('⏳ 上傳中...');
   const reader = new FileReader();
   reader.onload = async e => {
-    const base64 = e.target.result;
+    // 壓縮圖片到最大 800px，品質 0.7
+    const compressed = await compressImage(e.target.result, 800, 0.7);
+    const base64 = compressed;
     try {
       const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
       const res = await apiPost({
@@ -1747,7 +1760,7 @@ async function handleVenueImg(input, idx) {
         actName: act['活動名稱'] || currentActId,
         slotIdx: idx,
         base64Data: base64,
-        mimeType: file.type || 'image/jpeg'
+        mimeType: 'image/jpeg'
       });
       if(res && res.success) {
         // 更新快取
