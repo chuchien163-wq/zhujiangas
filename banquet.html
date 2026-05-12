@@ -1847,8 +1847,8 @@ async function renderVenuePage() {
     const img = document.getElementById('venue-img-' + slotIdx);
     const capInput = document.getElementById('venue-cap-' + slotIdx);
     const enlargeBtn = document.getElementById('venue-enlarge-' + slotIdx);
-    if(img) img.onclick = () => openLightbox(img.src, capInput?.value||'');
-    if(enlargeBtn) enlargeBtn.onclick = () => { const i = document.getElementById('venue-img-'+slotIdx); if(i) openLightbox(i.src, capInput?.value||''); };
+    if(img) img.onclick = () => openLightbox(img.src, (capInput||{}).value||'');
+    if(enlargeBtn) enlargeBtn.onclick = () => { const i = document.getElementById('venue-img-'+slotIdx); if(i) openLightbox(i.src, (capInput||{}).value||''); };
     if(capInput) capInput.oninput = () => localStorage.setItem(storKey+'_cap', capInput.value);
   });
 }
@@ -1913,12 +1913,12 @@ async function handleVenueImg(input, idx) {
         }
         img.src = base64;
         img.style.cursor = 'zoom-in';
-        img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
+        img.onclick = () => openLightbox(img.src, (document.getElementById('venue-cap-'+idx)||{}).value||'');
         // 同時存到 localStorage 當快取
         localStorage.setItem('venue_local_' + currentActId + '_' + idx, base64);
         showToast('✓ 照片已上傳到 Google Drive');
       } else {
-        showToast('❌ 上傳失敗：' + (res?.error || '未知錯誤'));
+        showToast('❌ 上傳失敗：' + ((res||{}).error || '未知錯誤'));
       }
     } catch(e) {
       showToast('❌ 上傳失敗：' + e.toString());
@@ -1928,7 +1928,7 @@ async function handleVenueImg(input, idx) {
 }
 
 function saveVenueCaption(idx) {
-  const val = document.getElementById('venue-cap-' + idx)?.value || '';
+  const val = (document.getElementById('venue-cap-' + idx)||{value:''}).value || '';
   localStorage.setItem(getVenueImgKey(currentActId, idx) + '_cap', val);
 }
 
@@ -2038,7 +2038,7 @@ async function renderMenuPage() {
                 </div>`
             }
             <div class="menu-img-overlay">
-              <div class="menu-img-action" onclick="openLightbox(document.getElementById('menu-img-${i}')?.src,'${m['方案名稱']}')"><i class="ti ti-eye"></i> 放大</div>
+              <div class="menu-img-action" onclick="openLightbox((document.getElementById('menu-img-${i}')||{}).src,'${m['方案名稱']}')"><i class="ti ti-eye"></i> 放大</div>
               <div class="menu-img-action" onclick="document.getElementById('menu-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
               <div class="menu-img-action" onclick="removeMenuImg(${i},'${m['方案名稱']}')"><i class="ti ti-trash"></i> 刪除</div>
             </div>
@@ -2100,13 +2100,13 @@ async function handleMenuImg(input, idx, planName) {
         const wrap = document.getElementById('menu-imgwrap-' + idx);
         wrap.innerHTML = `<img src="${compressed}" id="menu-img-${idx}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${planName}')">
           <div class="menu-img-overlay" style="pointer-events:none">
-            <div class="menu-img-action" style="pointer-events:all" onclick="openLightbox(document.getElementById('menu-img-${idx}')?.src,'${planName}')"><i class="ti ti-eye"></i> 放大</div>
+            <div class="menu-img-action" style="pointer-events:all" onclick="openLightbox((document.getElementById('menu-img-${idx}')||{}).src,'${planName}')"><i class="ti ti-eye"></i> 放大</div>
             <div class="menu-img-action" style="pointer-events:all" onclick="document.getElementById('menu-file-${idx}').click()"><i class="ti ti-upload"></i> 換圖</div>
             <div class="menu-img-action" style="pointer-events:all" onclick="removeMenuImg(${idx},'${planName}')"><i class="ti ti-trash"></i> 刪除</div>
           </div>`;
         showToast('✓ 菜單照片已上傳到 Google Drive');
       } else {
-        showToast('❌ 上傳失敗：' + (res?.error||''));
+        showToast('❌ 上傳失敗：' + ((res||{}).error||''));
       }
     } catch(e) {
       showToast('❌ 上傳失敗：' + e.toString());
@@ -2134,7 +2134,7 @@ async function removeMenuImg(idx, planName) {
 }
 
 function saveMenuDetail(idx, planName) {
-  const val = document.getElementById('menu-detail-' + idx)?.value || '';
+  const val = (document.getElementById('menu-detail-' + idx)||{value:''}).value || '';
   localStorage.setItem(getMenuDetailKey(currentActId, planName), val);
 }
 
@@ -2217,12 +2217,12 @@ function renderFeePage() {
 }
 
 function calcFee() {
-  const t = parseInt(document.getElementById('fee-tables')?.value||8);
-  const price = parseInt(document.getElementById('fee-plan')?.value||8000);
-  const svcMode = document.getElementById('fee-svc')?.value||'per';
-  const hasRoom = parseInt(document.getElementById('fee-hasroom')?.value||0);
-  const room = hasRoom ? parseInt(document.getElementById('fee-room')?.value||0) : 0;
-  const ktv = parseInt(document.getElementById('fee-ktv')?.value||0);
+  const t = parseInt((document.getElementById('fee-tables')||{value:8}).value||8);
+  const price = parseInt((document.getElementById('fee-plan')||{value:8000}).value||8000);
+  const svcMode = (document.getElementById('fee-svc')||{value:'per'}).value||'per';
+  const hasRoom = parseInt((document.getElementById('fee-hasroom')||{value:0}).value||0);
+  const room = hasRoom ? parseInt((document.getElementById('fee-room')||{value:0}).value||0) : 0;
+  const ktv = parseInt((document.getElementById('fee-ktv')||{value:0}).value||0);
   const base = price * t;
   const svc = svcMode==='per' ? price*0.1*t : base*0.1;
   const total = base + svc + room;
@@ -2294,7 +2294,7 @@ function renderInvitePage() {
         <button class="btn" style="flex:1;font-size:11px;padding:5px;justify-content:center" id="invite-upbtn-${i}">
           <i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳圖片'}
         </button>
-        ${savedImg ? `<button class="btn" style="font-size:11px;padding:5px 8px" onclick="openLightbox(document.querySelector('#invite-imgwrap-${i} img')?.src,'${card['版本名稱']}')"><i class="ti ti-eye"></i></button>` : ''}
+        ${savedImg ? `<button class="btn" style="font-size:11px;padding:5px 8px" onclick="openLightbox((document.querySelector('#invite-imgwrap-${i} img')||{src:''}).src,'${card['版本名稱']}')"><i class="ti ti-eye"></i></button>` : ''}
         ${savedImg ? `<button class="btn btn-red" style="font-size:11px;padding:5px 8px" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i></button>` : ''}
       </div>
       <div class="invite-footer">
