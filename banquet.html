@@ -639,6 +639,8 @@ select.inline-sel {
   gap: 6px;
 }
 .venue-photo-slot:hover .venue-photo-overlay { display: flex; }
+.venue-photo-overlay { pointer-events: none; }
+.venue-photo-overlay .menu-img-action { pointer-events: all; }
 
 /* ── 燈箱 Lightbox ── */
 .lightbox {
@@ -1811,10 +1813,11 @@ async function handleVenueImg(input, idx) {
           img = document.createElement('img');
           img.className = 'venue-photo-img';
           img.alt = '場地照片' + (idx+1);
-          img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
           area.insertBefore(img, area.firstChild);
         }
         img.src = base64;
+        img.style.cursor = 'zoom-in';
+        img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
         // 同時存到 localStorage 當快取
         localStorage.setItem('venue_local_' + currentActId + '_' + idx, base64);
         showToast('✓ 照片已上傳到 Google Drive');
