@@ -1638,7 +1638,27 @@ function getVenueImgKey(actId, idx) {
   return `venue_img_${actId}_${idx}`;
 }
 
-function renderVenuePage() {
+// 場地照片 Drive 快取（actId -> [{slotIdx, url}]）
+let venuePhotosCache = {};
+
+async function loadVenuePhotos() {
+  try {
+    const res = await apiPost({action:'getVenuePhotos', actId: currentActId});
+    if(res && res.success) {
+      venuePhotosCache[currentActId] = res.photos || [];
+    }
+  } catch(e) {
+    venuePhotosCache[currentActId] = [];
+  }
+}
+
+function getVenuePhotoUrl(slotIdx) {
+  const photos = venuePhotosCache[currentActId] || [];
+  const found = photos.find(p => p.slotIdx === slotIdx);
+  return found ? found.url : '';
+}
+
+async function renderVenuePage() {
   const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
   const fieldDefs = [
     ['活動名稱','活動名稱'],['日期','日期'],['星期','星期'],
@@ -1646,11 +1666,17 @@ function renderVenuePage() {
     ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
   ];
 
+  // 先顯示載入中
+  document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入照片中...</div>';
+
+  // 從 Drive 讀取照片
+  await loadVenuePhotos();
+
   // 產生8格圖片
   const photoSlots = Array.from({length:8}, (_,slotIdx) => {
     const storKey = getVenueImgKey(currentActId, slotIdx);
     const capStorKey = storKey + '_cap';
-    const savedImg = localStorage.getItem(storKey) || '';
+    const savedImg = getVenuePhotoUrl(slotIdx);
     const savedCap = localStorage.getItem(capStorKey) || '';
     return '<div class="venue-photo-slot" id="venue-slot-' + slotIdx + '">' +
       '<div class="venue-photo-img-area" id="venue-imgarea-' + slotIdx + '">' +
@@ -1706,26 +1732,51 @@ function renderVenuePage() {
   });
 }
 
-function handleVenueImg(input, idx) {
+async function handleVenueImg(input, idx) {
   const file = input.files[0];
   if(!file) return;
+  showToast('⏳ 上傳中...');
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = async e => {
     const base64 = e.target.result;
-    localStorage.setItem(getVenueImgKey(currentActId, idx), base64);
-    const area = document.getElementById('venue-imgarea-' + idx);
-    const ph = area.querySelector('.venue-photo-placeholder');
-    if(ph) ph.remove();
-    let img = area.querySelector('img');
-    if(!img) {
-      img = document.createElement('img');
-      img.className = 'venue-photo-img';
-      img.alt = '場地照片' + (idx+1);
-      img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
-      area.insertBefore(img, area.firstChild);
+    try {
+      const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
+      const res = await apiPost({
+        action: 'uploadVenuePhoto',
+        actId: currentActId,
+        actName: act['活動名稱'] || currentActId,
+        slotIdx: idx,
+        base64Data: base64,
+        mimeType: file.type || 'image/jpeg'
+      });
+      if(res && res.success) {
+        // 更新快取
+        if(!venuePhotosCache[currentActId]) venuePhotosCache[currentActId] = [];
+        const cache = venuePhotosCache[currentActId];
+        const existing = cache.findIndex(p => p.slotIdx === idx);
+        if(existing >= 0) cache[existing].url = res.url;
+        else cache.push({ slotIdx: idx, url: res.url, fileId: res.fileId });
+
+        // 更新畫面
+        const area = document.getElementById('venue-imgarea-' + idx);
+        const ph = area.querySelector('.venue-photo-placeholder');
+        if(ph) ph.remove();
+        let img = area.querySelector('img');
+        if(!img) {
+          img = document.createElement('img');
+          img.className = 'venue-photo-img';
+          img.alt = '場地照片' + (idx+1);
+          img.onclick = () => openLightbox(img.src, document.getElementById('venue-cap-'+idx)?.value||'');
+          area.insertBefore(img, area.firstChild);
+        }
+        img.src = res.url;
+        showToast('✓ 照片已上傳到 Google Drive');
+      } else {
+        showToast('❌ 上傳失敗：' + (res?.error || '未知錯誤'));
+      }
+    } catch(e) {
+      showToast('❌ 上傳失敗：' + e.toString());
     }
-    img.src = base64;
-    showToast('✓ 照片已上傳');
   };
   reader.readAsDataURL(file);
 }
@@ -1735,8 +1786,14 @@ function saveVenueCaption(idx) {
   localStorage.setItem(getVenueImgKey(currentActId, idx) + '_cap', val);
 }
 
-function removeVenueImg(idx) {
-  localStorage.removeItem(getVenueImgKey(currentActId, idx));
+async function removeVenueImg(idx) {
+  try {
+    await apiPost({ action:'deleteVenuePhoto', actId: currentActId, slotIdx: idx });
+    // 更新快取
+    if(venuePhotosCache[currentActId]) {
+      venuePhotosCache[currentActId] = venuePhotosCache[currentActId].filter(p => p.slotIdx !== idx);
+    }
+  } catch(e) {}
   const area = document.getElementById('venue-imgarea-' + idx);
   const img = area.querySelector('img');
   if(img) img.remove();
