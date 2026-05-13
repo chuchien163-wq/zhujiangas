@@ -1779,6 +1779,40 @@ function getVenueImgKey(actId, idx) {
 // 場地照片 Drive 快取（actId -> [{slotIdx, url}]）
 let venuePhotosCache = {};
 
+
+// ── 場地照片說明文字 ──
+var venueCaptionCache = {};
+
+async function loadVenueCaptions() {
+  try {
+    var res = await apiPost({action:'getVenueCaptions', actId: currentActId});
+    if(res && res.success) {
+      venueCaptionCache[currentActId] = {};
+      res.captions.forEach(function(c) {
+        venueCaptionCache[currentActId][c.idx] = c.text;
+      });
+    }
+  } catch(e) { console.error('loadVenueCaptions:', e); }
+}
+
+function getVenueCaption(idx) {
+  var cache = venueCaptionCache[currentActId];
+  if(cache && cache[idx]) return cache[idx];
+  return '';
+}
+
+async function saveAllVenueCaptions() {
+  var captions = [];
+  for(var i = 0; i < 20; i++) {
+    var el = document.getElementById('venue-cap-'+i);
+    if(el && el.value) captions.push({idx: i, text: el.value});
+  }
+  try {
+    await apiPost({action:'saveVenueCaptions', actId: currentActId, captions: captions});
+    showToast('✓ 說明文字已儲存');
+  } catch(e) { showToast('❌ 儲存失敗'); }
+}
+
 async function loadVenuePhotos() {
   try {
     const res = await apiPost({action:'getVenuePhotos', actId: currentActId});
@@ -1828,6 +1862,7 @@ async function renderVenuePage() {
   document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
 
   try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos:', e); }
+  try { await loadVenueCaptions(); } catch(e) { console.error('loadVenueCaptions:', e); }
 
   // ── 資訊卡片 ──
   var fields = [
@@ -1861,7 +1896,7 @@ async function renderVenuePage() {
   var photoSlots = Array.from({length:20}, function(_,i) {
     var storKey = getVenueImgKey(currentActId, i);
     var savedImg = getVenuePhotoUrl(i);
-    var savedCap = localStorage.getItem(storKey+'_cap') || '';
+    var savedCap = getVenueCaption(i);
     return '<div style="border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);background:var(--bg)" id="venue-slot-'+i+'">' +
       '<div style="position:relative;aspect-ratio:4/3;overflow:hidden" id="venue-imgarea-'+i+'">' +
       (savedImg
@@ -1941,7 +1976,11 @@ async function renderVenuePage() {
         if(im) openLightbox(im.src, capInput ? capInput.value : '');
       };
     }
-    if(capInput) capInput.oninput = function(){ localStorage.setItem(storKey+'_cap', capInput.value); };
+    if(capInput) capInput.oninput = function(){
+      localStorage.setItem(storKey+'_cap', capInput.value);
+      if(!venueCaptionCache[currentActId]) venueCaptionCache[currentActId] = {};
+      venueCaptionCache[currentActId][i] = capInput.value;
+    };
   });
 }
 
