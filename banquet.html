@@ -916,6 +916,7 @@ select.inline-sel {
   .btn { font-size: 12px; padding: 6px 10px; }
   .menu-cards { grid-template-columns: 1fr !important; }
   .invite-grid { grid-template-columns: 1fr 1fr !important; }
+  .menu-cards { grid-template-columns: 1fr !important; }
   .venue-photo-grid { grid-template-columns: 1fr 1fr !important; }
 
   .save-bar {
@@ -1019,6 +1020,7 @@ select.inline-sel {
     <div class="sb-item" id="nav-invite" onclick="showPage('invite')"><i class="ti ti-mail"></i> 邀請卡版本<span class="sb-badge" id="invite-badge">待裁示</span></div>
     <div class="sb-item" onclick="showPage('attend')"><i class="ti ti-users"></i> 出席管理</div>
     <div class="sb-section">記錄</div>
+    <div class="sb-item" onclick="showPage('after')"><i class="ti ti-camera"></i> 餐後紀錄</div>
     <div class="sb-item" onclick="showPage('seating')"><i class="ti ti-layout-grid"></i> 桌位圖</div>
     <div class="sb-item" onclick="showPage('history')"><i class="ti ti-history"></i> 歷史紀錄</div>
     <div class="sb-item" onclick="showPage('staff')"><i class="ti ti-id-badge"></i> 公司人員</div>
@@ -1283,6 +1285,14 @@ select.inline-sel {
     </div>
 
     <!-- ── 歷史紀錄 ── -->
+    <!-- ── 餐後紀錄 ── -->
+    <div id="page-after" class="page">
+      <div class="panel">
+        <div class="panel-title">餐後紀錄照片</div>
+        <div id="after-content" class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>
+      </div>
+    </div>
+
     <!-- ── 桌位圖 ── -->
     <div id="page-seating" class="page" style="padding-top:0">
       <!-- 工具列 -->
@@ -1478,6 +1488,7 @@ function fixDate(d) {
 
 // ── 頁面切換 ──
 const pageTitles = {
+  after: '餐後紀錄',
   seating: '桌位配置圖',
   dashboard:'儀錶板', venue:'場地資訊', menu:'菜單比較',
   fee:'費用試算', invite:'邀請卡版本', attend:'出席管理',
@@ -1779,21 +1790,22 @@ function getVenuePhotoUrl(slotIdx) {
 function getYoutubeEmbed(url) {
   if(!url) return '';
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-  if(!match) return '<div style="color:var(--text-muted);font-size:12px">輸入正確的 YouTube 網址後會顯示預覽</div>';
+  if(!match) return '<div style="color:var(--text-muted);font-size:12px;padding:10px">請輸入正確的 YouTube 網址</div>';
   const vid = match[1];
-  return '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px">' +
-    '<iframe src="https://www.youtube.com/embed/' + vid + '" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px" allowfullscreen></iframe></div>';
+  return '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:8px"><iframe src="https://www.youtube.com/embed/'+vid+'" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px" allowfullscreen></iframe></div>';
 }
 
 function previewYoutube(url) {
-  document.getElementById('venue-yt-preview').innerHTML = getYoutubeEmbed(url);
+  const el = document.getElementById('venue-yt-preview');
+  if(el) el.innerHTML = getYoutubeEmbed(url);
 }
 
 function saveYoutube() {
-  const url = document.getElementById('venue-youtube').value;
+  const url = (document.getElementById('venue-youtube')||{value:''}).value;
   localStorage.setItem('venue_yt_' + currentActId, url);
   showToast('✓ 影片連結已儲存');
 }
+
 
 async function renderVenuePage() {
   const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
@@ -1803,140 +1815,77 @@ async function renderVenuePage() {
     ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
   ];
 
-  // 先顯示載入中
-  document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入照片中...</div>';
-
-  // 從 Drive 讀取照片
+  document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
   await loadVenuePhotos();
 
-  // 產生8格圖片
-  const photoSlots = Array.from({length:20}, (_,slotIdx) => {
-    const storKey = getVenueImgKey(currentActId, slotIdx);
-    const capStorKey = storKey + '_cap';
-    const savedImg = getVenuePhotoUrl(slotIdx);
-    const savedCap = localStorage.getItem(capStorKey) || '';
-    return '<div class="venue-photo-slot" id="venue-slot-' + slotIdx + '">' +
-      '<div class="venue-photo-img-area" id="venue-imgarea-' + slotIdx + '">' +
+  // 場地照片20格
+  const photoSlots = Array.from({length:20}, (_,i) => {
+    const storKey = getVenueImgKey(currentActId, i);
+    const savedImg = getVenuePhotoUrl(i);
+    const savedCap = localStorage.getItem(storKey+'_cap') || '';
+    return '<div class="venue-photo-slot" id="venue-slot-'+i+'">' +
+      '<div class="venue-photo-img-area" id="venue-imgarea-'+i+'">' +
       (savedImg
-        ? '<img src="' + savedImg + '" class="venue-photo-img" alt="場地照片' + (slotIdx+1) + '" id="venue-img-' + slotIdx + '">'
-        : '<div class="venue-photo-placeholder" id="venue-ph-' + slotIdx + '"><i class="ti ti-camera"></i><span>上傳照片</span></div>'
+        ? '<img src="'+savedImg+'" class="venue-photo-img" style="cursor:zoom-in" id="venue-img-'+i+'">'
+        : '<div class="venue-photo-placeholder" id="venue-ph-'+i+'"><i class="ti ti-camera"></i><span>上傳照片</span></div>'
       ) +
       '<div class="venue-photo-overlay">' +
-      '<div class="menu-img-action" id="venue-enlarge-' + slotIdx + '"><i class="ti ti-eye"></i> 放大</div>' +
-      '<div class="menu-img-action" id="venue-upbtn-' + slotIdx + '"><i class="ti ti-upload"></i> 換圖</div>' +
-      '<div class="menu-img-action" onclick="removeVenueImg(' + slotIdx + ')"><i class="ti ti-trash"></i> 刪除</div>' +
+      '<div class="menu-img-action" id="venue-enlarge-'+i+'"><i class="ti ti-eye"></i> 放大</div>' +
+      '<div class="menu-img-action" id="venue-upbtn-'+i+'"><i class="ti ti-upload"></i> 換圖</div>' +
+      '<div class="menu-img-action" onclick="removeVenueImg('+i+')"><i class="ti ti-trash"></i> 刪除</div>' +
       '</div></div>' +
-      '<input class="venue-caption-input" id="venue-cap-' + slotIdx + '" placeholder="說明文字（選填）" value="' + savedCap.replace(/"/g,'&quot;') + '">' +
+      '<input class="venue-caption-input" id="venue-cap-'+i+'" placeholder="說明文字（選填）" value="'+savedCap.replace(/"/g,'&quot;')+'">' +
       '</div>';
   }).join('');
 
-  // 場地欄位表格（用 fieldDefs 避免變數名稱衝突）
-  const fieldRows = fieldDefs.map(([lbl, fk]) =>
-    '<tr>' +
-    '<td style="width:120px;color:var(--text-muted);font-size:12px">' + lbl + '</td>' +
-    '<td><input class="editable" id="vfield-' + fk + '" value="' + (act[fk]||'').replace(/"/g,'&quot;') + '"></td>' +
-    '</tr>'
+  const ytUrl = localStorage.getItem('venue_yt_' + currentActId) || '';
+  const fieldRows = fieldDefs.map(([lbl,fk]) =>
+    '<tr><td style="width:120px;color:var(--text-muted);font-size:12px">'+lbl+'</td>' +
+    '<td><input class="editable" id="vfield-'+fk+'" value="'+(act[fk]||'').replace(/"/g,'&quot;')+'"></td></tr>'
   ).join('');
 
   document.getElementById('venue-content').innerHTML =
     '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
-    '<table class="attend-table" style="margin-bottom:20px"><tbody>' + fieldRows + '</tbody></table>' +
+    '<table class="attend-table" style="margin-bottom:16px"><tbody>'+fieldRows+'</tbody></table>' +
     '<div class="save-bar" style="margin-bottom:20px"><button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>' +
     '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
-    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多8張，點格子上傳；可為每張照片加說明</span></div>' +
-    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
-    '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
     '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張，點格子上傳</span></div>' +
-    '<div class="venue-photo-grid">' + photoSlots + '</div>' +
+    '<div class="venue-photo-grid">'+photoSlots+'</div>' +
     '<div style="font-size:13px;font-weight:500;margin:20px 0 10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-brand-youtube" style="font-size:15px;color:#ff0000"></i> 場地影片（YouTube）</div>' +
-    '<div style="display:flex;gap:8px;margin-bottom:16px">' +
-    '<input class="editable" id="venue-youtube" placeholder="貼上 YouTube 網址，例：https://www.youtube.com/watch?v=XXXXX" ' +
-    'style="flex:1;font-size:13px" value="' + (localStorage.getItem('venue_yt_'+currentActId)||'') + '" ' +
-    'oninput="previewYoutube(this.value)">' +
-    '<button class="btn btn-gold" onclick="saveYoutube()"><i class="ti ti-device-floppy"></i> 儲存</button></div>' +
-    '<div id="venue-yt-preview" style="margin-bottom:20px">' + getYoutubeEmbed(localStorage.getItem('venue_yt_'+currentActId)||'') + '</div>' +
-    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
-    '<i class="ti ti-camera" style="font-size:15px"></i> 餐後紀錄照片' +
-    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張</span></div>';
+    '<div style="display:flex;gap:8px;margin-bottom:12px">' +
+    '<input class="editable" id="venue-youtube" placeholder="貼上 YouTube 網址" style="flex:1;font-size:13px" value="'+ytUrl+'" oninput="previewYoutube(this.value)">' +
+    '<button class="btn btn-gold btn-decision" onclick="saveYoutube()"><i class="ti ti-device-floppy"></i> 儲存</button></div>' +
+    '<div id="venue-yt-preview" style="margin-bottom:20px">'+getYoutubeEmbed(ytUrl)+'</div>';
 
-  // 餐後照片20格
-  const afterSlots = Array.from({length:20}, (_,slotIdx) => {
-    const savedImg = localStorage.getItem('after_local_' + currentActId + '_' + slotIdx) || '';
-    const savedCap = localStorage.getItem('after_cap_' + currentActId + '_' + slotIdx) || '';
-    return '<div class="venue-photo-slot" id="after-slot-' + slotIdx + '">' +
-      '<div class="venue-photo-img-area" id="after-imgarea-' + slotIdx + '">' +
-      (savedImg
-        ? '<img src="' + savedImg + '" class="venue-photo-img" style="cursor:zoom-in" id="after-img-' + slotIdx + '">'
-        : '<div class="venue-photo-placeholder" id="after-ph-' + slotIdx + '"><i class="ti ti-camera"></i><span>上傳照片</span></div>'
-      ) +
-      '<div class="venue-photo-overlay">' +
-      '<div class="menu-img-action" id="after-enlarge-' + slotIdx + '"><i class="ti ti-eye"></i> 放大</div>' +
-      '<div class="menu-img-action" id="after-upbtn-' + slotIdx + '"><i class="ti ti-upload"></i> 換圖</div>' +
-      '<div class="menu-img-action" onclick="removeAfterImg(' + slotIdx + ')"><i class="ti ti-trash"></i> 刪除</div>' +
-      '</div></div>' +
-      '<input class="venue-caption-input" id="after-cap-' + slotIdx + '" placeholder="說明文字（選填）" value="' + savedCap.replace(/"/g,'&quot;') + '">' +
-      '</div>';
-  }).join('');
-
-  document.getElementById('venue-content').innerHTML += 
-    '<div id="after-photo-grid" class="venue-photo-grid">' + afterSlots + '</div>';
-
-  // 等 DOM 渲染完再綁定
+  // 等 DOM
   await new Promise(r => setTimeout(r, 50));
 
-  // 清除舊的 file input
+  // 清舊 input
   document.querySelectorAll('.venue-file-input').forEach(el => el.remove());
 
-  // 綁定 file input 給每個格子
-  Array.from({length:8}, (_,slotIdx) => {
-    const storKey = getVenueImgKey(currentActId, slotIdx);
+  Array.from({length:20}, (_,i) => {
+    const storKey = getVenueImgKey(currentActId, i);
     const fi = document.createElement('input');
-    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none'; fi.className = 'venue-file-input';
-    fi.onchange = () => handleVenueImg(fi, slotIdx);
+    fi.type='file'; fi.accept='image/*'; fi.style.display='none';
+    fi.className='venue-file-input';
+    fi.onchange = () => handleVenueImg(fi, i);
     document.body.appendChild(fi);
-
-    const ph = document.getElementById('venue-ph-' + slotIdx);
+    const ph = document.getElementById('venue-ph-'+i);
+    const upBtn = document.getElementById('venue-upbtn-'+i);
+    const enlargeBtn = document.getElementById('venue-enlarge-'+i);
+    const img = document.getElementById('venue-img-'+i);
+    const capInput = document.getElementById('venue-cap-'+i);
     if(ph) ph.onclick = () => fi.click();
-    const upBtn = document.getElementById('venue-upbtn-' + slotIdx);
     if(upBtn) upBtn.onclick = () => fi.click();
-
-    const img = document.getElementById('venue-img-' + slotIdx);
-    const capInput = document.getElementById('venue-cap-' + slotIdx);
-    const enlargeBtn = document.getElementById('venue-enlarge-' + slotIdx);
     if(img) img.onclick = () => openLightbox(img.src, (capInput||{}).value||'');
-    if(enlargeBtn) enlargeBtn.onclick = () => { const i = document.getElementById('venue-img-'+slotIdx); if(i) openLightbox(i.src, (capInput||{}).value||''); };
+    if(enlargeBtn) enlargeBtn.onclick = () => { const im=document.getElementById('venue-img-'+i); if(im) openLightbox(im.src,(capInput||{}).value||''); };
     if(capInput) capInput.oninput = () => localStorage.setItem(storKey+'_cap', capInput.value);
   });
-
-  // 綁定餐後照片
-  bindAfterPhotoInputs();
 }
 
 
-// ── 圖片壓縮 ──
-function compressImage(base64, maxSize, quality) {
-  return new Promise(resolve => {
-    const img = new Image();
-    img.onload = () => {
-      let w = img.width, h = img.height;
-      if(w > maxSize || h > maxSize) {
-        if(w > h) { h = Math.round(h * maxSize/w); w = maxSize; }
-        else { w = Math.round(w * maxSize/h); h = maxSize; }
-      }
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', quality));
-    };
-    img.src = base64;
-  });
-}
-
-
-
-// ── 餐後照片處理 ──
 async function handleAfterImg(input, idx) {
   const file = input.files[0];
   if(!file) return;
