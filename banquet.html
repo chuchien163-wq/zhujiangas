@@ -1860,9 +1860,6 @@ async function renderVenuePage() {
     '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-camera" style="font-size:15px"></i> 餐後紀錄照片' +
     '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張</span></div>' +
-    '<div class="venue-photo-grid" id="after-photo-grid">' + afterSlots + '</div>';
-
-  // 餐後照片20格
   const afterSlots = Array.from({length:20}, (_,slotIdx) => {
     const storKey = 'after_' + currentActId + '_' + slotIdx;
     const capStorKey = storKey + '_cap';
@@ -1882,6 +1879,10 @@ async function renderVenuePage() {
       '<input class="venue-caption-input" id="after-cap-' + slotIdx + '" placeholder="說明文字（選填）" value="' + savedCap.replace(/"/g,'&quot;') + '">' +
       '</div>';
   }).join('');
+
+    '<div class="venue-photo-grid" id="after-photo-grid">' + afterSlots + '</div>';
+
+  // 餐後照片20格
 
   // 等 DOM 渲染完再綁定
   await new Promise(r => setTimeout(r, 50));
