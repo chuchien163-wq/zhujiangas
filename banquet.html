@@ -1819,9 +1819,9 @@ async function renderVenuePage() {
   ];
 
   document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
-  try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos error:', e); }
 
-  // 場地照片20格
+  try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos:', e); }
+
   const photoSlots = Array.from({length:20}, (_,i) => {
     const storKey = getVenueImgKey(currentActId, i);
     const savedImg = getVenuePhotoUrl(i);
@@ -1842,19 +1842,20 @@ async function renderVenuePage() {
   }).join('');
 
   const ytUrl = localStorage.getItem('venue_yt_' + currentActId) || '';
-  const fieldRows = fieldDefs.map(([lbl,fk]) =>
-    '<tr><td style="width:120px;color:var(--text-muted);font-size:12px">'+lbl+'</td>' +
-    '<td><input class="editable" id="vfield-'+fk+'" value="'+(act[fk]||'').replace(/"/g,'&quot;')+'"></td></tr>'
-  ).join('');
 
-  console.log('renderVenuePage: setting innerHTML');
+  const fieldRows = fieldDefs.map(function(pair) {
+    var lbl = pair[0]; var fk = pair[1];
+    return '<tr><td style="width:120px;color:var(--text-muted);font-size:12px">'+lbl+'</td>' +
+    '<td><input class="editable" id="vfield-'+fk+'" value="'+(act[fk]||'').replace(/"/g,'&quot;')+'"></td></tr>';
+  }).join('');
+
   document.getElementById('venue-content').innerHTML =
     '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
-    '<table class="attend-table" style="margin-bottom:16px"><tbody>'+fieldRows+'</tbody></table>' +
-    '<div class="save-bar" style="margin-bottom:20px"><button class="btn btn-gold" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>' +
+    '<table class="attend-table" style="margin-bottom:16px;width:100%"><tbody>'+fieldRows+'</tbody></table>' +
+    '<div class="save-bar" style="margin-bottom:20px"><button class="btn btn-gold btn-decision" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>' +
     '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
-    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張，點格子上傳</span></div>' +
+    '<span style="font-size:11px;color:var(--text-muted);font-weight:400"> 最多20張</span></div>' +
     '<div class="venue-photo-grid">'+photoSlots+'</div>' +
     '<div style="font-size:13px;font-weight:500;margin:20px 0 10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-brand-youtube" style="font-size:15px;color:#ff0000"></i> 場地影片（YouTube）</div>' +
@@ -1863,29 +1864,27 @@ async function renderVenuePage() {
     '<button class="btn btn-gold btn-decision" onclick="saveYoutube()"><i class="ti ti-device-floppy"></i> 儲存</button></div>' +
     '<div id="venue-yt-preview" style="margin-bottom:20px">'+getYoutubeEmbed(ytUrl)+'</div>';
 
-  // 等 DOM
-  await new Promise(r => setTimeout(r, 50));
+  await new Promise(function(r){ setTimeout(r, 50); });
 
-  // 清舊 input
-  document.querySelectorAll('.venue-file-input').forEach(el => el.remove());
+  document.querySelectorAll('.venue-file-input').forEach(function(el){ el.remove(); });
 
-  Array.from({length:20}, (_,i) => {
-    const storKey = getVenueImgKey(currentActId, i);
-    const fi = document.createElement('input');
+  Array.from({length:20}, function(_,i) {
+    var storKey = getVenueImgKey(currentActId, i);
+    var fi = document.createElement('input');
     fi.type='file'; fi.accept='image/*'; fi.style.display='none';
     fi.className='venue-file-input';
-    fi.onchange = () => handleVenueImg(fi, i);
+    fi.onchange = function(){ handleVenueImg(fi, i); };
     document.body.appendChild(fi);
-    const ph = document.getElementById('venue-ph-'+i);
-    const upBtn = document.getElementById('venue-upbtn-'+i);
-    const enlargeBtn = document.getElementById('venue-enlarge-'+i);
-    const img = document.getElementById('venue-img-'+i);
-    const capInput = document.getElementById('venue-cap-'+i);
-    if(ph) ph.onclick = () => fi.click();
-    if(upBtn) upBtn.onclick = () => fi.click();
-    if(img) img.onclick = () => openLightbox(img.src, (capInput||{}).value||'');
-    if(enlargeBtn) enlargeBtn.onclick = () => { const im=document.getElementById('venue-img-'+i); if(im) openLightbox(im.src,(capInput||{}).value||''); };
-    if(capInput) capInput.oninput = () => localStorage.setItem(storKey+'_cap', capInput.value);
+    var ph = document.getElementById('venue-ph-'+i);
+    var upBtn = document.getElementById('venue-upbtn-'+i);
+    var enlargeBtn = document.getElementById('venue-enlarge-'+i);
+    var img = document.getElementById('venue-img-'+i);
+    var capInput = document.getElementById('venue-cap-'+i);
+    if(ph) ph.onclick = function(){ fi.click(); };
+    if(upBtn) upBtn.onclick = function(){ fi.click(); };
+    if(img) img.onclick = function(){ openLightbox(img.src, capInput ? capInput.value : ''); };
+    if(enlargeBtn) enlargeBtn.onclick = function(){ var im=document.getElementById('venue-img-'+i); if(im) openLightbox(im.src, capInput ? capInput.value : ''); };
+    if(capInput) capInput.oninput = function(){ localStorage.setItem(storKey+'_cap', capInput.value); };
   });
 }
 
