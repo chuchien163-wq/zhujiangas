@@ -2460,6 +2460,19 @@ function calcFee() {
 // 邀請卡照片快取
 let inviteImgCache = {};
 
+
+// ── 從 Drive 讀取邀請卡圖片 ──
+async function loadInvitePhotos() {
+  try {
+    var res = await apiPost({action:'getInvitePhotos'});
+    if(res && res.success && res.photos) {
+      res.photos.forEach(function(p) {
+        inviteImgCache[p.ver] = p.url;
+      });
+    }
+  } catch(e) { console.error('loadInvitePhotos:', e); }
+}
+
 function getInviteImgSrc(ver) {
   // 從快取取
   if(inviteImgCache[ver]) return inviteImgCache[ver];
@@ -2479,8 +2492,9 @@ function getInviteImgKey(actId, ver) {
   return `invite_img_${actId}_${ver}`;
 }
 
-function renderInvitePage() {
+async function renderInvitePage() {
   initInviteImages();
+  await loadInvitePhotos();
   // 若 inviteData 仍為空，強制填入預設值
   if(!inviteData || inviteData.length === 0) {
     inviteData = [
