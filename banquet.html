@@ -249,6 +249,18 @@ body {
   border: 0.5px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px 18px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+#venue-content {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+#venue-content > * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .panel-title {
   font-size: 13px; font-weight: 500;
@@ -1134,7 +1146,7 @@ select.inline-sel {
     <div id="page-venue" class="page">
       <div class="panel">
         <div class="panel-title">場地資訊</div>
-        <div id="venue-content" class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>
+        <div id="venue-content" class="loading" style="display:block;width:100%"><i class="ti ti-loader spin"></i> 載入中...</div>
       </div>
     </div>
 
@@ -1868,9 +1880,10 @@ async function renderVenuePage() {
 
   var ytUrl = localStorage.getItem('venue_yt_' + currentActId) || '';
 
+  document.getElementById('venue-content').style.cssText = 'display:block;width:100%';
   document.getElementById('venue-content').innerHTML =
     // 資訊卡片
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">' + infoCards + '</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;width:100%">' + infoCards + '</div>' +
     // 按鈕列
     '<div style="display:flex;gap:8px;margin-bottom:20px">' +
     '<button class="btn btn-decision" onclick="toggleVenueEdit()"><i class="ti ti-edit"></i> 編輯資訊</button>' +
