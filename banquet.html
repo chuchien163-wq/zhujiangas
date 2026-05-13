@@ -1811,28 +1811,53 @@ function saveYoutube() {
 
 
 async function renderVenuePage() {
-  const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
-  const fieldDefs = [
-    ['活動名稱','活動名稱'],['日期','日期'],['星期','星期'],
-    ['地點','地點'],['廳別','廳別'],['承辦聯絡人','承辦聯絡人'],
-    ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
-  ];
+  const act = allActivities.find(function(a){ return a['活動ID'] === currentActId; }) || {};
 
   document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
 
   try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos:', e); }
 
-  const photoSlots = Array.from({length:20}, (_,i) => {
-    const storKey = getVenueImgKey(currentActId, i);
-    const savedImg = getVenuePhotoUrl(i);
-    const savedCap = localStorage.getItem(storKey+'_cap') || '';
-    return '<div class="venue-photo-slot" id="venue-slot-'+i+'">' +
-      '<div class="venue-photo-img-area" id="venue-imgarea-'+i+'">' +
+  // ── 資訊卡片 ──
+  var fields = [
+    ['活動名稱', act['活動名稱']||''],
+    ['日期', (act['日期']||'') + (act['星期'] ? '（'+act['星期']+'）' : '')],
+    ['地點', (act['地點']||'') + (act['廳別'] ? '　'+act['廳別'] : '')],
+    ['承辦聯絡人', act['承辦聯絡人']||''],
+    ['桌數範圍', act['桌數範圍']||''],
+    ['狀態', act['狀態']||''],
+    ['備註', act['備註']||'']
+  ];
+
+  var infoCards = fields.map(function(f) {
+    return '<div style="background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px">' +
+      '<div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">'+f[0]+'</div>' +
+      '<div style="font-size:13px;font-weight:500;color:var(--text)">'+f[1]+'</div>' +
+      '</div>';
+  }).join('');
+
+  // ── 編輯表單（預設隱藏）──
+  var editRows = [
+    ['活動名稱','活動名稱'],['日期','日期'],['星期','星期'],
+    ['地點','地點'],['廳別','廳別'],['承辦聯絡人','承辦聯絡人'],
+    ['桌數範圍','桌數範圍'],['狀態','狀態'],['備註','備註']
+  ].map(function(p){
+    return '<tr><td style="width:110px;color:var(--text-muted);font-size:12px">'+p[0]+'</td>' +
+    '<td><input class="editable" id="vfield-'+p[1]+'" value="'+(act[p[1]]||'').replace(/"/g,'&quot;')+'"></td></tr>';
+  }).join('');
+
+  // ── 照片格 ──
+  var photoSlots = Array.from({length:20}, function(_,i) {
+    var storKey = getVenueImgKey(currentActId, i);
+    var savedImg = getVenuePhotoUrl(i);
+    var savedCap = localStorage.getItem(storKey+'_cap') || '';
+    return '<div style="border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);background:var(--bg)" id="venue-slot-'+i+'">' +
+      '<div style="position:relative;aspect-ratio:4/3;overflow:hidden" id="venue-imgarea-'+i+'">' +
       (savedImg
-        ? '<img src="'+savedImg+'" class="venue-photo-img" style="cursor:zoom-in" id="venue-img-'+i+'">'
-        : '<div class="venue-photo-placeholder" id="venue-ph-'+i+'"><i class="ti ti-camera"></i><span>上傳照片</span></div>'
+        ? '<img src="'+savedImg+'" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in" id="venue-img-'+i+'">'
+        : '<div id="venue-ph-'+i+'" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--text-hint)">' +
+          '<i class="ti ti-camera" style="font-size:22px"></i><span style="font-size:11px">上傳照片</span></div>'
       ) +
-      '<div class="venue-photo-overlay">' +
+      '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;gap:6px" class="vp-overlay">' +
       '<div class="menu-img-action" id="venue-enlarge-'+i+'"><i class="ti ti-eye"></i> 放大</div>' +
       '<div class="menu-img-action" id="venue-upbtn-'+i+'"><i class="ti ti-upload"></i> 換圖</div>' +
       '<div class="menu-img-action" onclick="removeVenueImg('+i+')"><i class="ti ti-trash"></i> 刪除</div>' +
@@ -1841,31 +1866,41 @@ async function renderVenuePage() {
       '</div>';
   }).join('');
 
-  const ytUrl = localStorage.getItem('venue_yt_' + currentActId) || '';
-
-  const fieldRows = fieldDefs.map(function(pair) {
-    var lbl = pair[0]; var fk = pair[1];
-    return '<tr><td style="width:120px;color:var(--text-muted);font-size:12px">'+lbl+'</td>' +
-    '<td><input class="editable" id="vfield-'+fk+'" value="'+(act[fk]||'').replace(/"/g,'&quot;')+'"></td></tr>';
-  }).join('');
+  var ytUrl = localStorage.getItem('venue_yt_' + currentActId) || '';
 
   document.getElementById('venue-content').innerHTML =
-    '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
-    '<table class="attend-table" style="margin-bottom:16px;width:100%"><tbody>'+fieldRows+'</tbody></table>' +
-    '<div class="save-bar" style="margin-bottom:20px"><button class="btn btn-gold btn-decision" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存變更</button></div>' +
-    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
+    // 資訊卡片
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">' + infoCards + '</div>' +
+    // 按鈕列
+    '<div style="display:flex;gap:8px;margin-bottom:20px">' +
+    '<button class="btn btn-decision" onclick="toggleVenueEdit()"><i class="ti ti-edit"></i> 編輯資訊</button>' +
+    '<button class="btn btn-gold btn-decision" id="venue-save-btn" style="display:none" onclick="saveVenue()"><i class="ti ti-device-floppy"></i> 儲存</button>' +
+    '</div>' +
+    // 編輯表單（隱藏）
+    '<div id="venue-edit-form" style="display:none;margin-bottom:20px">' +
+    '<table class="attend-table"><tbody>' + editRows + '</tbody></table></div>' +
+    // 照片
+    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px">' +
     '<i class="ti ti-photo" style="font-size:15px"></i> 場地照片' +
-    '<span style="font-size:11px;color:var(--text-muted);font-weight:400"> 最多20張</span></div>' +
-    '<div class="venue-photo-grid">'+photoSlots+'</div>' +
-    '<div style="font-size:13px;font-weight:500;margin:20px 0 10px;display:flex;align-items:center;gap:8px">' +
+    '<span style="font-size:11px;color:var(--text-muted);font-weight:400"> 最多20張，點格子上傳</span></div>' +
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">' + photoSlots + '</div>' +
+    // YouTube
+    '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:6px">' +
     '<i class="ti ti-brand-youtube" style="font-size:15px;color:#ff0000"></i> 場地影片（YouTube）</div>' +
     '<div style="display:flex;gap:8px;margin-bottom:12px">' +
     '<input class="editable" id="venue-youtube" placeholder="貼上 YouTube 網址" style="flex:1;font-size:13px" value="'+ytUrl+'" oninput="previewYoutube(this.value)">' +
     '<button class="btn btn-gold btn-decision" onclick="saveYoutube()"><i class="ti ti-device-floppy"></i> 儲存</button></div>' +
-    '<div id="venue-yt-preview" style="margin-bottom:20px">'+getYoutubeEmbed(ytUrl)+'</div>';
+    '<div id="venue-yt-preview">' + getYoutubeEmbed(ytUrl) + '</div>';
+
+  // hover overlay CSS
+  document.querySelectorAll('.vp-overlay').forEach(function(el){
+    el.parentElement.addEventListener('mouseenter', function(){ el.style.display='flex'; });
+    el.parentElement.addEventListener('mouseleave', function(){ el.style.display='none'; });
+  });
 
   await new Promise(function(r){ setTimeout(r, 50); });
 
+  // 清舊 file input
   document.querySelectorAll('.venue-file-input').forEach(function(el){ el.remove(); });
 
   Array.from({length:20}, function(_,i) {
@@ -1875,17 +1910,34 @@ async function renderVenuePage() {
     fi.className='venue-file-input';
     fi.onchange = function(){ handleVenueImg(fi, i); };
     document.body.appendChild(fi);
+
     var ph = document.getElementById('venue-ph-'+i);
     var upBtn = document.getElementById('venue-upbtn-'+i);
     var enlargeBtn = document.getElementById('venue-enlarge-'+i);
     var img = document.getElementById('venue-img-'+i);
     var capInput = document.getElementById('venue-cap-'+i);
+
     if(ph) ph.onclick = function(){ fi.click(); };
     if(upBtn) upBtn.onclick = function(){ fi.click(); };
-    if(img) img.onclick = function(){ openLightbox(img.src, capInput ? capInput.value : ''); };
-    if(enlargeBtn) enlargeBtn.onclick = function(){ var im=document.getElementById('venue-img-'+i); if(im) openLightbox(im.src, capInput ? capInput.value : ''); };
+    if(img) {
+      img.onclick = function(){ openLightbox(img.src, capInput ? capInput.value : ''); };
+    }
+    if(enlargeBtn) {
+      enlargeBtn.onclick = function(){
+        var im = document.getElementById('venue-img-'+i);
+        if(im) openLightbox(im.src, capInput ? capInput.value : '');
+      };
+    }
     if(capInput) capInput.oninput = function(){ localStorage.setItem(storKey+'_cap', capInput.value); };
   });
+}
+
+function toggleVenueEdit() {
+  var form = document.getElementById('venue-edit-form');
+  var saveBtn = document.getElementById('venue-save-btn');
+  var shown = form.style.display !== 'none';
+  form.style.display = shown ? 'none' : 'block';
+  saveBtn.style.display = shown ? 'none' : 'inline-flex';
 }
 
 
