@@ -2030,6 +2030,26 @@ function bindAfterPhotoInputs() {
   });
 }
 
+
+// ── 圖片壓縮 ──
+function compressImage(base64, maxSize, quality) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if(w > maxSize || h > maxSize) {
+        if(w > h) { h = Math.round(h * maxSize/w); w = maxSize; }
+        else { w = Math.round(w * maxSize/h); h = maxSize; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = base64;
+  });
+}
+
 async function handleVenueImg(input, idx) {
   const file = input.files[0];
   if(!file) return;
