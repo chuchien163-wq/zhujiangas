@@ -616,6 +616,7 @@ select.inline-sel {
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 16px;
+  width: 100%;
 }
 .venue-photo-slot {
   position: relative;
@@ -623,6 +624,7 @@ select.inline-sel {
   overflow: hidden;
   border: 0.5px solid var(--border);
   background: var(--bg);
+  min-width: 0;
 }
 .venue-photo-img {
   width: 100%; height: 100%;
@@ -701,8 +703,9 @@ select.inline-sel {
 .venue-caption-input::placeholder { color: var(--text-hint); }
 .venue-photo-img-area {
   position: relative;
-  height: 140px;
+  aspect-ratio: 4/3;
   overflow: hidden;
+  width: 100%;
 }
 .venue-photo-img-area .venue-photo-img {
   width: 100%; height: 100%;
@@ -1816,7 +1819,7 @@ async function renderVenuePage() {
   ];
 
   document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
-  await loadVenuePhotos();
+  try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos error:', e); }
 
   // 場地照片20格
   const photoSlots = Array.from({length:20}, (_,i) => {
@@ -1844,6 +1847,7 @@ async function renderVenuePage() {
     '<td><input class="editable" id="vfield-'+fk+'" value="'+(act[fk]||'').replace(/"/g,'&quot;')+'"></td></tr>'
   ).join('');
 
+  console.log('renderVenuePage: setting innerHTML');
   document.getElementById('venue-content').innerHTML =
     '<div style="font-size:13px;font-weight:500;margin-bottom:12px">場地基本資訊</div>' +
     '<table class="attend-table" style="margin-bottom:16px"><tbody>'+fieldRows+'</tbody></table>' +
