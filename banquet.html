@@ -1848,23 +1848,41 @@ function getYoutubeEmbed(url) {
     '<iframe src="https://www.youtube.com/embed/'+vid+'" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:8px" allowfullscreen></iframe></div>';
 }
 
+var venueYoutubeCache = {};
+
+async function loadVenueYoutube() {
+  try {
+    var res = await apiPost({action:'getVenueYoutube', actId: currentActId});
+    if(res && res.success && res.urls && res.urls.length > 0) {
+      venueYoutubeCache[currentActId] = res.urls.map(function(u){ return {url: u.url, desc: u.desc}; });
+    }
+  } catch(e) { console.error('loadVenueYoutube:', e); }
+}
+
 function getYoutubeUrls() {
+  var cache = venueYoutubeCache[currentActId];
+  if(cache && cache.length > 0) return cache.map(function(u){ return u.url; });
   var saved = localStorage.getItem('venue_yt_multi_' + currentActId);
   if(saved) { try { return JSON.parse(saved); } catch(e){} }
   var old = localStorage.getItem('venue_yt_' + currentActId);
   return old ? [old] : [''];
 }
 
-function saveYoutube() {
+async function saveYoutube() {
   var urls = [];
-  for(var i=0; i<5; i++) {
-    var el = document.getElementById('venue-yt-input-'+i);
-    if(el) urls.push(el.value);
+  var container = document.getElementById('venue-yt-inputs');
+  if(container) {
+    var inputs = container.querySelectorAll('input.editable');
+    inputs.forEach(function(el){ if(el.value) urls.push({url: el.value, desc: ''}); });
   }
-  localStorage.setItem('venue_yt_multi_' + currentActId, JSON.stringify(urls));
-  var preview = document.getElementById('venue-yt-preview');
-  if(preview) preview.innerHTML = urls.map(function(u){ return getYoutubeEmbed(u); }).join('');
-  showToast('✓ 影片連結已儲存');
+  // 存到 Sheets
+  try {
+    await apiPost({action:'saveVenueYoutube', actId: currentActId, urls: urls});
+    venueYoutubeCache[currentActId] = urls;
+    var preview = document.getElementById('venue-yt-preview');
+    if(preview) preview.innerHTML = urls.map(function(u){ return getYoutubeEmbed(u.url); }).join('');
+    showToast('✓ 影片已儲存');
+  } catch(e) { showToast('❌ 儲存失敗'); }
 }
 
 function addYoutubeSlot() {
@@ -1908,6 +1926,7 @@ async function renderVenuePage() {
 
   try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos:', e); }
   try { await loadVenueCaptions(); } catch(e) { console.error('loadVenueCaptions:', e); }
+  try { await loadVenueYoutube(); } catch(e) { console.error('loadVenueYoutube:', e); }
 
   // ── 資訊卡片 ──
   var fields = [
