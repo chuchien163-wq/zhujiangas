@@ -1859,12 +1859,12 @@ async function renderVenuePage() {
     '<div id="venue-yt-preview" style="margin-bottom:20px">' + getYoutubeEmbed(localStorage.getItem('venue_yt_'+currentActId)||'') + '</div>' +
     '<div style="font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px">' +
     '<i class="ti ti-camera" style="font-size:15px"></i> 餐後紀錄照片' +
-    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張</span></div>' +
+    '<span style="font-size:11px;color:var(--text-muted);font-weight:400">最多20張</span></div>';
+
+  // 餐後照片20格
   const afterSlots = Array.from({length:20}, (_,slotIdx) => {
-    const storKey = 'after_' + currentActId + '_' + slotIdx;
-    const capStorKey = storKey + '_cap';
     const savedImg = localStorage.getItem('after_local_' + currentActId + '_' + slotIdx) || '';
-    const savedCap = localStorage.getItem(capStorKey) || '';
+    const savedCap = localStorage.getItem('after_cap_' + currentActId + '_' + slotIdx) || '';
     return '<div class="venue-photo-slot" id="after-slot-' + slotIdx + '">' +
       '<div class="venue-photo-img-area" id="after-imgarea-' + slotIdx + '">' +
       (savedImg
@@ -1880,9 +1880,8 @@ async function renderVenuePage() {
       '</div>';
   }).join('');
 
-    '<div class="venue-photo-grid" id="after-photo-grid">' + afterSlots + '</div>';
-
-  // 餐後照片20格
+  document.getElementById('venue-content').innerHTML += 
+    '<div id="after-photo-grid" class="venue-photo-grid">' + afterSlots + '</div>';
 
   // 等 DOM 渲染完再綁定
   await new Promise(r => setTimeout(r, 50));
