@@ -2345,16 +2345,7 @@ function setInviteImgCache(ver, url) {
   inviteImgCache[ver] = url;
 }
 
-function getInviteImgSrc(ver) {
-  const versions = ['版本1','版本2','版本3','版本4','版本5','版本6','版本7','版本8'];
-  const idx = versions.indexOf(ver);
-  if(idx >= 0 && INVITE_IMGS[idx]) return INVITE_IMGS[idx];
-  // 也嘗試從 localStorage 取（使用者自訂上傳）
-  const key = 'invite_img_custom_' + ver;
-  return localStorage.getItem(key) || '';
-}
-
-function initInviteImages() { /* 已改為直接嵌入，此函數保留相容性 */ }
+function initInviteImages() { /* 圖片從 Drive 上傳，此函數保留相容性 */ }
 
 // ── 邀請卡頁 ──
 function getInviteImgKey(actId, ver) {
