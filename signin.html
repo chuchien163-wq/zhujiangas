@@ -173,7 +173,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div class="hd-row">
     <div>
       <h1>竹建瓦斯 乙級導管配管自主練習</h1>
-      <p>13:30–17:30 ｜ 2026/4/28–5/13 ｜ 每場2人+空白位</p>
+      <p>13:30–17:30 ｜ 2026/5/15–6/22 ｜ 每場2人+空白位</p>
     </div>
     <div class="hd-btns">
       <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
@@ -293,7 +293,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div class="mgr-header">
     <h2>管理者總覽</h2>
-    <p>竹建瓦斯 乙級導管配管自主練習 2026/4/28–5/13</p>
+    <p>竹建瓦斯 乙級導管配管自主練習 2026/5/15–6/22</p>
   </div>
   <div class="mgr-stats" id="mgrStats"></div>
   <div class="mgr-add-box">
@@ -339,19 +339,37 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 
 <script>
 const SCHED = [
-  {seq:1,  date:'04/28', wd:'二', m1:'林孟賢', m2:'陳人豪'},
-  {seq:2,  date:'04/29', wd:'三', m1:'張鈞豪', m2:'劉建彣'},
-  {seq:3,  date:'04/30', wd:'四', m1:'黃禹竣', m2:'王璽凱'},
-  {seq:4,  date:'05/04', wd:'一', m1:'林琮炫', m2:'蔡凱程'},
-  {seq:5,  date:'05/05', wd:'二', m1:'陳東彥', m2:'林孟賢'},
-  {seq:6,  date:'05/06', wd:'三', m1:'陳人豪', m2:'張鈞豪'},
-  {seq:7,  date:'05/07', wd:'四', m1:'劉建彣', m2:'黃禹竣'},
-  {seq:8,  date:'05/08', wd:'五', m1:'王璽凱', m2:'林琮炫'},
-  {seq:9,  date:'05/11', wd:'一', m1:'蔡凱程', m2:'陳東彥'},
-  {seq:10, date:'05/12', wd:'二', m1:'林孟賢', m2:'張鈞豪'},
+  {seq: 1, date:'05/15', wd:'五', m1:'林孟賢', m2:'陳人豪'},
+  {seq: 2, date:'05/18', wd:'一', m1:'張鈞豪', m2:'劉建彣'},
+  {seq: 3, date:'05/19', wd:'二', m1:'黃禹竣', m2:'王璽凱'},
+  {seq: 4, date:'05/20', wd:'三', m1:'林琮炫', m2:'蔡凱程'},
+  {seq: 5, date:'05/21', wd:'四', m1:'陳東彥', m2:'林孟賢'},
+  {seq: 6, date:'05/22', wd:'五', m1:'陳人豪', m2:'張鈞豪'},
+  {seq: 7, date:'05/25', wd:'一', m1:'劉建彣', m2:'黃禹竣'},
+  {seq: 8, date:'05/26', wd:'二', m1:'王璽凱', m2:'林琮炫'},
+  {seq: 9, date:'05/27', wd:'三', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:10, date:'05/28', wd:'四', m1:'林孟賢', m2:'陳人豪'},
+  {seq:11, date:'05/29', wd:'五', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:12, date:'06/01', wd:'一', m1:'黃禹竣', m2:'王璽凱'},
+  {seq:13, date:'06/02', wd:'二', m1:'林琮炫', m2:'蔡凱程'},
+  {seq:14, date:'06/03', wd:'三', m1:'陳東彥', m2:'林孟賢'},
+  {seq:15, date:'06/04', wd:'四', m1:'陳人豪', m2:'張鈞豪'},
+  {seq:16, date:'06/05', wd:'五', m1:'劉建彣', m2:'黃禹竣'},
+  {seq:17, date:'06/08', wd:'一', m1:'王璽凱', m2:'林琮炫'},
+  {seq:18, date:'06/09', wd:'二', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:19, date:'06/10', wd:'三', m1:'林孟賢', m2:'陳人豪'},
+  {seq:20, date:'06/11', wd:'四', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:21, date:'06/12', wd:'五', m1:'黃禹竣', m2:'王璽凱'},
+  {seq:22, date:'06/15', wd:'一', m1:'林琮炫', m2:'蔡凱程'},
+  {seq:23, date:'06/16', wd:'二', m1:'陳東彥', m2:'林孟賢'},
+  {seq:24, date:'06/17', wd:'三', m1:'陳人豪', m2:'張鈞豪'},
+  {seq:25, date:'06/18', wd:'四', m1:'劉建彣', m2:'黃禹竣'},
+  {seq:26, date:'06/22', wd:'一', m1:'王璽凱', m2:'林琮炫'},
 ];
 
-const REMINDER = {date:'05/13', wd:'三', text:'第三次內訓\n乙級技術士訓練\n舊倉庫'};
+const REMINDER = {date:'06/23', wd:'二', text:'第四次內訓\n乙級技術士訓練\n舊倉庫'};
+const REMINDER2 = {date:'07/05', wd:'日', text:'乙級技術士\n考試日期'};
+const REMINDER3 = {date:'06/19', wd:'五', text:'端午節\n國定假日'};
 
 const MEMBERS = [
   {name:'林孟賢',no:1},{name:'陳人豪',no:2},{name:'張鈞豪',no:3},
@@ -383,12 +401,12 @@ const MATS = [
 
 let gasUrl = localStorage.getItem('gasUrl') || 'https://script.google.com/macros/s/AKfycbxKgrwRLgmpnDr7eMRO0KXOE7KYCpmakn3OBUncoBo8txroHhSNZv9uHyZ0Tksft_nWmg/exec';
 let sigRec = {};
-try { sigRec = JSON.parse(localStorage.getItem('sigRec8') || '{}'); } catch(e) {}
+try { sigRec = JSON.parse(localStorage.getItem('sigRec9') || '{}'); } catch(e) {}
 let freeRec = [];
-try { freeRec = JSON.parse(localStorage.getItem('freeRec8') || '[]'); } catch(e) {}
+try { freeRec = JSON.parse(localStorage.getItem('freeRec9') || '[]'); } catch(e) {}
 let SCHED_DATA = JSON.parse(JSON.stringify(SCHED));
 try {
-  const saved = JSON.parse(localStorage.getItem('schedOverride8') || '[]');
+  const saved = JSON.parse(localStorage.getItem('schedOverride9') || '[]');
   saved.forEach(s=>{
     const idx = SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
     if(idx>-1){if(s.m1)SCHED_DATA[idx].m1=s.m1;if(s.m2)SCHED_DATA[idx].m2=s.m2;}
@@ -397,8 +415,8 @@ try {
 
 function save(){
   try{
-    localStorage.setItem('sigRec8',JSON.stringify(sigRec));
-    localStorage.setItem('freeRec8',JSON.stringify(freeRec));
+    localStorage.setItem('sigRec9',JSON.stringify(sigRec));
+    localStorage.setItem('freeRec9',JSON.stringify(freeRec));
   }catch(e){}
 }
 
@@ -451,8 +469,9 @@ function renderCal(){
   SCHED_DATA.forEach(d=>schedMap[d.date]=d);
 
   const months=[
-    {year:2026,month:4,label:'2026年4月（4/28起）',firstDow:1, startDate:28},
-    {year:2026,month:5,label:'2026年5月（5/4起）',firstDow:0, startDate:4},
+    {year:2026,month:5,label:'2026年5月（5/15起）',firstDow:4, startDate:15},
+    {year:2026,month:6,label:'2026年6月',firstDow:0, startDate:1},
+    {year:2026,month:7,label:'2026年7月（7/5考試）',firstDow:2, startDate:1},
   ];
 
   months.forEach(m=>{
@@ -473,8 +492,9 @@ function renderCal(){
       const dow=(firstDow + (day - m.startDate)) % 7;
       const isWeekend=(dow===5||dow===6);
       const sched=schedMap[mmdd];
-      const isReminder=(mmdd===REMINDER.date);
-      const inRange=(m.month===4&&day>=28)||(m.month===5&&day<=13);
+      const isReminder=(mmdd===REMINDER.date||mmdd===REMINDER2.date||mmdd===REMINDER3.date);
+      const reminderData=mmdd===REMINDER.date?REMINDER:mmdd===REMINDER2.date?REMINDER2:REMINDER3;
+      const inRange=(m.month===5&&day>=15)||(m.month===6&&day<=23)||(m.month===7&&day<=5);
 
       if(!inRange){
         html+=`<div class="cal-cell empty"></div>`;
@@ -484,7 +504,7 @@ function renderCal(){
       if(isReminder){
         html+=`<div class="cal-cell reminder">
           <div class="cal-daynum">${day}</div>
-          <div class="cal-reminder-tag">${REMINDER.text.replace(/\n/g,'<br>')}</div>
+          <div class="cal-reminder-tag">${reminderData.text.replace(/\n/g,'<br>')}</div>
         </div>`;
         continue;
       }
@@ -764,10 +784,10 @@ function editSched(seq){
   const newM2=prompt(`第${seq}場 人員2（目前：${d.m2}）`,d.m2);if(newM2===null)return;
   d.m1=newM1.trim();d.m2=newM2.trim();
   try{
-    const saved=JSON.parse(localStorage.getItem('schedOverride8')||'[]');
+    const saved=JSON.parse(localStorage.getItem('schedOverride9')||'[]');
     const idx=saved.findIndex(s=>String(s.seq)===String(seq));
     if(idx>-1){saved[idx].m1=d.m1;saved[idx].m2=d.m2;}else saved.push({seq:d.seq,m1:d.m1,m2:d.m2});
-    localStorage.setItem('schedOverride8',JSON.stringify(saved));
+    localStorage.setItem('schedOverride9',JSON.stringify(saved));
   }catch(e){}
   if(gasUrl){
     const params=new URLSearchParams({action:'updateSched',seq:String(d.seq),date:d.date,wd:d.wd,m1:d.m1,m2:d.m2});
@@ -816,13 +836,12 @@ function renderMgrWithData(rows){
   refreshBtn.style.cssText='width:100%;padding:9px;font-size:13px;background:transparent;border:1px solid var(--blue);color:var(--blue);border-radius:8px;cursor:pointer;margin-bottom:12px;font-family:inherit';
   refreshBtn.textContent='🔄 重新整理（讀取最新資料）';refreshBtn.onclick=()=>renderMgr();el.appendChild(refreshBtn);
   // 排班管理
-  const sl=document.createElement('p');sl.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:4px 0 8px';sl.textContent='📅 排班表管理（點「調班」可修改人員）';el.appendChild(sl);
-  const slNote=document.createElement('p');slNote.style.cssText='font-size:11px;color:var(--amber);background:var(--amber-l);padding:6px 10px;border-radius:7px;margin-bottom:10px';slNote.textContent='💡 若有人要調班，點右側「調班」按鈕即可修改當場人員名稱！';el.appendChild(slNote);
+  const sl=document.createElement('p');sl.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:4px 0 8px';sl.textContent='📅 排班表管理（點✏️可修改人員）';el.appendChild(sl);
   SCHED_DATA.forEach(d=>{
     const srow=document.createElement('div');
     srow.style.cssText='background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px';
-    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.m1}、${d.m2}</div></div>
-      <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 調班</button>`;
+    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.members.join('、')}</div></div>
+      <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 修改</button>`;
     el.appendChild(srow);
   });
   const divider=document.createElement('div');divider.style.cssText='border-top:1px solid var(--border);margin:14px 0 10px';el.appendChild(divider);
@@ -912,7 +931,7 @@ function loadSchedFromSheets(){
   if(!gasUrl)return;
   fetch(gasUrl+'?action=getSched').then(r=>r.json()).then(data=>{
     if(data.sched&&data.sched.length>0){
-      localStorage.setItem('schedOverride8',JSON.stringify(data.sched));
+      localStorage.setItem('schedOverride9',JSON.stringify(data.sched));
       data.sched.forEach(s=>{
         const idx=SCHED_DATA.findIndex(d=>String(d.seq)===String(s.seq));
         if(idx>-1){if(s.m1)SCHED_DATA[idx].m1=s.m1;if(s.m2)SCHED_DATA[idx].m2=s.m2;}
