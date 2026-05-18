@@ -322,23 +322,50 @@ async function loadRecords() {
 
 // ── 庫存計算 ──
 function calcStock() {
-  const actual = {}, estimate = {};
-  Object.keys(INIT).forEach(k => { actual[k]=0; estimate[k]=0; });
+  // actual by case (for 預估-實際 diff)
+  const actualByCase = {}; // key: light+sub+name
+  const actualTotal = {};  // key: light+sub, 不含「已含初始庫存」
+  const estimateByCase = {}; // key: light+sub+name
+  const estimateTotal = {}; // key: light+sub
+
+  Object.keys(INIT).forEach(k => { actualTotal[k]=0; estimateTotal[k]=0; });
+
   allRecords.forEach(r => {
     const key = r.light + r.sub;
-    if (r.type==='actual') actual[key] = (actual[key]||0) + Number(r.qty);
-    else estimate[key] = (estimate[key]||0) + Number(r.qty);
+    const caseKey = key + '|' + r.name;
+    if (r.type === 'actual') {
+      // 有備註「已含初始庫存」→ 只記錄歷史，不扣庫存
+      if (r.note !== '已含初始庫存') {
+        actualTotal[key] = (actualTotal[key]||0) + Number(r.qty);
+      }
+      actualByCase[caseKey] = (actualByCase[caseKey]||0) + Number(r.qty);
+    } else {
+      estimateTotal[key] = (estimateTotal[key]||0) + Number(r.qty);
+      estimateByCase[caseKey] = (estimateByCase[caseKey]||0) + Number(r.qty);
+    }
   });
-  return { actual, estimate };
+
+  // 預估還需 = 各建案（預估 - 實際）差額加總（只算正數）
+  const estNeeded = {};
+  Object.keys(INIT).forEach(k => { estNeeded[k]=0; });
+  Object.keys(estimateByCase).forEach(caseKey => {
+    const [key] = caseKey.split('|');
+    const estQty = estimateByCase[caseKey] || 0;
+    const actQty = actualByCase[caseKey] || 0;
+    const diff = estQty - actQty;
+    if (diff > 0) estNeeded[key] = (estNeeded[key]||0) + diff;
+  });
+
+  return { actualTotal, actualByCase, estimateByCase, estimateTotal, estNeeded };
 }
 
 function renderStock() {
-  const { actual, estimate } = calcStock();
+  const { actualTotal, estNeeded, actualByCase, estimateByCase } = calcStock();
   const keys = ['4燈無子機','4燈有子機','6燈無子機','6燈有子機'];
   document.getElementById('stockGrid').innerHTML = keys.map(k => {
     const init = INIT[k]||0;
-    const used = actual[k]||0;
-    const est = estimate[k]||0;
+    const used = actualTotal[k]||0;
+    const est = estNeeded[k]||0;
     const remain = init - used;
     const gap = remain - est;
     const pct = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
@@ -351,7 +378,7 @@ function renderStock() {
       <div class="sc-remain">${remain}</div>
       <div class="sc-unit">隻（目前剩餘）</div>
       <div class="sc-rows">
-        <div class="sc-row"><span class="sc-lbl">初始庫存</span><span>${init} 隻</span></div>
+        <div class="sc-row"><span class="sc-lbl">今日庫存基準</span><span>${init} 隻</span></div>
         <div class="sc-row">
           <span class="sc-lbl">已實際領出</span>
           <button class="sc-link" data-key="${k}" onclick="openModal(this.dataset.key)">${used} 隻 ▸</button>
@@ -557,18 +584,43 @@ function openModal(key) {
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
 
 function openEstModal(key) {
-  const rows = allRecords.filter(r => r.light + r.sub === key && r.type === 'estimate');
+  const { actualByCase, estimateByCase } = calcStock();
+  // 找出這個種類所有有預估的建案
+  const caseNames = [...new Set(
+    allRecords.filter(r => r.light+r.sub===key && r.type==='estimate').map(r=>r.name)
+  )];
   document.getElementById('modalTitle').textContent = key + ' 預估等待中明細';
   const body = document.getElementById('modalBody');
-  if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="4" class="modal-empty">目前無預估排程記錄</td></tr>';
+  if (!caseNames.length) {
+    body.innerHTML = '<tr><td colspan="5" class="modal-empty">目前無預估排程記錄</td></tr>';
   } else {
-    body.innerHTML = rows.map(r => `<tr>
-      <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.qty} 隻</td>
-      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
-    </tr>`).join('');
+    // 找第一筆該建案的日期和部門
+    const rows = caseNames.map(name => {
+      const caseKey = key + '|' + name;
+      const est = estimateByCase[caseKey] || 0;
+      const act = actualByCase[caseKey] || 0;
+      const pending = Math.max(0, est - act);
+      const rec = allRecords.find(r => r.light+r.sub===key && r.name===name && r.type==='estimate');
+      return { name, est, act, pending, dept: rec ? rec.dept : '' };
+    }).filter(r => r.pending > 0); // 只顯示還有未領的
+
+    if (!rows.length) {
+      body.innerHTML = '<tr><td colspan="5" class="modal-empty">所有建案均已領完！</td></tr>';
+    } else {
+      body.innerHTML = `<tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
+      </tr>` + rows.map(r => `<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est} 隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act} 隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending} 隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+      </tr>`).join('');
+    }
   }
   document.getElementById('modalBg').classList.add('show');
 }
