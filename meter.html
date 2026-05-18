@@ -366,8 +366,8 @@ function tagCls(r){ return 't'+r.light.charAt(0)+(r.sub==='無子機'?'x':'v'); 
 function tagLbl(r){ return r.light+r.sub; }
 
 function renderTables() {
-  const biz = allRecords.filter(r=>r.dept==='業務部').slice().reverse();
-  const eng = allRecords.filter(r=>r.dept==='工務部').slice().reverse();
+  const biz = allRecords.filter(r=>r.dept==='業務部').slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const eng = allRecords.filter(r=>r.dept==='工務部').slice().sort((a,b)=>a.date.localeCompare(b.date));
   renderTable('biz-body', biz, false);
   renderTable('eng-body', eng, false);
   renderDelTable();
@@ -392,8 +392,8 @@ function renderDelTable() {
   if (!allRecords.length) { el.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; return; }
   // admin看全部，staff只看estimate（預估排程）
   const rows = currentRole==='admin'
-    ? allRecords.slice().reverse()
-    : allRecords.filter(r=>r.type==='estimate').slice().reverse();
+    ? allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date))
+    : allRecords.filter(r=>r.type==='estimate').slice().sort((a,b)=>a.date.localeCompare(b.date));
   if (!rows.length) { el.innerHTML='<tr><td colspan="6" class="no-data">尚無可刪除的記錄</td></tr>'; return; }
   el.innerHTML = rows.map(r => `<tr>
     <td>${r.date}</td>
