@@ -231,7 +231,10 @@ tbody tr:hover{background:var(--bg);}
           </div>
           <div class="fg ffull">
             <label>社區／建案名稱</label>
-            <input type="text" id="f-name" placeholder="例：富來建設">
+            <select id="f-name-sel" onchange="onCaseSelect(this.value)" style="margin-bottom:6px;">
+              <option value="">── 選擇現有建案 ──</option>
+            </select>
+            <input type="text" id="f-name" placeholder="或輸入新建案名稱">
           </div>
           <div class="fg">
             <label>燈別</label>
@@ -353,7 +356,10 @@ function renderStock() {
           <span class="sc-lbl">已實際領出</span>
           <button class="sc-link" data-key="${k}" onclick="openModal(this.dataset.key)">${used} 隻 ▸</button>
         </div>
-        <div class="sc-row"><span class="sc-lbl">預估還需</span><span>${est} 隻</span></div>
+        <div class="sc-row">
+          <span class="sc-lbl">預估還需</span>
+          <button class="sc-link" data-key="${k}" onclick="openEstModal(this.dataset.key)">${est} 隻 ▸</button>
+        </div>
         <div class="sc-row"><span>${gapHtml}</span></div>
       </div>
       <div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%"></div></div>
@@ -425,7 +431,10 @@ async function deleteRecord(rowId, btn) {
 async function submitRecord() {
   const date = document.getElementById('f-date').value.trim();
   const dept = document.getElementById('f-dept').value;
-  const name = document.getElementById('f-name').value.trim();
+  const sel = document.getElementById('f-name-sel');
+  const selVal = sel ? sel.value : '';
+  const nameInp = document.getElementById('f-name').value.trim();
+  const name = (selVal && selVal !== '__new__') ? selVal : nameInp;
   const light = document.getElementById('f-light').value;
   const sub = document.getElementById('f-sub').value;
   const qty = parseInt(document.getElementById('f-qty').value);
@@ -491,6 +500,10 @@ function checkPin() {
 }
 
 function loginAs(role) {
+  // 預設隱藏手動輸入欄，顯示下拉
+  const inp = document.getElementById('f-name');
+  if (inp) inp.style.display = 'none';
+  populateCaseDropdown();
   currentRole = role;
   document.getElementById('gateWrap').style.display='none';
   document.getElementById('loggedWrap').classList.add('show');
@@ -543,6 +556,23 @@ function openModal(key) {
 }
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
 
+function openEstModal(key) {
+  const rows = allRecords.filter(r => r.light + r.sub === key && r.type === 'estimate');
+  document.getElementById('modalTitle').textContent = key + ' 預估等待中明細';
+  const body = document.getElementById('modalBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="4" class="modal-empty">目前無預估排程記錄</td></tr>';
+  } else {
+    body.innerHTML = rows.map(r => `<tr>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.qty} 隻</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+    </tr>`).join('');
+  }
+  document.getElementById('modalBg').classList.add('show');
+}
+
 // ── 時間 ──
 function setUpdatedTime() {
   const now = new Date();
@@ -550,6 +580,38 @@ function setUpdatedTime() {
   const t = `${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   document.getElementById('upd-biz').textContent='更新時間：'+t;
   document.getElementById('upd-eng').textContent='更新時間：'+t;
+}
+
+// ── 建案下拉選單 ──
+function populateCaseDropdown() {
+  const sel = document.getElementById('f-name-sel');
+  if (!sel) return;
+  // 從現有記錄抓出不重複的建案名稱，依字母排序
+  const names = [...new Set(allRecords.map(r => r.name).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'zh-TW'));
+  sel.innerHTML = '<option value="">── 選擇現有建案 ──</option>';
+  names.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    sel.appendChild(opt);
+  });
+  // 加一個「輸入新建案」選項
+  const newOpt = document.createElement('option');
+  newOpt.value = '__new__';
+  newOpt.textContent = '＋ 輸入新建案名稱';
+  sel.appendChild(newOpt);
+}
+
+function onCaseSelect(val) {
+  const inp = document.getElementById('f-name');
+  if (val === '__new__' || val === '') {
+    inp.value = '';
+    inp.style.display = 'block';
+    inp.focus();
+  } else {
+    inp.value = val;
+    inp.style.display = 'none';
+  }
 }
 
 init();
