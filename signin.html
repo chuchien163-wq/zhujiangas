@@ -841,7 +841,7 @@ function renderMgrWithData(rows){
   SCHED_DATA.forEach(d=>{
     const srow=document.createElement('div');
     srow.style.cssText='background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;gap:8px';
-    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.members.join('、')}</div></div>
+    srow.innerHTML=`<div><span style="font-size:13px;font-weight:700">2026/${d.date}（${d.wd}）第${d.seq}場</span><div style="font-size:12px;color:var(--gray-400);margin-top:3px">${d.m1}、${d.m2}</div></div>
       <button onclick="editSched(${d.seq})" style="font-size:12px;padding:5px 12px;border-radius:7px;border:1px solid var(--blue);color:var(--blue);background:transparent;cursor:pointer;font-family:inherit;white-space:nowrap">✏️ 調班</button>`;
     el.appendChild(srow);
   });
