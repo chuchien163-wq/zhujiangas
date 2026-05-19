@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>竹建瓦斯｜換表庫存看板</title>
+<title>竹建瓦斯｜換表庫存系統</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 :root{
@@ -13,54 +13,131 @@
   --amber:#b06a00;--amber-bg:#fff3e0;
   --red:#c0392b;--red-bg:#fdecea;
   --purple:#6d28d9;--purple-bg:#f3e8ff;
+  --blue:#1565c0;--blue-bg:#e3f0fb;
   --r:12px;--rs:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
 
-.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+/* ── Login ── */
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center;}
+.login-logo{width:56px;height:56px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;margin:0 auto 16px;}
+.login-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+.login-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.login-field{text-align:left;margin-bottom:14px;}
+.login-field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;}
+.login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;}
+.login-field input:focus{border-color:var(--green);background:#fff;}
+.btn-login{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;}
+.btn-login:hover{opacity:.88;}
+.login-err{font-size:13px;color:var(--red);min-height:20px;margin-top:8px;}
+
+/* ── App ── */
+#appPage{display:none;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hdr-l{display:flex;align-items:center;gap:10px;}
-.logo{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;flex-shrink:0;}
-.hdr-title{font-size:16px;font-weight:700;}
+.logo{width:32px;height:32px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;}
+.hdr-title{font-size:15px;font-weight:700;}
 .hdr-sub{font-size:11px;color:var(--muted);}
-.live{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--green);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hdr-r{display:flex;align-items:center;gap:10px;}
+.role-badge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--green-bg);color:var(--green);}
+.btn-signout{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;}
 
-.main{max-width:720px;margin:0 auto;padding:14px 14px 40px;}
-.slabel{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+/* ── Nav tabs ── */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-tab{flex-shrink:0;padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--green);border-bottom-color:var(--green);}
 
-.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+.main{max-width:900px;margin:0 auto;padding:14px 14px 40px;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* ── Stock cards ── */
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+@media(min-width:600px){.sg{grid-template-columns:repeat(4,1fr);}}
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;position:relative;overflow:hidden;}
 .sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
 .sc.ok::before{background:var(--green);}
 .sc.warn::before{background:var(--amber);}
 .sc.danger::before{background:var(--red);}
 .sc-type{font-size:11px;color:var(--muted);margin-bottom:4px;}
-.sc-remain{font-size:28px;font-weight:700;line-height:1;}
+.sc-remain{font-size:26px;font-weight:700;line-height:1;}
 .sc.ok .sc-remain{color:var(--green);}
 .sc.warn .sc-remain{color:var(--amber);}
 .sc.danger .sc-remain{color:var(--red);}
 .sc-unit{font-size:11px;color:var(--muted);margin-bottom:6px;}
-.sc-rows{display:flex;flex-direction:column;gap:4px;margin-top:2px;}
-.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.sc-rows{display:flex;flex-direction:column;gap:3px;}
+.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
 .sc-lbl{color:var(--muted);}
-.sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:12px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
+.sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:11px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
 .sc-gap{color:var(--red);font-weight:700;font-size:11px;}
 .sc-safe{color:var(--green);font-weight:500;font-size:11px;}
 .sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;}
-.sc-bar-fill{height:3px;border-radius:2px;transition:width .5s;}
+.sc-bar-fill{height:3px;border-radius:2px;}
 .sc.ok .sc-bar-fill{background:var(--green);}
 .sc.warn .sc-bar-fill{background:var(--amber);}
 .sc.danger .sc-bar-fill{background:var(--red);}
 
-.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{flex-shrink:0;padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .15s;}
-.tab:hover{background:var(--surface);color:var(--text);}
-.tab.active{background:var(--text);color:#fff;border-color:var(--text);font-weight:500;}
-.panel{display:none;}.panel.active{display:block;}
+/* ── Dashboard grid ── */
+.dash-grid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:700px){.dash-grid{grid-template-columns:1fr 1fr;}}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.dash-card-hdr{padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.dash-card-title{font-size:13px;font-weight:700;}
+.dash-count{font-size:11px;color:var(--muted);}
+.dash-table{width:100%;border-collapse:collapse;font-size:12px;}
+.dash-table th{padding:7px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;border-bottom:1px solid var(--border);}
+.dash-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.dash-table tr:last-child td{border-bottom:none;}
+.dash-table tr:hover{background:var(--bg);}
 
+/* ── Tags & badges ── */
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.t4x{background:#e3f0fb;color:#1565c0;}
+.t4v{background:#e8f5ee;color:#1a7a50;}
+.t6x{background:#fff3e0;color:#b06a00;}
+.t6v{background:#fce4ec;color:#ad1457;}
+.badge-act{background:var(--green-bg);color:var(--green);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.badge-est{background:var(--purple-bg);color:var(--purple);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.pay-o{font-size:14px;font-weight:700;color:var(--green);cursor:pointer;}
+.pay-x{font-size:14px;font-weight:700;color:var(--red);cursor:pointer;}
+.pay-blank{font-size:12px;color:var(--light);cursor:pointer;}
+
+/* ── Section label ── */
+.slabel{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+
+/* ── Unpaid summary ── */
+.unpaid-box{background:var(--red-bg);border:1px solid #f5c6c2;border-radius:var(--r);padding:14px 16px;margin-bottom:16px;}
+.unpaid-box h4{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;}
+.unpaid-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+@media(min-width:500px){.unpaid-grid{grid-template-columns:repeat(4,1fr);}}
+.unpaid-item{background:#fff;border-radius:var(--rs);padding:8px 10px;text-align:center;}
+.unpaid-item .ui-type{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.unpaid-item .ui-qty{font-size:18px;font-weight:700;color:var(--red);}
+.unpaid-item .ui-unit{font-size:10px;color:var(--muted);}
+
+/* ── Forms ── */
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.fcard h4{font-size:14px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.ffull{grid-column:1/-1;}
+.fg label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;}
+.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;}
+.fg input:focus,.fg select:focus{border-color:var(--green);background:#fff;}
+.btn-green{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
+.btn-green:hover{opacity:.88;}
+.btn-green:disabled{opacity:.5;cursor:not-allowed;}
+.ok-msg{display:none;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:var(--rs);padding:10px 14px;color:var(--green);font-size:13px;font-weight:500;text-align:center;margin-bottom:10px;}
+.type-toggle{display:flex;gap:8px;margin-bottom:12px;}
+.ttype{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;font-size:13px;font-family:inherit;background:transparent;color:var(--muted);transition:all .15s;}
+.ttype.act{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:500;}
+.ttype.est{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:500;}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--light);font-size:14px;padding:2px 5px;border-radius:4px;}
+.btn-del:hover{color:var(--red);}
+
+/* ── Twrap ── */
 .twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 thead th{padding:9px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);}
@@ -70,322 +147,367 @@ tbody tr:hover{background:var(--bg);}
 .no-data{text-align:center;color:var(--light);padding:28px;font-size:13px;}
 .loading-cell{text-align:center;color:var(--muted);padding:28px;font-size:13px;}
 
-.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.t4x{background:#e3f0fb;color:#1565c0;}
-.t4v{background:#e8f5ee;color:#1a7a50;}
-.t6x{background:#fff3e0;color:#b06a00;}
-.t6v{background:#fce4ec;color:#ad1457;}
-.badge-act{background:var(--green-bg);color:var(--green);font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;}
-.badge-est{background:var(--purple-bg);color:var(--purple);font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500;}
-
-.btn-del{background:none;border:none;cursor:pointer;color:var(--light);font-size:15px;padding:2px 5px;border-radius:4px;transition:color .15s;line-height:1;}
-.btn-del:hover{color:var(--red);}
-
-.qty-wrap{display:inline-flex;align-items:center;gap:4px;}
-.qty-val{font-weight:500;}
-.qty-inp{width:55px;padding:3px 6px;border:1.5px solid var(--green);border-radius:4px;font-size:13px;font-family:inherit;text-align:center;display:none;}
-.qty-inp.show{display:inline-block;}
-.qty-val.hide{display:none;}
-.edit-ico{color:var(--light);font-size:11px;cursor:pointer;display:none;}
-
-.fcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
-.fcard h4{font-size:14px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.ffull{grid-column:1/-1;}
-.fg label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;}
-.fg input,.fg select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;}
-.fg input:focus,.fg select:focus{border-color:var(--green);background:#fff;}
-.btn-green{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:opacity .15s;}
-.btn-green:hover{opacity:.88;}
-.btn-green:disabled{opacity:.5;cursor:not-allowed;}
-.ok-msg{display:none;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:var(--rs);padding:10px 14px;color:var(--green);font-size:13px;font-weight:500;text-align:center;margin-bottom:10px;}
-
+/* ── Modal ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:460px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-hdr{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-hdr h3{font-size:15px;font-weight:700;}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;}
+.modal-body{overflow-y:auto;flex:1;}
+.modal-empty{text-align:center;color:var(--light);padding:24px;font-size:13px;}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.updated{font-size:11px;color:var(--light);text-align:right;margin-bottom:8px;}
 .divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
 .divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-
-.gate{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;}
-.gate h3{font-size:15px;font-weight:700;margin-bottom:4px;}
-.gate p{font-size:12px;color:var(--muted);margin-bottom:14px;}
-.pin-row{display:flex;gap:7px;justify-content:center;margin-bottom:8px;}
-.pin-inp{width:44px;height:44px;text-align:center;font-size:20px;font-weight:700;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;outline:none;}
-.pin-inp:focus{border-color:var(--green);}
-.pin-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:6px;}
-.btn-unlock{padding:8px 22px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;font-family:'Noto Sans TC',sans-serif;cursor:pointer;}
-
-.logged-wrap{display:none;}.logged-wrap.show{display:block;}
-.role-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.role-tag{font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;}
-.role-tag.staff{background:var(--green-bg);color:var(--green);}
-.role-tag.admin{background:#fef3c7;color:#92400e;}
-.btn-logout{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;text-decoration:underline;}
-
-.type-toggle{display:flex;gap:8px;margin-bottom:12px;}
-.ttype{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;font-size:13px;font-family:inherit;background:transparent;color:var(--muted);transition:all .15s;}
-.ttype.act{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:500;}
-.ttype.est{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:500;}
-
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:16px;}
-.modal-bg.show{display:flex;}
-.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:420px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
-.modal-hdr{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-hdr h3{font-size:15px;font-weight:700;}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;padding:0 4px;}
-.modal-body{overflow-y:auto;flex:1;}
-.modal-empty{text-align:center;color:var(--light);padding:24px;font-size:13px;}
-
-.updated{font-size:11px;color:var(--light);text-align:right;margin-bottom:8px;}
-
-@media(max-width:480px){
-  .fgrid{grid-template-columns:1fr;}
-  .ffull{grid-column:1;}
-}
+@media(max-width:480px){.fgrid{grid-template-columns:1fr;}.ffull{grid-column:1;}}
 </style>
 </head>
 <body>
 
-<div class="hdr">
-  <div class="hdr-l">
-    <div class="logo">竹</div>
-    <div>
-      <div class="hdr-title">換表庫存看板</div>
-      <div class="hdr-sub">竹建瓦斯股份有限公司</div>
+<!-- ══ 登入頁 ══ -->
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">竹</div>
+    <div class="login-title">換表庫存系統</div>
+    <div class="login-sub">竹建瓦斯股份有限公司</div>
+    <div class="login-field">
+      <label>工號</label>
+      <input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6">
     </div>
+    <div class="login-field">
+      <label>密碼</label>
+      <input type="password" id="pwd" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">登入</button>
+    <div class="login-err" id="loginErr"></div>
   </div>
-  <div class="live"><div class="dot"></div>即時</div>
 </div>
 
-<div class="main">
-  <div class="slabel">目前庫存狀態</div>
-  <div class="sg" id="stockGrid"><div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div></div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('biz',this)">業務部記錄</button>
-    <button class="tab" onclick="switchTab('eng',this)">工務部記錄</button>
-    <button class="tab" onclick="switchTab('add',this)">新增 / 管理</button>
-  </div>
-
-  <!-- 業務部 -->
-  <div class="panel active" id="panel-biz">
-    <div class="updated" id="upd-biz"></div>
-    <div class="twrap">
-      <table>
-        <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th><th></th></tr></thead>
-        <tbody id="biz-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
-      </table>
+<!-- ══ 主系統 ══ -->
+<div id="appPage">
+  <div class="hdr">
+    <div class="hdr-l">
+      <div class="logo">竹</div>
+      <div>
+        <div class="hdr-title">換表庫存系統</div>
+        <div class="hdr-sub">竹建瓦斯股份有限公司</div>
+      </div>
+    </div>
+    <div class="hdr-r">
+      <span class="role-badge" id="roleBadge">—</span>
+      <div class="live"><div class="dot"></div>即時</div>
+      <button class="btn-signout" onclick="signOut()">登出</button>
     </div>
   </div>
 
-  <!-- 工務部 -->
-  <div class="panel" id="panel-eng">
-    <div class="updated" id="upd-eng"></div>
-    <div class="twrap">
-      <table>
-        <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th><th></th></tr></thead>
-        <tbody id="eng-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
-      </table>
-    </div>
+  <!-- Nav -->
+  <div class="nav">
+    <button class="nav-tab active" onclick="switchPanel('dashboard',this)">📊 總覽</button>
+    <button class="nav-tab" onclick="switchPanel('biz',this)">業務部</button>
+    <button class="nav-tab" onclick="switchPanel('eng',this)">工務部</button>
+    <button class="nav-tab" id="tab-manage" onclick="switchPanel('manage',this)" style="display:none;">⚙️ 管理</button>
   </div>
 
-  <!-- 新增/管理 -->
-  <div class="panel" id="panel-add">
+  <div class="main">
 
-    <!-- 登入區 -->
-    <div id="gateWrap">
-      <div class="gate" id="gateBox">
-        <h3>🔐 登入</h3>
-        <p id="gateDesc">業務部／工務部請輸入5位密碼，倉管請輸入4位密碼</p>
-        <div class="pin-row" id="pinRow"></div>
-        <div class="pin-err" id="pinErr"></div>
-        <button class="btn-unlock" onclick="checkPin()">確認登入</button>
+    <!-- ══ 總覽 ══ -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="slabel" style="margin-bottom:8px;">庫存狀態</div>
+      <div class="sg" id="stockGrid"><div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div></div>
+
+      <!-- 未繳費警示（倉管/管理員/工務部看得到） -->
+      <div id="unpaidSection" style="display:none;">
+        <div class="slabel">⚠️ 未繳費統計（不計入預估）</div>
+        <div class="unpaid-box">
+          <h4>未繳費建案總用量</h4>
+          <div class="unpaid-grid" id="unpaidGrid"></div>
+        </div>
+        <div class="slabel">未繳費建案清單</div>
+        <div class="twrap">
+          <table>
+            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>部門</th></tr></thead>
+            <tbody id="unpaidBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 已繳費清單（倉管/管理員/工務部） -->
+      <div id="paidSection" style="display:none;">
+        <div class="slabel">✓ 已繳費建案清單</div>
+        <div class="twrap">
+          <table>
+            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>部門</th></tr></thead>
+            <tbody id="paidBody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- 登入後 -->
-    <div class="logged-wrap" id="loggedWrap">
-      <div class="role-bar">
-        <span class="role-tag" id="roleTag">—</span>
-        <button class="btn-logout" onclick="logout()">登出</button>
+    <!-- ══ 業務部 ══ -->
+    <div class="panel" id="panel-biz">
+      <div class="updated" id="upd-biz"></div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-hdr">
+            <span class="dash-card-title">📋 業務部 建案總覽</span>
+            <span class="dash-count" id="biz-count"></span>
+          </div>
+          <table class="dash-table">
+            <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th></tr></thead>
+            <tbody id="biz-body"><tr><td colspan="5" class="loading-cell">載入中…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-hdr">
+            <span class="dash-card-title">📊 業務部 用量統計</span>
+          </div>
+          <div style="padding:14px;" id="biz-stats"></div>
+        </div>
       </div>
+    </div>
+
+    <!-- ══ 工務部 ══ -->
+    <div class="panel" id="panel-eng">
+      <div class="updated" id="upd-eng"></div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-hdr">
+            <span class="dash-card-title">📋 工務部 建案總覽</span>
+            <span class="dash-count" id="eng-count"></span>
+          </div>
+          <table class="dash-table">
+            <thead><tr>
+              <th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th>
+              <th id="pay-col-hdr" style="display:none;">繳費</th>
+            </tr></thead>
+            <tbody id="eng-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
+          </table>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-hdr">
+            <span class="dash-card-title">📊 工務部 用量統計</span>
+          </div>
+          <div style="padding:14px;" id="eng-stats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ 管理 ══ -->
+    <div class="panel" id="panel-manage">
       <div class="ok-msg" id="okMsg">✓ 已成功送出！</div>
 
-      <!-- 新增案件（業務部/工務部/倉管都能用） -->
+      <!-- 新增記錄 -->
       <div class="fcard">
-        <h4 id="addFormTitle">新增案件</h4>
-        <!-- 倉管專用：類型切換 -->
+        <h4 id="addTitle">新增記錄</h4>
         <div class="type-toggle" id="typeToggle" style="display:none;">
           <button class="ttype act" id="btn-act" onclick="setType('actual')">✓ 實際領出（扣庫存）</button>
-          <button class="ttype" id="btn-est" onclick="setType('estimate')">○ 預估排程（未來用量）</button>
+          <button class="ttype" id="btn-est" onclick="setType('estimate')">○ 預估排程</button>
         </div>
         <div class="fgrid">
-          <div class="fg">
-            <label>日期（民國）</label>
-            <input type="text" id="f-date" placeholder="115.05.18">
-          </div>
-          <div class="fg">
-            <label>部門</label>
-            <select id="f-dept">
-              <option value="業務部">業務部</option>
-              <option value="工務部">工務部</option>
-            </select>
+          <div class="fg"><label>日期（民國）</label><input type="text" id="f-date" placeholder="115.05.18"></div>
+          <div class="fg"><label>部門</label>
+            <select id="f-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
           </div>
           <div class="fg ffull">
             <label>社區／建案名稱</label>
             <select id="f-name-sel" onchange="onCaseSelect(this.value)" style="margin-bottom:6px;">
               <option value="">── 選擇現有建案 ──</option>
             </select>
-            <input type="text" id="f-name" placeholder="或輸入新建案名稱">
+            <input type="text" id="f-name" placeholder="或輸入新建案名稱" style="display:none;">
           </div>
-          <div class="fg">
-            <label>燈別</label>
-            <select id="f-light">
-              <option value="4燈">4燈</option>
-              <option value="6燈">6燈</option>
-            </select>
+          <div class="fg"><label>燈別</label>
+            <select id="f-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
           </div>
-          <div class="fg">
-            <label>子機</label>
-            <select id="f-sub">
-              <option value="無子機">無子機（X）</option>
-              <option value="有子機">有子機（V）</option>
-            </select>
+          <div class="fg"><label>子機</label>
+            <select id="f-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
           </div>
-          <div class="fg ffull">
-            <label>數量（隻）</label>
-            <input type="number" id="f-qty" min="1" placeholder="0">
-          </div>
+          <div class="fg ffull"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
         </div>
         <button class="btn-green" id="btnSub" onclick="submitRecord()">確認送出</button>
       </div>
 
-      <!-- 刪除區（業務部/工務部/倉管） -->
-      <div class="divider"><span>刪除記錄</span></div>
-      <div class="twrap">
-        <table>
-          <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th><th>刪除</th></tr></thead>
-          <tbody id="del-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
-        </table>
+      <!-- 刪除記錄（倉管/管理員） -->
+      <div id="delSection" style="display:none;">
+        <div class="divider"><span>刪除記錄</span></div>
+        <div class="twrap">
+          <table>
+            <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th><th>刪除</th></tr></thead>
+            <tbody id="del-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
+          </table>
+        </div>
       </div>
-
     </div>
+
   </div>
 </div>
 
-<!-- Modal：已領出明細 -->
+<!-- Modal -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-hdr">
-      <h3 id="modalTitle">已領出明細</h3>
+      <h3 id="modalTitle">明細</h3>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
-        </tr></thead>
-        <tbody id="modalBody"></tbody>
-      </table>
-    </div>
+    <div class="modal-body" id="modalBody"></div>
   </div>
 </div>
 
 <script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbx3AhuOd27ZAa1A140arCcqyQ0UNtNPnLriHwOoqVGwAv0hSoRb7Va6yFtI3iyJdWU/exec';
-const PIN_STAFF = '00000';
-const PIN_ADMIN = '1688';
 
-const INIT = { '4燈無子機':123, '4燈有子機':257, '6燈無子機':246, '6燈有子機':65 };
 let allRecords = [];
-let currentRole = null; // 'staff' | 'admin'
+let INIT = { '4燈無子機':123, '4燈有子機':257, '6燈無子機':246, '6燈有子機':65 };
+let currentRole = null;
 let recordType = 'estimate';
 
-// ── 初始化 ──
-async function init() {
-  buildPinInputs(5);
-  await loadRecords();
-  renderStock();
-  renderTables();
-  setUpdatedTime();
+// ── 登入 ──
+async function doLogin() {
+  const empId = document.getElementById('empId').value.trim();
+  const pwd   = document.getElementById('pwd').value.trim();
+  if (!empId || !pwd) { document.getElementById('loginErr').textContent='請輸入工號和密碼'; return; }
+  document.getElementById('loginErr').textContent='驗證中…';
+  try {
+    const r = await fetch(`${GAS_URL}?action=login&empId=${encodeURIComponent(empId)}&pwd=${encodeURIComponent(pwd)}`);
+    const d = await r.json();
+    if (d.success) {
+      currentRole = d.role;
+      startApp();
+    } else {
+      document.getElementById('loginErr').textContent = d.message || '工號或密碼錯誤';
+    }
+  } catch(e) {
+    document.getElementById('loginErr').textContent = '連線失敗，請稍後再試';
+  }
 }
 
-async function loadRecords() {
+function startApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appPage').style.display   = 'block';
+  document.getElementById('roleBadge').textContent   = currentRole;
+
+  // 管理分頁顯示條件
+  const canManage = ['業務部','工務部','倉管','管理員'].includes(currentRole);
+  if (canManage) document.getElementById('tab-manage').style.display = '';
+
+  // 繳費欄位：工務部/管理員可見
+  const canPay = ['工務部','管理員'].includes(currentRole);
+  if (canPay) document.getElementById('pay-col-hdr').style.display = '';
+
+  // 未繳費/已繳費區塊：工務部/倉管/管理員
+  const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
+  if (canSeePay) {
+    document.getElementById('unpaidSection').style.display = '';
+    document.getElementById('paidSection').style.display   = '';
+  }
+
+  // 管理頁設定
+  if (currentRole === '倉管' || currentRole === '管理員') {
+    document.getElementById('typeToggle').style.display = 'flex';
+    document.getElementById('addTitle').textContent = '新增記錄';
+    document.getElementById('delSection').style.display = '';
+    setType('actual');
+  } else {
+    document.getElementById('addTitle').textContent = '新增預估排程';
+    recordType = 'estimate';
+  }
+
+  loadData();
+}
+
+function signOut() {
+  currentRole = null;
+  allRecords  = [];
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('appPage').style.display   = 'none';
+  document.getElementById('empId').value = '';
+  document.getElementById('pwd').value   = '';
+  document.getElementById('loginErr').textContent = '';
+}
+
+// ── 資料載入 ──
+async function loadData() {
   try {
-    const r = await fetch(GAS_URL + '?action=getAll');
+    const r = await fetch(`${GAS_URL}?action=getAll`);
     const d = await r.json();
     if (d.records) allRecords = d.records;
-    if (d.stock) Object.keys(d.stock).forEach(k => { INIT[k] = d.stock[k]; });
+    if (d.stock)   Object.keys(d.stock).forEach(k => { INIT[k] = d.stock[k]; });
   } catch(e) { console.log('載入失敗', e); }
+  renderAll();
+}
+
+function renderAll() {
+  renderStock();
+  renderBiz();
+  renderEng();
+  renderDelTable();
+  renderPaymentSections();
+  setUpdatedTime();
 }
 
 // ── 庫存計算 ──
 function calcStock() {
-  // actual by case (for 預估-實際 diff)
-  const actualByCase = {}; // key: light+sub+name
-  const actualTotal = {};  // key: light+sub, 不含「已含初始庫存」
-  const estimateByCase = {}; // key: light+sub+name
-  const estimateTotal = {}; // key: light+sub
-
-  Object.keys(INIT).forEach(k => { actualTotal[k]=0; estimateTotal[k]=0; });
+  const actualTotal    = {};
+  const actualByCase   = {};
+  const estByCase      = {};
+  const estNeeded      = {};
+  Object.keys(INIT).forEach(k => { actualTotal[k]=0; estNeeded[k]=0; });
 
   allRecords.forEach(r => {
-    const key = r.light + r.sub;
+    const key     = r.light + r.sub;
     const caseKey = key + '|' + r.name;
     if (r.type === 'actual') {
-      // 有備註「已含初始庫存」→ 只記錄歷史，不扣庫存
-      if (r.note !== '已含初始庫存') {
-        actualTotal[key] = (actualTotal[key]||0) + Number(r.qty);
-      }
+      if (r.note !== '已含初始庫存') actualTotal[key] = (actualTotal[key]||0) + Number(r.qty);
       actualByCase[caseKey] = (actualByCase[caseKey]||0) + Number(r.qty);
     } else {
-      estimateTotal[key] = (estimateTotal[key]||0) + Number(r.qty);
-      estimateByCase[caseKey] = (estimateByCase[caseKey]||0) + Number(r.qty);
+      // 未繳費的不計入預估
+      if (r.payment !== 'X') {
+        estByCase[caseKey] = (estByCase[caseKey]||0) + Number(r.qty);
+      }
     }
   });
 
-  // 預估還需 = 各建案（預估 - 實際）差額加總（只算正數）
-  const estNeeded = {};
-  Object.keys(INIT).forEach(k => { estNeeded[k]=0; });
-  Object.keys(estimateByCase).forEach(caseKey => {
+  // 預估還需 = 各建案（預估－實際）> 0 加總
+  Object.keys(estByCase).forEach(caseKey => {
     const [key] = caseKey.split('|');
-    const estQty = estimateByCase[caseKey] || 0;
-    const actQty = actualByCase[caseKey] || 0;
-    const diff = estQty - actQty;
+    const diff = (estByCase[caseKey]||0) - (actualByCase[caseKey]||0);
     if (diff > 0) estNeeded[key] = (estNeeded[key]||0) + diff;
   });
 
-  return { actualTotal, actualByCase, estimateByCase, estimateTotal, estNeeded };
+  return { actualTotal, actualByCase, estByCase, estNeeded };
 }
 
+// ── 庫存卡片 ──
 function renderStock() {
-  const { actualTotal, estNeeded, actualByCase, estimateByCase } = calcStock();
+  const { actualTotal, estNeeded } = calcStock();
   const keys = ['4燈無子機','4燈有子機','6燈無子機','6燈有子機'];
   document.getElementById('stockGrid').innerHTML = keys.map(k => {
-    const init = INIT[k]||0;
-    const used = actualTotal[k]||0;
-    const est = estNeeded[k]||0;
+    const init   = INIT[k]||0;
+    const used   = actualTotal[k]||0;
+    const est    = estNeeded[k]||0;
     const remain = init - used;
-    const gap = remain - est;
-    const pct = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
-    const cls = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
+    const gap    = remain - est;
+    const pct    = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
+    const cls    = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
     const gapHtml = gap<0
-      ? `<span class="sc-gap">⚠ 缺口 ${Math.abs(gap)} 隻，建議採買</span>`
-      : `<span class="sc-safe">尚餘 ${gap} 隻可用</span>`;
+      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻，建議採買</span>`
+      : `<span class="sc-safe">可用${gap}隻</span>`;
     return `<div class="sc ${cls}">
       <div class="sc-type">${k}</div>
       <div class="sc-remain">${remain}</div>
       <div class="sc-unit">隻（目前剩餘）</div>
       <div class="sc-rows">
-        <div class="sc-row"><span class="sc-lbl">今日庫存基準</span><span>${init} 隻</span></div>
+        <div class="sc-row"><span class="sc-lbl">今日基準</span><span>${init}隻</span></div>
         <div class="sc-row">
           <span class="sc-lbl">已實際領出</span>
-          <button class="sc-link" data-key="${k}" onclick="openModal(this.dataset.key)">${used} 隻 ▸</button>
+          <button class="sc-link" data-key="${k}" onclick="openActModal(this.dataset.key)">${used}隻▸</button>
         </div>
         <div class="sc-row">
           <span class="sc-lbl">預估還需</span>
-          <button class="sc-link" data-key="${k}" onclick="openEstModal(this.dataset.key)">${est} 隻 ▸</button>
+          <button class="sc-link" data-key="${k}" onclick="openEstModal(this.dataset.key)">${est}隻▸</button>
         </div>
         <div class="sc-row"><span>${gapHtml}</span></div>
       </div>
@@ -394,279 +516,276 @@ function renderStock() {
   }).join('');
 }
 
-// ── 表格 ──
-function tagCls(r){ return 't'+r.light.charAt(0)+(r.sub==='無子機'?'x':'v'); }
-function tagLbl(r){ return r.light+r.sub; }
-
-function renderTables() {
-  const biz = allRecords.filter(r=>r.dept==='業務部').slice().sort((a,b)=>a.date.localeCompare(b.date));
-  const eng = allRecords.filter(r=>r.dept==='工務部').slice().sort((a,b)=>a.date.localeCompare(b.date));
-  renderTable('biz-body', biz, false);
-  renderTable('eng-body', eng, false);
-  renderDelTable();
-  setUpdatedTime();
-}
-
-function renderTable(id, rows, showDel) {
-  const el = document.getElementById(id);
-  if (!rows.length) { el.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; return; }
-  el.innerHTML = rows.map((r,i) => `<tr>
-    <td>${r.date}</td>
-    <td>${r.name}</td>
-    <td>${r.qty}</td>
+// ── 業務部 ──
+function renderBiz() {
+  const rows = allRecords.filter(r=>r.dept==='業務部').sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('biz-count').textContent = `共 ${rows.length} 筆`;
+  const body = document.getElementById('biz-body');
+  if (!rows.length) { body.innerHTML='<tr><td colspan="5" class="no-data">尚無記錄</td></tr>'; }
+  else { body.innerHTML = rows.map(r=>`<tr>
+    <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
     <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
-    <td></td>
-  </tr>`).join('');
+  </tr>`).join(''); }
+
+  // 統計
+  const stats = calcDeptStats(rows);
+  document.getElementById('biz-stats').innerHTML = renderStats(stats);
 }
 
+// ── 工務部 ──
+function renderEng() {
+  const rows = allRecords.filter(r=>r.dept==='工務部').sort((a,b)=>a.date.localeCompare(b.date));
+  document.getElementById('eng-count').textContent = `共 ${rows.length} 筆`;
+  const canPay = ['工務部','管理員'].includes(currentRole);
+  const body = document.getElementById('eng-body');
+  if (!rows.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
+  else { body.innerHTML = rows.map(r=>{
+    const payHtml = canPay
+      ? `<td onclick="togglePayment('${r.rowId}','${r.payment||''}')" style="cursor:pointer;text-align:center;">
+          ${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'<span class="pay-blank">—</span>'}
+         </td>`
+      : `<td style="text-align:center;">${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'—'}</td>`;
+    return `<tr>
+      <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
+      <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+      <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
+      ${payHtml}
+    </tr>`;
+  }).join(''); }
+
+  const stats = calcDeptStats(rows);
+  document.getElementById('eng-stats').innerHTML = renderStats(stats);
+}
+
+// ── 繳費切換 ──
+async function togglePayment(rowId, current) {
+  // 循環：空 → O → X → 空
+  const next = current==='' ? 'O' : current==='O' ? 'X' : '';
+  // 更新本地
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (rec) rec.payment = next;
+  renderAll();
+  // 更新 GAS
+  try {
+    await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updatePayment', rowId: Number(rowId), payment: next }) });
+  } catch(e) { console.log(e); }
+}
+
+// ── 未繳費/已繳費區塊 ──
+function renderPaymentSections() {
+  const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
+  if (!canSeePay) return;
+
+  const engRecords = allRecords.filter(r=>r.dept==='工務部' && r.type==='estimate');
+  const unpaid = engRecords.filter(r=>r.payment==='X');
+  const paid   = engRecords.filter(r=>r.payment==='O');
+
+  // 未繳費統計
+  const unpaidTotals = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
+  unpaid.forEach(r=>{ const k=r.light+r.sub; unpaidTotals[k]=(unpaidTotals[k]||0)+Number(r.qty); });
+
+  document.getElementById('unpaidGrid').innerHTML = Object.entries(unpaidTotals).map(([k,v])=>`
+    <div class="unpaid-item">
+      <div class="ui-type">${k}</div>
+      <div class="ui-qty">${v}</div>
+      <div class="ui-unit">隻</div>
+    </div>`).join('');
+
+  // 未繳費清單
+  const ubody = document.getElementById('unpaidBody');
+  if (!unpaid.length) { ubody.innerHTML='<tr><td colspan="4" class="no-data">目前無未繳費建案</td></tr>'; }
+  else { ubody.innerHTML = unpaid.map(r=>`<tr>
+    <td>${r.name}</td><td>${r.qty}</td>
+    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+    <td>${r.dept}</td>
+  </tr>`).join(''); }
+
+  // 已繳費清單
+  const pbody = document.getElementById('paidBody');
+  if (!paid.length) { pbody.innerHTML='<tr><td colspan="4" class="no-data">目前無已繳費建案</td></tr>'; }
+  else { pbody.innerHTML = paid.map(r=>`<tr>
+    <td>${r.name}</td><td>${r.qty}</td>
+    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+    <td>${r.dept}</td>
+  </tr>`).join(''); }
+}
+
+// ── 統計 ──
+function calcDeptStats(rows) {
+  const s = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
+  rows.forEach(r=>{ const k=r.light+r.sub; s[k]=(s[k]||0)+Number(r.qty); });
+  return s;
+}
+function renderStats(s) {
+  return Object.entries(s).map(([k,v])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">
+      <span style="color:var(--muted);">${k}</span>
+      <span style="font-weight:700;">${v} 隻</span>
+    </div>`).join('');
+}
+
+// ── 刪除表格 ──
 function renderDelTable() {
-  const el = document.getElementById('del-body');
-  if (!allRecords.length) { el.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; return; }
-  // admin看全部，staff只看estimate（預估排程）
-  const rows = currentRole==='admin'
-    ? allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date))
-    : allRecords.filter(r=>r.type==='estimate').slice().sort((a,b)=>a.date.localeCompare(b.date));
-  if (!rows.length) { el.innerHTML='<tr><td colspan="6" class="no-data">尚無可刪除的記錄</td></tr>'; return; }
-  el.innerHTML = rows.map(r => `<tr>
-    <td>${r.date}</td>
-    <td>${r.name}</td>
-    <td>${r.qty}</td>
+  const canDel = ['倉管','管理員'].includes(currentRole);
+  if (!canDel) return;
+  const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const body = document.getElementById('del-body');
+  if (!rows.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; return; }
+  body.innerHTML = rows.map(r=>`<tr>
+    <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
     <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
-    <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid, this)">✕</button></td>
+    <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
+}
+
+// ── 新增記錄 ──
+async function submitRecord() {
+  const sel    = document.getElementById('f-name-sel');
+  const selVal = sel ? sel.value : '';
+  const nameInp = document.getElementById('f-name').value.trim();
+  const name   = (selVal && selVal!=='__new__') ? selVal : nameInp;
+  const date   = document.getElementById('f-date').value.trim();
+  const dept   = document.getElementById('f-dept').value;
+  const light  = document.getElementById('f-light').value;
+  const sub    = document.getElementById('f-sub').value;
+  const qty    = parseInt(document.getElementById('f-qty').value);
+  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  const type = (['倉管','管理員'].includes(currentRole)) ? recordType : 'estimate';
+  const rec  = { date, dept, name, light, sub, qty, type, note:'', payment:'' };
+  const btn  = document.getElementById('btnSub');
+  btn.disabled=true; btn.textContent='送出中…';
+  let newRowId = Date.now();
+  try {
+    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
+    const d = await r.json();
+    if (d.rowId) newRowId = d.rowId;
+  } catch(e) { console.log(e); }
+  allRecords.push({...rec, rowId:newRowId});
+  renderAll();
+  document.getElementById('f-date').value='';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-qty').value='';
+  if (sel) { sel.value=''; populateCaseDropdown(); }
+  document.getElementById('f-name').style.display='none';
+  const ok=document.getElementById('okMsg'); ok.style.display='block';
+  setTimeout(()=>{ok.style.display='none';},3000);
+  btn.disabled=false; btn.textContent='確認送出';
 }
 
 // ── 刪除 ──
 async function deleteRecord(rowId, btn) {
   if (!confirm('確定要刪除這筆記錄？')) return;
-  btn.disabled = true;
-  btn.textContent = '…';
+  btn.disabled=true; btn.textContent='…';
   try {
-    await fetch(GAS_URL, {
-      method:'POST',
-      body: JSON.stringify({ action:'deleteRecord', rowId: Number(rowId) })
-    });
+    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})});
   } catch(e) { console.log(e); }
-  allRecords = allRecords.filter(r => String(r.rowId) !== String(rowId));
-  renderStock();
-  renderTables();
+  allRecords = allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  renderAll();
 }
 
-// ── 新增 ──
-async function submitRecord() {
-  const date = document.getElementById('f-date').value.trim();
-  const dept = document.getElementById('f-dept').value;
+// ── 下拉選單 ──
+function populateCaseDropdown() {
   const sel = document.getElementById('f-name-sel');
-  const selVal = sel ? sel.value : '';
-  const nameInp = document.getElementById('f-name').value.trim();
-  const name = (selVal && selVal !== '__new__') ? selVal : nameInp;
-  const light = document.getElementById('f-light').value;
-  const sub = document.getElementById('f-sub').value;
-  const qty = parseInt(document.getElementById('f-qty').value);
-  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-  // staff 固定 estimate，admin 看切換
-  const type = currentRole==='admin' ? recordType : 'estimate';
-  const rec = { date, dept, name, light, sub, qty, type };
-  const btn = document.getElementById('btnSub');
-  btn.disabled=true; btn.textContent='送出中…';
-  let newRowId = Date.now();
-  try {
-    const r = await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'addRecord', ...rec }) });
-    const d = await r.json();
-    if (d.rowId) newRowId = d.rowId;
-  } catch(e) { console.log(e); }
-  allRecords.push({ ...rec, rowId: newRowId });
-  renderStock(); renderTables();
-  document.getElementById('f-date').value='';
-  document.getElementById('f-name').value='';
-  document.getElementById('f-qty').value='';
-  const ok = document.getElementById('okMsg');
-  ok.style.display='block';
-  setTimeout(()=>{ ok.style.display='none'; }, 3000);
-  btn.disabled=false; btn.textContent='確認送出';
+  if (!sel) return;
+  const names = [...new Set(allRecords.map(r=>r.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-TW'));
+  sel.innerHTML = '<option value="">── 選擇現有建案 ──</option>';
+  names.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
+  const newOpt=document.createElement('option'); newOpt.value='__new__'; newOpt.textContent='＋ 輸入新建案名稱'; sel.appendChild(newOpt);
+}
+function onCaseSelect(val) {
+  const inp=document.getElementById('f-name');
+  if (val==='__new__'||val==='') { inp.value=''; inp.style.display='block'; if(val==='__new__') inp.focus(); }
+  else { inp.value=val; inp.style.display='none'; }
 }
 
+// ── 記錄類型切換 ──
 function setType(t) {
-  recordType = t;
+  recordType=t;
   document.getElementById('btn-act').className='ttype'+(t==='actual'?' act':'');
   document.getElementById('btn-est').className='ttype'+(t==='estimate'?' est':'');
 }
 
-// ── PIN ──
-let pinLen = 5;
-function buildPinInputs(len) {
-  pinLen = len;
-  const row = document.getElementById('pinRow');
-  row.innerHTML = '';
-  for (let i=0; i<len; i++) {
-    const inp = document.createElement('input');
-    inp.className='pin-inp'; inp.type='password'; inp.maxLength=1; inp.inputMode='numeric'; inp.id='p'+i;
-    inp.addEventListener('input', ()=>{ if(inp.value && i<len-1) document.getElementById('p'+(i+1)).focus(); });
-    inp.addEventListener('keydown', e=>{ if(e.key==='Backspace'&&!inp.value&&i>0) document.getElementById('p'+(i-1)).focus(); });
-    row.appendChild(inp);
-  }
-}
-
-function getPin() {
-  return Array.from({length:pinLen}, (_,i)=>{ const el=document.getElementById('p'+i); return el?el.value:''; }).join('');
-}
-
-function checkPin() {
-  const pin = getPin();
-  if (pin === PIN_ADMIN) {
-    loginAs('admin');
-  } else if (pin === PIN_STAFF) {
-    loginAs('staff');
-  } else {
-    document.getElementById('pinErr').textContent='密碼錯誤，請再試一次';
-    for(let i=0;i<pinLen;i++){ const el=document.getElementById('p'+i); if(el) el.value=''; }
-    document.getElementById('p0').focus();
-  }
-}
-
-function loginAs(role) {
-  // 預設隱藏手動輸入欄，顯示下拉
-  const inp = document.getElementById('f-name');
-  if (inp) inp.style.display = 'none';
-  populateCaseDropdown();
-  currentRole = role;
-  document.getElementById('gateWrap').style.display='none';
-  document.getElementById('loggedWrap').classList.add('show');
-  const tag = document.getElementById('roleTag');
-  if (role==='admin') {
-    tag.textContent='🔑 倉管模式';
-    tag.className='role-tag admin';
-    document.getElementById('typeToggle').style.display='flex';
-    document.getElementById('addFormTitle').textContent='新增記錄（倉管）';
-    setType('actual');
-  } else {
-    tag.textContent='✓ 業務／工務模式';
-    tag.className='role-tag staff';
-    document.getElementById('typeToggle').style.display='none';
-    document.getElementById('addFormTitle').textContent='新增預估排程';
-    recordType='estimate';
-  }
-  renderDelTable();
-}
-
-function logout() {
-  currentRole=null;
-  document.getElementById('gateWrap').style.display='';
-  document.getElementById('loggedWrap').classList.remove('show');
-  for(let i=0;i<pinLen;i++){ const el=document.getElementById('p'+i); if(el) el.value=''; }
-  document.getElementById('pinErr').textContent='';
-}
-
-// ── Tabs ──
-function switchTab(name, el) {
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  el.classList.add('active');
-}
-
 // ── Modal ──
-function openModal(key) {
+function openActModal(key) {
   const rows = allRecords.filter(r=>r.light+r.sub===key && r.type==='actual');
   document.getElementById('modalTitle').textContent = key+' 已領出明細';
-  const body = document.getElementById('modalBody');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="4" class="modal-empty">尚無實際領出記錄</td></tr>'; }
-  else { body.innerHTML = rows.map(r=>`<tr>
-    <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-    <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.qty} 隻</td>
-    <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-    <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
-  </tr>`).join(''); }
+  document.getElementById('modalBody').innerHTML = !rows.length
+    ? `<div class="modal-empty">尚無實際領出記錄</div>`
+    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">備註</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.note||''}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
   document.getElementById('modalBg').classList.add('show');
 }
-function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
 
 function openEstModal(key) {
-  const { actualByCase, estimateByCase } = calcStock();
-  // 找出這個種類所有有預估的建案
-  const caseNames = [...new Set(
-    allRecords.filter(r => r.light+r.sub===key && r.type==='estimate').map(r=>r.name)
-  )];
-  document.getElementById('modalTitle').textContent = key + ' 預估等待中明細';
-  const body = document.getElementById('modalBody');
+  const { actualByCase, estByCase } = calcStock();
+  const caseNames = [...new Set(allRecords.filter(r=>r.light+r.sub===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  document.getElementById('modalTitle').textContent = key+' 預估等待中明細';
   if (!caseNames.length) {
-    body.innerHTML = '<tr><td colspan="5" class="modal-empty">目前無預估排程記錄</td></tr>';
+    document.getElementById('modalBody').innerHTML = `<div class="modal-empty">目前無預估排程記錄</div>`;
   } else {
-    // 找第一筆該建案的日期和部門
-    const rows = caseNames.map(name => {
-      const caseKey = key + '|' + name;
-      const est = estimateByCase[caseKey] || 0;
-      const act = actualByCase[caseKey] || 0;
-      const pending = Math.max(0, est - act);
-      const rec = allRecords.find(r => r.light+r.sub===key && r.name===name && r.type==='estimate');
-      return { name, est, act, pending, dept: rec ? rec.dept : '' };
-    }).filter(r => r.pending > 0); // 只顯示還有未領的
-
-    if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="5" class="modal-empty">所有建案均已領完！</td></tr>';
-    } else {
-      body.innerHTML = `<tr>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
-      </tr>` + rows.map(r => `<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est} 隻</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act} 隻</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending} 隻</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
-      </tr>`).join('');
-    }
+    const rows = caseNames.map(name=>{
+      const caseKey=key+'|'+name;
+      const est=estByCase[caseKey]||0;
+      const act=actualByCase[caseKey]||0;
+      const pending=Math.max(0,est-act);
+      const rec=allRecords.find(r=>r.light+r.sub===key&&r.name===name&&r.type==='estimate');
+      return {name,est,act,pending,dept:rec?rec.dept:''};
+    }).filter(r=>r.pending>0);
+    document.getElementById('modalBody').innerHTML = !rows.length
+      ? `<div class="modal-empty">所有建案均已領完！</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr>
+            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
+            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
+            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
+            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
+          </tr></thead>
+          <tbody>${rows.map(r=>`<tr>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
+            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+          </tr>`).join('')}</tbody>
+        </table>`;
   }
   document.getElementById('modalBg').classList.add('show');
 }
 
-// ── 時間 ──
-function setUpdatedTime() {
-  const now = new Date();
-  const roc = now.getFullYear()-1911;
-  const t = `${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('upd-biz').textContent='更新時間：'+t;
-  document.getElementById('upd-eng').textContent='更新時間：'+t;
+function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
+
+// ── Nav ──
+function switchPanel(name, el) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  el.classList.add('active');
+  if (name==='manage') populateCaseDropdown();
 }
 
-// ── 建案下拉選單 ──
-function populateCaseDropdown() {
-  const sel = document.getElementById('f-name-sel');
-  if (!sel) return;
-  // 從現有記錄抓出不重複的建案名稱，依字母排序
-  const names = [...new Set(allRecords.map(r => r.name).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'zh-TW'));
-  sel.innerHTML = '<option value="">── 選擇現有建案 ──</option>';
-  names.forEach(n => {
-    const opt = document.createElement('option');
-    opt.value = n;
-    opt.textContent = n;
-    sel.appendChild(opt);
-  });
-  // 加一個「輸入新建案」選項
-  const newOpt = document.createElement('option');
-  newOpt.value = '__new__';
-  newOpt.textContent = '＋ 輸入新建案名稱';
-  sel.appendChild(newOpt);
+// ── 工具 ──
+function tagCls(r){ return 't'+r.light.charAt(0)+(r.sub==='無子機'?'x':'v'); }
+function tagLbl(r){ return r.light+r.sub; }
+function setUpdatedTime(){
+  const now=new Date(); const roc=now.getFullYear()-1911;
+  const t=`${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  ['biz','eng'].forEach(d=>{ const el=document.getElementById('upd-'+d); if(el) el.textContent='更新時間：'+t; });
 }
-
-function onCaseSelect(val) {
-  const inp = document.getElementById('f-name');
-  if (val === '__new__' || val === '') {
-    inp.value = '';
-    inp.style.display = 'block';
-    inp.focus();
-  } else {
-    inp.value = val;
-    inp.style.display = 'none';
-  }
-}
-
-init();
 </script>
 </body>
 </html>
