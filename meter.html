@@ -257,7 +257,7 @@ tbody tr:hover{background:var(--bg);}
             <span class="dash-count" id="biz-count"></span>
           </div>
           <table class="dash-table">
-            <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th></tr></thead>
+            <thead><tr><th>社區／建案</th><th>種類</th><th>預估量</th><th>已領出</th><th>尚欠</th></tr></thead>
             <tbody id="biz-body"><tr><td colspan="5" class="loading-cell">載入中…</td></tr></tbody>
           </table>
         </div>
@@ -281,7 +281,7 @@ tbody tr:hover{background:var(--bg);}
           </div>
           <table class="dash-table">
             <thead><tr>
-              <th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th>
+              <th>社區／建案</th><th>種類</th><th>預估量</th><th>已領出</th><th>尚欠</th>
               <th id="pay-col-hdr" style="display:none;">繳費</th>
             </tr></thead>
             <tbody id="eng-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
@@ -516,46 +516,66 @@ function renderStock() {
   }).join('');
 }
 
+// ── 合併同建案+種類 ──
+function mergeByCase(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const k = r.name + '|' + r.light + r.sub;
+    if (!map[k]) map[k] = { name:r.name, key:r.light+r.sub, cls:tagCls(r), est:0, actual:0 };
+    if (r.type==='actual') map[k].actual += Number(r.qty);
+    else map[k].est += Number(r.qty);
+  });
+  return Object.values(map).map(r=>({...r, pending:Math.max(0,r.est-r.actual)}))
+    .sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
+}
+
 // ── 業務部 ──
 function renderBiz() {
-  const rows = allRecords.filter(r=>r.dept==='業務部').sort((a,b)=>a.date.localeCompare(b.date));
-  document.getElementById('biz-count').textContent = `共 ${rows.length} 筆`;
+  const rows = allRecords.filter(r=>r.dept==='業務部');
+  const merged = mergeByCase(rows);
+  document.getElementById('biz-count').textContent = `共 ${merged.length} 筆`;
   const body = document.getElementById('biz-body');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="5" class="no-data">尚無記錄</td></tr>'; }
-  else { body.innerHTML = rows.map(r=>`<tr>
-    <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
-    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
+  if (!merged.length) { body.innerHTML='<tr><td colspan="5" class="no-data">尚無記錄</td></tr>'; }
+  else { body.innerHTML = merged.map(r=>`<tr>
+    <td>${r.name}</td>
+    <td><span class="tag ${r.cls}">${r.key}</span></td>
+    <td>${r.est} 隻</td>
+    <td>${r.actual} 隻</td>
+    <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending} 隻</td>
   </tr>`).join(''); }
-
-  // 統計
   const stats = calcDeptStats(rows);
-  document.getElementById('biz-stats').innerHTML = renderStats(stats);
+  document.getElementById('biz-stats').innerHTML = renderStats(stats, '業務部');
 }
 
 // ── 工務部 ──
 function renderEng() {
-  const rows = allRecords.filter(r=>r.dept==='工務部').sort((a,b)=>a.date.localeCompare(b.date));
-  document.getElementById('eng-count').textContent = `共 ${rows.length} 筆`;
+  const rows = allRecords.filter(r=>r.dept==='工務部');
+  const merged = mergeByCase(rows);
+  document.getElementById('eng-count').textContent = `共 ${merged.length} 筆`;
   const canPay = ['工務部','管理員'].includes(currentRole);
   const body = document.getElementById('eng-body');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
-  else { body.innerHTML = rows.map(r=>{
+  if (!merged.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
+  else { body.innerHTML = merged.map(r=>{
+    // 找原始記錄的rowId和payment（取estimate那筆）
+    const origRec = allRecords.find(rec=>rec.dept==='工務部'&&rec.name===r.name&&rec.light+rec.sub===r.key&&rec.type==='estimate');
+    const rowId   = origRec ? origRec.rowId : '';
+    const payment = origRec ? (origRec.payment||'') : '';
     const payHtml = canPay
-      ? `<td onclick="togglePayment('${r.rowId}','${r.payment||''}')" style="cursor:pointer;text-align:center;">
-          ${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'<span class="pay-blank">—</span>'}
+      ? `<td onclick="togglePayment('${rowId}','${payment}')" style="cursor:pointer;text-align:center;">
+          ${payment==='O'?'<span class="pay-o">O</span>':payment==='X'?'<span class="pay-x">X</span>':'<span class="pay-blank">—</span>'}
          </td>`
-      : `<td style="text-align:center;">${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'—'}</td>`;
+      : `<td style="text-align:center;">${payment==='O'?'<span class="pay-o">O</span>':payment==='X'?'<span class="pay-x">X</span>':'—'}</td>`;
     return `<tr>
-      <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
-      <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-      <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
+      <td>${r.name}</td>
+      <td><span class="tag ${r.cls}">${r.key}</span></td>
+      <td>${r.est} 隻</td>
+      <td>${r.actual} 隻</td>
+      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending} 隻</td>
       ${payHtml}
     </tr>`;
   }).join(''); }
-
   const stats = calcDeptStats(rows);
-  document.getElementById('eng-stats').innerHTML = renderStats(stats);
+  document.getElementById('eng-stats').innerHTML = renderStats(stats, '工務部');
 }
 
 // ── 繳費切換 ──
@@ -613,16 +633,55 @@ function renderPaymentSections() {
 
 // ── 統計 ──
 function calcDeptStats(rows) {
-  const s = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
-  rows.forEach(r=>{ const k=r.light+r.sub; s[k]=(s[k]||0)+Number(r.qty); });
-  return s;
+  const est    = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
+  const actual = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
+  rows.forEach(r=>{
+    const k = r.light + r.sub;
+    if (r.type === 'actual') actual[k] = (actual[k]||0) + Number(r.qty);
+    else est[k] = (est[k]||0) + Number(r.qty);
+  });
+  return { est, actual };
 }
-function renderStats(s) {
-  return Object.entries(s).map(([k,v])=>`
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;">
-      <span style="color:var(--muted);">${k}</span>
-      <span style="font-weight:700;">${v} 隻</span>
-    </div>`).join('');
+function renderStats({ est, actual }, dept) {
+  const keys = ['4燈無子機','4燈有子機','6燈無子機','6燈有子機'];
+  return `<table style="width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr>
+      <th style="padding:6px 8px;text-align:left;color:var(--muted);font-size:11px;border-bottom:1px solid var(--border);">種類</th>
+      <th style="padding:6px 8px;text-align:right;color:var(--purple);font-size:11px;border-bottom:1px solid var(--border);">預估總量</th>
+      <th style="padding:6px 8px;text-align:right;color:var(--green);font-size:11px;border-bottom:1px solid var(--border);">實際領出</th>
+    </tr></thead>
+    <tbody>${keys.map(k=>`<tr>
+      <td style="padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);">${k}</td>
+      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--purple);">${est[k]||0} 隻</td>
+      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;">
+        <button class="sc-link" style="font-weight:700;color:var(--green);" 
+          data-key="${k}" data-dept="${dept}"
+          onclick="openDeptActModal(this.dataset.key, this.dataset.dept)">
+          ${actual[k]||0} 隻 ▸
+        </button>
+      </td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+function openDeptActModal(key, dept) {
+  const rows = allRecords.filter(r => r.light+r.sub===key && r.type==='actual' && r.dept===dept);
+  document.getElementById('modalTitle').textContent = dept + ' ' + key + ' 實際領出明細';
+  document.getElementById('modalBody').innerHTML = !rows.length
+    ? `<div class="modal-empty">尚無實際領出記錄</div>`
+    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--green);">${r.qty} 隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  document.getElementById('modalBg').classList.add('show');
 }
 
 // ── 刪除表格 ──
