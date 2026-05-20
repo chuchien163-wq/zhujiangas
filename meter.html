@@ -365,22 +365,24 @@ let currentRole = null;
 let recordType = 'estimate';
 
 // ── 登入 ──
-async function doLogin() {
+// ── 帳號清單（直接嵌入，修改後重新上傳 meter.html）──
+const ACCOUNTS = [
+  { empId: '037', pwd: '6666', role: '業務部' },
+  { empId: '070', pwd: '8888', role: '工務部' },
+  { empId: '054', pwd: '1688', role: '倉管'   },
+  { empId: '060', pwd: '1688', role: '管理員' },
+];
+
+function doLogin() {
   const empId = document.getElementById('empId').value.trim();
   const pwd   = document.getElementById('pwd').value.trim();
   if (!empId || !pwd) { document.getElementById('loginErr').textContent='請輸入工號和密碼'; return; }
-  document.getElementById('loginErr').textContent='驗證中…';
-  try {
-    const r = await fetch(`${GAS_URL}?action=login&empId=${encodeURIComponent(empId)}&pwd=${encodeURIComponent(pwd)}`);
-    const d = await r.json();
-    if (d.success) {
-      currentRole = d.role;
-      startApp();
-    } else {
-      document.getElementById('loginErr').textContent = d.message || '工號或密碼錯誤';
-    }
-  } catch(e) {
-    document.getElementById('loginErr').textContent = '連線失敗，請稍後再試';
+  const account = ACCOUNTS.find(a => a.empId === empId && a.pwd === pwd);
+  if (account) {
+    currentRole = account.role;
+    startApp();
+  } else {
+    document.getElementById('loginErr').textContent = '工號或密碼錯誤，請再試一次';
   }
 }
 
