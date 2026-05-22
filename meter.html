@@ -239,6 +239,13 @@ tbody tr:hover{background:var(--bg);}
 </div>
 
 <!-- App -->
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="width:40px;height:40px;border:3px solid #e2e0d8;border-top-color:#1a7a50;border-radius:50%;animation:spin 1s linear infinite;"></div>
+  <div style="font-size:14px;color:#888880;" id="loadingText">資料載入中，請稍候…</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
 <div id="appPage">
   <div class="hdr">
     <div class="hdr-l">
@@ -664,6 +671,14 @@ function signOut() {
 
 // ── 載入資料 ──
 async function loadData() {
+  const overlay = document.getElementById('loadingOverlay');
+  const loadText = document.getElementById('loadingText');
+  if (overlay) overlay.style.display='flex';
+  
+  const msgs = ['連線 Google Sheets…','讀取庫存資料…','載入建案記錄…','整理資料中…'];
+  let mi = 0;
+  const ticker = setInterval(()=>{ if(loadText && mi<msgs.length) loadText.textContent=msgs[mi++]; }, 1200);
+  
   try {
     const r = await fetch(`${GAS_URL}?action=getAll`);
     const d = await r.json();
@@ -672,6 +687,9 @@ async function loadData() {
     if (d.inbound)  allInbound  = d.inbound;
     if (d.incoming) allIncoming = d.incoming;
   } catch(e) { console.log('載入失敗',e); }
+  
+  clearInterval(ticker);
+  if (overlay) overlay.style.display='none';
   renderAll();
 }
 
