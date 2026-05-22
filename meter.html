@@ -142,18 +142,18 @@ tbody tr:hover{background:var(--bg);}
 /* Incoming */
 .incoming-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);}
 .incoming-item:last-child{border-bottom:none;}
-.incoming-name{font-size:13px;font-weight:500;color:var(--text);}
-.incoming-date{font-size:11px;color:var(--muted);margin-top:2px;}
-.incoming-qty{font-size:13px;font-weight:500;color:var(--amber);background:var(--amber-bg);padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.incoming-name{font-size:14px;font-weight:500;color:var(--text);}
+.incoming-date{font-size:12px;color:var(--muted);margin-top:2px;}
+.incoming-qty{font-size:14px;font-weight:500;color:var(--amber);background:var(--amber-bg);padding:4px 12px;border-radius:20px;white-space:nowrap;}
 
 /* Unpaid */
 .unpaid-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px;border-bottom:0.5px solid var(--border);}
 .unpaid-num{background:var(--bg);border-radius:var(--rs);padding:8px;text-align:center;}
-.unpaid-num-type{font-size:10px;color:var(--muted);margin-bottom:3px;}
-.unpaid-num-val{font-size:18px;font-weight:700;color:var(--red);}
-.unpaid-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;padding:8px 14px;border-bottom:0.5px solid var(--border);}
+.unpaid-num-type{font-size:12px;color:var(--muted);margin-bottom:3px;}
+.unpaid-num-val{font-size:22px;font-weight:700;color:var(--red);}
+.unpaid-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:10px 14px;border-bottom:0.5px solid var(--border);}
 .unpaid-row:last-child{border-bottom:none;}
-.dept-tag{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.dept-tag{font-size:12px;padding:3px 9px;border-radius:20px;white-space:nowrap;}
 .dept-biz{background:var(--blue-bg);color:var(--blue);}
 .dept-eng{background:var(--green-bg);color:var(--green);}
 
@@ -300,10 +300,12 @@ tbody tr:hover{background:var(--bg);}
           </div>
         </div>
         <div id="paidSection" style="display:none;">
-          <div class="slabel">已繳費清單</div>
           <div class="card">
-            <div class="card-hdr"><span class="card-title">✓ 已繳費建案</span></div>
-            <div id="paidBody"></div>
+            <div class="card-hdr" onclick="togglePaid()" style="cursor:pointer;">
+              <span class="card-title">✓ 已繳費建案</span>
+              <span id="paidToggleIcon" style="font-size:12px;color:var(--muted);">展開 ▼</span>
+            </div>
+            <div id="paidBody" style="display:none;"></div>
           </div>
         </div>
       </div>
@@ -1581,6 +1583,19 @@ function openDeptActModal(key, dept) {
       </tr>`).join('')}</tbody>
     </table>`;
   document.getElementById('modalBg').classList.add('show');
+}
+
+function togglePaid() {
+  const body = document.getElementById('paidBody');
+  const icon = document.getElementById('paidToggleIcon');
+  if (!body) return;
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    if (icon) icon.textContent = '收合 ▲';
+  } else {
+    body.style.display = 'none';
+    if (icon) icon.textContent = '展開 ▼';
+  }
 }
 
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
