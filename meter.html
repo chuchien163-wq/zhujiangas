@@ -413,63 +413,50 @@ tbody tr:hover{background:var(--bg);}
         <div>
           <div class="fcard">
             <h4 id="addTitle">新增出入庫／排程記錄</h4>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">系統預設「排程」的「數量」自動計算到未來預估庫存</div>
-            <div class="type-toggle" id="typeToggle" style="display:none;">
-              <button class="ttype act" id="btn-act" onclick="setType('actual')">✓ 實際領出</button>
-              <button class="ttype" id="btn-est" onclick="setType('estimate')">○ 預估排程</button>
-              <button class="ttype" id="btn-ret" onclick="setType('return')">↩ 退回倉庫</button>
-            </div>
-            <div class="fgrid">
-              <div class="fg"><label>日期（民國格式）</label><input type="text" id="f-date" placeholder="115.05.22"></div>
-              <div class="fg"><label>部門</label>
-                <select id="f-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
-              </div>
-              <div class="fg ffull">
-                <label>社區建案（自動查詢下拉）</label>
-                <select id="f-name-sel" onchange="onCaseSelect(this.value)" style="margin-bottom:6px;">
-                  <option value="">請輸入或選擇建案</option>
-                </select>
-                <input type="text" id="f-name" placeholder="輸入或選擇建案" style="display:none;">
-              </div>
-              <div class="fg"><label>燈別</label>
-                <select id="f-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
-              </div>
-              <div class="fg"><label>子機</label>
-                <select id="f-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
-              </div>
-              <div class="fg"><label>廠商與型號</label>
-                <select id="f-vendor"><option value="N">N（台北貿易）</option><option value="M">M（力泰瓦斯）</option></select>
-              </div>
-              <div class="fg"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
-              <div class="fg ffull"><label>備註</label><input type="text" id="f-note" placeholder="例：已含初始庫存／換表等量"></div>
-            </div>
-            <button class="btn-green" id="btnSub" onclick="submitRecord()">➤ 確認送出資料</button>
-          </div>
-        </div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">系統將依選擇的「類型」自動計算目前剩餘庫存</div>
 
-        <!-- 右側：入庫記錄＋預計進貨 -->
-        <div>
-          <!-- 廠商入庫明細記錄 -->
-          <div class="card" style="margin-bottom:12px;">
-            <div class="card-hdr">
-              <span class="card-title">📦 廠商入庫明細記錄</span>
-              <a href="#" onclick="return false;" style="font-size:11px;color:var(--green);" id="inbound-toggle-btn" onclick="toggleInboundForm()">直接更新庫存</a>
+            <!-- 記錄類型下拉 -->
+            <div class="fg ffull" style="margin-bottom:12px;">
+              <label>記錄類型</label>
+              <select id="recordTypeSelect" onchange="onRecordTypeChange(this.value)" style="width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;">
+                <option value="estimate">📅 預估排程（estimate）</option>
+                <option value="actual">✓ 實際領出</option>
+                <option value="return">↩ 退回倉庫</option>
+                <option value="inbound">📦 廠商入庫（直接更新庫存）</option>
+                <option value="incoming">🚚 新增預計進貨</option>
+              </select>
             </div>
-            <div id="inbound-body-wrap">
-              <table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <thead><tr>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">日期</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">進貨廠商</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格型號</th>
-                  <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">入庫數量</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
-                </tr></thead>
-                <tbody id="inbound-body"><tr><td colspan="5" class="no-data">尚無入庫記錄</td></tr></tbody>
-              </table>
+
+            <!-- 通用欄位（排程/領出/退回） -->
+            <div id="normalFields">
+              <div class="fgrid">
+                <div class="fg"><label>日期（民國格式）</label><input type="text" id="f-date" placeholder="115.05.22"></div>
+                <div class="fg" id="deptField"><label>部門</label>
+                  <select id="f-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
+                </div>
+                <div class="fg ffull">
+                  <label>社區建案（自動彙整下拉）</label>
+                  <select id="f-name-sel" onchange="onCaseSelect(this.value)" style="margin-bottom:6px;">
+                    <option value="">請輸入或選擇建案</option>
+                  </select>
+                  <input type="text" id="f-name" placeholder="輸入或選擇建案" style="display:none;">
+                </div>
+                <div class="fg"><label>燈別</label>
+                  <select id="f-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
+                </div>
+                <div class="fg"><label>子機</label>
+                  <select id="f-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
+                </div>
+                <div class="fg"><label>廠商與型號</label>
+                  <select id="f-vendor"><option value="N">N（台北貿易）</option><option value="M">M（力泰瓦斯）</option></select>
+                </div>
+                <div class="fg"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
+                <div class="fg ffull"><label>備註</label><input type="text" id="f-note" placeholder="例：已含初始庫存／換表等量"></div>
+              </div>
             </div>
-            <div id="inbound-form" style="padding:12px 14px;border-top:0.5px solid var(--border);">
-              <h4 id="ib-form-title" style="font-size:13px;font-weight:700;margin-bottom:10px;">➕ 新增入庫（廠商送貨）</h4>
-              <input type="hidden" id="ib-rowid" value="">
+
+            <!-- 廠商入庫欄位 -->
+            <div id="inboundFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
                 <div class="fg"><label>廠商</label>
@@ -486,34 +473,10 @@ tbody tr:hover{background:var(--bg);}
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ib-qty" min="1" placeholder="0"></div>
               </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn-blue" id="ib-submit-btn" onclick="submitInbound()" style="flex:1;">確認入庫，更新庫存</button>
-                <button id="ib-cancel-btn" onclick="cancelEditInbound()" style="display:none;flex:1;padding:10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;cursor:pointer;">取消編輯</button>
-              </div>
             </div>
-          </div>
 
-          <!-- 預計進貨排程進度 -->
-          <div class="card">
-            <div class="card-hdr">
-              <span class="card-title">🚚 預計進貨排程進度</span>
-              <span class="card-note" style="color:var(--amber);">⚠️ 不影響庫存計算</span>
-            </div>
-            <div id="incoming-body-wrap">
-              <table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <thead><tr>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計到貨日</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格</th>
-                  <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計數量</th>
-                  <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
-                </tr></thead>
-                <tbody id="incoming-body"><tr><td colspan="5" class="no-data">尚無預計進貨</td></tr></tbody>
-              </table>
-            </div>
-            <div style="padding:12px 14px;border-top:0.5px solid var(--border);">
-              <h4 id="ic-form-title" style="font-size:13px;font-weight:700;margin-bottom:10px;">➕ 新增預計進貨</h4>
-              <input type="hidden" id="ic-rowid" value="">
+            <!-- 預計進貨欄位 -->
+            <div id="incomingFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
                 <div class="fg"><label>廠商</label>
@@ -530,16 +493,55 @@ tbody tr:hover{background:var(--bg);}
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ic-qty" min="1" placeholder="0"></div>
               </div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn-blue" id="ic-submit-btn" onclick="submitIncoming()" style="flex:1;">新增預計進貨提醒</button>
-                <button id="ic-cancel-btn" onclick="cancelEditIncoming()" style="display:none;flex:1;padding:10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rs);font-size:13px;font-family:inherit;cursor:pointer;">取消編輯</button>
-              </div>
             </div>
+
+            <input type="hidden" id="ib-rowid" value="">
+            <input type="hidden" id="ic-rowid" value="">
+            <button class="btn-green" id="btnSub" onclick="handleSubmit()">➤ 確認送出資料</button>
+          </div>
+        </div>
+
+        <!-- 右側：入庫記錄 + 預計進貨 -->
+        <div>
+          <!-- 廠商入庫明細 -->
+          <div class="card" style="margin-bottom:12px;">
+            <div class="card-hdr">
+              <span class="card-title">📦 廠商入庫明細記錄</span>
+              <span style="font-size:11px;color:var(--green);cursor:pointer;" onclick="switchToType('inbound')">直接更新庫存</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">日期</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">進貨廠商</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格型號</th>
+                <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">入庫數量</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
+              </tr></thead>
+              <tbody id="inbound-body"><tr><td colspan="5" class="no-data">尚無入庫記錄</td></tr></tbody>
+            </table>
+          </div>
+
+          <!-- 預計進貨 -->
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-title">🚚 預計進貨排程進度</span>
+              <span style="font-size:11px;color:var(--amber);">⚠️ 不影響庫存計算</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+              <thead><tr>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計到貨日</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格</th>
+                <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計數量</th>
+                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
+              </tr></thead>
+              <tbody id="incoming-body"><tr><td colspan="5" class="no-data">尚無預計進貨</td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- 刪除記錄 -->
+      <!-- 刪除領表記錄 -->
       <div id="delSection" style="display:none;margin-top:12px;">
         <div class="divider"><span>刪除領表記錄</span></div>
         <div class="twrap">
@@ -648,13 +650,24 @@ function startApp() {
   if (canSeePay) { document.getElementById('unpaidSection').style.display=''; document.getElementById('paidSection').style.display=''; }
   const isAdmin = ['倉管','管理員'].includes(currentRole);
   if (isAdmin) {
-    document.getElementById('typeToggle').style.display='flex';
-    document.getElementById('addTitle').textContent='新增記錄（含退回）';
+    document.getElementById('addTitle').textContent='新增出入庫／排程記錄';
     document.getElementById('delSection').style.display='';
-    setType('actual');
+    // 預設選實際領出
+    const sel = document.getElementById('recordTypeSelect');
+    if (sel) { sel.value='actual'; onRecordTypeChange('actual'); }
   } else {
     document.getElementById('addTitle').textContent='新增預估排程';
     recordType='estimate';
+    // 業務部/工務部只能看到estimate
+    const sel = document.getElementById('recordTypeSelect');
+    if (sel) {
+      sel.value='estimate';
+      onRecordTypeChange('estimate');
+      // 隱藏非estimate選項
+      Array.from(sel.options).forEach(o=>{
+        if(o.value!=='estimate') o.style.display='none';
+      });
+    }
   }
   loadData();
 }
@@ -1319,10 +1332,47 @@ function onCaseSelect(val) {
 
 // ── 記錄類型 ──
 function setType(t) {
-  recordType=t;
-  document.getElementById('btn-act').className='ttype'+(t==='actual'?' act':'');
-  document.getElementById('btn-est').className='ttype'+(t==='estimate'?' est':'');
-  document.getElementById('btn-ret').className='ttype'+(t==='return'?' ret':'');
+  recordType = t;
+}
+
+function onRecordTypeChange(val) {
+  const normalFields   = document.getElementById('normalFields');
+  const inboundFields  = document.getElementById('inboundFields');
+  const incomingFields = document.getElementById('incomingFields');
+  const deptField      = document.getElementById('deptField');
+
+  normalFields.style.display   = 'none';
+  inboundFields.style.display  = 'none';
+  incomingFields.style.display = 'none';
+
+  if (val === 'inbound') {
+    inboundFields.style.display = 'block';
+    document.getElementById('btnSub').textContent = '確認入庫，更新庫存';
+    document.getElementById('btnSub').style.background = 'var(--blue)';
+  } else if (val === 'incoming') {
+    incomingFields.style.display = 'block';
+    document.getElementById('btnSub').textContent = '新增預計進貨提醒';
+    document.getElementById('btnSub').style.background = 'var(--purple)';
+  } else {
+    normalFields.style.display = 'block';
+    recordType = val;
+    deptField.style.display = (val === 'return') ? 'none' : '';
+    document.getElementById('btnSub').textContent = '➤ 確認送出資料';
+    document.getElementById('btnSub').style.background = 'var(--green)';
+  }
+}
+
+function switchToType(type) {
+  const sel = document.getElementById('recordTypeSelect');
+  if (sel) { sel.value = type; onRecordTypeChange(type); }
+  switchPanel('manage', document.querySelector('.nav-tab[onclick*="manage"]'));
+}
+
+function handleSubmit() {
+  const type = document.getElementById('recordTypeSelect').value;
+  if (type === 'inbound')  { submitInbound();  return; }
+  if (type === 'incoming') { submitIncoming(); return; }
+  submitRecord();
 }
 
 // ── Modal ──
@@ -1591,8 +1641,13 @@ function switchPanel(name, el) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
-  el.classList.add('active');
-  if (name==='manage') populateCaseDropdown();
+  if(el) el.classList.add('active');
+  if (name==='manage') {
+    populateCaseDropdown();
+    // 初始化下拉顯示狀態
+    const sel = document.getElementById('recordTypeSelect');
+    if (sel) onRecordTypeChange(sel.value);
+  }
 }
 
 // ── 工具 ──
