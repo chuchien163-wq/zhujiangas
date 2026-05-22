@@ -616,11 +616,11 @@ function calcStock() {
     const k       = r.light+r.sub+'-'+vend;
     const caseKey = k+'|'+r.name;
     if (r.type==='actual') {
-      if (r.note!=='已含初始庫存') netActual[k] = (netActual[k]||0) + Number(r.qty);
+      if ((r.note||'').trim()!=='已含初始庫存') netActual[k] = (netActual[k]||0) + Number(r.qty);
       actualByCase[caseKey] = (actualByCase[caseKey]||0) + Number(r.qty);
     } else if (r.type==='return') {
       // 退回：加回庫存，加回尚欠
-      if (r.note!=='已含初始庫存') netActual[k] = (netActual[k]||0) - Number(r.qty);
+      if ((r.note||'').trim()!=='已含初始庫存') netActual[k] = (netActual[k]||0) - Number(r.qty);
       actualByCase[caseKey] = (actualByCase[caseKey]||0) - Number(r.qty);
     } else if (r.type==='estimate') {
       if (r.payment!=='X') {
