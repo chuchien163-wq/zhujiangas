@@ -733,9 +733,6 @@ function renderStock() {
     </div>`;
   }).join('');
 
-  // 隱藏M型區塊（已合併進N型卡片）
-  const mSection = document.getElementById('stockGrid-M');
-  if (mSection) mSection.closest('.vendor-section').style.display='none';
 }
 
 function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
