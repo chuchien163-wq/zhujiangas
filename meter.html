@@ -541,7 +541,8 @@ function calcStock() {
   });
 
   allRecords.forEach(r => {
-    const k       = r.light+r.sub+'-'+r.vendor;
+    const vend    = r.vendor||'N';
+    const k       = r.light+r.sub+'-'+vend;
     const caseKey = k+'|'+r.name;
     if (r.type==='actual') {
       if (r.note!=='已含初始庫存') netActual[k] = (netActual[k]||0) + Number(r.qty);
@@ -639,7 +640,7 @@ function renderIncomingTable() {
 function mergeByCase(rows) {
   const map = {};
   rows.forEach(r => {
-    const k = r.name+'|'+r.light+r.sub+'|'+r.vendor;
+    const k = r.name+'|'+r.light+r.sub+'|'+(r.vendor||'N');
     if (!map[k]) map[k] = { name:r.name, key:r.light+r.sub, vendor:r.vendor, cls:tagCls(r), est:0, actual:0, returned:0 };
     if (r.type==='actual')   map[k].actual   += Number(r.qty);
     else if (r.type==='return') map[k].returned += Number(r.qty);
