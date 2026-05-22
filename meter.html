@@ -846,7 +846,7 @@ function renderDelTable() {
   if (!canDel) return;
   const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
   const body = document.getElementById('del-body');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無記錄</td></tr>'; return; }
+  if (!rows.length) { body.innerHTML='<tr><td colspan="8" class="no-data">尚無記錄</td></tr>'; return; }
   body.innerHTML = rows.map(r=>`<tr>
     <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
