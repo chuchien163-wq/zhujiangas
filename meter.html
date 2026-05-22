@@ -689,8 +689,59 @@ function calcStock() {
 // ── 庫存卡片 ──
 function renderStock() {
   const { netActual, estNeeded, inboundTotal } = calcStock();
-  renderStockGroup('stockGrid-N', KEYS_N, netActual, estNeeded, inboundTotal);
-  renderStockGroup('stockGrid-M', KEYS_M, netActual, estNeeded, inboundTotal);
+  const baseKeys = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
+  const grid = document.getElementById('stockGrid-N');
+
+  grid.innerHTML = baseKeys.map(base => {
+    const kN = base+'-N';
+    const kM = base+'-M';
+    const initN   = (INIT[kN]||0) + (inboundTotal[kN]||0);
+    const initM   = (INIT[kM]||0) + (inboundTotal[kM]||0);
+    const usedN   = netActual[kN]||0;
+    const usedM   = netActual[kM]||0;
+    const estN    = estNeeded[kN]||0;
+    const estM    = estNeeded[kM]||0;
+    const remainN = initN - usedN;
+    const remainM = initM - usedM;
+    const total   = remainN + remainM;
+    const usedAll = usedN + usedM;
+    const estAll  = estN + estM;
+    const gap     = total - estAll;
+    const pct     = Math.min(100,(initN+initM)>0?Math.round(total/(initN+initM)*100):0);
+    const cls     = total<=0?'danger':gap<0?'warn':'ok';
+    const gapHtml = gap<0
+      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
+      : `<span class="sc-safe">可用${gap}隻</span>`;
+    return `<div class="sc ${cls}">
+      <div class="sc-type">${base}</div>
+      <div class="sc-remain">${total}</div>
+      <div class="sc-unit">隻（目前剩餘）</div>
+      <div class="sc-rows">
+        <div class="sc-row">
+          <span class="sc-lbl">N型（台北貿易）</span>
+          <button class="sc-link" data-key="${kN}" onclick="openVendorModal(this.dataset.key,'N型（台北貿易）')">${remainN}隻▸</button>
+        </div>
+        <div class="sc-row">
+          <span class="sc-lbl">M型（力泰瓦斯）</span>
+          <button class="sc-link" data-key="${kM}" onclick="openVendorModal(this.dataset.key,'M型（力泰瓦斯）')">${remainM}隻▸</button>
+        </div>
+        <div class="sc-row" style="border-top:1px solid var(--border);margin-top:3px;padding-top:3px;">
+          <span class="sc-lbl">已領出</span>
+          <button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openActModalBoth(this.dataset.keyn,this.dataset.keym)">${usedAll}隻▸</button>
+        </div>
+        <div class="sc-row">
+          <span class="sc-lbl">預估還需</span>
+          <button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openEstModalBoth(this.dataset.keyn,this.dataset.keym)">${estAll}隻▸</button>
+        </div>
+        <div class="sc-row"><span>${gapHtml}</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // 隱藏M型區塊（已合併進N型卡片）
+  const mSection = document.getElementById('stockGrid-M');
+  if (mSection) mSection.closest('.vendor-section').style.display='none';
 }
 
 function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
@@ -1061,11 +1112,124 @@ function setType(t) {
 }
 
 // ── Modal ──
+function openVendorModal(key, vendorLabel) {
+  // 顯示該廠商該種類的所有已領出社區（含盤點前）
+  const base = key.replace('-N','').replace('-M','');
+  
+  // 用 actualByCase 計算各社區總領出
+  const caseMap = {};
+  allRecords.forEach(r => {
+    if (r.light+r.sub+'-'+(r.vendor||'N') !== key) return;
+    if (r.type === 'actual') {
+      caseMap[r.name] = (caseMap[r.name]||0) + Number(r.qty);
+    } else if (r.type === 'return') {
+      caseMap[r.name] = (caseMap[r.name]||0) - Number(r.qty);
+    }
+  });
+
+  const rows = Object.entries(caseMap)
+    .filter(([name, qty]) => qty > 0)
+    .sort((a,b) => b[1]-a[1]);
+
+  document.getElementById('modalTitle').textContent = base+' '+vendorLabel+' 已領社區明細';
+  document.getElementById('modalBody').innerHTML = !rows.length
+    ? `<div class="modal-empty">尚無領出記錄</div>`
+    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
+        <th style="padding:8px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領出</th>
+      </tr></thead>
+      <tbody>${rows.map(([name,qty])=>`<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--green);">${qty}隻</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function openActModalBoth(keyN, keyM) {
+  const rows = allRecords.filter(r =>
+    (r.light+r.sub+'-'+(r.vendor||'N')===keyN || r.light+r.sub+'-'+(r.vendor||'N')===keyM) &&
+    (r.type==='actual' || r.type==='return') &&
+    (r.note||'').trim() !== '已含初始庫存'
+  );
+  const base = keyN.replace('-N','');
+  const totalAct = rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
+  const totalRet = rows.filter(r=>r.type==='return').reduce((s,r)=>s+Number(r.qty),0);
+  const netTotal = totalAct - totalRet;
+  document.getElementById('modalTitle').textContent = base+' 已領出明細';
+  document.getElementById('modalBody').innerHTML = !rows.length
+    ? `<div class="modal-empty">尚無領出記錄</div>`
+    : `<div style="padding:10px 14px;background:var(--green-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
+        <span>領出 <b>${totalAct}</b>隻　退回 <b style="color:var(--amber)">${totalRet}</b>隻</span>
+        <span>淨領出 <b style="color:var(--green)">${netTotal}</b>隻</span>
+       </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">狀態</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--amber)':'var(--green)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退回</span>'}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function openEstModalBoth(keyN, keyM) {
+  const {actualByCase, estByCase} = calcStock();
+  const base = keyN.replace('-N','');
+  const caseNamesN = [...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyN&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  const caseNamesM = [...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyM&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  const allCases = [...new Set([...caseNamesN,...caseNamesM])];
+  document.getElementById('modalTitle').textContent = base+' 預估等待中';
+  if (!allCases.length) {
+    document.getElementById('modalBody').innerHTML = `<div class="modal-empty">目前無預估排程</div>`;
+  } else {
+    const rows = allCases.map(name => {
+      const ckN = keyN+'|'+name;
+      const ckM = keyM+'|'+name;
+      const est = (estByCase[ckN]||0) + (estByCase[ckM]||0);
+      const act = Math.max(0,(actualByCase[ckN]||0)) + Math.max(0,(actualByCase[ckM]||0));
+      const pending = Math.max(0, est-act);
+      const rec = allRecords.find(r=>(r.light+r.sub+'-'+(r.vendor||'N')===keyN||r.light+r.sub+'-'+(r.vendor||'N')===keyM)&&r.name===name&&r.type==='estimate');
+      return {name, est, act, pending, dept: rec?rec.dept:''};
+    }).filter(r=>r.pending>0);
+    document.getElementById('modalBody').innerHTML = !rows.length
+      ? `<div class="modal-empty">所有建案均已領完！</div>`
+      : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  }
+  document.getElementById('modalBg').classList.add('show');
+}
+
 function openActModal(key) {
-  // 顯示 actual 和 return 兩種記錄
+  // 顯示 actual 和 return 兩種記錄（排除已含初始庫存）
   const rows = allRecords.filter(r =>
     r.light+r.sub+'-'+(r.vendor||'N')===key &&
-    (r.type==='actual' || r.type==='return')
+    (r.type==='actual' || r.type==='return') &&
+    (r.note||'').trim() !== '已含初始庫存'
   );
   // 計算淨領出
   const totalAct = rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
