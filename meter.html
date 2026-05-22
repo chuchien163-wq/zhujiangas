@@ -64,7 +64,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .panel{display:none;}.panel.active{display:block;}
 
 /* Main */
-.main{max-width:100%;margin:0;padding:12px 24px 24px;}
+.main{max-width:1200px;margin:0 auto;padding:12px 24px 24px;}
 
 /* Stock Grid */
 .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
@@ -77,9 +77,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .sc.ok::before{background:var(--green);}
 .sc.warn::before{background:var(--amber);}
 .sc.danger::before{background:var(--red);}
-.sc.ok{border-left:5px solid var(--green);}
-.sc.warn{border-left:5px solid var(--amber);}
-.sc.danger{border-left:5px solid var(--red);}
+.sc.ok{border-left:4px solid var(--green);}
+.sc.warn{border-left:4px solid #e6a817;}
+.sc.danger{border-left:4px solid var(--red);}
 
 .sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
 .sc-type{font-size:15px;color:var(--muted);font-weight:500);}
@@ -329,24 +329,22 @@ tbody tr:hover{background:var(--bg);}
         
       </div>
 
-      <!-- 已繳費清單（全寬） -->
+      <!-- 已繳費清單 -->
       <div id="paidSection" style="display:none;margin-top:12px;">
         <div class="slabel">已繳費清單</div>
         <div class="twrap">
           <div class="twrap-scroll">
           <table>
             <thead><tr>
-              <th>社區／建案</th>
-              <th>種類</th>
-              <th>廠商</th>
-              <th>數量</th>
-              <th>部門</th>
+              <th>社區／建案</th><th>種類</th><th>廠商</th><th>數量</th><th>部門</th>
             </tr></thead>
             <tbody id="paidBody"><tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr></tbody>
           </table>
           </div>
         </div>
-      </div></div>
+      </div>
+
+</div>
 
     <!-- 業務部 -->
     <div class="panel" id="panel-biz">
