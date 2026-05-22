@@ -281,6 +281,26 @@ tbody tr:hover{background:var(--bg);}
     <!-- 業務部 -->
     <div class="panel" id="panel-biz">
       <div class="updated" id="upd-biz"></div>
+      <!-- 篩選列 -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <select id="biz-filter-type" onchange="renderBiz()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部狀態</option>
+          <option value="estimate">預估</option>
+          <option value="actual">已領出</option>
+          <option value="return">退回</option>
+        </select>
+        <select id="biz-filter-light" onchange="renderBiz()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部燈別</option>
+          <option value="4燈">4燈</option>
+          <option value="6燈">6燈</option>
+        </select>
+        <select id="biz-filter-vendor" onchange="renderBiz()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部廠商</option>
+          <option value="N">N型（台北貿易）</option>
+          <option value="M">M型（力泰瓦斯）</option>
+        </select>
+        <input type="text" id="biz-search" oninput="renderBiz()" placeholder="🔍 搜尋建案名稱" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);flex:1;min-width:120px;">
+      </div>
       <div class="dash-grid">
         <div class="dash-card">
           <div class="dash-card-hdr">
@@ -302,6 +322,32 @@ tbody tr:hover{background:var(--bg);}
     <!-- 工務部 -->
     <div class="panel" id="panel-eng">
       <div class="updated" id="upd-eng"></div>
+      <!-- 篩選列 -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <select id="eng-filter-type" onchange="renderEng()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部狀態</option>
+          <option value="estimate">預估</option>
+          <option value="actual">已領出</option>
+          <option value="return">退回</option>
+        </select>
+        <select id="eng-filter-light" onchange="renderEng()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部燈別</option>
+          <option value="4燈">4燈</option>
+          <option value="6燈">6燈</option>
+        </select>
+        <select id="eng-filter-vendor" onchange="renderEng()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部廠商</option>
+          <option value="N">N型（台北貿易）</option>
+          <option value="M">M型（力泰瓦斯）</option>
+        </select>
+        <select id="eng-filter-pay" onchange="renderEng()" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);">
+          <option value="">全部繳費</option>
+          <option value="O">已繳費</option>
+          <option value="X">未繳費</option>
+          <option value="">未標記</option>
+        </select>
+        <input type="text" id="eng-search" oninput="renderEng()" placeholder="🔍 搜尋建案名稱" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg);flex:1;min-width:120px;">
+      </div>
       <div class="dash-grid">
         <div class="dash-card">
           <div class="dash-card-hdr">
@@ -648,27 +694,39 @@ function renderStock() {
 }
 
 function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
-  document.getElementById(gridId).innerHTML = keys.map(k => {
-    const init   = (INIT[k]||0) + (inboundTotal[k]||0);
-    const used   = netActual[k]||0;
-    const est    = estNeeded[k]||0;
-    const remain = init - used;
-    const gap    = remain - est;
-    const pct    = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
-    const cls    = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
-    const label  = k.replace('-N','').replace('-M','');
+  // 合併同類型（去掉-N/-M），每個類型一張卡片
+  const baseKeys = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
+  const vendor   = keys[0].includes('-N') ? 'N' : 'M';
+  
+  document.getElementById(gridId).innerHTML = baseKeys.map(base => {
+    const kN = base+'-N';
+    const kM = base+'-M';
+    const isN = vendor === 'N';
+    const k   = isN ? kN : kM;
+    
+    const initN   = (INIT[kN]||0) + (inboundTotal[kN]||0);
+    const initM   = (INIT[kM]||0) + (inboundTotal[kM]||0);
+    const init    = isN ? initN : initM;
+    const used    = netActual[k]||0;
+    const est     = estNeeded[k]||0;
+    const remain  = init - used;
+    const gap     = remain - est;
+    const pct     = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
+    const cls     = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
     const gapHtml = gap<0
       ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
       : `<span class="sc-safe">可用${gap}隻</span>`;
+    const inboundHtml = inboundTotal[k] ? `<div class="sc-row"><span class="sc-lbl">累計入庫</span><span>+${inboundTotal[k]}隻</span></div>` : '';
+    
     return `<div class="sc ${cls}">
-      <div class="sc-type">${label}</div>
+      <div class="sc-type">${base}</div>
       <div class="sc-remain">${remain}</div>
       <div class="sc-unit">隻（目前剩餘）</div>
       <div class="sc-rows">
-        <div class="sc-row"><span class="sc-lbl">今日基準</span><span>${INIT[k]||0}隻</span></div>
-        ${inboundTotal[k] ? `<div class="sc-row"><span class="sc-lbl">累計入庫</span><span>+${inboundTotal[k]}隻</span></div>` : ''}
+        <div class="sc-row"><span class="sc-lbl">盤點庫存</span><span>${INIT[k]||0}隻</span></div>
+        ${inboundHtml}
         <div class="sc-row">
-          <span class="sc-lbl">已實際領出</span>
+          <span class="sc-lbl">盤點後領出</span>
           <button class="sc-link" data-key="${k}" onclick="openActModal(this.dataset.key)">${used}隻▸</button>
         </div>
         <div class="sc-row">
@@ -726,7 +784,17 @@ function mergeByCase(rows) {
 
 // ── 業務部 ──
 function renderBiz() {
-  const rows   = allRecords.filter(r=>r.dept==='業務部');
+  let rows = allRecords.filter(r=>r.dept==='業務部');
+  // 篩選
+  const fType   = document.getElementById('biz-filter-type')?.value || '';
+  const fLight  = document.getElementById('biz-filter-light')?.value || '';
+  const fVendor = document.getElementById('biz-filter-vendor')?.value || '';
+  const fSearch = (document.getElementById('biz-search')?.value || '').trim();
+  if (fType)   rows = rows.filter(r=>r.type===fType);
+  if (fLight)  rows = rows.filter(r=>r.light===fLight);
+  if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
+  if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
+  
   const merged = mergeByCase(rows);
   document.getElementById('biz-count').textContent=`共 ${merged.length} 筆`;
   const body = document.getElementById('biz-body');
@@ -734,17 +802,29 @@ function renderBiz() {
   else { body.innerHTML = merged.map(r=>`<tr>
     <td>${r.name}</td>
     <td><span class="tag ${r.cls}">${r.key}</span></td>
-    <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+    <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
     <td>${r.est}隻</td>
     <td>${r.netActual}隻</td>
     <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
   </tr>`).join(''); }
-  document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(rows), '業務部');
+  document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
 }
 
 // ── 工務部 ──
 function renderEng() {
-  const rows   = allRecords.filter(r=>r.dept==='工務部');
+  let rows = allRecords.filter(r=>r.dept==='工務部');
+  // 篩選
+  const fType   = document.getElementById('eng-filter-type')?.value || '';
+  const fLight  = document.getElementById('eng-filter-light')?.value || '';
+  const fVendor = document.getElementById('eng-filter-vendor')?.value || '';
+  const fPay    = document.getElementById('eng-filter-pay')?.value || '';
+  const fSearch = (document.getElementById('eng-search')?.value || '').trim();
+  if (fType)   rows = rows.filter(r=>r.type===fType);
+  if (fLight)  rows = rows.filter(r=>r.light===fLight);
+  if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
+  if (fPay)    rows = rows.filter(r=>r.payment===fPay);
+  if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
+
   const merged = mergeByCase(rows);
   document.getElementById('eng-count').textContent=`共 ${merged.length} 筆`;
   const canPay = ['工務部','管理員'].includes(currentRole);
@@ -762,14 +842,14 @@ function renderEng() {
     return `<tr>
       <td>${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
-      <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
       <td>${r.est}隻</td>
       <td>${r.netActual}隻</td>
       <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
       ${payHtml}
     </tr>`;
   }).join(''); }
-  document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(rows), '工務部');
+  document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='工務部')), '工務部');
 }
 
 // ── 繳費切換 ──
@@ -982,22 +1062,35 @@ function setType(t) {
 
 // ── Modal ──
 function openActModal(key) {
-  const rows=allRecords.filter(r=>r.light+r.sub+'-'+r.vendor===key&&r.type==='actual');
-  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 已領出明細';
+  // 顯示 actual 和 return 兩種記錄
+  const rows = allRecords.filter(r =>
+    r.light+r.sub+'-'+(r.vendor||'N')===key &&
+    (r.type==='actual' || r.type==='return')
+  );
+  // 計算淨領出
+  const totalAct = rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
+  const totalRet = rows.filter(r=>r.type==='return').reduce((s,r)=>s+Number(r.qty),0);
+  const netTotal = totalAct - totalRet;
+
+  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 本期領出明細';
   document.getElementById('modalBody').innerHTML=!rows.length
-    ?`<div class="modal-empty">尚無實際領出記錄</div>`
-    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+    ?`<div class="modal-empty">尚無本期領出記錄</div>`
+    :`<div style="padding:10px 14px;background:var(--green-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
+        <span>領出 <b>${totalAct}</b>隻　退回 <b style="color:var(--amber)">${totalRet}</b>隻</span>
+        <span>淨領出 <b style="color:var(--green)">${netTotal}</b>隻</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead><tr>
         <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
         <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">狀態</th>
         <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">備註</th>
       </tr></thead>
       <tbody>${rows.map(r=>`<tr>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--amber)':'var(--green)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退回</span>'}</td>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.note||''}</td>
       </tr>`).join('')}</tbody>
     </table>`;
   document.getElementById('modalBg').classList.add('show');
@@ -1005,7 +1098,7 @@ function openActModal(key) {
 
 function openEstModal(key) {
   const {actualByCase,estByCase}=calcStock();
-  const caseNames=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+r.vendor===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  const caseNames=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
   document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 預估等待中';
   if (!caseNames.length) {
     document.getElementById('modalBody').innerHTML=`<div class="modal-empty">目前無預估排程記錄</div>`;
