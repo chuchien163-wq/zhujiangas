@@ -230,7 +230,7 @@ tbody tr:hover{background:var(--bg);}
 </head>
 <body>
 
-<!-- Login -->
+<!-- ══ 登入 ══ -->
 <div id="loginPage">
   <div class="login-card">
     <div class="login-logo-wrap">
@@ -253,21 +253,25 @@ tbody tr:hover{background:var(--bg);}
   </div>
 </div>
 
-<!-- App -->
-<!-- Loading Overlay -->
+<!-- ══ 載入動畫 ══ -->
 <div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
   <div style="width:40px;height:40px;border:3px solid #e2e0d8;border-top-color:#1a7a50;border-radius:50%;animation:spin 1s linear infinite;"></div>
   <div style="font-size:14px;color:#888880;" id="loadingText">資料載入中，請稍候…</div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
+<!-- ══ 主程式 ══ -->
 <div id="appPage">
+
+  <!-- Header -->
   <div class="hdr">
     <div class="hdr-l">
       <div class="logo">竹</div>
       <div>
         <div class="hdr-title">換表庫存系統 v2.1</div>
-        <div class="sync" style="cursor:pointer;" onclick="refreshData()" title="點擊強制重新載入"><div class="sync-dot"></div>Google Sheets 即時同步中 ↺</div>
+        <div class="sync" style="cursor:pointer;" onclick="refreshData()" title="點擊強制重新載入">
+          <div class="sync-dot"></div>Google Sheets 即時同步中 ↺
+        </div>
       </div>
     </div>
     <div class="hdr-r">
@@ -279,6 +283,7 @@ tbody tr:hover{background:var(--bg);}
     </div>
   </div>
 
+  <!-- Nav -->
   <div class="nav">
     <button class="nav-tab active" onclick="switchPanel('dashboard',this)">📊 總覽</button>
     <button class="nav-tab" onclick="switchPanel('biz',this)">業務部</button>
@@ -286,15 +291,19 @@ tbody tr:hover{background:var(--bg);}
     <button class="nav-tab" id="tab-manage" onclick="switchPanel('manage',this)" style="display:none;">⚙️ 系統管理</button>
   </div>
 
+  <!-- Main -->
   <div class="main">
 
-    <!-- 總覽 -->
+    <!-- ══ 總覽 ══ -->
     <div class="panel active" id="panel-dashboard">
       <div class="slabel">庫存狀態</div>
-      <div class="sg" id="stockGrid-N" style="margin-bottom:16px;"><div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div></div>
+      <div class="sg" id="stockGrid-N" style="margin-bottom:16px;">
+        <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div>
+      </div>
       <div style="display:none;" id="stockGrid-M"></div>
 
       <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;" class="dashboard-bot">
+
         <!-- 左：預計進貨 -->
         <div id="incomingSection" style="display:none;">
           <div class="slabel">🚚 預計進貨提醒</div>
@@ -306,44 +315,48 @@ tbody tr:hover{background:var(--bg);}
             <div id="incomingList"></div>
           </div>
         </div>
-        <!-- 右：未繳費+已繳費 -->
+
+        <!-- 右：未繳費 + 已繳費 -->
         <div>
-        <div id="unpaidSection" style="display:none;">
-          <div class="slabel">未繳費統計</div>
-          <div class="card">
-            <div class="card-hdr"><span class="card-title">⚠️ 未繳費建案（不計入預估）</span></div>
-            <div class="unpaid-nums" id="unpaidGrid"></div>
-            <div class="twrap-scroll"><table style="width:100%;border-collapse:collapse;">
-              <thead><tr>
-                <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">社區／建案</th>
-                <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">種類</th>
-                <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
-                <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">數量</th>
-                <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">部門</th>
-              </tr></thead>
-              <tbody id="unpaidBody"><tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr></tbody>
-            </table>
-            </div>
+          <div id="unpaidSection" style="display:none;">
+            <div class="slabel">未繳費統計</div>
+            <div class="card">
+              <div class="card-hdr"><span class="card-title">⚠️ 未繳費建案（不計入預估）</span></div>
+              <div class="unpaid-nums" id="unpaidGrid"></div>
+              <div class="twrap-scroll">
+                <table style="width:100%;border-collapse:collapse;">
+                  <thead><tr>
+                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">社區／建案</th>
+                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">種類</th>
+                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
+                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">數量</th>
+                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">部門</th>
+                  </tr></thead>
+                  <tbody id="unpaidBody"><tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr></tbody>
+                </table>
+              </div>
             </div>
           </div>
-      <!-- 已繳費清單（右側，未繳費下方） -->
-      <div id="paidSection" style="display:none;margin-top:12px;">
-        <div class="slabel">已繳費清單</div>
-        <div class="twrap">
-          <div class="twrap-scroll">
-          <table>
-            <thead><tr>
-              <th>社區／建案</th><th>種類</th><th>廠商</th><th>數量</th><th>部門</th>
-            </tr></thead>
-            <tbody id="paidBody"><tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr></tbody>
-          </table>
+
+          <div id="paidSection" style="display:none;margin-top:12px;">
+            <div class="slabel">已繳費清單</div>
+            <div class="twrap">
+              <div class="twrap-scroll">
+                <table>
+                  <thead><tr>
+                    <th>社區／建案</th><th>種類</th><th>廠商</th><th>數量</th><th>部門</th>
+                  </tr></thead>
+                  <tbody id="paidBody"><tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+
       </div>
     </div>
 
-    <!-- 業務部 -->
+    <!-- ══ 業務部 ══ -->
     <div class="panel" id="panel-biz">
       <div class="updated" id="upd-biz"></div>
       <div class="filter-bar">
@@ -386,8 +399,9 @@ tbody tr:hover{background:var(--bg);}
           </div>
         </div>
       </div>
+    </div>
 
-    <!-- 工務部 -->
+    <!-- ══ 工務部 ══ -->
     <div class="panel" id="panel-eng">
       <div class="updated" id="upd-eng"></div>
       <div class="filter-bar">
@@ -435,19 +449,18 @@ tbody tr:hover{background:var(--bg);}
           </div>
         </div>
       </div>
+    </div>
 
-    <!-- 系統管理 -->
+    <!-- ══ 系統管理 ══ -->
     <div class="panel" id="panel-manage">
       <div class="ok-msg" id="okMsg">✓ 已成功送出！</div>
       <div class="manage-grid">
 
-        <!-- 左側：新增記錄 -->
+        <!-- 左：新增記錄 -->
         <div>
           <div class="fcard">
             <h4 id="addTitle">新增出入庫／排程記錄</h4>
             <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">系統將依選擇的「類型」自動計算目前剩餘庫存</div>
-
-            <!-- 記錄類型下拉 -->
             <div class="fg ffull" style="margin-bottom:12px;">
               <label>記錄類型</label>
               <select id="recordTypeSelect" onchange="onRecordTypeChange(this.value)" style="width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;">
@@ -459,7 +472,6 @@ tbody tr:hover{background:var(--bg);}
               </select>
             </div>
 
-            <!-- 通用欄位（排程/領出/退回） -->
             <div id="normalFields">
               <div class="fgrid">
                 <div class="fg"><label>日期（民國格式）</label><input type="text" id="f-date" placeholder="115.05.22"></div>
@@ -487,7 +499,6 @@ tbody tr:hover{background:var(--bg);}
               </div>
             </div>
 
-            <!-- 廠商入庫欄位 -->
             <div id="inboundFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
@@ -507,7 +518,6 @@ tbody tr:hover{background:var(--bg);}
               </div>
             </div>
 
-            <!-- 預計進貨欄位 -->
             <div id="incomingFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
@@ -533,9 +543,8 @@ tbody tr:hover{background:var(--bg);}
           </div>
         </div>
 
-        <!-- 右側：入庫記錄 + 預計進貨 -->
+        <!-- 右：入庫記錄 + 預計進貨 -->
         <div>
-          <!-- 廠商入庫明細 -->
           <div class="card" style="margin-bottom:12px;">
             <div class="card-hdr">
               <span class="card-title">📦 廠商入庫明細記錄</span>
@@ -553,7 +562,6 @@ tbody tr:hover{background:var(--bg);}
             </table>
           </div>
 
-          <!-- 預計進貨 -->
           <div class="card">
             <div class="card-hdr">
               <span class="card-title">🚚 預計進貨排程進度</span>
@@ -590,7 +598,7 @@ tbody tr:hover{background:var(--bg);}
   </div>
 </div>
 
-<!-- Modal -->
+<!-- ══ Modal ══ -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-hdr">
@@ -601,7 +609,7 @@ tbody tr:hover{background:var(--bg);}
   </div>
 </div>
 
-<!-- 編輯 Modal -->
+<!-- ══ 編輯 Modal ══ -->
 <div class="modal-bg" id="editModalBg" onclick="if(event.target===this)closeEditModal()">
   <div class="modal">
     <div class="modal-hdr">
@@ -1720,8 +1728,5 @@ function setUpdatedTime(){
 }
 
 </script>
-</div>
-</div>
-</div>
 </body>
 </html>
