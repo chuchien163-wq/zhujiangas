@@ -157,6 +157,8 @@ tbody tr:hover{background:var(--bg);}
 .ttype.est{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:500;}
 .ttype.ret{border-color:var(--amber);background:var(--amber-bg);color:var(--amber);font-weight:500;}
 .btn-del{background:none;border:none;cursor:pointer;color:var(--light);font-size:14px;padding:2px 5px;border-radius:4px;}
+.btn-edit{background:none;border:none;cursor:pointer;color:var(--blue);font-size:14px;padding:2px 5px;border-radius:4px;}
+.btn-edit:hover{opacity:.7;}
 .btn-del:hover{color:var(--red);}
 .divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
 .divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
@@ -417,13 +419,82 @@ tbody tr:hover{background:var(--bg);}
         <div class="divider"><span>刪除領表記錄</span></div>
         <div class="twrap">
           <table>
-            <thead><tr><th>日期</th><th>社區</th><th>數量</th><th>種類</th><th>廠商</th><th>狀態</th><th>刪除</th></tr></thead>
+            <thead><tr><th>日期</th><th>社區</th><th>數量</th><th>種類</th><th>廠商</th><th>狀態</th><th>編輯</th><th>刪除</th></tr></thead>
             <tbody id="del-body"></tbody>
           </table>
         </div>
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- 編輯 Modal -->
+<div class="modal-bg" id="editModalBg" onclick="if(event.target===this)closeEditModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h3>✏️ 編輯記錄</h3>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px;">
+      <div class="ok-msg" id="editOkMsg" style="display:none;">✓ 已成功修改！</div>
+      <input type="hidden" id="edit-rowid">
+      <div class="fgrid">
+        <div class="fg">
+          <label>日期（民國）</label>
+          <input type="text" id="edit-date" placeholder="115.05.18">
+        </div>
+        <div class="fg">
+          <label>部門</label>
+          <select id="edit-dept">
+            <option value="業務部">業務部</option>
+            <option value="工務部">工務部</option>
+          </select>
+        </div>
+        <div class="fg ffull">
+          <label>社區／建案名稱</label>
+          <input type="text" id="edit-name">
+        </div>
+        <div class="fg">
+          <label>燈別</label>
+          <select id="edit-light">
+            <option value="4燈">4燈</option>
+            <option value="6燈">6燈</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>子機</label>
+          <select id="edit-sub">
+            <option value="無子機">無子機（X）</option>
+            <option value="有子機">有子機（V）</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>廠商</label>
+          <select id="edit-vendor">
+            <option value="N">N型（台北貿易）</option>
+            <option value="M">M型（力泰瓦斯）</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>數量（隻）</label>
+          <input type="number" id="edit-qty" min="1">
+        </div>
+        <div class="fg">
+          <label>類型</label>
+          <select id="edit-type">
+            <option value="estimate">預估排程</option>
+            <option value="actual">實際領出</option>
+            <option value="return">退回倉庫</option>
+          </select>
+        </div>
+        <div class="fg ffull">
+          <label>備註</label>
+          <input type="text" id="edit-note" placeholder="備註（選填）">
+        </div>
+      </div>
+      <button class="btn-green" onclick="submitEdit()">確認修改</button>
+    </div>
   </div>
 </div>
 
@@ -781,6 +852,7 @@ function renderDelTable() {
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
     <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
     <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退回</span>':'<span class="badge-est">預估</span>'}</td>
+    <td><button class="btn-edit" data-rowid="${r.rowId}" onclick="openEditModal(this.dataset.rowid)">✏️</button></td>
     <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
 }
@@ -991,6 +1063,57 @@ function openDeptActModal(key, dept) {
 }
 
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
+
+// ── 編輯 Modal ──
+function openEditModal(rowId) {
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (!rec) return;
+  document.getElementById('edit-rowid').value  = rec.rowId;
+  document.getElementById('edit-date').value   = rec.date;
+  document.getElementById('edit-dept').value   = rec.dept;
+  document.getElementById('edit-name').value   = rec.name;
+  document.getElementById('edit-light').value  = rec.light;
+  document.getElementById('edit-sub').value    = rec.sub;
+  document.getElementById('edit-vendor').value = rec.vendor||'N';
+  document.getElementById('edit-qty').value    = rec.qty;
+  document.getElementById('edit-type').value   = rec.type;
+  document.getElementById('edit-note').value   = rec.note||'';
+  document.getElementById('editOkMsg').style.display='none';
+  document.getElementById('editModalBg').classList.add('show');
+}
+
+function closeEditModal() { document.getElementById('editModalBg').classList.remove('show'); }
+
+async function submitEdit() {
+  const rowId  = document.getElementById('edit-rowid').value;
+  const date   = document.getElementById('edit-date').value.trim();
+  const dept   = document.getElementById('edit-dept').value;
+  const name   = document.getElementById('edit-name').value.trim();
+  const light  = document.getElementById('edit-light').value;
+  const sub    = document.getElementById('edit-sub').value;
+  const vendor = document.getElementById('edit-vendor').value;
+  const qty    = parseInt(document.getElementById('edit-qty').value);
+  const type   = document.getElementById('edit-type').value;
+  const note   = document.getElementById('edit-note').value.trim();
+  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+
+  // 更新本地資料
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (rec) { rec.date=date; rec.dept=dept; rec.name=name; rec.light=light; rec.sub=sub; rec.vendor=vendor; rec.qty=qty; rec.type=type; rec.note=note; }
+
+  // 更新 GAS
+  try {
+    await fetch(GAS_URL, { method:'POST', body: JSON.stringify({
+      action:'editRecord', rowId:Number(rowId),
+      date, dept, name, light, sub, vendor, qty, type, note
+    })});
+  } catch(e) { console.log(e); }
+
+  renderAll();
+  const ok = document.getElementById('editOkMsg');
+  ok.style.display='block';
+  setTimeout(()=>{ ok.style.display='none'; closeEditModal(); }, 1500);
+}
 
 // ── Nav ──
 function switchPanel(name, el) {
