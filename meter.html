@@ -21,10 +21,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 
 /* Login */
 #loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center;}
-.login-logo{width:56px;height:56px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;margin:0 auto 16px;}
-.login-title{font-size:20px;font-weight:700;margin-bottom:4px;}
-.login-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.08);}
+.login-logo-wrap{position:relative;width:72px;height:72px;margin:0 auto 20px;}
+.login-logo{width:72px;height:72px;background:var(--green);border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;position:relative;z-index:1;}
+.login-logo-ring{position:absolute;inset:-6px;border:2px solid var(--green);border-radius:22px;opacity:.25;}
+.login-title{font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text);}
+.login-company{font-size:14px;color:var(--muted);margin-bottom:2px;}
+.login-sub{font-size:12px;color:var(--light);margin-bottom:28px;letter-spacing:.04em;}
 .login-field{text-align:left;margin-bottom:14px;}
 .login-field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;}
 .login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;}
@@ -48,7 +51,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 /* Nav */
-.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:57px;z-index:99;}
 .nav::-webkit-scrollbar{display:none;}
 .nav-tab{flex-shrink:0;padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;}
 .nav-tab:hover{color:var(--text);}
@@ -63,25 +66,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .vendor-title{font-size:13px;font-weight:700;padding:8px 12px;border-radius:var(--rs);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .vendor-n{background:var(--blue-bg);color:var(--blue);}
 .vendor-m{background:var(--amber-bg);color:var(--amber);}
-.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 @media(min-width:600px){.sg{grid-template-columns:repeat(4,1fr);}}
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 13px;position:relative;overflow:hidden;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
 .sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
 .sc.ok::before{background:var(--green);}
 .sc.warn::before{background:var(--amber);}
 .sc.danger::before{background:var(--red);}
-.sc-type{font-size:11px;color:var(--muted);margin-bottom:3px;}
-.sc-remain{font-size:24px;font-weight:700;line-height:1;}
+.sc-type{font-size:13px;color:var(--muted);margin-bottom:4px;font-weight:500;}
+.sc-remain{font-size:30px;font-weight:700;line-height:1;}
 .sc.ok .sc-remain{color:var(--green);}
 .sc.warn .sc-remain{color:var(--amber);}
 .sc.danger .sc-remain{color:var(--red);}
-.sc-unit{font-size:11px;color:var(--muted);margin-bottom:5px;}
-.sc-rows{display:flex;flex-direction:column;gap:3px;}
-.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.sc-unit{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.sc-rows{display:flex;flex-direction:column;gap:5px;}
+.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;}
 .sc-lbl{color:var(--muted);}
-.sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:11px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
-.sc-gap{color:var(--red);font-weight:700;font-size:10px;}
-.sc-safe{color:var(--green);font-weight:500;font-size:10px;}
+.sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:13px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
+.sc-gap{color:var(--red);font-weight:700;font-size:12px;}
+.sc-safe{color:var(--green);font-weight:500;font-size:12px;}
 .sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;}
 .sc-bar-fill{height:3px;border-radius:2px;}
 .sc.ok .sc-bar-fill{background:var(--green);}
@@ -96,7 +99,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 
 /* Dash */
 .dash-grid{display:grid;grid-template-columns:1fr;gap:12px;}
-@media(min-width:700px){.dash-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:700px){.dash-grid{grid-template-columns:3fr 2fr;}}
 .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .dash-card-hdr{padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .dash-card-title{font-size:13px;font-weight:700;}
@@ -104,13 +107,15 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 
 /* Table */
 .twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{padding:8px 11px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);}
-tbody td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+.twrap-scroll{max-height:480px;overflow-y:auto;}
+.twrap-scroll thead th{position:sticky;top:0;z-index:1;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+thead th{padding:9px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:12px;background:var(--bg);border-bottom:1px solid var(--border);}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:var(--bg);}
-.no-data{text-align:center;color:var(--light);padding:24px;font-size:13px;}
-.loading-cell{text-align:center;color:var(--muted);padding:24px;font-size:13px;}
+.no-data{text-align:center;color:var(--light);padding:28px;font-size:14px;}
+.loading-cell{text-align:center;color:var(--muted);padding:28px;font-size:14px;}
 
 /* Tags */
 .tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
@@ -121,8 +126,8 @@ tbody tr:hover{background:var(--bg);}
 .badge-act{background:var(--green-bg);color:var(--green);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
 .badge-est{background:var(--purple-bg);color:var(--purple);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
 .badge-ret{background:var(--amber-bg);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
-.ven-n{background:var(--blue-bg);color:var(--blue);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
-.ven-m{background:var(--amber-bg);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.ven-n{background:var(--blue-bg);color:var(--blue);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.ven-m{background:var(--amber-bg);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .pay-o{font-size:14px;font-weight:700;color:var(--green);cursor:pointer;}
 .pay-x{font-size:14px;font-weight:700;color:var(--red);cursor:pointer;}
 .pay-blank{font-size:12px;color:var(--light);cursor:pointer;}
@@ -183,9 +188,13 @@ tbody tr:hover{background:var(--bg);}
 <!-- Login -->
 <div id="loginPage">
   <div class="login-card">
-    <div class="login-logo">竹</div>
+    <div class="login-logo-wrap">
+      <div class="login-logo">竹</div>
+      <div class="login-logo-ring"></div>
+    </div>
     <div class="login-title">換表庫存系統</div>
-    <div class="login-sub">竹建瓦斯股份有限公司 v2.1</div>
+    <div class="login-company">竹建瓦斯股份有限公司</div>
+    <div class="login-sub">Gas Meter Inventory System v2.1</div>
     <div class="login-field">
       <label>工號</label>
       <input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6">
@@ -301,14 +310,19 @@ tbody tr:hover{background:var(--bg);}
             <span class="dash-card-title">📋 業務部 建案總覽</span>
             <span class="dash-count" id="biz-count"></span>
           </div>
+          <div class="twrap-scroll">
           <table>
             <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th></tr></thead>
             <tbody id="biz-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
           </table>
+          </div>
         </div>
         <div class="dash-card">
           <div class="dash-card-hdr"><span class="dash-card-title">📊 業務部 用量統計</span></div>
-          <div style="padding:14px;" id="biz-stats"></div>
+          <div style="padding:14px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「實際領出」可查看各社區明細</div>
+            <div id="biz-stats"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -348,14 +362,19 @@ tbody tr:hover{background:var(--bg);}
             <span class="dash-card-title">📋 工務部 建案總覽</span>
             <span class="dash-count" id="eng-count"></span>
           </div>
+          <div class="twrap-scroll">
           <table>
             <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th><th id="pay-col-hdr" style="display:none;">繳費</th></tr></thead>
             <tbody id="eng-body"><tr><td colspan="7" class="loading-cell">載入中…</td></tr></tbody>
           </table>
+          </div>
         </div>
         <div class="dash-card">
           <div class="dash-card-hdr"><span class="dash-card-title">📊 工務部 用量統計</span></div>
-          <div style="padding:14px;" id="eng-stats"></div>
+          <div style="padding:14px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「實際領出」可查看各社區明細</div>
+            <div id="eng-stats"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -401,8 +420,19 @@ tbody tr:hover{background:var(--bg);}
       <!-- 入庫（倉管/管理員） -->
       <div id="inboundSection" style="display:none;">
         <div class="divider"><span>📦 入庫記錄</span></div>
+
+        <!-- 入庫列表（在上方） -->
+        <div class="twrap" style="margin-bottom:12px;">
+          <table>
+            <thead><tr><th>入庫日期</th><th>廠商</th><th>種類</th><th>型號</th><th>數量</th><th>編輯</th><th>刪除</th></tr></thead>
+            <tbody id="inbound-body"><tr><td colspan="7" class="no-data">尚無入庫記錄</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- 入庫表單 -->
         <div class="fcard">
-          <h4>新增入庫（廠商送貨）</h4>
+          <h4 id="ib-form-title">➕ 新增入庫（廠商送貨）</h4>
+          <input type="hidden" id="ib-rowid" value="">
           <div class="fgrid">
             <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
             <div class="fg"><label>廠商</label>
@@ -419,13 +449,27 @@ tbody tr:hover{background:var(--bg);}
             </div>
             <div class="fg"><label>數量（隻）</label><input type="number" id="ib-qty" min="1" placeholder="0"></div>
           </div>
-          <button class="btn-blue" onclick="submitInbound()">確認入庫，更新庫存</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-blue" id="ib-submit-btn" onclick="submitInbound()" style="flex:1;">確認入庫，更新庫存</button>
+            <button id="ib-cancel-btn" onclick="cancelEditInbound()" style="display:none;flex:1;padding:11px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:inherit;cursor:pointer;">取消編輯</button>
+          </div>
         </div>
 
         <!-- 預計進貨管理 -->
         <div class="divider"><span>📅 預計進貨管理</span></div>
+
+        <!-- 預計進貨列表（在上方） -->
+        <div class="twrap" style="margin-bottom:12px;">
+          <table>
+            <thead><tr><th>預計日期</th><th>廠商</th><th>種類</th><th>型號</th><th>數量</th><th>編輯</th><th>刪除</th></tr></thead>
+            <tbody id="incoming-body"><tr><td colspan="7" class="no-data">尚無預計進貨</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- 新增表單 -->
         <div class="fcard">
-          <h4>新增預計進貨</h4>
+          <h4 id="ic-form-title">➕ 新增預計進貨</h4>
+          <input type="hidden" id="ic-rowid" value="">
           <div class="fgrid">
             <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
             <div class="fg"><label>廠商</label>
@@ -442,15 +486,10 @@ tbody tr:hover{background:var(--bg);}
             </div>
             <div class="fg"><label>數量（隻）</label><input type="number" id="ic-qty" min="1" placeholder="0"></div>
           </div>
-          <button class="btn-blue" onclick="submitIncoming()">新增預計進貨提醒</button>
-        </div>
-
-        <!-- 預計進貨列表 -->
-        <div class="twrap">
-          <table>
-            <thead><tr><th>預計日期</th><th>廠商</th><th>種類</th><th>型號</th><th>數量</th><th>刪除</th></tr></thead>
-            <tbody id="incoming-body"></tbody>
-          </table>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-blue" id="ic-submit-btn" onclick="submitIncoming()" style="flex:1;">新增預計進貨</button>
+            <button id="ic-cancel-btn" onclick="cancelEditIncoming()" style="display:none;flex:1;padding:11px;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:inherit;cursor:pointer;">取消編輯</button>
+          </div>
         </div>
       </div>
 
@@ -633,6 +672,7 @@ function renderAll() {
   renderPaymentSections();
   renderIncomingSection();
   renderIncomingTable();
+  renderInboundTable();
   setUpdatedTime();
 }
 
@@ -783,6 +823,57 @@ function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
 }
 
 // ── 預計進貨 ──
+function renderInboundTable() {
+  const body = document.getElementById('inbound-body');
+  if (!body) return;
+  if (!allInbound.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無入庫記錄</td></tr>'; return; }
+  body.innerHTML = allInbound.map(r=>`<tr>
+    <td>${r.date}</td>
+    <td>${r.vendor}</td>
+    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span></td>
+    <td><span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
+    <td style="font-weight:700;">${r.qty}隻</td>
+    <td><button class="btn-edit" onclick="editInbound('${r.rowId}')">✏️</button></td>
+    <td><button class="btn-del" onclick="deleteInbound('${r.rowId}',this)">✕</button></td>
+  </tr>`).join('');
+}
+
+function editInbound(rowId) {
+  const r = allInbound.find(x=>String(x.rowId)===String(rowId));
+  if (!r) return;
+  document.getElementById('ib-rowid').value  = rowId;
+  document.getElementById('ib-date').value   = r.date;
+  document.getElementById('ib-vendor').value = r.vendor;
+  document.getElementById('ib-light').value  = r.light;
+  document.getElementById('ib-sub').value    = r.sub;
+  document.getElementById('ib-type').value   = r.type;
+  document.getElementById('ib-qty').value    = r.qty;
+  document.getElementById('ib-form-title').textContent = '✏️ 編輯入庫記錄';
+  document.getElementById('ib-submit-btn').textContent = '確認修改';
+  document.getElementById('ib-cancel-btn').style.display = 'block';
+  document.getElementById('ib-date').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelEditInbound() {
+  document.getElementById('ib-rowid').value  = '';
+  document.getElementById('ib-date').value   = '';
+  document.getElementById('ib-qty').value    = '';
+  document.getElementById('ib-form-title').textContent = '➕ 新增入庫（廠商送貨）';
+  document.getElementById('ib-submit-btn').textContent = '確認入庫，更新庫存';
+  document.getElementById('ib-cancel-btn').style.display = 'none';
+}
+
+async function deleteInbound(rowId, btn) {
+  if (!confirm('確定要刪除這筆入庫記錄？
+⚠️ 刪除後庫存會自動減少！')) return;
+  btn.disabled=true; btn.textContent='…';
+  try {
+    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
+  } catch(e) { console.log(e); }
+  allInbound = allInbound.filter(r=>String(r.rowId)!==String(rowId));
+  renderAll();
+}
+
 function renderIncomingSection() {
   if (!allIncoming.length) { document.getElementById('incomingSection').style.display='none'; return; }
   document.getElementById('incomingSection').style.display='';
@@ -796,15 +887,41 @@ function renderIncomingSection() {
 function renderIncomingTable() {
   const body = document.getElementById('incoming-body');
   if (!body) return;
-  if (!allIncoming.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無預計進貨</td></tr>'; return; }
+  if (!allIncoming.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無預計進貨</td></tr>'; return; }
   body.innerHTML = allIncoming.map(r=>`<tr>
     <td>${r.date}</td>
     <td>${r.vendor}</td>
     <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span></td>
     <td><span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
     <td style="font-weight:700;">${r.qty}隻</td>
+    <td><button class="btn-edit" onclick="editIncoming('${r.rowId}')">✏️</button></td>
     <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteIncoming(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
+}
+
+function editIncoming(rowId) {
+  const r = allIncoming.find(x=>String(x.rowId)===String(rowId));
+  if (!r) return;
+  document.getElementById('ic-rowid').value  = rowId;
+  document.getElementById('ic-date').value   = r.date;
+  document.getElementById('ic-vendor').value = r.vendor;
+  document.getElementById('ic-light').value  = r.light;
+  document.getElementById('ic-sub').value    = r.sub;
+  document.getElementById('ic-type').value   = r.type;
+  document.getElementById('ic-qty').value    = r.qty;
+  document.getElementById('ic-form-title').textContent = '✏️ 編輯預計進貨';
+  document.getElementById('ic-submit-btn').textContent = '確認修改';
+  document.getElementById('ic-cancel-btn').style.display = 'block';
+  document.getElementById('ic-date').scrollIntoView({behavior:'smooth'});
+}
+
+function cancelEditIncoming() {
+  document.getElementById('ic-rowid').value  = '';
+  document.getElementById('ic-date').value   = '';
+  document.getElementById('ic-qty').value    = '';
+  document.getElementById('ic-form-title').textContent = '➕ 新增預計進貨';
+  document.getElementById('ic-submit-btn').textContent = '新增預計進貨';
+  document.getElementById('ic-cancel-btn').style.display = 'none';
 }
 
 // ── 合併建案 ──
@@ -1015,6 +1132,7 @@ async function submitRecord() {
 
 // ── 入庫 ──
 async function submitInbound() {
+  const rowId  = document.getElementById('ib-rowid').value;
   const date   = document.getElementById('ib-date').value.trim();
   const vendor = document.getElementById('ib-vendor').value;
   const light  = document.getElementById('ib-light').value;
@@ -1023,22 +1141,42 @@ async function submitInbound() {
   const qty    = parseInt(document.getElementById('ib-qty').value);
   if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
   const rec = { date, vendor, light, sub, type, qty };
-  try {
-    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
-    const d = await r.json();
-    allInbound.push({...rec, rowId:d.rowId||Date.now()});
-  } catch(e) { console.log(e); }
-  // 更新初始庫存（加到對應的N/M型）
   const k = light+sub+'-'+type;
-  INIT[k] = (INIT[k]||0) + qty;
-  document.getElementById('ib-date').value='';
-  document.getElementById('ib-qty').value='';
+
+  if (rowId) {
+    // 編輯模式：先找舊的數量，還原庫存，再加新數量
+    const old = allInbound.find(x=>String(x.rowId)===String(rowId));
+    if (old) {
+      const oldK = old.light+old.sub+'-'+old.type;
+      INIT[oldK] = (INIT[oldK]||0) - old.qty; // 還原舊庫存
+    }
+    try {
+      await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
+      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+      const d = await r.json();
+      allInbound = allInbound.filter(x=>String(x.rowId)!==String(rowId));
+      allInbound.push({...rec, rowId: d.rowId||Date.now()});
+    } catch(e) { console.log(e); }
+    INIT[k] = (INIT[k]||0) + qty; // 加新庫存
+    cancelEditInbound();
+  } else {
+    // 新增模式
+    try {
+      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+      const d = await r.json();
+      allInbound.push({...rec, rowId:d.rowId||Date.now()});
+    } catch(e) { console.log(e); }
+    INIT[k] = (INIT[k]||0) + qty;
+    document.getElementById('ib-date').value='';
+    document.getElementById('ib-qty').value='';
+  }
   renderAll();
   showOk();
 }
 
 // ── 預計進貨 ──
 async function submitIncoming() {
+  const rowId  = document.getElementById('ic-rowid').value;
   const date   = document.getElementById('ic-date').value.trim();
   const vendor = document.getElementById('ic-vendor').value;
   const light  = document.getElementById('ic-light').value;
@@ -1047,15 +1185,29 @@ async function submitIncoming() {
   const qty    = parseInt(document.getElementById('ic-qty').value);
   if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
   const rec = { date, vendor, light, sub, type, qty };
-  let newRowId = Date.now();
-  try {
-    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
-    const d = await r.json();
-    if (d.rowId) newRowId=d.rowId;
-  } catch(e) { console.log(e); }
-  allIncoming.push({...rec,rowId:newRowId});
-  document.getElementById('ic-date').value='';
-  document.getElementById('ic-qty').value='';
+
+  if (rowId) {
+    // 編輯模式：刪舊的，新增新的
+    try {
+      await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})});
+      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
+      const d = await r.json();
+      allIncoming = allIncoming.filter(x=>String(x.rowId)!==String(rowId));
+      allIncoming.push({...rec, rowId: d.rowId||Date.now()});
+    } catch(e) { console.log(e); }
+    cancelEditIncoming();
+  } else {
+    // 新增模式
+    let newRowId = Date.now();
+    try {
+      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
+      const d = await r.json();
+      if (d.rowId) newRowId=d.rowId;
+    } catch(e) { console.log(e); }
+    allIncoming.push({...rec, rowId:newRowId});
+    document.getElementById('ic-date').value='';
+    document.getElementById('ic-qty').value='';
+  }
   renderAll();
   showOk();
 }
