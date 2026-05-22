@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>竹建瓦斯｜換表庫存系統</title>
+<title>竹建瓦斯｜換表庫存系統 v2.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 :root{
@@ -19,7 +19,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
 
-/* ── Login ── */
+/* Login */
 #loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center;}
 .login-logo{width:56px;height:56px;background:var(--green);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700;margin:0 auto 16px;}
@@ -33,7 +33,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .btn-login:hover{opacity:.88;}
 .login-err{font-size:13px;color:var(--red);min-height:20px;margin-top:8px;}
 
-/* ── App ── */
+/* App */
 #appPage{display:none;}
 .hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hdr-l{display:flex;align-items:center;gap:10px;}
@@ -43,8 +43,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .hdr-r{display:flex;align-items:center;gap:10px;}
 .role-badge{font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;background:var(--green-bg);color:var(--green);}
 .btn-signout{font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* ── Nav tabs ── */
+/* Nav */
 .nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
 .nav::-webkit-scrollbar{display:none;}
 .nav-tab{flex-shrink:0;padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;}
@@ -53,62 +56,78 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 
 .main{max-width:900px;margin:0 auto;padding:14px 14px 40px;}
 .panel{display:none;}.panel.active{display:block;}
+.slabel{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
 
-/* ── Stock cards ── */
-.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+/* Stock */
+.vendor-section{margin-bottom:18px;}
+.vendor-title{font-size:13px;font-weight:700;padding:8px 12px;border-radius:var(--rs);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.vendor-n{background:var(--blue-bg);color:var(--blue);}
+.vendor-m{background:var(--amber-bg);color:var(--amber);}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
 @media(min-width:600px){.sg{grid-template-columns:repeat(4,1fr);}}
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;position:relative;overflow:hidden;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 13px;position:relative;overflow:hidden;}
 .sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
 .sc.ok::before{background:var(--green);}
 .sc.warn::before{background:var(--amber);}
 .sc.danger::before{background:var(--red);}
-.sc-type{font-size:11px;color:var(--muted);margin-bottom:4px;}
-.sc-remain{font-size:26px;font-weight:700;line-height:1;}
+.sc-type{font-size:11px;color:var(--muted);margin-bottom:3px;}
+.sc-remain{font-size:24px;font-weight:700;line-height:1;}
 .sc.ok .sc-remain{color:var(--green);}
 .sc.warn .sc-remain{color:var(--amber);}
 .sc.danger .sc-remain{color:var(--red);}
-.sc-unit{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.sc-unit{font-size:11px;color:var(--muted);margin-bottom:5px;}
 .sc-rows{display:flex;flex-direction:column;gap:3px;}
 .sc-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;}
 .sc-lbl{color:var(--muted);}
 .sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:11px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
-.sc-gap{color:var(--red);font-weight:700;font-size:11px;}
-.sc-safe{color:var(--green);font-weight:500;font-size:11px;}
-.sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;}
+.sc-gap{color:var(--red);font-weight:700;font-size:10px;}
+.sc-safe{color:var(--green);font-weight:500;font-size:10px;}
+.sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;}
 .sc-bar-fill{height:3px;border-radius:2px;}
 .sc.ok .sc-bar-fill{background:var(--green);}
 .sc.warn .sc-bar-fill{background:var(--amber);}
 .sc.danger .sc-bar-fill{background:var(--red);}
 
-/* ── Dashboard grid ── */
+/* Incoming */
+.incoming-box{background:var(--purple-bg);border:1px solid #d4b8f0;border-radius:var(--r);padding:12px 14px;margin-bottom:14px;}
+.incoming-box h4{font-size:12px;font-weight:700;color:var(--purple);margin-bottom:8px;}
+.incoming-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:4px 0;border-bottom:1px solid #e8d8f8;}
+.incoming-item:last-child{border-bottom:none;}
+
+/* Dash */
 .dash-grid{display:grid;grid-template-columns:1fr;gap:12px;}
 @media(min-width:700px){.dash-grid{grid-template-columns:1fr 1fr;}}
 .dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .dash-card-hdr{padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .dash-card-title{font-size:13px;font-weight:700;}
 .dash-count{font-size:11px;color:var(--muted);}
-.dash-table{width:100%;border-collapse:collapse;font-size:12px;}
-.dash-table th{padding:7px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;border-bottom:1px solid var(--border);}
-.dash-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
-.dash-table tr:last-child td{border-bottom:none;}
-.dash-table tr:hover{background:var(--bg);}
 
-/* ── Tags & badges ── */
-.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+/* Table */
+.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{padding:8px 11px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);}
+tbody td{padding:8px 11px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--bg);}
+.no-data{text-align:center;color:var(--light);padding:24px;font-size:13px;}
+.loading-cell{text-align:center;color:var(--muted);padding:24px;font-size:13px;}
+
+/* Tags */
+.tag{display:inline-block;font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .t4x{background:#e3f0fb;color:#1565c0;}
 .t4v{background:#e8f5ee;color:#1a7a50;}
 .t6x{background:#fff3e0;color:#b06a00;}
 .t6v{background:#fce4ec;color:#ad1457;}
 .badge-act{background:var(--green-bg);color:var(--green);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
 .badge-est{background:var(--purple-bg);color:var(--purple);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.badge-ret{background:var(--amber-bg);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.ven-n{background:var(--blue-bg);color:var(--blue);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
+.ven-m{background:var(--amber-bg);color:var(--amber);font-size:10px;padding:2px 6px;border-radius:20px;font-weight:500;}
 .pay-o{font-size:14px;font-weight:700;color:var(--green);cursor:pointer;}
 .pay-x{font-size:14px;font-weight:700;color:var(--red);cursor:pointer;}
 .pay-blank{font-size:12px;color:var(--light);cursor:pointer;}
 
-/* ── Section label ── */
-.slabel{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
-
-/* ── Unpaid summary ── */
+/* Unpaid */
 .unpaid-box{background:var(--red-bg);border:1px solid #f5c6c2;border-radius:var(--r);padding:14px 16px;margin-bottom:16px;}
 .unpaid-box h4{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;}
 .unpaid-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
@@ -118,7 +137,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .unpaid-item .ui-qty{font-size:18px;font-weight:700;color:var(--red);}
 .unpaid-item .ui-unit{font-size:10px;color:var(--muted);}
 
-/* ── Forms ── */
+/* Form */
 .fcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
 .fcard h4{font-size:14px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
@@ -129,25 +148,22 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .btn-green{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
 .btn-green:hover{opacity:.88;}
 .btn-green:disabled{opacity:.5;cursor:not-allowed;}
+.btn-blue{width:100%;padding:11px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:8px;}
+.btn-blue:hover{opacity:.88;}
 .ok-msg{display:none;background:var(--green-bg);border:1px solid var(--green-bd);border-radius:var(--rs);padding:10px 14px;color:var(--green);font-size:13px;font-weight:500;text-align:center;margin-bottom:10px;}
-.type-toggle{display:flex;gap:8px;margin-bottom:12px;}
-.ttype{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;font-size:13px;font-family:inherit;background:transparent;color:var(--muted);transition:all .15s;}
+.type-toggle{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.ttype{flex:1;min-width:80px;padding:7px;border:1.5px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;font-size:12px;font-family:inherit;background:transparent;color:var(--muted);transition:all .15s;}
 .ttype.act{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:500;}
 .ttype.est{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:500;}
+.ttype.ret{border-color:var(--amber);background:var(--amber-bg);color:var(--amber);font-weight:500;}
 .btn-del{background:none;border:none;cursor:pointer;color:var(--light);font-size:14px;padding:2px 5px;border-radius:4px;}
 .btn-del:hover{color:var(--red);}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
+.divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.updated{font-size:11px;color:var(--light);text-align:right;margin-bottom:8px;}
 
-/* ── Twrap ── */
-.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{padding:9px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);}
-tbody td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
-tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover{background:var(--bg);}
-.no-data{text-align:center;color:var(--light);padding:28px;font-size:13px;}
-.loading-cell{text-align:center;color:var(--muted);padding:28px;font-size:13px;}
-
-/* ── Modal ── */
+/* Modal */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:16px;}
 .modal-bg.show{display:flex;}
 .modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:460px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
@@ -156,24 +172,18 @@ tbody tr:hover{background:var(--bg);}
 .modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;}
 .modal-body{overflow-y:auto;flex:1;}
 .modal-empty{text-align:center;color:var(--light);padding:24px;font-size:13px;}
-.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green);}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.updated{font-size:11px;color:var(--light);text-align:right;margin-bottom:8px;}
-.divider{display:flex;align-items:center;gap:10px;margin:16px 0 12px;}
-.divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
 @media(max-width:480px){.fgrid{grid-template-columns:1fr;}.ffull{grid-column:1;}}
 </style>
 </head>
 <body>
 
-<!-- ══ 登入頁 ══ -->
+<!-- Login -->
 <div id="loginPage">
   <div class="login-card">
     <div class="login-logo">竹</div>
     <div class="login-title">換表庫存系統</div>
-    <div class="login-sub">竹建瓦斯股份有限公司</div>
+    <div class="login-sub">竹建瓦斯股份有限公司 v2.1</div>
     <div class="login-field">
       <label>工號</label>
       <input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6">
@@ -187,7 +197,7 @@ tbody tr:hover{background:var(--bg);}
   </div>
 </div>
 
-<!-- ══ 主系統 ══ -->
+<!-- App -->
 <div id="appPage">
   <div class="hdr">
     <div class="hdr-l">
@@ -204,7 +214,6 @@ tbody tr:hover{background:var(--bg);}
     </div>
   </div>
 
-  <!-- Nav -->
   <div class="nav">
     <button class="nav-tab active" onclick="switchPanel('dashboard',this)">📊 總覽</button>
     <button class="nav-tab" onclick="switchPanel('biz',this)">業務部</button>
@@ -214,12 +223,32 @@ tbody tr:hover{background:var(--bg);}
 
   <div class="main">
 
-    <!-- ══ 總覽 ══ -->
+    <!-- 總覽 -->
     <div class="panel active" id="panel-dashboard">
-      <div class="slabel" style="margin-bottom:8px;">庫存狀態</div>
-      <div class="sg" id="stockGrid"><div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div></div>
 
-      <!-- 未繳費警示（倉管/管理員/工務部看得到） -->
+      <!-- 預計進貨提醒 -->
+      <div id="incomingSection" style="display:none;margin-bottom:16px;">
+        <div class="slabel">📅 預計進貨</div>
+        <div class="incoming-box">
+          <h4>待到貨（不影響庫存計算，到貨後倉管填入庫）</h4>
+          <div id="incomingList"></div>
+        </div>
+      </div>
+
+      <!-- N型庫存 -->
+      <div class="vendor-section">
+        <div class="slabel">庫存狀態</div>
+        <div class="vendor-title vendor-n">🏭 N型（台北貿易）</div>
+        <div class="sg" id="stockGrid-N"></div>
+      </div>
+
+      <!-- M型庫存 -->
+      <div class="vendor-section">
+        <div class="vendor-title vendor-m">🏭 M型（力泰瓦斯）</div>
+        <div class="sg" id="stockGrid-M"></div>
+      </div>
+
+      <!-- 未繳費 -->
       <div id="unpaidSection" style="display:none;">
         <div class="slabel">⚠️ 未繳費統計（不計入預估）</div>
         <div class="unpaid-box">
@@ -229,25 +258,25 @@ tbody tr:hover{background:var(--bg);}
         <div class="slabel">未繳費建案清單</div>
         <div class="twrap">
           <table>
-            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>部門</th></tr></thead>
+            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>廠商</th></tr></thead>
             <tbody id="unpaidBody"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- 已繳費清單（倉管/管理員/工務部） -->
+      <!-- 已繳費 -->
       <div id="paidSection" style="display:none;">
         <div class="slabel">✓ 已繳費建案清單</div>
         <div class="twrap">
           <table>
-            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>部門</th></tr></thead>
+            <thead><tr><th>社區／建案</th><th>數量</th><th>種類</th><th>廠商</th></tr></thead>
             <tbody id="paidBody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ══ 業務部 ══ -->
+    <!-- 業務部 -->
     <div class="panel" id="panel-biz">
       <div class="updated" id="upd-biz"></div>
       <div class="dash-grid">
@@ -256,21 +285,19 @@ tbody tr:hover{background:var(--bg);}
             <span class="dash-card-title">📋 業務部 建案總覽</span>
             <span class="dash-count" id="biz-count"></span>
           </div>
-          <table class="dash-table">
-            <thead><tr><th>社區／建案</th><th>種類</th><th>預估量</th><th>已領出</th><th>尚欠</th></tr></thead>
-            <tbody id="biz-body"><tr><td colspan="5" class="loading-cell">載入中…</td></tr></tbody>
+          <table>
+            <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th></tr></thead>
+            <tbody id="biz-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
           </table>
         </div>
         <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-title">📊 業務部 用量統計</span>
-          </div>
+          <div class="dash-card-hdr"><span class="dash-card-title">📊 業務部 用量統計</span></div>
           <div style="padding:14px;" id="biz-stats"></div>
         </div>
       </div>
     </div>
 
-    <!-- ══ 工務部 ══ -->
+    <!-- 工務部 -->
     <div class="panel" id="panel-eng">
       <div class="updated" id="upd-eng"></div>
       <div class="dash-grid">
@@ -279,33 +306,29 @@ tbody tr:hover{background:var(--bg);}
             <span class="dash-card-title">📋 工務部 建案總覽</span>
             <span class="dash-count" id="eng-count"></span>
           </div>
-          <table class="dash-table">
-            <thead><tr>
-              <th>社區／建案</th><th>種類</th><th>預估量</th><th>已領出</th><th>尚欠</th>
-              <th id="pay-col-hdr" style="display:none;">繳費</th>
-            </tr></thead>
-            <tbody id="eng-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
+          <table>
+            <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th><th id="pay-col-hdr" style="display:none;">繳費</th></tr></thead>
+            <tbody id="eng-body"><tr><td colspan="7" class="loading-cell">載入中…</td></tr></tbody>
           </table>
         </div>
         <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-title">📊 工務部 用量統計</span>
-          </div>
+          <div class="dash-card-hdr"><span class="dash-card-title">📊 工務部 用量統計</span></div>
           <div style="padding:14px;" id="eng-stats"></div>
         </div>
       </div>
     </div>
 
-    <!-- ══ 管理 ══ -->
+    <!-- 管理 -->
     <div class="panel" id="panel-manage">
       <div class="ok-msg" id="okMsg">✓ 已成功送出！</div>
 
-      <!-- 新增記錄 -->
+      <!-- 新增領表/退回 -->
       <div class="fcard">
         <h4 id="addTitle">新增記錄</h4>
         <div class="type-toggle" id="typeToggle" style="display:none;">
-          <button class="ttype act" id="btn-act" onclick="setType('actual')">✓ 實際領出（扣庫存）</button>
+          <button class="ttype act" id="btn-act" onclick="setType('actual')">✓ 實際領出</button>
           <button class="ttype" id="btn-est" onclick="setType('estimate')">○ 預估排程</button>
+          <button class="ttype" id="btn-ret" onclick="setType('return')">↩ 退回倉庫</button>
         </div>
         <div class="fgrid">
           <div class="fg"><label>日期（民國）</label><input type="text" id="f-date" placeholder="115.05.18"></div>
@@ -325,18 +348,77 @@ tbody tr:hover{background:var(--bg);}
           <div class="fg"><label>子機</label>
             <select id="f-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
           </div>
-          <div class="fg ffull"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
+          <div class="fg"><label>廠商</label>
+            <select id="f-vendor"><option value="N">N型（台北貿易）</option><option value="M">M型（力泰瓦斯）</option></select>
+          </div>
+          <div class="fg"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
         </div>
         <button class="btn-green" id="btnSub" onclick="submitRecord()">確認送出</button>
       </div>
 
-      <!-- 刪除記錄（倉管/管理員） -->
-      <div id="delSection" style="display:none;">
-        <div class="divider"><span>刪除記錄</span></div>
+      <!-- 入庫（倉管/管理員） -->
+      <div id="inboundSection" style="display:none;">
+        <div class="divider"><span>📦 入庫記錄</span></div>
+        <div class="fcard">
+          <h4>新增入庫（廠商送貨）</h4>
+          <div class="fgrid">
+            <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
+            <div class="fg"><label>廠商</label>
+              <select id="ib-vendor"><option value="台北貿易">台北貿易（N型）</option><option value="力泰瓦斯">力泰瓦斯（M型）</option></select>
+            </div>
+            <div class="fg"><label>燈別</label>
+              <select id="ib-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
+            </div>
+            <div class="fg"><label>子機</label>
+              <select id="ib-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
+            </div>
+            <div class="fg"><label>廠商型號</label>
+              <select id="ib-type"><option value="N">N型</option><option value="M">M型</option></select>
+            </div>
+            <div class="fg"><label>數量（隻）</label><input type="number" id="ib-qty" min="1" placeholder="0"></div>
+          </div>
+          <button class="btn-blue" onclick="submitInbound()">確認入庫，更新庫存</button>
+        </div>
+
+        <!-- 預計進貨管理 -->
+        <div class="divider"><span>📅 預計進貨管理</span></div>
+        <div class="fcard">
+          <h4>新增預計進貨</h4>
+          <div class="fgrid">
+            <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
+            <div class="fg"><label>廠商</label>
+              <select id="ic-vendor"><option value="台北貿易">台北貿易（N型）</option><option value="力泰瓦斯">力泰瓦斯（M型）</option></select>
+            </div>
+            <div class="fg"><label>燈別</label>
+              <select id="ic-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
+            </div>
+            <div class="fg"><label>子機</label>
+              <select id="ic-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
+            </div>
+            <div class="fg"><label>廠商型號</label>
+              <select id="ic-type"><option value="N">N型</option><option value="M">M型</option></select>
+            </div>
+            <div class="fg"><label>數量（隻）</label><input type="number" id="ic-qty" min="1" placeholder="0"></div>
+          </div>
+          <button class="btn-blue" onclick="submitIncoming()">新增預計進貨提醒</button>
+        </div>
+
+        <!-- 預計進貨列表 -->
         <div class="twrap">
           <table>
-            <thead><tr><th>日期</th><th>社區／建案</th><th>數量</th><th>種類</th><th>狀態</th><th>刪除</th></tr></thead>
-            <tbody id="del-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
+            <thead><tr><th>預計日期</th><th>廠商</th><th>種類</th><th>型號</th><th>數量</th><th>刪除</th></tr></thead>
+            <tbody id="incoming-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 刪除記錄 -->
+      <div id="delSection" style="display:none;">
+        <div class="divider"><span>刪除領表記錄</span></div>
+        <div class="twrap">
+          <table>
+            <thead><tr><th>日期</th><th>社區</th><th>數量</th><th>種類</th><th>廠商</th><th>狀態</th><th>刪除</th></tr></thead>
+            <tbody id="del-body"></tbody>
           </table>
         </div>
       </div>
@@ -359,85 +441,76 @@ tbody tr:hover{background:var(--bg);}
 <script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbx3AhuOd27ZAa1A140arCcqyQ0UNtNPnLriHwOoqVGwAv0hSoRb7Va6yFtI3iyJdWU/exec';
 
+const ACCOUNTS = [
+  { empId:'037', pwd:'6666', role:'業務部' },
+  { empId:'070', pwd:'8888', role:'工務部' },
+  { empId:'054', pwd:'1688', role:'倉管'   },
+  { empId:'060', pwd:'1688', role:'管理員' },
+];
+
+const KEYS_N = ['4燈有子機-N','4燈無子機-N','6燈有子機-N','6燈無子機-N'];
+const KEYS_M = ['4燈有子機-M','4燈無子機-M','6燈有子機-M','6燈無子機-M'];
+
 let allRecords = [];
-let INIT = { '4燈無子機':123, '4燈有子機':257, '6燈無子機':246, '6燈有子機':65 };
+let allInbound = [];
+let allIncoming = [];
+let INIT = {};
 let currentRole = null;
 let recordType = 'estimate';
 
 // ── 登入 ──
-// ── 帳號清單（直接嵌入，修改後重新上傳 meter.html）──
-const ACCOUNTS = [
-  { empId: '037', pwd: '6666', role: '業務部' },
-  { empId: '070', pwd: '8888', role: '工務部' },
-  { empId: '054', pwd: '1688', role: '倉管'   },
-  { empId: '060', pwd: '1688', role: '管理員' },
-];
-
 function doLogin() {
   const empId = document.getElementById('empId').value.trim();
   const pwd   = document.getElementById('pwd').value.trim();
-  if (!empId || !pwd) { document.getElementById('loginErr').textContent='請輸入工號和密碼'; return; }
-  const account = ACCOUNTS.find(a => a.empId === empId && a.pwd === pwd);
-  if (account) {
-    currentRole = account.role;
-    startApp();
-  } else {
-    document.getElementById('loginErr').textContent = '工號或密碼錯誤，請再試一次';
-  }
+  if (!empId||!pwd) { document.getElementById('loginErr').textContent='請輸入工號和密碼'; return; }
+  const acc = ACCOUNTS.find(a=>a.empId===empId && a.pwd===pwd);
+  if (acc) { currentRole=acc.role; startApp(); }
+  else { document.getElementById('loginErr').textContent='工號或密碼錯誤，請再試一次'; }
 }
 
 function startApp() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('appPage').style.display   = 'block';
-  document.getElementById('roleBadge').textContent   = currentRole;
-
-  // 管理分頁顯示條件
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='block';
+  document.getElementById('roleBadge').textContent=currentRole;
   const canManage = ['業務部','工務部','倉管','管理員'].includes(currentRole);
-  if (canManage) document.getElementById('tab-manage').style.display = '';
-
-  // 繳費欄位：工務部/管理員可見
+  if (canManage) document.getElementById('tab-manage').style.display='';
   const canPay = ['工務部','管理員'].includes(currentRole);
-  if (canPay) document.getElementById('pay-col-hdr').style.display = '';
-
-  // 未繳費/已繳費區塊：工務部/倉管/管理員
+  if (canPay) document.getElementById('pay-col-hdr').style.display='';
   const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
-  if (canSeePay) {
-    document.getElementById('unpaidSection').style.display = '';
-    document.getElementById('paidSection').style.display   = '';
-  }
-
-  // 管理頁設定
-  if (currentRole === '倉管' || currentRole === '管理員') {
-    document.getElementById('typeToggle').style.display = 'flex';
-    document.getElementById('addTitle').textContent = '新增記錄';
-    document.getElementById('delSection').style.display = '';
+  if (canSeePay) { document.getElementById('unpaidSection').style.display=''; document.getElementById('paidSection').style.display=''; }
+  const isAdmin = ['倉管','管理員'].includes(currentRole);
+  if (isAdmin) {
+    document.getElementById('typeToggle').style.display='flex';
+    document.getElementById('addTitle').textContent='新增記錄（含退回）';
+    document.getElementById('delSection').style.display='';
+    document.getElementById('inboundSection').style.display='';
     setType('actual');
   } else {
-    document.getElementById('addTitle').textContent = '新增預估排程';
-    recordType = 'estimate';
+    document.getElementById('addTitle').textContent='新增預估排程';
+    recordType='estimate';
   }
-
   loadData();
 }
 
 function signOut() {
-  currentRole = null;
-  allRecords  = [];
-  document.getElementById('loginPage').style.display = 'flex';
-  document.getElementById('appPage').style.display   = 'none';
-  document.getElementById('empId').value = '';
-  document.getElementById('pwd').value   = '';
-  document.getElementById('loginErr').textContent = '';
+  currentRole=null; allRecords=[]; allInbound=[]; allIncoming=[];
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('appPage').style.display='none';
+  document.getElementById('empId').value='';
+  document.getElementById('pwd').value='';
+  document.getElementById('loginErr').textContent='';
 }
 
-// ── 資料載入 ──
+// ── 載入資料 ──
 async function loadData() {
   try {
     const r = await fetch(`${GAS_URL}?action=getAll`);
     const d = await r.json();
-    if (d.records) allRecords = d.records;
-    if (d.stock)   Object.keys(d.stock).forEach(k => { INIT[k] = d.stock[k]; });
-  } catch(e) { console.log('載入失敗', e); }
+    if (d.records)  allRecords  = d.records;
+    if (d.stock)    Object.keys(d.stock).forEach(k=>{ INIT[k]=d.stock[k]; });
+    if (d.inbound)  allInbound  = d.inbound;
+    if (d.incoming) allIncoming = d.incoming;
+  } catch(e) { console.log('載入失敗',e); }
   renderAll();
 }
 
@@ -447,62 +520,81 @@ function renderAll() {
   renderEng();
   renderDelTable();
   renderPaymentSections();
+  renderIncomingSection();
+  renderIncomingTable();
   setUpdatedTime();
 }
 
 // ── 庫存計算 ──
 function calcStock() {
-  const actualTotal    = {};
-  const actualByCase   = {};
-  const estByCase      = {};
-  const estNeeded      = {};
-  Object.keys(INIT).forEach(k => { actualTotal[k]=0; estNeeded[k]=0; });
+  // 實際淨領出 = 實際領出 - 退回（不含「已含初始庫存」）
+  const netActual    = {};  // key: light+sub+vendor
+  const actualByCase = {};  // key: light+sub+vendor|name
+  const estByCase    = {};  // key: light+sub+vendor|name（不含未繳費）
+  const estNeeded    = {};  // key: light+sub+vendor
+
+  // 加上入庫（增加初始庫存後的額外入庫）
+  const inboundTotal = {};
+  allInbound.forEach(r => {
+    const k = r.light+r.sub+'-'+r.type;
+    inboundTotal[k] = (inboundTotal[k]||0) + Number(r.qty);
+  });
 
   allRecords.forEach(r => {
-    const key     = r.light + r.sub;
-    const caseKey = key + '|' + r.name;
-    if (r.type === 'actual') {
-      if (r.note !== '已含初始庫存') actualTotal[key] = (actualTotal[key]||0) + Number(r.qty);
+    const k       = r.light+r.sub+'-'+r.vendor;
+    const caseKey = k+'|'+r.name;
+    if (r.type==='actual') {
+      if (r.note!=='已含初始庫存') netActual[k] = (netActual[k]||0) + Number(r.qty);
       actualByCase[caseKey] = (actualByCase[caseKey]||0) + Number(r.qty);
-    } else {
-      // 未繳費的不計入預估
-      if (r.payment !== 'X') {
+    } else if (r.type==='return') {
+      // 退回：加回庫存，加回尚欠
+      if (r.note!=='已含初始庫存') netActual[k] = (netActual[k]||0) - Number(r.qty);
+      actualByCase[caseKey] = (actualByCase[caseKey]||0) - Number(r.qty);
+    } else if (r.type==='estimate') {
+      if (r.payment!=='X') {
         estByCase[caseKey] = (estByCase[caseKey]||0) + Number(r.qty);
       }
     }
   });
 
-  // 預估還需 = 各建案（預估－實際）> 0 加總
+  // 預估還需
+  [...KEYS_N,...KEYS_M].forEach(k=>{ estNeeded[k]=0; });
   Object.keys(estByCase).forEach(caseKey => {
-    const [key] = caseKey.split('|');
-    const diff = (estByCase[caseKey]||0) - (actualByCase[caseKey]||0);
-    if (diff > 0) estNeeded[key] = (estNeeded[key]||0) + diff;
+    const [k] = caseKey.split('|');
+    const diff = (estByCase[caseKey]||0) - Math.max(0, actualByCase[caseKey]||0);
+    if (diff>0) estNeeded[k] = (estNeeded[k]||0) + diff;
   });
 
-  return { actualTotal, actualByCase, estByCase, estNeeded };
+  return { netActual, actualByCase, estByCase, estNeeded, inboundTotal };
 }
 
 // ── 庫存卡片 ──
 function renderStock() {
-  const { actualTotal, estNeeded } = calcStock();
-  const keys = ['4燈無子機','4燈有子機','6燈無子機','6燈有子機'];
-  document.getElementById('stockGrid').innerHTML = keys.map(k => {
-    const init   = INIT[k]||0;
-    const used   = actualTotal[k]||0;
+  const { netActual, estNeeded, inboundTotal } = calcStock();
+  renderStockGroup('stockGrid-N', KEYS_N, netActual, estNeeded, inboundTotal);
+  renderStockGroup('stockGrid-M', KEYS_M, netActual, estNeeded, inboundTotal);
+}
+
+function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
+  document.getElementById(gridId).innerHTML = keys.map(k => {
+    const init   = (INIT[k]||0) + (inboundTotal[k]||0);
+    const used   = netActual[k]||0;
     const est    = estNeeded[k]||0;
     const remain = init - used;
     const gap    = remain - est;
     const pct    = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
     const cls    = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
+    const label  = k.replace('-N','').replace('-M','');
     const gapHtml = gap<0
-      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻，建議採買</span>`
+      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
       : `<span class="sc-safe">可用${gap}隻</span>`;
     return `<div class="sc ${cls}">
-      <div class="sc-type">${k}</div>
+      <div class="sc-type">${label}</div>
       <div class="sc-remain">${remain}</div>
       <div class="sc-unit">隻（目前剩餘）</div>
       <div class="sc-rows">
-        <div class="sc-row"><span class="sc-lbl">今日基準</span><span>${init}隻</span></div>
+        <div class="sc-row"><span class="sc-lbl">今日基準</span><span>${INIT[k]||0}隻</span></div>
+        ${inboundTotal[k] ? `<div class="sc-row"><span class="sc-lbl">累計入庫</span><span>+${inboundTotal[k]}隻</span></div>` : ''}
         <div class="sc-row">
           <span class="sc-lbl">已實際領出</span>
           <button class="sc-link" data-key="${k}" onclick="openActModal(this.dataset.key)">${used}隻▸</button>
@@ -518,47 +610,75 @@ function renderStock() {
   }).join('');
 }
 
-// ── 合併同建案+種類 ──
+// ── 預計進貨 ──
+function renderIncomingSection() {
+  if (!allIncoming.length) { document.getElementById('incomingSection').style.display='none'; return; }
+  document.getElementById('incomingSection').style.display='';
+  document.getElementById('incomingList').innerHTML = allIncoming.map(r=>
+    `<div class="incoming-item">
+      <span>${r.date} ${r.vendor} ${r.light}${r.sub}（${r.type}型）</span>
+      <span style="font-weight:700;color:var(--purple);">${r.qty}隻</span>
+    </div>`).join('');
+}
+
+function renderIncomingTable() {
+  const body = document.getElementById('incoming-body');
+  if (!body) return;
+  if (!allIncoming.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無預計進貨</td></tr>'; return; }
+  body.innerHTML = allIncoming.map(r=>`<tr>
+    <td>${r.date}</td>
+    <td>${r.vendor}</td>
+    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span></td>
+    <td><span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
+    <td style="font-weight:700;">${r.qty}隻</td>
+    <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteIncoming(this.dataset.rowid,this)">✕</button></td>
+  </tr>`).join('');
+}
+
+// ── 合併建案 ──
 function mergeByCase(rows) {
   const map = {};
   rows.forEach(r => {
-    const k = r.name + '|' + r.light + r.sub;
-    if (!map[k]) map[k] = { name:r.name, key:r.light+r.sub, cls:tagCls(r), est:0, actual:0 };
-    if (r.type==='actual') map[k].actual += Number(r.qty);
+    const k = r.name+'|'+r.light+r.sub+'|'+r.vendor;
+    if (!map[k]) map[k] = { name:r.name, key:r.light+r.sub, vendor:r.vendor, cls:tagCls(r), est:0, actual:0, returned:0 };
+    if (r.type==='actual')   map[k].actual   += Number(r.qty);
+    else if (r.type==='return') map[k].returned += Number(r.qty);
     else map[k].est += Number(r.qty);
   });
-  return Object.values(map).map(r=>({...r, pending:Math.max(0,r.est-r.actual)}))
-    .sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
+  return Object.values(map).map(r=>({
+    ...r,
+    netActual: r.actual - r.returned,
+    pending: Math.max(0, r.est - (r.actual - r.returned))
+  })).sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
 }
 
 // ── 業務部 ──
 function renderBiz() {
-  const rows = allRecords.filter(r=>r.dept==='業務部');
+  const rows   = allRecords.filter(r=>r.dept==='業務部');
   const merged = mergeByCase(rows);
-  document.getElementById('biz-count').textContent = `共 ${merged.length} 筆`;
+  document.getElementById('biz-count').textContent=`共 ${merged.length} 筆`;
   const body = document.getElementById('biz-body');
-  if (!merged.length) { body.innerHTML='<tr><td colspan="5" class="no-data">尚無記錄</td></tr>'; }
+  if (!merged.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
   else { body.innerHTML = merged.map(r=>`<tr>
     <td>${r.name}</td>
     <td><span class="tag ${r.cls}">${r.key}</span></td>
-    <td>${r.est} 隻</td>
-    <td>${r.actual} 隻</td>
-    <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending} 隻</td>
+    <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+    <td>${r.est}隻</td>
+    <td>${r.netActual}隻</td>
+    <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
   </tr>`).join(''); }
-  const stats = calcDeptStats(rows);
-  document.getElementById('biz-stats').innerHTML = renderStats(stats, '業務部');
+  document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(rows), '業務部');
 }
 
 // ── 工務部 ──
 function renderEng() {
-  const rows = allRecords.filter(r=>r.dept==='工務部');
+  const rows   = allRecords.filter(r=>r.dept==='工務部');
   const merged = mergeByCase(rows);
-  document.getElementById('eng-count').textContent = `共 ${merged.length} 筆`;
+  document.getElementById('eng-count').textContent=`共 ${merged.length} 筆`;
   const canPay = ['工務部','管理員'].includes(currentRole);
-  const body = document.getElementById('eng-body');
-  if (!merged.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
-  else { body.innerHTML = merged.map(r=>{
-    // 找原始記錄的rowId和payment（取estimate那筆）
+  const body   = document.getElementById('eng-body');
+  if (!merged.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無記錄</td></tr>'; }
+  else { body.innerHTML = merged.map(r => {
     const origRec = allRecords.find(rec=>rec.dept==='工務部'&&rec.name===r.name&&rec.light+rec.sub===r.key&&rec.type==='estimate');
     const rowId   = origRec ? origRec.rowId : '';
     const payment = origRec ? (origRec.payment||'') : '';
@@ -570,82 +690,64 @@ function renderEng() {
     return `<tr>
       <td>${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
-      <td>${r.est} 隻</td>
-      <td>${r.actual} 隻</td>
-      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending} 隻</td>
+      <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+      <td>${r.est}隻</td>
+      <td>${r.netActual}隻</td>
+      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
       ${payHtml}
     </tr>`;
   }).join(''); }
-  const stats = calcDeptStats(rows);
-  document.getElementById('eng-stats').innerHTML = renderStats(stats, '工務部');
+  document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(rows), '工務部');
 }
 
 // ── 繳費切換 ──
 async function togglePayment(rowId, current) {
-  // 循環：空 → O → X → 空
   const next = current==='' ? 'O' : current==='O' ? 'X' : '';
-  // 更新本地
-  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  const rec  = allRecords.find(r=>String(r.rowId)===String(rowId));
   if (rec) rec.payment = next;
   renderAll();
-  // 更新 GAS
-  try {
-    await fetch(GAS_URL, { method:'POST', body: JSON.stringify({ action:'updatePayment', rowId: Number(rowId), payment: next }) });
-  } catch(e) { console.log(e); }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'updatePayment',rowId:Number(rowId),payment:next})}); }
+  catch(e) { console.log(e); }
 }
 
-// ── 未繳費/已繳費區塊 ──
+// ── 未繳費/已繳費 ──
 function renderPaymentSections() {
   const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
   if (!canSeePay) return;
-
-  const engRecords = allRecords.filter(r=>r.dept==='工務部' && r.type==='estimate');
-  const unpaid = engRecords.filter(r=>r.payment==='X');
-  const paid   = engRecords.filter(r=>r.payment==='O');
-
-  // 未繳費統計
-  const unpaidTotals = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
-  unpaid.forEach(r=>{ const k=r.light+r.sub; unpaidTotals[k]=(unpaidTotals[k]||0)+Number(r.qty); });
-
-  document.getElementById('unpaidGrid').innerHTML = Object.entries(unpaidTotals).map(([k,v])=>`
+  const eng    = allRecords.filter(r=>r.dept==='工務部'&&r.type==='estimate');
+  const unpaid = eng.filter(r=>r.payment==='X');
+  const paid   = eng.filter(r=>r.payment==='O');
+  const totals = {};
+  unpaid.forEach(r=>{ const k=r.light+r.sub; totals[k]=(totals[k]||0)+Number(r.qty); });
+  document.getElementById('unpaidGrid').innerHTML = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'].map(k=>`
     <div class="unpaid-item">
       <div class="ui-type">${k}</div>
-      <div class="ui-qty">${v}</div>
+      <div class="ui-qty">${totals[k]||0}</div>
       <div class="ui-unit">隻</div>
     </div>`).join('');
-
-  // 未繳費清單
-  const ubody = document.getElementById('unpaidBody');
-  if (!unpaid.length) { ubody.innerHTML='<tr><td colspan="4" class="no-data">目前無未繳費建案</td></tr>'; }
-  else { ubody.innerHTML = unpaid.map(r=>`<tr>
-    <td>${r.name}</td><td>${r.qty}</td>
-    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-    <td>${r.dept}</td>
-  </tr>`).join(''); }
-
-  // 已繳費清單
-  const pbody = document.getElementById('paidBody');
-  if (!paid.length) { pbody.innerHTML='<tr><td colspan="4" class="no-data">目前無已繳費建案</td></tr>'; }
-  else { pbody.innerHTML = paid.map(r=>`<tr>
-    <td>${r.name}</td><td>${r.qty}</td>
-    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-    <td>${r.dept}</td>
-  </tr>`).join(''); }
+  const ub = document.getElementById('unpaidBody');
+  ub.innerHTML = !unpaid.length ? '<tr><td colspan="4" class="no-data">目前無未繳費建案</td></tr>'
+    : unpaid.map(r=>`<tr><td>${r.name}</td><td>${r.qty}</td><td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td><td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td></tr>`).join('');
+  const pb = document.getElementById('paidBody');
+  pb.innerHTML = !paid.length ? '<tr><td colspan="4" class="no-data">目前無已繳費建案</td></tr>'
+    : paid.map(r=>`<tr><td>${r.name}</td><td>${r.qty}</td><td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td><td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td></tr>`).join('');
 }
 
 // ── 統計 ──
 function calcDeptStats(rows) {
-  const est    = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
-  const actual = {'4燈無子機':0,'4燈有子機':0,'6燈無子機':0,'6燈有子機':0};
+  const est={}, actual={};
+  ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'].forEach(k=>{est[k]=0;actual[k]=0;});
   rows.forEach(r=>{
-    const k = r.light + r.sub;
-    if (r.type === 'actual') actual[k] = (actual[k]||0) + Number(r.qty);
-    else est[k] = (est[k]||0) + Number(r.qty);
+    const k=r.light+r.sub;
+    if (r.type==='actual') actual[k]=(actual[k]||0)+Number(r.qty);
+    else if (r.type==='return') actual[k]=(actual[k]||0)-Number(r.qty);
+    else est[k]=(est[k]||0)+Number(r.qty);
   });
-  return { est, actual };
+  return {est,actual};
 }
-function renderStats({ est, actual }, dept) {
-  const keys = ['4燈無子機','4燈有子機','6燈無子機','6燈有子機'];
+
+function renderStats({est,actual}, dept) {
+  const keys=['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
   return `<table style="width:100%;border-collapse:collapse;font-size:12px;">
     <thead><tr>
       <th style="padding:6px 8px;text-align:left;color:var(--muted);font-size:11px;border-bottom:1px solid var(--border);">種類</th>
@@ -654,36 +756,16 @@ function renderStats({ est, actual }, dept) {
     </tr></thead>
     <tbody>${keys.map(k=>`<tr>
       <td style="padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);">${k}</td>
-      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--purple);">${est[k]||0} 隻</td>
+      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--purple);">${est[k]||0}隻</td>
       <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;">
-        <button class="sc-link" style="font-weight:700;color:var(--green);" 
+        <button class="sc-link" style="font-weight:700;color:var(--green);"
           data-key="${k}" data-dept="${dept}"
-          onclick="openDeptActModal(this.dataset.key, this.dataset.dept)">
-          ${actual[k]||0} 隻 ▸
+          onclick="openDeptActModal(this.dataset.key,this.dataset.dept)">
+          ${actual[k]||0}隻▸
         </button>
       </td>
     </tr>`).join('')}</tbody>
   </table>`;
-}
-
-function openDeptActModal(key, dept) {
-  const rows = allRecords.filter(r => r.light+r.sub===key && r.type==='actual' && r.dept===dept);
-  document.getElementById('modalTitle').textContent = dept + ' ' + key + ' 實際領出明細';
-  document.getElementById('modalBody').innerHTML = !rows.length
-    ? `<div class="modal-empty">尚無實際領出記錄</div>`
-    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-        </tr></thead>
-        <tbody>${rows.map(r=>`<tr>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--green);">${r.qty} 隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-        </tr>`).join('')}</tbody>
-      </table>`;
-  document.getElementById('modalBg').classList.add('show');
 }
 
 // ── 刪除表格 ──
@@ -692,11 +774,12 @@ function renderDelTable() {
   if (!canDel) return;
   const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
   const body = document.getElementById('del-body');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; return; }
+  if (!rows.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無記錄</td></tr>'; return; }
   body.innerHTML = rows.map(r=>`<tr>
     <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-est">預估</span>'}</td>
+    <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退回</span>':'<span class="badge-est">預估</span>'}</td>
     <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
 }
@@ -706,43 +789,98 @@ async function submitRecord() {
   const sel    = document.getElementById('f-name-sel');
   const selVal = sel ? sel.value : '';
   const nameInp = document.getElementById('f-name').value.trim();
-  const name   = (selVal && selVal!=='__new__') ? selVal : nameInp;
+  const name   = (selVal&&selVal!=='__new__') ? selVal : nameInp;
   const date   = document.getElementById('f-date').value.trim();
   const dept   = document.getElementById('f-dept').value;
   const light  = document.getElementById('f-light').value;
   const sub    = document.getElementById('f-sub').value;
+  const vendor = document.getElementById('f-vendor').value;
   const qty    = parseInt(document.getElementById('f-qty').value);
   if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-  const type = (['倉管','管理員'].includes(currentRole)) ? recordType : 'estimate';
-  const rec  = { date, dept, name, light, sub, qty, type, note:'', payment:'' };
+  const type = ['倉管','管理員'].includes(currentRole) ? recordType : 'estimate';
+  const rec  = { date, dept, name, light, sub, vendor, qty, type, note:'', payment:'' };
   const btn  = document.getElementById('btnSub');
   btn.disabled=true; btn.textContent='送出中…';
   let newRowId = Date.now();
   try {
     const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
     const d = await r.json();
-    if (d.rowId) newRowId = d.rowId;
+    if (d.rowId) newRowId=d.rowId;
   } catch(e) { console.log(e); }
-  allRecords.push({...rec, rowId:newRowId});
+  allRecords.push({...rec,rowId:newRowId});
   renderAll();
   document.getElementById('f-date').value='';
   document.getElementById('f-name').value='';
   document.getElementById('f-qty').value='';
   if (sel) { sel.value=''; populateCaseDropdown(); }
   document.getElementById('f-name').style.display='none';
-  const ok=document.getElementById('okMsg'); ok.style.display='block';
-  setTimeout(()=>{ok.style.display='none';},3000);
+  showOk();
   btn.disabled=false; btn.textContent='確認送出';
+}
+
+// ── 入庫 ──
+async function submitInbound() {
+  const date   = document.getElementById('ib-date').value.trim();
+  const vendor = document.getElementById('ib-vendor').value;
+  const light  = document.getElementById('ib-light').value;
+  const sub    = document.getElementById('ib-sub').value;
+  const type   = document.getElementById('ib-type').value;
+  const qty    = parseInt(document.getElementById('ib-qty').value);
+  if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  const rec = { date, vendor, light, sub, type, qty };
+  try {
+    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+    const d = await r.json();
+    allInbound.push({...rec, rowId:d.rowId||Date.now()});
+  } catch(e) { console.log(e); }
+  // 更新初始庫存（加到對應的N/M型）
+  const k = light+sub+'-'+type;
+  INIT[k] = (INIT[k]||0) + qty;
+  document.getElementById('ib-date').value='';
+  document.getElementById('ib-qty').value='';
+  renderAll();
+  showOk();
+}
+
+// ── 預計進貨 ──
+async function submitIncoming() {
+  const date   = document.getElementById('ic-date').value.trim();
+  const vendor = document.getElementById('ic-vendor').value;
+  const light  = document.getElementById('ic-light').value;
+  const sub    = document.getElementById('ic-sub').value;
+  const type   = document.getElementById('ic-type').value;
+  const qty    = parseInt(document.getElementById('ic-qty').value);
+  if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  const rec = { date, vendor, light, sub, type, qty };
+  let newRowId = Date.now();
+  try {
+    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
+    const d = await r.json();
+    if (d.rowId) newRowId=d.rowId;
+  } catch(e) { console.log(e); }
+  allIncoming.push({...rec,rowId:newRowId});
+  document.getElementById('ic-date').value='';
+  document.getElementById('ic-qty').value='';
+  renderAll();
+  showOk();
 }
 
 // ── 刪除 ──
 async function deleteRecord(rowId, btn) {
   if (!confirm('確定要刪除這筆記錄？')) return;
   btn.disabled=true; btn.textContent='…';
-  try {
-    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})});
-  } catch(e) { console.log(e); }
-  allRecords = allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})}); }
+  catch(e) { console.log(e); }
+  allRecords=allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  renderAll();
+}
+
+async function deleteIncoming(rowId, btn) {
+  if (!confirm('確定要刪除這筆預計進貨？')) return;
+  btn.disabled=true; btn.textContent='…';
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})}); }
+  catch(e) { console.log(e); }
+  allIncoming=allIncoming.filter(r=>String(r.rowId)!==String(rowId));
   renderAll();
 }
 
@@ -750,8 +888,8 @@ async function deleteRecord(rowId, btn) {
 function populateCaseDropdown() {
   const sel = document.getElementById('f-name-sel');
   if (!sel) return;
-  const names = [...new Set(allRecords.map(r=>r.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-TW'));
-  sel.innerHTML = '<option value="">── 選擇現有建案 ──</option>';
+  const names=[...new Set(allRecords.map(r=>r.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-TW'));
+  sel.innerHTML='<option value="">── 選擇現有建案 ──</option>';
   names.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
   const newOpt=document.createElement('option'); newOpt.value='__new__'; newOpt.textContent='＋ 輸入新建案名稱'; sel.appendChild(newOpt);
 }
@@ -761,70 +899,93 @@ function onCaseSelect(val) {
   else { inp.value=val; inp.style.display='none'; }
 }
 
-// ── 記錄類型切換 ──
+// ── 記錄類型 ──
 function setType(t) {
   recordType=t;
   document.getElementById('btn-act').className='ttype'+(t==='actual'?' act':'');
   document.getElementById('btn-est').className='ttype'+(t==='estimate'?' est':'');
+  document.getElementById('btn-ret').className='ttype'+(t==='return'?' ret':'');
 }
 
 // ── Modal ──
 function openActModal(key) {
-  const rows = allRecords.filter(r=>r.light+r.sub===key && r.type==='actual');
-  document.getElementById('modalTitle').textContent = key+' 已領出明細';
-  document.getElementById('modalBody').innerHTML = !rows.length
-    ? `<div class="modal-empty">尚無實際領出記錄</div>`
-    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">備註</th>
-        </tr></thead>
-        <tbody>${rows.map(r=>`<tr>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.note||''}</td>
-        </tr>`).join('')}</tbody>
-      </table>`;
+  const rows=allRecords.filter(r=>r.light+r.sub+'-'+r.vendor===key&&r.type==='actual');
+  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 已領出明細';
+  document.getElementById('modalBody').innerHTML=!rows.length
+    ?`<div class="modal-empty">尚無實際領出記錄</div>`
+    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">備註</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.note||''}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
   document.getElementById('modalBg').classList.add('show');
 }
 
 function openEstModal(key) {
-  const { actualByCase, estByCase } = calcStock();
-  const caseNames = [...new Set(allRecords.filter(r=>r.light+r.sub===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
-  document.getElementById('modalTitle').textContent = key+' 預估等待中明細';
+  const {actualByCase,estByCase}=calcStock();
+  const caseNames=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+r.vendor===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 預估等待中';
   if (!caseNames.length) {
-    document.getElementById('modalBody').innerHTML = `<div class="modal-empty">目前無預估排程記錄</div>`;
+    document.getElementById('modalBody').innerHTML=`<div class="modal-empty">目前無預估排程記錄</div>`;
   } else {
-    const rows = caseNames.map(name=>{
+    const rows=caseNames.map(name=>{
       const caseKey=key+'|'+name;
       const est=estByCase[caseKey]||0;
-      const act=actualByCase[caseKey]||0;
+      const act=Math.max(0,actualByCase[caseKey]||0);
       const pending=Math.max(0,est-act);
-      const rec=allRecords.find(r=>r.light+r.sub===key&&r.name===name&&r.type==='estimate');
+      const rec=allRecords.find(r=>r.light+r.sub+'-'+r.vendor===key&&r.name===name&&r.type==='estimate');
       return {name,est,act,pending,dept:rec?rec.dept:''};
     }).filter(r=>r.pending>0);
-    document.getElementById('modalBody').innerHTML = !rows.length
-      ? `<div class="modal-empty">所有建案均已領完！</div>`
-      : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-          <thead><tr>
-            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
-            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
-            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
-            <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
-          </tr></thead>
-          <tbody>${rows.map(r=>`<tr>
-            <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
-            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
-            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
-            <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
-            <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
-          </tr>`).join('')}</tbody>
-        </table>`;
+    document.getElementById('modalBody').innerHTML=!rows.length
+      ?`<div class="modal-empty">所有建案均已領完！</div>`
+      :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead><tr>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
+        </tr></thead>
+        <tbody>${rows.map(r=>`<tr>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
   }
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function openDeptActModal(key, dept) {
+  const rows=allRecords.filter(r=>r.light+r.sub===key&&r.type==='actual'&&r.dept===dept);
+  document.getElementById('modalTitle').textContent=dept+' '+key+' 實際領出明細';
+  document.getElementById('modalBody').innerHTML=!rows.length
+    ?`<div class="modal-empty">尚無實際領出記錄</div>`
+    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
   document.getElementById('modalBg').classList.add('show');
 }
 
@@ -841,7 +1002,9 @@ function switchPanel(name, el) {
 
 // ── 工具 ──
 function tagCls(r){ return 't'+r.light.charAt(0)+(r.sub==='無子機'?'x':'v'); }
+function tagCls2(light,sub){ return 't'+light.charAt(0)+(sub==='無子機'?'x':'v'); }
 function tagLbl(r){ return r.light+r.sub; }
+function showOk(){ const ok=document.getElementById('okMsg'); ok.style.display='block'; setTimeout(()=>{ok.style.display='none';},3000); }
 function setUpdatedTime(){
   const now=new Date(); const roc=now.getFullYear()-1911;
   const t=`${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
