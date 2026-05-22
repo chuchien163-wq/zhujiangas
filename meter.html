@@ -864,8 +864,7 @@ function cancelEditInbound() {
 }
 
 async function deleteInbound(rowId, btn) {
-  if (!confirm('確定要刪除這筆入庫記錄？
-⚠️ 刪除後庫存會自動減少！')) return;
+  if (!confirm('確定要刪除這筆入庫記錄？⚠️ 刪除後庫存會自動減少！')) return;
   btn.disabled=true; btn.textContent='…';
   try {
     await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
