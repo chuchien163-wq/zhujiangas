@@ -252,7 +252,7 @@ tbody tr:hover{background:var(--bg);}
       <div class="logo">竹</div>
       <div>
         <div class="hdr-title">換表庫存系統 v2.1</div>
-        <div class="sync"><div class="sync-dot"></div>Google Sheets 即時同步中</div>
+        <div class="sync" style="cursor:pointer;" onclick="refreshData()" title="點擊強制重新載入"><div class="sync-dot"></div>Google Sheets 即時同步中 ↺</div>
       </div>
     </div>
     <div class="hdr-r">
@@ -670,27 +670,61 @@ function signOut() {
 }
 
 // ── 載入資料 ──
-async function loadData() {
-  const overlay = document.getElementById('loadingOverlay');
+const CACHE_KEY = 'meter_cache';
+const CACHE_TTL = 5 * 60 * 1000; // 5分鐘快取
+
+async function loadData(forceRefresh=false) {
+  const overlay  = document.getElementById('loadingOverlay');
   const loadText = document.getElementById('loadingText');
+
+  // 嘗試讀快取
+  if (!forceRefresh) {
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const { data, ts } = JSON.parse(cached);
+        if (Date.now() - ts < CACHE_TTL) {
+          applyData(data);
+          renderAll();
+          return;
+        }
+      }
+    } catch(e) {}
+  }
+
+  // 快取沒有或過期，從 GAS 抓
   if (overlay) overlay.style.display='flex';
-  
   const msgs = ['連線 Google Sheets…','讀取庫存資料…','載入建案記錄…','整理資料中…'];
   let mi = 0;
-  const ticker = setInterval(()=>{ if(loadText && mi<msgs.length) loadText.textContent=msgs[mi++]; }, 1200);
-  
+  const ticker = setInterval(()=>{ if(loadText && mi<msgs.length) loadText.textContent=msgs[mi++]; }, 1500);
+
   try {
     const r = await fetch(`${GAS_URL}?action=getAll`);
     const d = await r.json();
-    if (d.records)  allRecords  = d.records;
-    if (d.stock)    Object.keys(d.stock).forEach(k=>{ INIT[k]=d.stock[k]; });
-    if (d.inbound)  allInbound  = d.inbound;
-    if (d.incoming) allIncoming = d.incoming;
+    applyData(d);
+    // 存入快取
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data:d, ts:Date.now() })); } catch(e){}
   } catch(e) { console.log('載入失敗',e); }
-  
+
   clearInterval(ticker);
   if (overlay) overlay.style.display='none';
   renderAll();
+}
+
+function applyData(d) {
+  if (d.records)  allRecords  = d.records;
+  if (d.stock)    Object.keys(d.stock).forEach(k=>{ INIT[k]=d.stock[k]; });
+  if (d.inbound)  allInbound  = d.inbound;
+  if (d.incoming) allIncoming = d.incoming;
+}
+
+function clearCache() {
+  try { sessionStorage.removeItem(CACHE_KEY); } catch(e){}
+}
+
+async function refreshData() {
+  clearCache();
+  await loadData(true);
 }
 
 function renderAll() {
@@ -1156,6 +1190,7 @@ async function submitRecord() {
     if (d.rowId) newRowId=d.rowId;
   } catch(e) { console.log(e); }
   allRecords.push({...rec,rowId:newRowId});
+  clearCache();
   renderAll();
   document.getElementById('f-date').value='';
   document.getElementById('f-name').value='';
@@ -1255,6 +1290,7 @@ async function deleteRecord(rowId, btn) {
   try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})}); }
   catch(e) { console.log(e); }
   allRecords=allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  clearCache();
   renderAll();
 }
 
