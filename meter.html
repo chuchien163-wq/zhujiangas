@@ -69,15 +69,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 /* Stock Grid */
 .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
 @media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.dashboard-bot{grid-template-columns:1fr !important;}}
 @media(max-width:480px){.sg{grid-template-columns:1fr;}}
 
-.sc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 16px;position:relative;border-top-width:3px;}
-.sc.ok{border-top-color:var(--green);}
-.sc.warn{border-top-color:var(--amber);}
-.sc.danger{border-top-color:var(--red);}
+.sc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:4px 0 0 4px;}
+.sc.ok::before{background:var(--green);}
+.sc.warn::before{background:var(--amber);}
+.sc.danger::before{background:var(--red);}
+.sc.ok{border-left:5px solid var(--green);}
+.sc.warn{border-left:5px solid var(--amber);}
+.sc.danger{border-left:5px solid var(--red);}
 
 .sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.sc-type{font-size:15px;color:var(--muted);font-weight:500;}
+.sc-type{font-size:15px;color:var(--muted);font-weight:500);}
+.sc-badge{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.sc-badge-4{background:var(--blue);}
+.sc-badge-6{background:var(--green);}
+.sc-buy-tag{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:0 var(--r) 0 8px;}
+
 .sc-status{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .sc-status-ok{background:var(--green-bg);color:var(--green);}
 .sc-status-warn{background:var(--amber-bg);color:var(--amber);}
@@ -86,6 +96,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .sc-remain{font-size:36px;font-weight:700;line-height:1;color:var(--text);}
 .sc-unit{font-size:13px;color:var(--muted);margin-bottom:10px;}
 .sc-div{border-top:0.5px solid var(--border);margin:8px 0;}
+
+.sc-nm-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;}
+.sc-nm-item{flex:1;}
+.sc-nm-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
+.sc-nm-val{font-size:13px;font-weight:500;}
 .sc-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:2px 0;}
 .sc-lbl{color:var(--muted);}
 .sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:14px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
@@ -279,24 +294,26 @@ tbody tr:hover{background:var(--bg);}
       <div class="sg" id="stockGrid-N" style="margin-bottom:16px;"><div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div></div>
       <div style="display:none;" id="stockGrid-M"></div>
 
-      <div id="incomingSection" style="display:none;margin-bottom:16px;">
-        <div class="slabel">📦 預計進貨提醒</div>
-        <div class="card">
-          <div class="card-hdr">
-            <span class="card-title">待到貨清單</span>
-            <span class="card-note">⚠️ 不影響庫存計算，到貨後倉管填入庫</span>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;" class="dashboard-bot">
+        <!-- 左：預計進貨 -->
+        <div id="incomingSection" style="display:none;">
+          <div class="slabel">🚚 預計進貨提醒</div>
+          <div class="card">
+            <div class="card-hdr">
+              <span class="card-title">待到貨清單</span>
+              <span class="card-note">⚠️ 不影響庫存計算</span>
+            </div>
+            <div id="incomingList"></div>
           </div>
-          <div id="incomingList"></div>
         </div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:12px;">
+        <!-- 右：未繳費+已繳費 -->
+        <div>
         <div id="unpaidSection" style="display:none;">
           <div class="slabel">未繳費統計</div>
           <div class="card">
             <div class="card-hdr"><span class="card-title">⚠️ 未繳費建案（不計入預估）</span></div>
             <div class="unpaid-nums" id="unpaidGrid"></div>
-            <table style="width:100%;border-collapse:collapse;">
+            <div class="twrap-scroll"><table style="width:100%;border-collapse:collapse;">
               <thead><tr>
                 <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">社區／建案</th>
                 <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">種類</th>
@@ -306,11 +323,14 @@ tbody tr:hover{background:var(--bg);}
               </tr></thead>
               <tbody id="unpaidBody"><tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr></tbody>
             </table>
+            </div>
+            </div>
           </div>
         </div>
         <div id="paidSection" style="display:none;">
           <div class="slabel">已繳費清單</div>
           <div class="twrap">
+            <div class="twrap-scroll">
             <table>
               <thead><tr>
                 <th>社區／建案</th>
@@ -321,7 +341,9 @@ tbody tr:hover{background:var(--bg);}
               </tr></thead>
               <tbody id="paidBody"><tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr></tbody>
             </table>
+            </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -839,15 +861,28 @@ function renderStock() {
       ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
       : `<span class="sc-safe">可用${gap}隻</span>`;
     return `<div class="sc ${cls}">
+      ${gap<0 ? '<div class="sc-buy-tag">採買警示</div>' : ''}
       <div class="sc-head">
-        <span class="sc-type">${base}</span>
-        <span class="sc-status ${cls==='ok'?'sc-status-ok':cls==='warn'?'sc-status-warn':'sc-status-danger'}">${cls==='ok'?'正常':cls==='warn'?'注意':'緊缺'}</span>
+        <div>
+          <div class="sc-type">${base}</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;">
+            <span class="sc-remain">${total}</span>
+            <span class="sc-unit">隻剩餘</span>
+          </div>
+        </div>
+        <div class="sc-badge ${base.charAt(0)==='4'?'sc-badge-4':'sc-badge-6'}">${base.charAt(0)}</div>
       </div>
-      <div class="sc-remain">${total}</div>
-      <div class="sc-unit">隻剩餘</div>
       <div class="sc-div"></div>
-      <div class="sc-row"><span class="sc-lbl">N型（台北貿易）</span><button class="sc-link" data-key="${kN}" onclick="openVendorModal(this.dataset.key,'N型（台北貿易）')">${remainN}隻▸</button></div>
-      <div class="sc-row"><span class="sc-lbl">M型（力泰瓦斯）</span><button class="sc-link" data-key="${kM}" onclick="openVendorModal(this.dataset.key,'M型（力泰瓦斯）')">${remainM}隻▸</button></div>
+      <div class="sc-nm-row">
+        <div class="sc-nm-item">
+          <div class="sc-nm-label">N型（台北貿易）</div>
+          <button class="sc-link sc-nm-val" data-key="${kN}" onclick="openVendorModal(this.dataset.key,'N型（台北貿易）')">${remainN}隻▸</button>
+        </div>
+        <div class="sc-nm-item">
+          <div class="sc-nm-label">M型（力泰瓦斯）</div>
+          <button class="sc-link sc-nm-val" data-key="${kM}" onclick="openVendorModal(this.dataset.key,'M型（力泰瓦斯）')">${remainM}隻▸</button>
+        </div>
+      </div>
       <div class="sc-div"></div>
       <div class="sc-row"><span class="sc-lbl">本期已領出</span><button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openActModalBoth(this.dataset.keyn,this.dataset.keym)">${usedAll}隻▸</button></div>
       <div class="sc-row"><span class="sc-lbl">預估還需</span><button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openEstModalBoth(this.dataset.keyn,this.dataset.keym)">${estAll}隻▸</button></div>
