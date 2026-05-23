@@ -15,6 +15,7 @@
   --r:10px;--rs:7px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
 body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:20px;}
 
 /* Login */
@@ -61,7 +62,7 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 .btn-signout:hover{color:var(--red);}
 
 /* Nav */
-.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 96px;position:sticky;top:53px;z-index:99;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(8px);}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 96px;position:sticky;top:62px;z-index:99;overflow-x:auto;scrollbar-width:none;backdrop-filter:blur(8px);}
 .nav::-webkit-scrollbar{display:none;}
 .nav-tab{flex-shrink:0;padding:9px 20px;font-size:19px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s;position:relative;overflow:hidden;}
 .nav-tab:hover{color:var(--text);}
@@ -119,13 +120,13 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 
 /* Charts */
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;}
 .chart-title{font-size:19px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:.04em;}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.bar-label{font-size:19px;color:var(--muted);white-space:nowrap;width:64px;text-align:right;}
-.bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
-.bar-fill{height:7px;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
-.bar-val{font-size:19px;white-space:nowrap;width:44px;text-align:right;}
+.bar-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.bar-label{flex-shrink:0;font-size:17px;color:var(--muted);white-space:nowrap;width:90px;text-align:right;}
+.bar-track{flex:1;height:10px;min-width:0;background:var(--border);border-radius:4px;overflow:hidden;}
+.bar-fill{height:10px;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+.bar-val{flex-shrink:0;font-weight:700;font-size:17px;font-weight:700;white-space:nowrap;width:70px;text-align:left;}
 .donut-wrap{display:flex;align-items:center;gap:16px;}
 .donut-legend{display:flex;flex-direction:column;gap:7px;flex:1;}
 .leg-row{display:flex;align-items:center;gap:6px;font-size:20px;}
