@@ -2,233 +2,301 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>竹建瓦斯｜換表庫存系統 v2.1</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>竹建瓦斯｜換表庫存系統 v3.0</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 :root{
-  --bg:#f5f4f0;--surface:#fff;--border:#e8e6de;
-  --text:#1a1a1a;--muted:#888880;--light:#c0beb6;
-  --green:#1a7a50;--green-bg:#e8f5ee;--green-bd:#b8dfc8;
-  --amber:#b06a00;--amber-bg:#fff3e0;--amber-bd:#f5c67a;
-  --red:#c0392b;--red-bg:#fdecea;--red-bd:#f5c6c2;
-  --purple:#6d28d9;--purple-bg:#f3e8ff;
-  --blue:#1565c0;--blue-bg:#e3f0fb;
-  --r:12px;--rs:8px;
+  --bg:#0a0e1a;--surface:#0d1420;--border:#1a2a3a;
+  --text:#c8c6bf;--muted:#4a5a66;--light:#2a3a4a;
+  --gold:#b8943c;--gold-dim:#b8943c33;--gold-bg:#b8943c11;
+  --cyan:#00a882;--cyan-dim:#00a88233;--cyan-bg:#00a88211;
+  --red:#cc3355;--red-dim:#cc335533;--red-bg:#cc335511;
+  --blue-btn:#1a6ab8;--purple:#6d28d9;
+  --r:10px;--rs:7px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
 
 /* Login */
-#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:var(--bg);}
-.login-card{background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.06);}
-.login-logo-wrap{position:relative;width:64px;height:64px;margin:0 auto 18px;}
-.login-logo{width:64px;height:64px;background:var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;position:relative;z-index:1;}
-.login-logo img{width:64px;height:64px;border-radius:14px;object-fit:contain;}
-.login-logo-ring{position:absolute;inset:-5px;border:1.5px solid var(--green);border-radius:19px;opacity:.2;}
-.login-title{font-size:20px;font-weight:700;margin-bottom:3px;}
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px;text-align:center;position:relative;overflow:hidden;}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.login-logo-wrap{position:relative;width:64px;height:64px;margin:16px auto 18px;}
+.login-logo{width:64px;height:64px;background:var(--bg);border:1.5px solid var(--gold);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;font-weight:700;}
+.login-logo-ring{position:absolute;inset:-6px;border:1px solid var(--gold-dim);border-radius:20px;animation:ring 3s linear infinite;}
+@keyframes ring{to{transform:rotate(360deg);}}
+.login-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:3px;}
 .login-company{font-size:13px;color:var(--muted);margin-bottom:2px;}
-.login-sub{font-size:11px;color:var(--light);margin-bottom:24px;letter-spacing:.04em;}
+.login-sub{font-size:11px;color:var(--light);margin-bottom:26px;letter-spacing:.06em;}
 .login-field{text-align:left;margin-bottom:12px;}
-.login-field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:4px;}
-.login-field input{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s;}
-.login-field input:focus{border-color:var(--green);background:#fff;}
-.btn-login{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:opacity .15s;}
-.btn-login:hover{opacity:.88;}
+.login-field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;letter-spacing:.04em;}
+.login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;}
+.login-field input:focus{border-color:var(--gold);}
+.btn-login{width:100%;padding:11px;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:all .2s;position:relative;overflow:hidden;}
+.btn-login:hover{background:var(--gold-bg);}
 .login-err{font-size:12px;color:var(--red);min-height:18px;margin-top:8px;}
+
+/* Loading */
+#loadingOverlay{display:none;position:fixed;inset:0;background:rgba(10,14,26,.95);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--muted);letter-spacing:.06em;}
 
 /* App */
 #appPage{display:none;}
 
 /* Header */
-.hdr{background:var(--surface);border-bottom:0.5px solid var(--border);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hdr-l{display:flex;align-items:center;gap:10px;}
-.logo{width:32px;height:32px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;overflow:hidden;}
-.logo img{width:32px;height:32px;object-fit:contain;}
-.hdr-title{font-size:14px;font-weight:700;}
-.sync{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--green);}
-.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+.logo{width:32px;height:32px;background:var(--bg);border:1.5px solid var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;font-weight:700;flex-shrink:0;}
+.hdr-title{font-size:14px;font-weight:700;color:var(--text);}
+.sync{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--cyan);cursor:pointer;letter-spacing:.04em;transition:opacity .2s;}
+.sync:hover{opacity:.7;}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.hdr-r{display:flex;align-items:center;gap:8px;}
-.user-chip{display:flex;align-items:center;gap:6px;background:var(--bg);border:0.5px solid var(--border);border-radius:20px;padding:4px 10px 4px 4px;}
-.user-av{width:22px;height:22px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;}
-.user-name{font-size:11px;font-weight:500;color:var(--text);}
-.btn-signout{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;}
+.user-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--gold-dim);border-radius:20px;padding:4px 10px;}
+.user-av{width:22px;height:22px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:9px;font-weight:700;}
+.user-name{font-size:11px;color:var(--gold);}
+.btn-signout{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;transition:color .15s;}
+.btn-signout:hover{color:var(--red);}
 
 /* Nav */
-.nav{background:var(--surface);border-bottom:0.5px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:sticky;top:52px;z-index:99;padding:0 20px;}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 60px;position:sticky;top:52px;z-index:99;overflow-x:auto;scrollbar-width:none;}
 .nav::-webkit-scrollbar{display:none;}
-.nav-tab{flex-shrink:0;padding:9px 16px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;}
+.nav-tab{flex-shrink:0;padding:9px 20px;font-size:12px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s;position:relative;overflow:hidden;}
 .nav-tab:hover{color:var(--text);}
-.nav-tab.active{color:var(--green);border-bottom-color:var(--green);}
-.panel{display:none;}.panel.active{display:block;}
+.nav-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+
+/* Panel */
+.panel{display:none;}
+.panel.active{display:block;animation:slideIn .3s cubic-bezier(.4,0,.2,1);}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
 
 /* Main */
-.main{max-width:1200px;margin:0 auto;padding:12px 24px 24px;}
+.main{max-width:1200px;margin:0 auto;padding:14px 60px 32px;}
 
-/* Stock Grid */
-.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;}
-@media(max-width:900px){.sg{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:700px){.dashboard-bot{grid-template-columns:1fr !important;}}
-@media(max-width:480px){.sg{grid-template-columns:1fr;}}
+/* Ripple */
+.ripple-host{position:relative;overflow:hidden;}
+.ripple{position:absolute;border-radius:50%;background:rgba(0,168,130,.2);transform:scale(0);animation:ripple .5s linear;pointer-events:none;z-index:10;}
+@keyframes ripple{to{transform:scale(4);opacity:0;}}
+.click-scale{transition:transform .1s cubic-bezier(.4,0,.2,1);}
+.click-scale:active{transform:scale(.95);}
 
-.sc{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;}
-.sc::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:4px 0 0 4px;}
-.sc.ok::before{background:var(--green);}
-.sc.warn::before{background:var(--amber);}
-.sc.danger::before{background:var(--red);}
-.sc.ok{border-left:4px solid var(--green);}
-.sc.warn{border-left:4px solid #e6a817;}
-.sc.danger{border-left:4px solid var(--red);}
+/* Stock Cards */
+.sg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:14px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-left-width:3px;border-radius:var(--r);padding:14px;position:relative;overflow:hidden;cursor:pointer;}
+.sc.ok{border-left-color:var(--cyan);}
+.sc.warn{border-left-color:var(--gold);}
+.sc.danger{border-left-color:var(--red);}
+.sc-scan{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,168,130,.04),transparent);animation:scan 3s linear infinite;pointer-events:none;}
+@keyframes scan{to{left:150%;}}
+.sc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.sc-type{font-size:11px;color:var(--muted);letter-spacing:.04em;}
+.sc-badge{width:22px;height:22px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.sc-badge-4{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
+.sc-badge-6{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
+.sc-num{font-size:30px;font-weight:700;line-height:1;}
+.sc-num.ok{color:var(--cyan);}
+.sc-num.warn{color:var(--gold);}
+.sc-num.danger{color:var(--red);}
+.sc-unit{font-size:10px;color:var(--muted);margin-bottom:8px;}
+.sc-div{border-top:1px solid var(--border);margin:6px 0;}
+.sc-row{display:flex;justify-content:space-between;align-items:center;gap:4px;padding:2px 0;}
+.sc-lbl{color:var(--muted);white-space:nowrap;font-size:11px;flex-shrink:0;}
+.sc-link{color:var(--cyan);white-space:nowrap;font-size:11px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.sc-link:hover{background:var(--cyan-bg);}
+.sc-link-gold{color:var(--gold);white-space:nowrap;font-size:11px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.sc-link-gold:hover{background:var(--gold-bg);}
+.sc-bar{height:2px;background:var(--border);border-radius:1px;margin-top:6px;}
+.sc-bar-fill{height:2px;border-radius:1px;transition:width .3s;}
+.sc-bar-fill.ok{background:var(--cyan);}
+.sc-bar-fill.warn{background:var(--gold);}
+.sc-bar-fill.danger{background:var(--red);}
+.sc-gap{color:var(--red);font-size:11px;font-weight:500;white-space:nowrap;}
+.sc-safe{color:var(--cyan);font-size:11px;white-space:nowrap;}
+.buy-tag{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:0 var(--r) 0 6px;letter-spacing:.05em;animation:blink 2.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.15;}}
 
-.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.sc-type{font-size:15px;color:var(--muted);font-weight:500);}
-.sc-badge{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
-.sc-badge-4{background:var(--blue);}
-.sc-badge-6{background:var(--green);}
-.sc-buy-tag{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:0 var(--r) 0 8px;}
+/* Charts */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
+.chart-title{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:.04em;}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.bar-label{font-size:10px;color:var(--muted);white-space:nowrap;width:64px;text-align:right;}
+.bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
+.bar-fill{height:7px;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
+.bar-val{font-size:10px;white-space:nowrap;width:44px;text-align:right;}
+.donut-wrap{display:flex;align-items:center;gap:16px;}
+.donut-legend{display:flex;flex-direction:column;gap:7px;flex:1;}
+.leg-row{display:flex;align-items:center;gap:6px;font-size:11px;}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.leg-lbl{color:var(--muted);white-space:nowrap;}
+.leg-val{margin-left:auto;font-weight:500;}
+.leg-divider{border-top:1px solid var(--border);padding-top:7px;margin-top:2px;}
 
-.sc-status{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.sc-status-ok{background:var(--green-bg);color:var(--green);}
-.sc-status-warn{background:var(--amber-bg);color:var(--amber);}
-.sc-status-danger{background:var(--red-bg);color:var(--red);}
-
-.sc-remain{font-size:36px;font-weight:700;line-height:1;color:var(--text);}
-.sc-unit{font-size:13px;color:var(--muted);margin-bottom:10px;}
-.sc-div{border-top:0.5px solid var(--border);margin:8px 0;}
-
-.sc-nm-row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px;}
-.sc-nm-item{flex:1;}
-.sc-nm-label{font-size:11px;color:var(--muted);margin-bottom:2px;}
-.sc-nm-val{font-size:13px;font-weight:500;}
-.sc-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:2px 0;}
-.sc-lbl{color:var(--muted);}
-.sc-link{color:var(--green);text-decoration:underline;cursor:pointer;font-size:14px;font-weight:500;background:none;border:none;font-family:inherit;padding:0;}
-.sc-gap{color:var(--red);font-weight:700;font-size:13px;}
-.sc-safe{color:var(--green);font-weight:500;font-size:13px;}
-.sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;}
-.sc-bar-fill{height:3px;border-radius:2px;}
-.sc.ok .sc-bar-fill{background:var(--green);}
-.sc.warn .sc-bar-fill{background:var(--amber);}
-.sc.danger .sc-bar-fill{background:var(--red);}
-
-/* Bottom grid */
-.bot-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:700px){.bot-grid{grid-template-columns:1fr;}}
-
-/* Dash grid */
-.dash-grid{display:grid;grid-template-columns:3fr 2fr;gap:12px;}
-@media(max-width:700px){.dash-grid{grid-template-columns:1fr;}}
+/* Bot Grid */
+.bot-grid{display:grid;grid-template-columns:1fr 2fr;gap:10px;}
 
 /* Card */
-.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.card-hdr{padding:10px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
-.card-note{font-size:12px;color:var(--muted);}
-.card-count{font-size:13px;color:var(--muted);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.card-hdr{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.04em;}
+.card-note{font-size:10px;color:var(--muted);}
+.card-count{font-size:11px;color:var(--muted);}
+.card-action{font-size:11px;color:var(--cyan);cursor:pointer;background:none;border:1px solid var(--cyan-dim);border-radius:20px;font-family:inherit;padding:3px 10px;transition:background .15s;}
+.card-action:hover{background:var(--cyan-bg);}
 
-/* Table */
-.twrap{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px;}
-.twrap-scroll{max-height:440px;overflow-y:auto;}
-.twrap-scroll thead th{position:sticky;top:0;z-index:1;}
-table{width:100%;border-collapse:collapse;font-size:15px;}
-thead th{padding:9px 14px;text-align:left;color:var(--muted);font-weight:500;font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);}
-tbody td{padding:11px 14px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle;}
+/* Tables */
+.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
+.twrap-scroll{overflow-y:auto;max-height:420px;}
+.twrap-scroll::-webkit-scrollbar{width:4px;}
+.twrap-scroll::-webkit-scrollbar-track{background:var(--bg);}
+.twrap-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{padding:8px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);letter-spacing:.04em;white-space:nowrap;position:sticky;top:0;z-index:1;}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover{background:var(--bg);}
-.no-data{text-align:center;color:var(--light);padding:24px;font-size:13px;}
-.loading-cell{text-align:center;color:var(--muted);padding:24px;font-size:13px;}
+tbody tr:hover td{background:#0d1a2a;transition:background .15s;}
+.no-data{text-align:center;color:var(--muted);padding:24px;font-size:12px;letter-spacing:.04em;}
 
 /* Tags */
-.tag{display:inline-block;font-size:12px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.t4x{background:#e3f0fb;color:#1565c0;}
-.t4v{background:#e8f5ee;color:#1a7a50;}
-.t6x{background:#fff3e0;color:#b06a00;}
-.t6v{background:#fce4ec;color:#ad1457;}
-.badge-act{background:var(--green-bg);color:var(--green);font-size:12px;padding:2px 6px;border-radius:20px;font-weight:500;}
-.badge-est{background:var(--purple-bg);color:var(--purple);font-size:12px;padding:2px 6px;border-radius:20px;font-weight:500;}
-.badge-ret{background:var(--amber-bg);color:var(--amber);font-size:12px;padding:2px 6px;border-radius:20px;font-weight:500;}
-.ven-n{background:var(--blue-bg);color:var(--blue);font-size:12px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.ven-m{background:var(--amber-bg);color:var(--amber);font-size:12px;padding:2px 6px;border-radius:20px;font-weight:500;white-space:nowrap;}
-.pay-o{font-size:15px;font-weight:700;color:var(--green);cursor:pointer;}
-.pay-x{font-size:15px;font-weight:700;color:var(--red);cursor:pointer;}
-.pay-blank{font-size:13px;color:var(--light);cursor:pointer;}
+.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.t4x{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
+.t4v{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
+.t6x{background:#1a0a20;color:#aa66cc;border:1px solid #aa66cc33;}
+.t6v{background:#1a0a14;color:#cc4488;border:1px solid #cc448833;}
+.ven-n{background:var(--cyan-bg);color:var(--cyan);font-size:10px;padding:2px 6px;border-radius:20px;border:1px solid var(--cyan-dim);display:inline-block;}
+.ven-m{background:var(--gold-bg);color:var(--gold);font-size:10px;padding:2px 6px;border-radius:20px;border:1px solid var(--gold-dim);display:inline-block;}
+.badge-act{background:var(--cyan-bg);color:var(--cyan);font-size:10px;padding:2px 7px;border-radius:20px;}
+.badge-est{background:var(--gold-bg);color:var(--gold);font-size:10px;padding:2px 7px;border-radius:20px;}
+.badge-ret{background:#1a1000;color:#aa8800;font-size:10px;padding:2px 7px;border-radius:20px;}
+.dept-tag{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.dept-biz{background:var(--cyan-bg);color:var(--cyan);}
+.dept-eng{background:var(--gold-bg);color:var(--gold);}
+.pay-o{color:var(--cyan);font-weight:700;}
+.pay-x{color:var(--red);font-weight:700;}
+.pay-blank{color:var(--muted);}
+
+/* Hang date urgency */
+.days-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.days-urgent{background:var(--red-bg);color:var(--red);border:1px solid var(--red-dim);animation:blink 2.5s ease-in-out infinite;}
+.days-warning{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
+.days-ok{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
+.days-none{background:transparent;color:var(--muted);border:1px solid var(--border);}
+
+/* Urgency rows */
+tr.urgent td{border-left:2px solid var(--red)!important;}
+tr.warning td{border-left:2px solid var(--gold)!important;}
 
 /* Incoming */
-.incoming-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:0.5px solid var(--border);}
+.incoming-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px;}
 .incoming-item:last-child{border-bottom:none;}
-.incoming-name{font-size:14px;font-weight:500;color:var(--text);}
-.incoming-date{font-size:12px;color:var(--muted);margin-top:2px;}
-.incoming-qty{font-size:14px;font-weight:500;color:var(--amber);background:var(--amber-bg);padding:4px 12px;border-radius:20px;white-space:nowrap;}
+.inc-name{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap;}
+.inc-date{font-size:10px;color:var(--muted);margin-top:2px;}
+.inc-qty{font-size:13px;font-weight:700;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 
 /* Unpaid */
-.unpaid-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px;border-bottom:0.5px solid var(--border);}
-.unpaid-num{background:var(--bg);border-radius:var(--rs);padding:8px;text-align:center;}
-.unpaid-num-type{font-size:12px;color:var(--muted);margin-bottom:3px;}
-.unpaid-num-val{font-size:22px;font-weight:700;color:var(--red);}
-.unpaid-row{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;padding:10px 14px;border-bottom:0.5px solid var(--border);}
-.unpaid-row:last-child{border-bottom:none;}
-.dept-tag{font-size:12px;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.dept-biz{background:var(--blue-bg);color:var(--blue);}
-.dept-eng{background:var(--green-bg);color:var(--green);}
-
-/* Form */
-.fcard{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;}
-.fcard h4{font-size:14px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:0.5px solid var(--border);}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.ffull{grid-column:1/-1;}
-.fg label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-bottom:4px;}
-.fg input,.fg select{width:100%;padding:10px 12px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
-.fg input:focus,.fg select:focus{border-color:var(--green);background:#fff;}
-.btn-green{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;}
-.btn-green:hover{opacity:.88;}
-.btn-green:disabled{opacity:.5;cursor:not-allowed;}
-.btn-blue{width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;}
-.btn-blue:hover{opacity:.88;}
-.ok-msg{display:none;background:var(--green-bg);border:0.5px solid var(--green-bd);border-radius:var(--rs);padding:10px 14px;color:var(--green);font-size:13px;font-weight:500;text-align:center;margin-bottom:10px;}
-.type-toggle{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
-.ttype{flex:1;min-width:80px;padding:7px;border:0.5px solid var(--border);border-radius:var(--rs);text-align:center;cursor:pointer;font-size:12px;font-family:inherit;background:transparent;color:var(--muted);transition:all .15s;}
-.ttype.act{border-color:var(--green);background:var(--green-bg);color:var(--green);font-weight:500;}
-.ttype.est{border-color:var(--purple);background:var(--purple-bg);color:var(--purple);font-weight:500;}
-.ttype.ret{border-color:var(--amber);background:var(--amber-bg);color:var(--amber);font-weight:500;}
-.btn-del{background:none;border:none;cursor:pointer;color:var(--light);font-size:14px;padding:2px 5px;border-radius:4px;transition:color .15s;}
-.btn-del:hover{color:var(--red);}
-.btn-edit{background:none;border:none;cursor:pointer;color:var(--blue);font-size:14px;padding:2px 5px;border-radius:4px;transition:opacity .15s;}
-.btn-edit:hover{opacity:.7;}
-.divider{display:flex;align-items:center;gap:10px;margin:14px 0 10px;}
-.divider span{font-size:11px;color:var(--muted);white-space:nowrap;}
-.divider::before,.divider::after{content:'';flex:1;height:0.5px;background:var(--border);}
-.updated{font-size:13px;color:var(--light);text-align:right;margin-bottom:8px;}
-.slabel{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
-
-/* Manage layout */
-.manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-@media(max-width:700px){.manage-grid{grid-template-columns:1fr;}}
-
-/* Modal */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;padding:16px;}
-.modal-bg.show{display:flex;}
-.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:460px;max-height:82vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.12);}
-.modal-hdr{padding:12px 16px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-hdr h3{font-size:14px;font-weight:700;}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);line-height:1;padding:0 4px;}
-.modal-body{overflow-y:auto;flex:1;}
-.modal-empty{text-align:center;color:var(--light);padding:24px;font-size:13px;}
+.unpaid-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);}
+.unpaid-num-box{background:var(--red-bg);border:1px solid var(--red-dim);border-radius:8px;padding:8px;text-align:center;}
+.un-type{font-size:10px;color:var(--muted);margin-bottom:3px;}
+.un-val{font-size:20px;font-weight:700;color:var(--red);}
+.un-unit{font-size:10px;color:var(--muted);}
+.slabel{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px;font-weight:500;}
 
 /* Filter bar */
-.filter-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
-.filter-bar select,.filter-bar input{padding:7px 12px;border:0.5px solid var(--border);border-radius:20px;font-size:13px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;}
-.filter-bar input{flex:1;min-width:120px;}
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0 12px;align-items:center;}
+.filter-bar select,.filter-bar input{padding:7px 10px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text);font-size:12px;font-family:inherit;outline:none;transition:border-color .2s;cursor:pointer;}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--gold);}
+.filter-bar input{min-width:160px;}
 
-@media(max-width:480px){
-  .fgrid{grid-template-columns:1fr;}.ffull{grid-column:1;}
-  .manage-grid{grid-template-columns:1fr;}
-  thead th:nth-child(3),tbody td:nth-child(3){display:none;}
-}
+/* Dept grid */
+.dash-grid{display:grid;grid-template-columns:3fr 1fr;gap:10px;}
+.updated{font-size:11px;color:var(--muted);text-align:right;padding-bottom:6px;}
 
+/* Form */
+.manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.fcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;}
+.fcard h4{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.fcard-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg.ffull{grid-column:1/-1;}
+.fg label{font-size:11px;color:var(--muted);letter-spacing:.04em;font-weight:500;}
+.fg label .hint{font-weight:400;color:var(--light);margin-left:4px;}
+.fg input,.fg select,.fg textarea{padding:9px 11px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;width:100%;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--cyan);}
+.verify-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:var(--rs);margin-top:4px;cursor:pointer;}
+.verify-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gold);}
+.verify-label{font-size:12px;color:var(--gold);}
+
+/* Buttons */
+.btn-green{width:100%;padding:11px;background:var(--cyan);color:#0a0e1a;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;margin-top:8px;}
+.btn-green:hover{opacity:.85;}
+.btn-green:disabled{opacity:.5;cursor:not-allowed;}
+.btn-edit{background:none;border:none;cursor:pointer;font-size:14px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--gold);}
+.btn-edit:hover{background:var(--gold-bg);}
+.btn-del{background:none;border:none;cursor:pointer;font-size:12px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--muted);}
+.btn-del:hover{background:var(--red-bg);color:var(--red);}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;margin-top:6px;display:none;}
+.btn-cancel:hover{color:var(--text);}
+.ok-msg{background:var(--cyan-bg);border:1px solid var(--cyan-dim);color:var(--cyan);padding:8px 14px;border-radius:var(--rs);font-size:13px;margin-bottom:12px;display:none;}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0 10px;font-size:11px;color:var(--muted);letter-spacing:.06em;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
+.modal-hdr h3{font-size:14px;font-weight:700;color:var(--gold);}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 8px;border-radius:4px;transition:color .15s;font-family:inherit;}
+.modal-close:hover{color:var(--text);}
+.modal-body{overflow-y:auto;flex:1;}
+.modal-empty{text-align:center;color:var(--muted);padding:32px;font-size:13px;}
+
+/* Quick Add Modal */
+.quick-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.quick-modal-bg.show{display:flex;}
+.quick-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:480px;position:relative;overflow:hidden;}
+.quick-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+
+/* Smart Alloc */
+.smart-header{margin-bottom:14px;}
+.smart-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.smart-sub{font-size:12px;color:var(--muted);}
+.smart-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;}
+.smart-batch{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;position:relative;overflow:hidden;}
+.smart-batch::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--cyan);}
+.smart-batch-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
+.smart-batch-title{font-size:14px;font-weight:700;color:var(--text);}
+.smart-batch-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.smart-status-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.badge-ok{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
+.badge-warn{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
+.badge-none{background:var(--border);color:var(--muted);}
+.smart-content{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
+.smart-chart-col{min-width:0;}
+.smart-table-col{min-width:0;overflow:auto;}
+.smart-ok{color:var(--cyan);font-size:11px;font-weight:700;}
+.smart-warn{color:var(--gold);font-size:11px;font-weight:700;}
+.smart-no{color:var(--red);font-size:11px;font-weight:700;}
+.smart-leftover{font-size:11px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--border);margin-top:4px;}
+.smart-scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:smartscan 4s linear infinite;pointer-events:none;z-index:0;}
+@keyframes smartscan{0%{transform:translateX(-100%);}100%{transform:translateX(100vw);}}
+
+/* Manage inbound/incoming forms */
+.manage-right{display:flex;flex-direction:column;gap:10px;}
+.form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.form-section-hdr{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.form-section-title{font-size:12px;font-weight:700;color:var(--gold);}
+.form-section-body{padding:14px;}
 </style>
 </head>
 <body>
+
+<!-- 掃描線 -->
+<div class="smart-scan"></div>
 
 <!-- ══ 登入 ══ -->
 <div id="loginPage">
@@ -239,26 +307,19 @@ tbody tr:hover{background:var(--bg);}
     </div>
     <div class="login-title">換表庫存系統</div>
     <div class="login-company">竹建瓦斯股份有限公司</div>
-    <div class="login-sub">Gas Meter Inventory System v2.1</div>
-    <div class="login-field">
-      <label>工號</label>
-      <input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6">
-    </div>
-    <div class="login-field">
-      <label>密碼</label>
-      <input type="password" id="pwd" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <button class="btn-login" onclick="doLogin()">登入</button>
+    <div class="login-sub">Gas Meter Inventory System v3.0</div>
+    <div class="login-field"><label>工　號</label><input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()"></div>
+    <div class="login-field"><label>密　碼</label><input type="password" id="pwd" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-login ripple-host click-scale" onclick="doLogin()">登　入</button>
     <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
 <!-- ══ 載入動畫 ══ -->
-<div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div style="width:40px;height:40px;border:3px solid #e2e0d8;border-top-color:#1a7a50;border-radius:50%;animation:spin 1s linear infinite;"></div>
-  <div style="font-size:14px;color:#888880;" id="loadingText">資料載入中，請稍候…</div>
+<div id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">資料載入中，請稍候…</div>
 </div>
-<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- ══ 主程式 ══ -->
 <div id="appPage">
@@ -268,13 +329,13 @@ tbody tr:hover{background:var(--bg);}
     <div class="hdr-l">
       <div class="logo">竹</div>
       <div>
-        <div class="hdr-title">換表庫存系統 v2.1</div>
-        <div class="sync" style="cursor:pointer;" onclick="refreshData()" title="點擊強制重新載入">
+        <div class="hdr-title">換表庫存系統 v3.0</div>
+        <div class="sync" onclick="refreshData()" title="點擊強制重新載入">
           <div class="sync-dot"></div>Google Sheets 即時同步中 ↺
         </div>
       </div>
     </div>
-    <div class="hdr-r">
+    <div style="display:flex;align-items:center;gap:10px;">
       <div class="user-chip">
         <div class="user-av" id="userAv">管</div>
         <span class="user-name" id="roleBadge">—</span>
@@ -285,10 +346,11 @@ tbody tr:hover{background:var(--bg);}
 
   <!-- Nav -->
   <div class="nav">
-    <button class="nav-tab active" onclick="switchPanel('dashboard',this)">📊 總覽</button>
-    <button class="nav-tab" onclick="switchPanel('biz',this)">業務部</button>
-    <button class="nav-tab" onclick="switchPanel('eng',this)">工務部</button>
-    <button class="nav-tab" id="tab-manage" onclick="switchPanel('manage',this)" style="display:none;">⚙️ 系統管理</button>
+    <button class="nav-tab ripple-host active" onclick="switchPanel('dashboard',this)">📊 總覽</button>
+    <button class="nav-tab ripple-host" onclick="switchPanel('biz',this)">業務部</button>
+    <button class="nav-tab ripple-host" onclick="switchPanel('eng',this)">工務部</button>
+    <button class="nav-tab ripple-host" id="tab-manage" onclick="switchPanel('manage',this)" style="display:none;">⚙️ 系統管理</button>
+    <button class="nav-tab ripple-host" id="tab-smart" onclick="switchPanel('smart',this)" style="display:none;">📦 智慧配貨</button>
   </div>
 
   <!-- Main -->
@@ -296,14 +358,51 @@ tbody tr:hover{background:var(--bg);}
 
     <!-- ══ 總覽 ══ -->
     <div class="panel active" id="panel-dashboard">
-      <div class="slabel">庫存狀態</div>
-      <div class="sg" id="stockGrid-N" style="margin-bottom:16px;">
+      <div class="slabel" style="margin-bottom:8px;">庫存狀態</div>
+      <div class="sg" id="stockGrid-N">
         <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div>
       </div>
       <div style="display:none;" id="stockGrid-M"></div>
 
-      <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;" class="dashboard-bot">
+      <!-- 圖表區 -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">庫存使用率（剩餘量）</div>
+          <div id="barChart">
+            <div class="bar-row"><span class="bar-label">4燈有子</span><div class="bar-track"><div class="bar-fill" style="background:var(--muted);width:0%"></div></div><span class="bar-val" style="color:var(--muted);">—</span></div>
+            <div class="bar-row"><span class="bar-label">4燈無子</span><div class="bar-track"><div class="bar-fill" style="background:var(--muted);width:0%"></div></div><span class="bar-val" style="color:var(--muted);">—</span></div>
+            <div class="bar-row"><span class="bar-label">6燈有子</span><div class="bar-track"><div class="bar-fill" style="background:var(--muted);width:0%"></div></div><span class="bar-val" style="color:var(--muted);">—</span></div>
+            <div class="bar-row"><span class="bar-label">6燈無子</span><div class="bar-track"><div class="bar-fill" style="background:var(--muted);width:0%"></div></div><span class="bar-val" style="color:var(--muted);">—</span></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">N型 vs M型 庫存分佈</div>
+          <div class="donut-wrap">
+            <svg width="100" height="100" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="4"/>
+              <circle id="donutN" cx="18" cy="18" r="14" fill="none" stroke="var(--cyan)" stroke-width="4"
+                stroke-dasharray="0 88" stroke-dashoffset="22" transform="rotate(-90 18 18)"/>
+              <circle id="donutM" cx="18" cy="18" r="14" fill="none" stroke="var(--gold)" stroke-width="4"
+                stroke-dasharray="0 88" stroke-dashoffset="22" transform="rotate(-90 18 18)"/>
+              <g id="donutTotal" style="opacity:0;transition:opacity .6s 2s;">
+                <text id="donutTotalNum" x="18" y="17" text-anchor="middle" fill="var(--cyan)" font-size="5.5" font-weight="bold">0</text>
+                <text x="18" y="22" text-anchor="middle" fill="var(--muted)" font-size="3.5">總庫存</text>
+              </g>
+            </svg>
+            <div class="donut-legend">
+              <div class="leg-row"><div class="leg-dot" style="background:var(--cyan);"></div><span class="leg-lbl">N型（台北貿易）</span><span class="leg-val" id="legendN" style="color:var(--cyan);">—</span></div>
+              <div class="leg-row"><div class="leg-dot" style="background:var(--gold);"></div><span class="leg-lbl">M型（力泰瓦斯）</span><span class="leg-val" id="legendM" style="color:var(--gold);">—</span></div>
+              <div class="leg-divider">
+                <div class="leg-row"><span class="leg-lbl">預估還需</span><span class="leg-val" id="legendEst" style="color:var(--red);">—</span></div>
+                <div class="leg-row" style="margin-top:4px;"><span class="leg-lbl">整體缺口</span><span class="leg-val" id="legendGap">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
+      <!-- 下方：預計進貨 + 未繳費/已繳費 -->
+      <div class="bot-grid">
         <!-- 左：預計進貨 -->
         <div id="incomingSection" style="display:none;">
           <div class="slabel">🚚 預計進貨提醒</div>
@@ -324,13 +423,9 @@ tbody tr:hover{background:var(--bg);}
               <div class="card-hdr"><span class="card-title">⚠️ 未繳費建案（不計入預估）</span></div>
               <div class="unpaid-nums" id="unpaidGrid"></div>
               <div class="twrap-scroll">
-                <table style="width:100%;border-collapse:collapse;">
+                <table>
                   <thead><tr>
-                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">社區／建案</th>
-                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">種類</th>
-                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
-                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">數量</th>
-                    <th style="padding:8px 14px;text-align:left;color:var(--muted);font-size:13px;background:var(--bg);border-bottom:0.5px solid var(--border);">部門</th>
+                    <th>社區／建案</th><th>種類</th><th>廠商</th><th>數量</th><th>部門</th>
                   </tr></thead>
                   <tbody id="unpaidBody"><tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr></tbody>
                 </table>
@@ -338,7 +433,7 @@ tbody tr:hover{background:var(--bg);}
             </div>
           </div>
 
-          <div id="paidSection" style="display:none;margin-top:12px;">
+          <div id="paidSection" style="display:none;margin-top:10px;">
             <div class="slabel">已繳費清單</div>
             <div class="twrap">
               <div class="twrap-scroll">
@@ -352,49 +447,55 @@ tbody tr:hover{background:var(--bg);}
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- ══ 業務部 ══ -->
     <div class="panel" id="panel-biz">
       <div class="updated" id="upd-biz"></div>
-      <div class="filter-bar">
-        <select id="biz-filter-type" onchange="renderBiz()">
-          <option value="">全部狀態</option>
-          <option value="estimate">預估</option>
-          <option value="actual">已領出</option>
-          <option value="return">退回</option>
-        </select>
-        <select id="biz-filter-light" onchange="renderBiz()">
-          <option value="">全部燈別</option>
-          <option value="4燈">4燈</option>
-          <option value="6燈">6燈</option>
-        </select>
-        <select id="biz-filter-vendor" onchange="renderBiz()">
-          <option value="">全部廠商</option>
-          <option value="N">N型（台北貿易）</option>
-          <option value="M">M型（力泰瓦斯）</option>
-        </select>
-        <input type="text" id="biz-search" oninput="renderBiz()" placeholder="🔍 搜尋建案名稱">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="filter-bar" style="margin-bottom:0;padding-bottom:0;">
+          <select id="biz-filter-type" onchange="renderBiz()">
+            <option value="">全部狀態</option>
+            <option value="estimate">預估排程</option>
+            <option value="actual">已領出</option>
+            <option value="return">退料入庫</option>
+          </select>
+          <select id="biz-filter-light" onchange="renderBiz()">
+            <option value="">全部燈別</option>
+            <option value="4燈">4燈</option>
+            <option value="6燈">6燈</option>
+          </select>
+          <select id="biz-filter-vendor" onchange="renderBiz()">
+            <option value="">全部廠商</option>
+            <option value="N">N型（台北貿易）</option>
+            <option value="M">M型（力泰瓦斯）</option>
+          </select>
+          <input type="text" id="biz-search" oninput="renderBiz()" placeholder="🔍 搜尋建案名稱">
+        </div>
+        <button class="card-action ripple-host click-scale" onclick="showBizQuickAdd()" style="flex-shrink:0;margin-left:10px;">＋ 新增建案</button>
       </div>
       <div class="dash-grid">
-        <div class="card">
-          <div class="card-hdr">
+        <div class="twrap">
+          <div class="card-hdr" style="border-bottom:1px solid var(--border);">
             <span class="card-title">📋 業務部 建案總覽</span>
             <span class="card-count" id="biz-count"></span>
           </div>
           <div class="twrap-scroll">
             <table>
-              <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th></tr></thead>
-              <tbody id="biz-body"><tr><td colspan="6" class="loading-cell">載入中…</td></tr></tbody>
+              <thead><tr>
+                <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
+                <th>預計掛表日 <span style="font-size:9px;font-weight:400;color:var(--muted);">（實際領錶日→安裝到建案日）</span></th>
+                <th>距今</th>
+              </tr></thead>
+              <tbody id="biz-body"><tr><td colspan="8" class="no-data">載入中…</td></tr></tbody>
             </table>
           </div>
         </div>
         <div class="card">
           <div class="card-hdr"><span class="card-title">📊 業務部 用量統計</span></div>
           <div style="padding:12px 14px;">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:0.5px solid var(--border);">點「實際領出」可查看各社區明細</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
             <div id="biz-stats"></div>
           </div>
         </div>
@@ -404,47 +505,55 @@ tbody tr:hover{background:var(--bg);}
     <!-- ══ 工務部 ══ -->
     <div class="panel" id="panel-eng">
       <div class="updated" id="upd-eng"></div>
-      <div class="filter-bar">
-        <select id="eng-filter-type" onchange="renderEng()">
-          <option value="">全部狀態</option>
-          <option value="estimate">預估</option>
-          <option value="actual">已領出</option>
-          <option value="return">退回</option>
-        </select>
-        <select id="eng-filter-light" onchange="renderEng()">
-          <option value="">全部燈別</option>
-          <option value="4燈">4燈</option>
-          <option value="6燈">6燈</option>
-        </select>
-        <select id="eng-filter-vendor" onchange="renderEng()">
-          <option value="">全部廠商</option>
-          <option value="N">N型（台北貿易）</option>
-          <option value="M">M型（力泰瓦斯）</option>
-        </select>
-        <select id="eng-filter-pay" onchange="renderEng()">
-          <option value="">全部繳費</option>
-          <option value="O">已繳費</option>
-          <option value="X">未繳費</option>
-        </select>
-        <input type="text" id="eng-search" oninput="renderEng()" placeholder="🔍 搜尋建案名稱">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="filter-bar" style="margin-bottom:0;padding-bottom:0;">
+          <select id="eng-filter-type" onchange="renderEng()">
+            <option value="">全部狀態</option>
+            <option value="estimate">預估排程</option>
+            <option value="actual">已領出</option>
+            <option value="return">退料入庫</option>
+          </select>
+          <select id="eng-filter-light" onchange="renderEng()">
+            <option value="">全部燈別</option>
+            <option value="4燈">4燈</option>
+            <option value="6燈">6燈</option>
+          </select>
+          <select id="eng-filter-vendor" onchange="renderEng()">
+            <option value="">全部廠商</option>
+            <option value="N">N型（台北貿易）</option>
+            <option value="M">M型（力泰瓦斯）</option>
+          </select>
+          <select id="eng-filter-pay" onchange="renderEng()">
+            <option value="">全部繳費</option>
+            <option value="O">已繳費</option>
+            <option value="X">未繳費</option>
+          </select>
+          <input type="text" id="eng-search" oninput="renderEng()" placeholder="🔍 搜尋建案名稱">
+        </div>
+        <button class="card-action ripple-host click-scale" onclick="showEngQuickAdd()" style="flex-shrink:0;margin-left:10px;">＋ 新增建案</button>
       </div>
       <div class="dash-grid">
-        <div class="card">
-          <div class="card-hdr">
+        <div class="twrap">
+          <div class="card-hdr" style="border-bottom:1px solid var(--border);">
             <span class="card-title">📋 工務部 建案總覽</span>
             <span class="card-count" id="eng-count"></span>
           </div>
           <div class="twrap-scroll">
             <table>
-              <thead><tr><th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th><th id="pay-col-hdr" style="display:none;">繳費</th></tr></thead>
-              <tbody id="eng-body"><tr><td colspan="7" class="loading-cell">載入中…</td></tr></tbody>
+              <thead><tr>
+                <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
+                <th>預計掛表日 <span style="font-size:9px;font-weight:400;color:var(--muted);">（預計安裝到建案日）</span></th>
+                <th>距今</th>
+                <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:9px;font-weight:400;color:var(--muted);">點擊切換</span></th>
+              </tr></thead>
+              <tbody id="eng-body"><tr><td colspan="9" class="no-data">載入中…</td></tr></tbody>
             </table>
           </div>
         </div>
         <div class="card">
           <div class="card-hdr"><span class="card-title">📊 工務部 用量統計</span></div>
           <div style="padding:12px 14px;">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:0.5px solid var(--border);">點「實際領出」可查看各社區明細</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
             <div id="eng-stats"></div>
           </div>
         </div>
@@ -460,30 +569,30 @@ tbody tr:hover{background:var(--bg);}
         <div>
           <div class="fcard">
             <h4 id="addTitle">新增出入庫／排程記錄</h4>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">系統將依選擇的「類型」自動計算目前剩餘庫存</div>
+            <div class="fcard-sub">系統將依選擇的「類型」自動計算目前剩餘庫存</div>
+
             <div class="fg ffull" style="margin-bottom:12px;">
               <label>記錄類型</label>
-              <select id="recordTypeSelect" onchange="onRecordTypeChange(this.value)" style="width:100%;padding:9px 12px;border:0.5px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;">
+              <select id="recordTypeSelect" onchange="onRecordTypeChange(this.value)">
                 <option value="estimate">📅 預估排程（estimate）</option>
                 <option value="actual">✓ 實際領出</option>
-                <option value="return">↩ 退回倉庫</option>
+                <option value="return">↩ 退料入庫</option>
                 <option value="inbound">📦 廠商入庫（直接更新庫存）</option>
                 <option value="incoming">🚚 新增預計進貨</option>
               </select>
             </div>
 
+            <!-- 一般記錄欄位（預估/領出/退料）-->
             <div id="normalFields">
               <div class="fgrid">
-                <div class="fg"><label>日期（民國格式）</label><input type="text" id="f-date" placeholder="115.05.22"></div>
+                <div class="fg"><label>實際領錶日期（民國格式）<span class="hint">例：115.05.18</span></label><input type="text" id="f-date" placeholder="115.05.22"></div>
                 <div class="fg" id="deptField"><label>部門</label>
                   <select id="f-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
                 </div>
                 <div class="fg ffull">
                   <label>社區建案（自動彙整下拉）</label>
-                  <select id="f-name-sel" onchange="onCaseSelect(this.value)" style="margin-bottom:6px;">
-                    <option value="">請輸入或選擇建案</option>
-                  </select>
-                  <input type="text" id="f-name" placeholder="輸入或選擇建案" style="display:none;">
+                  <select id="f-name-sel" onchange="onCaseSelect(this.value,'f-name')" style="margin-bottom:6px;"></select>
+                  <input type="text" id="f-name" placeholder="輸入新建案名稱" style="display:none;">
                 </div>
                 <div class="fg"><label>燈別</label>
                   <select id="f-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
@@ -495,10 +604,19 @@ tbody tr:hover{background:var(--bg);}
                   <select id="f-vendor"><option value="N">N（台北貿易）</option><option value="M">M（力泰瓦斯）</option></select>
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
+                <div class="fg ffull">
+                  <label>預計掛表日（民國格式）<span class="hint">預計安裝到建案的日期，例：115.07.30</span></label>
+                  <input type="text" id="f-hangdate" placeholder="115.07.30（60天內系統會提醒倉管備料）">
+                </div>
                 <div class="fg ffull"><label>備註</label><input type="text" id="f-note" placeholder="例：已含初始庫存／換表等量"></div>
+              </div>
+              <div class="verify-row" id="verifyRow" style="display:none;">
+                <input type="checkbox" id="f-verify">
+                <label class="verify-label" for="f-verify">☑ 我已確認本次記錄數量正確，與實體核對無誤</label>
               </div>
             </div>
 
+            <!-- 廠商入庫欄位 -->
             <div id="inboundFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
@@ -515,9 +633,18 @@ tbody tr:hover{background:var(--bg);}
                   <select id="ib-type"><option value="N">N型</option><option value="M">M型</option></select>
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ib-qty" min="1" placeholder="0"></div>
+                <div class="fg ffull"><label>採購單號 <span class="hint">對應紙本採購單</span></label><input type="text" id="ib-po" placeholder="PO-115-001"></div>
+                <div class="fg ffull"><label>本次到貨說明 <span class="hint">例：第一批，共兩批</span></label><input type="text" id="ib-note" placeholder="本次到貨說明"></div>
+                <div class="fg ffull"><label>下一批預計日期 <span class="hint">如有分批到貨</span></label><input type="text" id="ib-nextdate" placeholder="115.06.20（無則留空）"></div>
               </div>
+              <div class="verify-row">
+                <input type="checkbox" id="ib-verify">
+                <label class="verify-label" for="ib-verify">☑ 我已確認本次入庫數量正確，與實體核對無誤</label>
+              </div>
+              <input type="hidden" id="ib-rowid"><input type="hidden" id="ib-submit-btn"><input type="hidden" id="ic-submit-btn">
             </div>
 
+            <!-- 預計進貨欄位 -->
             <div id="incomingFields" style="display:none;">
               <div class="fgrid">
                 <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
@@ -535,47 +662,59 @@ tbody tr:hover{background:var(--bg);}
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ic-qty" min="1" placeholder="0"></div>
               </div>
+              <input type="hidden" id="ic-rowid">
             </div>
 
-            <input type="hidden" id="ib-rowid" value="">
-            <input type="hidden" id="ic-rowid" value="">
-            <button class="btn-green" id="btnSub" onclick="handleSubmit()">➤ 確認送出資料</button>
+            <button class="btn-green ripple-host click-scale" id="btnSub" onclick="handleSubmit()">➤ 確認送出資料</button>
           </div>
         </div>
 
         <!-- 右：入庫記錄 + 預計進貨 -->
-        <div>
-          <div class="card" style="margin-bottom:12px;">
-            <div class="card-hdr">
-              <span class="card-title">📦 廠商入庫明細記錄</span>
-              <span style="font-size:11px;color:var(--green);cursor:pointer;" onclick="switchToType('inbound')">直接更新庫存</span>
+        <div class="manage-right">
+          <!-- 廠商入庫 -->
+          <div class="form-section">
+            <div class="form-section-hdr">
+              <span class="form-section-title" id="ib-form-title">➕ 新增入庫（廠商送貨）</span>
+              <button class="btn-cancel ripple-host" id="ib-cancel-btn" onclick="cancelEditInbound()">取消編輯</button>
             </div>
-            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <div style="padding:10px 14px;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="card-title">📦 廠商入庫明細記錄</span>
+                <button class="card-action ripple-host" onclick="switchToType('inbound')">＋ 新增入庫</button>
+              </div>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
               <thead><tr>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">日期</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">進貨廠商</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格型號</th>
-                <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">入庫數量</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
+                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">採購單號</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
               </tr></thead>
               <tbody id="inbound-body"><tr><td colspan="5" class="no-data">尚無入庫記錄</td></tr></tbody>
             </table>
           </div>
 
-          <div class="card">
-            <div class="card-hdr">
-              <span class="card-title">🚚 預計進貨排程進度</span>
-              <span style="font-size:11px;color:var(--amber);">⚠️ 不影響庫存計算</span>
+          <!-- 預計進貨 -->
+          <div class="form-section">
+            <div class="form-section-hdr">
+              <span class="form-section-title" id="ic-form-title">➕ 新增預計進貨</span>
+              <button class="btn-cancel ripple-host" id="ic-cancel-btn" onclick="cancelEditIncoming()">取消編輯</button>
             </div>
-            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <div style="padding:10px 14px;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span class="card-title">🚚 預計進貨排程 <span style="font-size:10px;color:var(--muted);font-weight:400;">不影響庫存計算</span></span>
+                <button class="card-action ripple-host" onclick="switchToType('incoming')">＋ 新增</button>
+              </div>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
               <thead><tr>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計到貨日</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">廠商</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">規格</th>
-                <th style="padding:7px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">預計數量</th>
-                <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:0.5px solid var(--border);">操作</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">預計到貨日</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
+                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
               </tr></thead>
-              <tbody id="incoming-body"><tr><td colspan="5" class="no-data">尚無預計進貨</td></tr></tbody>
+              <tbody id="incoming-body"><tr><td colspan="4" class="no-data">尚無預計進貨</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -583,11 +722,13 @@ tbody tr:hover{background:var(--bg);}
 
       <!-- 刪除領表記錄 -->
       <div id="delSection" style="display:none;margin-top:12px;">
-        <div class="divider"><span>刪除領表記錄</span></div>
+        <div class="divider"><span>領表記錄管理</span></div>
         <div class="twrap">
           <div class="twrap-scroll">
             <table>
-              <thead><tr><th>日期</th><th>社區</th><th>數量</th><th>種類</th><th>廠商</th><th>狀態</th><th>編輯</th><th>刪除</th></tr></thead>
+              <thead><tr>
+                <th>實際領錶日</th><th>社區建案</th><th>數量</th><th>種類</th><th>廠商</th><th>狀態</th><th>預計掛表日</th><th>編輯</th><th>刪除</th>
+              </tr></thead>
               <tbody id="del-body"></tbody>
             </table>
           </div>
@@ -595,10 +736,57 @@ tbody tr:hover{background:var(--bg);}
       </div>
     </div>
 
+    <!-- ══ 智慧配貨建議 ══ -->
+    <div class="panel" id="panel-smart">
+      <div class="smart-header">
+        <div class="smart-title">📦 智慧配貨建議</div>
+        <div class="smart-sub">依預計進貨＋現有庫存，自動計算可供應哪些建案（依掛表日排序，最緊急優先）</div>
+      </div>
+      <div class="smart-empty" id="smart-empty" style="display:none;">
+        目前無預計進貨記錄。<br>請至「系統管理」→「預計進貨」新增到貨資訊。
+      </div>
+      <div id="smart-body"></div>
+    </div>
+
   </div>
 </div>
 
-<!-- ══ Modal ══ -->
+<!-- ══ 快速新增 Modal（業務部/工務部）══ -->
+<div class="quick-modal-bg" id="quickAddModal">
+  <div class="quick-modal">
+    <div class="modal-hdr">
+      <h3 id="qa-title">新增預估排程</h3>
+      <button class="modal-close" onclick="closeQuickAdd()">✕</button>
+    </div>
+    <div style="padding:16px;">
+      <input type="hidden" id="qa-dept">
+      <div class="fgrid">
+        <div class="fg ffull">
+          <label>社區建案</label>
+          <select id="qa-name-sel" onchange="onCaseSelect(this.value,'qa-name')" style="margin-bottom:6px;"></select>
+          <input type="text" id="qa-name" placeholder="輸入新建案名稱" style="display:none;">
+        </div>
+        <div class="fg"><label>燈別</label>
+          <select id="qa-light"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
+        </div>
+        <div class="fg"><label>子機</label>
+          <select id="qa-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
+        </div>
+        <div class="fg"><label>廠商</label>
+          <select id="qa-vendor"><option value="N">N（台北貿易）</option><option value="M">M（力泰瓦斯）</option></select>
+        </div>
+        <div class="fg"><label>數量（隻）</label><input type="number" id="qa-qty" min="1" placeholder="0"></div>
+        <div class="fg ffull">
+          <label>預計掛表日 <span class="hint">預計安裝到建案的日期</span></label>
+          <input type="text" id="qa-hangdate" placeholder="115.07.30（60天內自動警示）">
+        </div>
+      </div>
+      <button class="btn-green ripple-host click-scale" id="qa-submit" onclick="submitQuickAdd()">確認送出</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 明細 Modal ══ -->
 <div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-hdr">
@@ -620,7 +808,7 @@ tbody tr:hover{background:var(--bg);}
       <div class="ok-msg" id="editOkMsg" style="display:none;">✓ 已成功修改！</div>
       <input type="hidden" id="edit-rowid">
       <div class="fgrid">
-        <div class="fg"><label>日期（民國）</label><input type="text" id="edit-date"></div>
+        <div class="fg"><label>實際領錶日期（民國）</label><input type="text" id="edit-date"></div>
         <div class="fg"><label>部門</label>
           <select id="edit-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
         </div>
@@ -635,83 +823,62 @@ tbody tr:hover{background:var(--bg);}
           <select id="edit-vendor"><option value="N">N型（台北貿易）</option><option value="M">M型（力泰瓦斯）</option></select>
         </div>
         <div class="fg"><label>數量（隻）</label><input type="number" id="edit-qty" min="1"></div>
-        <div class="fg"><label>類型</label>
-          <select id="edit-type"><option value="estimate">預估排程</option><option value="actual">實際領出</option><option value="return">退回倉庫</option></select>
+        <div class="fg"><label>狀態類型</label>
+          <select id="edit-type"><option value="estimate">預估排程</option><option value="actual">實際領出</option><option value="return">退料入庫</option></select>
+        </div>
+        <div class="fg ffull">
+          <label>預計掛表日（民國格式）<span class="hint">預計安裝到建案的日期</span></label>
+          <input type="text" id="edit-hangdate" placeholder="115.07.30（留空則不設定）">
         </div>
         <div class="fg ffull"><label>備註</label><input type="text" id="edit-note" placeholder="備註（選填）"></div>
       </div>
-      <button class="btn-green" onclick="submitEdit()">確認修改</button>
+      <button class="btn-green ripple-host click-scale" onclick="submitEdit()">確認修改</button>
     </div>
   </div>
 </div>
 
-<script>
-
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbx3AhuOd27ZAa1A140arCcqyQ0UNtNPnLriHwOoqVGwAv0hSoRb7Va6yFtI3iyJdWU/exec';
-
+<script>const GAS_URL = 'https://script.google.com/macros/s/AKfycbx3AhuOd27ZAa1A140arCcqyQ0UNtNPnLriHwOoqVGwAv0hSoRb7Va6yFtI3iyJdWU/exec';
 const ACCOUNTS = [
   { empId:'037', pwd:'6666', role:'業務部' },
   { empId:'070', pwd:'8888', role:'工務部' },
   { empId:'054', pwd:'1688', role:'倉管'   },
   { empId:'060', pwd:'1688', role:'管理員' },
 ];
-
 const KEYS_N = ['4燈有子機-N','4燈無子機-N','6燈有子機-N','6燈無子機-N'];
 const KEYS_M = ['4燈有子機-M','4燈無子機-M','6燈有子機-M','6燈無子機-M'];
+const CACHE_KEY = 'meter_cache_v30';
+const CACHE_TTL = 5 * 60 * 1000;
 
-let allRecords = [];
-let allInbound = [];
-let allIncoming = [];
-let INIT = {};
-let currentRole = null;
-let recordType = 'estimate';
+let allRecords = [], allInbound = [], allIncoming = [], INIT = {}, currentRole = null, recordType = 'estimate';
 
-// ── 登入 ──
+// ── Ripple ──
+function addRipple(e) {
+  const el = e.currentTarget;
+  const rect = el.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.classList.add('ripple');
+  const size = Math.max(rect.width, rect.height) * 2;
+  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  el.appendChild(r);
+  r.addEventListener('animationend', ()=>r.remove());
+}
+function initRipples() {
+  document.querySelectorAll('.ripple-host').forEach(el=>{
+    el.removeEventListener('click', addRipple);
+    el.addEventListener('click', addRipple);
+  });
+}
+
+// ── Login ──
 function doLogin() {
   const empId = document.getElementById('empId').value.trim();
   const pwd   = document.getElementById('pwd').value.trim();
-  if (!empId||!pwd) { document.getElementById('loginErr').textContent='請輸入工號和密碼'; return; }
+  if (!empId||!pwd) { showLoginErr('請輸入工號和密碼'); return; }
   const acc = ACCOUNTS.find(a=>a.empId===empId && a.pwd===pwd);
   if (acc) { currentRole=acc.role; startApp(); }
-  else { document.getElementById('loginErr').textContent='工號或密碼錯誤，請再試一次'; }
+  else showLoginErr('工號或密碼錯誤，請再試一次');
 }
-
-function startApp() {
-  document.getElementById('loginPage').style.display='none';
-  document.getElementById('appPage').style.display='block';
-  document.getElementById('roleBadge').textContent=currentRole;
-  const av = document.getElementById('userAv');
-  if(av) av.textContent = currentRole.charAt(0);
-  const canManage = ['業務部','工務部','倉管','管理員'].includes(currentRole);
-  if (canManage) document.getElementById('tab-manage').style.display='';
-  const canPay = ['工務部','管理員'].includes(currentRole);
-  if (canPay) document.getElementById('pay-col-hdr').style.display='';
-  const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
-  if (canSeePay) { document.getElementById('unpaidSection').style.display=''; document.getElementById('paidSection').style.display=''; }
-  const isAdmin = ['倉管','管理員'].includes(currentRole);
-  if (isAdmin) {
-    document.getElementById('addTitle').textContent='新增出入庫／排程記錄';
-    document.getElementById('delSection').style.display='';
-    // 預設選實際領出
-    const sel = document.getElementById('recordTypeSelect');
-    if (sel) { sel.value='actual'; onRecordTypeChange('actual'); }
-  } else {
-    document.getElementById('addTitle').textContent='新增預估排程';
-    recordType='estimate';
-    // 業務部/工務部只能看到estimate
-    const sel = document.getElementById('recordTypeSelect');
-    if (sel) {
-      sel.value='estimate';
-      onRecordTypeChange('estimate');
-      // 隱藏非estimate選項
-      Array.from(sel.options).forEach(o=>{
-        if(o.value!=='estimate') o.style.display='none';
-      });
-    }
-  }
-  loadData();
-}
-
+function showLoginErr(msg) { document.getElementById('loginErr').textContent = msg; }
 function signOut() {
   currentRole=null; allRecords=[]; allInbound=[]; allIncoming=[];
   document.getElementById('loginPage').style.display='flex';
@@ -721,64 +888,88 @@ function signOut() {
   document.getElementById('loginErr').textContent='';
 }
 
-// ── 載入資料 ──
-const CACHE_KEY = 'meter_cache';
-const CACHE_TTL = 5 * 60 * 1000; // 5分鐘快取
+// ── Start App ──
+function startApp() {
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='block';
+  document.getElementById('roleBadge').textContent = currentRole;
+  const av = document.getElementById('userAv');
+  if (av) av.textContent = currentRole.charAt(0);
 
+  const canManage  = ['業務部','工務部','倉管','管理員'].includes(currentRole);
+  const canPay     = ['工務部','管理員'].includes(currentRole);
+  const canSeePay  = ['工務部','倉管','管理員'].includes(currentRole);
+  const isAdmin    = ['倉管','管理員'].includes(currentRole);
+
+  if (canManage)  document.getElementById('tab-manage').style.display='';
+  if (canPay)     document.getElementById('pay-col-hdr').style.display='';
+  if (canSeePay) {
+    document.getElementById('unpaidSection').style.display='';
+    document.getElementById('paidSection').style.display='';
+  }
+  // 智慧配貨分頁（倉管/管理員）
+  if (isAdmin) {
+    document.getElementById('tab-smart').style.display='';
+    document.getElementById('delSection').style.display='';
+  }
+
+  // 系統管理記錄類型下拉
+  const sel = document.getElementById('recordTypeSelect');
+  if (sel) {
+    if (isAdmin) {
+      sel.value='actual'; onRecordTypeChange('actual');
+    } else {
+      sel.value='estimate'; onRecordTypeChange('estimate');
+      Array.from(sel.options).forEach(o=>{
+        if (!['estimate'].includes(o.value)) o.style.display='none';
+      });
+    }
+  }
+
+  loadData();
+  setTimeout(initRipples, 500);
+}
+
+// ── Data ──
+const CACHE_KEY2 = 'meter_cache_v30';
 async function loadData(forceRefresh=false) {
   const overlay  = document.getElementById('loadingOverlay');
   const loadText = document.getElementById('loadingText');
-
-  // 嘗試讀快取
   if (!forceRefresh) {
     try {
-      const cached = sessionStorage.getItem(CACHE_KEY);
+      const cached = sessionStorage.getItem(CACHE_KEY2);
       if (cached) {
         const { data, ts } = JSON.parse(cached);
         if (Date.now() - ts < CACHE_TTL) {
-          applyData(data);
-          renderAll();
-          return;
+          applyData(data); renderAll(); return;
         }
       }
     } catch(e) {}
   }
-
-  // 快取沒有或過期，從 GAS 抓
   if (overlay) overlay.style.display='flex';
   const msgs = ['連線 Google Sheets…','讀取庫存資料…','載入建案記錄…','整理資料中…'];
   let mi = 0;
-  const ticker = setInterval(()=>{ if(loadText && mi<msgs.length) loadText.textContent=msgs[mi++]; }, 1500);
-
+  const ticker = setInterval(()=>{ if(loadText&&mi<msgs.length) loadText.textContent=msgs[mi++]; }, 1500);
   try {
     const r = await fetch(`${GAS_URL}?action=getAll`);
     const d = await r.json();
     applyData(d);
-    // 存入快取
-    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ data:d, ts:Date.now() })); } catch(e){}
+    try { sessionStorage.setItem(CACHE_KEY2, JSON.stringify({ data:d, ts:Date.now() })); } catch(e){}
   } catch(e) { console.log('載入失敗',e); }
-
   clearInterval(ticker);
   if (overlay) overlay.style.display='none';
   renderAll();
 }
-
 function applyData(d) {
   if (d.records)  allRecords  = d.records;
   if (d.stock)    Object.keys(d.stock).forEach(k=>{ INIT[k]=d.stock[k]; });
   if (d.inbound)  allInbound  = d.inbound;
   if (d.incoming) allIncoming = d.incoming;
 }
+function clearCache() { try { sessionStorage.removeItem(CACHE_KEY2); } catch(e){} }
+async function refreshData() { clearCache(); await loadData(true); }
 
-function clearCache() {
-  try { sessionStorage.removeItem(CACHE_KEY); } catch(e){}
-}
-
-async function refreshData() {
-  clearCache();
-  await loadData(true);
-}
-
+// ── Render All ──
 function renderAll() {
   renderStock();
   renderBiz();
@@ -788,357 +979,376 @@ function renderAll() {
   renderIncomingSection();
   renderIncomingTable();
   renderInboundTable();
+  renderSmartAlloc();
   setUpdatedTime();
+  setTimeout(initRipples, 100);
 }
 
-// ── 庫存計算 ──
+// ── Stock Calc ──
 function calcStock() {
-  // 實際淨領出 = 實際領出 - 退回（不含「已含初始庫存」）
-  const netActual    = {};  // key: light+sub+vendor
-  const actualByCase = {};  // key: light+sub+vendor|name
-  const estByCase    = {};  // key: light+sub+vendor|name（不含未繳費）
-  const estNeeded    = {};  // key: light+sub+vendor
-
-  // 加上入庫（增加初始庫存後的額外入庫）
-  const inboundTotal = {};
-  allInbound.forEach(r => {
-    const k = r.light+r.sub+'-'+r.type;
-    inboundTotal[k] = (inboundTotal[k]||0) + Number(r.qty);
+  const netActual={}, actualByCase={}, estByCase={}, estNeeded={}, inboundTotal={};
+  allInbound.forEach(r=>{
+    const k=r.light+r.sub+'-'+r.type;
+    inboundTotal[k]=(inboundTotal[k]||0)+Number(r.qty);
   });
-
-  allRecords.forEach(r => {
-    const vend    = r.vendor||'N';
-    const k       = r.light+r.sub+'-'+vend;
-    const caseKey = k+'|'+r.name;
+  allRecords.forEach(r=>{
+    const vend=(r.vendor||'N');
+    const k=r.light+r.sub+'-'+vend;
+    const ck=k+'|'+r.name;
     if (r.type==='actual') {
-      if ((r.note||'').trim()!=='已含初始庫存') netActual[k] = (netActual[k]||0) + Number(r.qty);
-      actualByCase[caseKey] = (actualByCase[caseKey]||0) + Number(r.qty);
+      if ((r.note||'').trim()!=='已含初始庫存') netActual[k]=(netActual[k]||0)+Number(r.qty);
+      actualByCase[ck]=(actualByCase[ck]||0)+Number(r.qty);
     } else if (r.type==='return') {
-      // 退回：加回庫存，加回尚欠
-      if ((r.note||'').trim()!=='已含初始庫存') netActual[k] = (netActual[k]||0) - Number(r.qty);
-      actualByCase[caseKey] = (actualByCase[caseKey]||0) - Number(r.qty);
+      if ((r.note||'').trim()!=='已含初始庫存') netActual[k]=(netActual[k]||0)-Number(r.qty);
+      actualByCase[ck]=(actualByCase[ck]||0)-Number(r.qty);
     } else if (r.type==='estimate') {
-      if (r.payment!=='X') {
-        estByCase[caseKey] = (estByCase[caseKey]||0) + Number(r.qty);
-      }
+      if (r.payment!=='X') estByCase[ck]=(estByCase[ck]||0)+Number(r.qty);
     }
   });
-
-  // 預估還需
   [...KEYS_N,...KEYS_M].forEach(k=>{ estNeeded[k]=0; });
-  Object.keys(estByCase).forEach(caseKey => {
-    const [k] = caseKey.split('|');
-    const diff = (estByCase[caseKey]||0) - Math.max(0, actualByCase[caseKey]||0);
-    if (diff>0) estNeeded[k] = (estNeeded[k]||0) + diff;
+  Object.keys(estByCase).forEach(ck=>{
+    const [k]=ck.split('|');
+    const diff=(estByCase[ck]||0)-Math.max(0,actualByCase[ck]||0);
+    if (diff>0) estNeeded[k]=(estNeeded[k]||0)+diff;
   });
-
   return { netActual, actualByCase, estByCase, estNeeded, inboundTotal };
 }
 
-// ── 庫存卡片 ──
+// ── Stock Cards ──
 function renderStock() {
   const { netActual, estNeeded, inboundTotal } = calcStock();
   const baseKeys = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
   const grid = document.getElementById('stockGrid-N');
-
-  grid.innerHTML = baseKeys.map(base => {
-    const kN = base+'-N';
-    const kM = base+'-M';
-    const initN   = (INIT[kN]||0) + (inboundTotal[kN]||0);
-    const initM   = (INIT[kM]||0) + (inboundTotal[kM]||0);
-    const usedN   = netActual[kN]||0;
-    const usedM   = netActual[kM]||0;
-    const estN    = estNeeded[kN]||0;
-    const estM    = estNeeded[kM]||0;
-    const remainN = initN - usedN;
-    const remainM = initM - usedM;
-    const total   = remainN + remainM;
-    const usedAll = usedN + usedM;
-    const estAll  = estN + estM;
-    const gap     = total - estAll;
-    const pct     = Math.min(100,(initN+initM)>0?Math.round(total/(initN+initM)*100):0);
-    const cls     = total<=0?'danger':gap<0?'warn':'ok';
-    const gapHtml = gap<0
-      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
-      : `<span class="sc-safe">可用${gap}隻</span>`;
-    return `<div class="sc ${cls}">
-      ${gap<0 ? '<div class="sc-buy-tag">採買警示</div>' : ''}
+  if (!grid) return;
+  grid.innerHTML = baseKeys.map(base=>{
+    const kN=base+'-N', kM=base+'-M';
+    const initN=(INIT[kN]||0)+(inboundTotal[kN]||0);
+    const initM=(INIT[kM]||0)+(inboundTotal[kM]||0);
+    const usedN=netActual[kN]||0, usedM=netActual[kM]||0;
+    const estN=estNeeded[kN]||0, estM=estNeeded[kM]||0;
+    const remainN=initN-usedN, remainM=initM-usedM;
+    const total=remainN+remainM, usedAll=usedN+usedM, estAll=estN+estM;
+    const gap=total-estAll;
+    const pct=Math.min(100,(initN+initM)>0?Math.round(total/(initN+initM)*100):0);
+    const cls=total<=0?'danger':gap<0?'warn':'ok';
+    const gapHtml=gap<0?`<span class="sc-gap">⚠ 缺口 ${Math.abs(gap)} 隻</span>`:`<span class="sc-safe">可用 ${gap} 隻</span>`;
+    return `<div class="sc ${cls} ripple-host click-scale">
+      <div class="sc-scan"></div>
+      ${gap<0?'<div class="buy-tag">採買警示</div>':''}
       <div class="sc-head">
-        <div>
-          <div class="sc-type">${base}</div>
-          <div style="display:flex;align-items:baseline;gap:6px;margin-top:2px;">
-            <span class="sc-remain">${total}</span>
-            <span class="sc-unit">隻剩餘</span>
-          </div>
-        </div>
-        <div class="sc-badge ${base.charAt(0)==='4'?'sc-badge-4':'sc-badge-6'}">${base.charAt(0)}</div>
+        <span class="sc-type">${base}</span>
+        <span class="sc-badge ${base.charAt(0)==='4'?'sc-badge-4':'sc-badge-6'}">${base.charAt(0)}</span>
+      </div>
+      <div class="sc-num ${cls}">${total}</div>
+      <div class="sc-unit">隻剩餘</div>
+      <div class="sc-div"></div>
+      <div class="sc-row">
+        <span class="sc-lbl">N型（台北貿易）</span>
+        <button class="sc-link click-scale" data-key="${kN}" onclick="openVendorModal(this.dataset.key,'N型（台北貿易）')">${remainN}隻▸</button>
+      </div>
+      <div class="sc-row">
+        <span class="sc-lbl">M型（力泰瓦斯）</span>
+        <button class="sc-link-gold click-scale" data-key="${kM}" onclick="openVendorModal(this.dataset.key,'M型（力泰瓦斯）')">${remainM}隻▸</button>
       </div>
       <div class="sc-div"></div>
-      <div class="sc-nm-row">
-        <div class="sc-nm-item">
-          <div class="sc-nm-label">N型（台北貿易）</div>
-          <button class="sc-link sc-nm-val" data-key="${kN}" onclick="openVendorModal(this.dataset.key,'N型（台北貿易）')">${remainN}隻▸</button>
-        </div>
-        <div class="sc-nm-item">
-          <div class="sc-nm-label">M型（力泰瓦斯）</div>
-          <button class="sc-link sc-nm-val" data-key="${kM}" onclick="openVendorModal(this.dataset.key,'M型（力泰瓦斯）')">${remainM}隻▸</button>
-        </div>
+      <div class="sc-row">
+        <span class="sc-lbl">本期已領出</span>
+        <button class="sc-link click-scale" data-keyn="${kN}" data-keym="${kM}" onclick="openActModalBoth(this.dataset.keyn,this.dataset.keym)">${usedAll}隻▸</button>
       </div>
-      <div class="sc-div"></div>
-      <div class="sc-row"><span class="sc-lbl">本期已領出</span><button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openActModalBoth(this.dataset.keyn,this.dataset.keym)">${usedAll}隻▸</button></div>
-      <div class="sc-row"><span class="sc-lbl">預估還需</span><button class="sc-link" data-keyn="${kN}" data-keym="${kM}" onclick="openEstModalBoth(this.dataset.keyn,this.dataset.keym)">${estAll}隻▸</button></div>
-      <div class="sc-row"><span>${gapHtml}</span></div>
-      <div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%"></div></div>
+      <div class="sc-row">
+        <span class="sc-lbl">預估還需</span>
+        <button class="sc-link click-scale" data-keyn="${kN}" data-keym="${kM}" onclick="openEstModalBoth(this.dataset.keyn,this.dataset.keym)">${estAll}隻▸</button>
+      </div>
+      <div class="sc-row">${gapHtml}</div>
+      <div class="sc-bar"><div class="sc-bar-fill ${cls}" style="width:${pct}%"></div></div>
     </div>`;
   }).join('');
-
+  // 更新圖表
+  renderCharts();
 }
 
-function renderStockGroup(gridId, keys, netActual, estNeeded, inboundTotal) {
-  // 合併同類型（去掉-N/-M），每個類型一張卡片
+// ── Charts ──
+function renderCharts() {
+  const { netActual, estNeeded, inboundTotal } = calcStock();
   const baseKeys = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
-  const vendor   = keys[0].includes('-N') ? 'N' : 'M';
-  
-  document.getElementById(gridId).innerHTML = baseKeys.map(base => {
-    const kN = base+'-N';
-    const kM = base+'-M';
-    const isN = vendor === 'N';
-    const k   = isN ? kN : kM;
-    
-    const initN   = (INIT[kN]||0) + (inboundTotal[kN]||0);
-    const initM   = (INIT[kM]||0) + (inboundTotal[kM]||0);
-    const init    = isN ? initN : initM;
-    const used    = netActual[k]||0;
-    const est     = estNeeded[k]||0;
-    const remain  = init - used;
-    const gap     = remain - est;
-    const pct     = Math.min(100, init>0 ? Math.round(remain/init*100) : 0);
-    const cls     = remain<=0 ? 'danger' : gap<0 ? 'warn' : 'ok';
-    const gapHtml = gap<0
-      ? `<span class="sc-gap">⚠ 缺口${Math.abs(gap)}隻</span>`
-      : `<span class="sc-safe">可用${gap}隻</span>`;
-    const inboundHtml = inboundTotal[k] ? `<div class="sc-row"><span class="sc-lbl">累計入庫</span><span>+${inboundTotal[k]}隻</span></div>` : '';
-    
-    return `<div class="sc ${cls}">
-      <div class="sc-type">${base}</div>
-      <div class="sc-remain">${remain}</div>
-      <div class="sc-unit">隻（目前剩餘）</div>
-      <div class="sc-rows">
-        <div class="sc-row"><span class="sc-lbl">盤點庫存</span><span>${INIT[k]||0}隻</span></div>
-        ${inboundHtml}
-        <div class="sc-row">
-          <span class="sc-lbl">盤點後領出</span>
-          <button class="sc-link" data-key="${k}" onclick="openActModal(this.dataset.key)">${used}隻▸</button>
-        </div>
-        <div class="sc-row">
-          <span class="sc-lbl">預估還需</span>
-          <button class="sc-link" data-key="${k}" onclick="openEstModal(this.dataset.key)">${est}隻▸</button>
-        </div>
-        <div class="sc-row"><span>${gapHtml}</span></div>
-      </div>
-      <div class="sc-bar"><div class="sc-bar-fill" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
+  // 長條圖
+  const barGrid = document.getElementById('barChart');
+  if (barGrid) {
+    const maxVal = Math.max(...baseKeys.map(b=>(INIT[b+'-N']||0)+(INIT[b+'-M']||0)+(inboundTotal[b+'-N']||0)+(inboundTotal[b+'-M']||0)), 1);
+    barGrid.innerHTML = baseKeys.map(base=>{
+      const kN=base+'-N', kM=base+'-M';
+      const initN=(INIT[kN]||0)+(inboundTotal[kN]||0);
+      const initM=(INIT[kM]||0)+(inboundTotal[kM]||0);
+      const usedN=netActual[kN]||0, usedM=netActual[kM]||0;
+      const remain=(initN-usedN)+(initM-usedM);
+      const pct=Math.round(remain/maxVal*100);
+      const cls=remain<=0?'danger':((estNeeded[kN]||0)+(estNeeded[kM]||0))>remain?'warn':'ok';
+      const color=cls==='ok'?'var(--cyan)':cls==='warn'?'var(--gold)':'var(--red)';
+      return `<div class="bar-row">
+        <span class="bar-label">${base.replace('燈','燈')}</span>
+        <div class="bar-track"><div class="bar-fill" style="background:${color};" data-w="${pct}"></div></div>
+        <span class="bar-val" style="color:${color};">${remain}隻</span>
+      </div>`;
+    }).join('');
+    // 動畫
+    setTimeout(()=>{
+      barGrid.querySelectorAll('.bar-fill').forEach(el=>{
+        el.style.width = el.dataset.w + '%';
+      });
+    }, 100);
+  }
+  // 圓形圖
+  const totalN = KEYS_N.reduce((s,k)=>(INIT[k]||0)+(inboundTotal[k]||0)-(netActual[k]||0)+s, 0);
+  const totalM = KEYS_M.reduce((s,k)=>(INIT[k]||0)+(inboundTotal[k]||0)-(netActual[k]||0)+s, 0);
+  const total  = totalN + totalM || 1;
+  const circum = 88;
+  const nLen   = Math.round(totalN/total*circum);
+  const mLen   = circum - nLen;
+  const donutN = document.getElementById('donutN');
+  const donutM = document.getElementById('donutM');
+  const donutTotal = document.getElementById('donutTotal');
+  if (donutN) {
+    donutN.style.transition='stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1)';
+    setTimeout(()=>{
+      donutN.setAttribute('stroke-dasharray', `${nLen} ${circum-nLen}`);
+      donutN.setAttribute('stroke-dashoffset', `${22}`);
+    }, 200);
+  }
+  if (donutM) {
+    donutM.style.transition='stroke-dasharray 1.0s cubic-bezier(.4,0,.2,1) 1.2s';
+    setTimeout(()=>{
+      donutM.setAttribute('stroke-dasharray', `${mLen} ${circum-mLen}`);
+      donutM.setAttribute('stroke-dashoffset', `${22-nLen}`);
+    }, 1200);
+  }
+  if (donutTotal) {
+    setTimeout(()=>{ donutTotal.style.opacity='1'; }, 2000);
+    document.getElementById('donutTotalNum').textContent = total;
+  }
+  document.getElementById('legendN').textContent = totalN + '隻';
+  document.getElementById('legendM').textContent = totalM + '隻';
+  // 預估缺口
+  const totalEst = [...KEYS_N,...KEYS_M].reduce((s,k)=>s+(estNeeded[k]||0),0);
+  const gapTotal = total - totalEst;
+  document.getElementById('legendEst').textContent = totalEst + '隻';
+  document.getElementById('legendGap').textContent = (gapTotal < 0 ? '缺' + Math.abs(gapTotal) : '充足') + '隻';
+  document.getElementById('legendGap').style.color = gapTotal < 0 ? 'var(--red)' : 'var(--cyan)';
 }
 
-// ── 預計進貨 ──
-function renderInboundTable() {
-  const body = document.getElementById('inbound-body');
-  if (!body) return;
-  if (!allInbound.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無入庫記錄</td></tr>'; return; }
-  body.innerHTML = allInbound.map(r=>`<tr>
-    <td>${r.date}</td>
-    <td style="font-size:12px;">${r.vendor}</td>
-    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
-    <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
-    <td><button class="btn-edit" onclick="editInbound('${r.rowId}')">✏️</button><button class="btn-del" onclick="deleteInbound('${r.rowId}',this)">✕</button></td>
-  </tr>`).join('');
+// ── 掛表日工具 ──
+function parseRocDate(rocStr) {
+  if (!rocStr) return null;
+  // 支援 115.05.15 和 115/05/15
+  const s = rocStr.replace(/\//g, '.');
+  const parts = s.split('.');
+  if (parts.length !== 3) return null;
+  const year  = parseInt(parts[0]) + 1911;
+  const month = parseInt(parts[1]) - 1;
+  const day   = parseInt(parts[2]);
+  return new Date(year, month, day);
+}
+function daysFromToday(rocStr) {
+  const d = parseRocDate(rocStr);
+  if (!d) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((d - today) / 86400000);
+}
+function urgencyClass(days) {
+  if (days === null) return '';
+  if (days <= 7)  return 'urgent';
+  if (days <= 60) return 'warning';
+  return '';
+}
+function urgencyBadge(days) {
+  if (days === null) return '<span class="days-badge days-none">未設定</span>';
+  if (days < 0)   return `<span class="days-badge days-urgent">已過期 ${Math.abs(days)} 天</span>`;
+  if (days === 0) return `<span class="days-badge days-urgent">今天！</span>`;
+  if (days <= 7)  return `<span class="days-badge days-urgent">${days} 天</span>`;
+  if (days <= 60) return `<span class="days-badge days-warning">${days} 天</span>`;
+  return `<span class="days-badge days-ok">${days} 天</span>`;
 }
 
-function editInbound(rowId) {
-  const r = allInbound.find(x=>String(x.rowId)===String(rowId));
-  if (!r) return;
-  document.getElementById('ib-rowid').value  = rowId;
-  document.getElementById('ib-date').value   = r.date;
-  document.getElementById('ib-vendor').value = r.vendor;
-  document.getElementById('ib-light').value  = r.light;
-  document.getElementById('ib-sub').value    = r.sub;
-  document.getElementById('ib-type').value   = r.type;
-  document.getElementById('ib-qty').value    = r.qty;
-  document.getElementById('ib-form-title').textContent = '✏️ 編輯入庫記錄';
-  document.getElementById('ib-submit-btn').textContent = '確認修改';
-  document.getElementById('ib-cancel-btn').style.display = 'block';
-  document.getElementById('ib-date').scrollIntoView({behavior:'smooth'});
-}
-
-function cancelEditInbound() {
-  document.getElementById('ib-rowid').value  = '';
-  document.getElementById('ib-date').value   = '';
-  document.getElementById('ib-qty').value    = '';
-  document.getElementById('ib-form-title').textContent = '➕ 新增入庫（廠商送貨）';
-  document.getElementById('ib-submit-btn').textContent = '確認入庫，更新庫存';
-  document.getElementById('ib-cancel-btn').style.display = 'none';
-}
-
-async function deleteInbound(rowId, btn) {
-  if (!confirm('確定要刪除這筆入庫記錄？⚠️ 刪除後庫存會自動減少！')) return;
-  btn.disabled=true; btn.textContent='…';
-  try {
-    await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
-  } catch(e) { console.log(e); }
-  allInbound = allInbound.filter(r=>String(r.rowId)!==String(rowId));
-  renderAll();
-}
-
-function renderIncomingSection() {
-  if (!allIncoming.length) { document.getElementById('incomingSection').style.display='none'; return; }
-  document.getElementById('incomingSection').style.display='';
-  document.getElementById('incomingList').innerHTML = allIncoming.map(r=>
-    `<div class="incoming-item">
-      <div>
-        <div class="incoming-name">${r.light}${r.sub}（${r.type}型・${r.vendor}）</div>
-        <div class="incoming-date">預計到貨：${r.date}</div>
-      </div>
-      <span class="incoming-qty">${r.qty}隻</span>
-    </div>`).join('');
-}
-
-function renderIncomingTable() {
-  const body = document.getElementById('incoming-body');
-  if (!body) return;
-  if (!allIncoming.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無預計進貨</td></tr>'; return; }
-  body.innerHTML = allIncoming.map(r=>`<tr>
-    <td>${r.date}</td>
-    <td style="font-size:12px;">${r.vendor}</td>
-    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
-    <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
-    <td><button class="btn-edit" onclick="editIncoming('${r.rowId}')">✏️</button><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteIncoming(this.dataset.rowid,this)">✕</button></td>
-  </tr>`).join('');
-}
-
-function editIncoming(rowId) {
-  const r = allIncoming.find(x=>String(x.rowId)===String(rowId));
-  if (!r) return;
-  document.getElementById('ic-rowid').value  = rowId;
-  document.getElementById('ic-date').value   = r.date;
-  document.getElementById('ic-vendor').value = r.vendor;
-  document.getElementById('ic-light').value  = r.light;
-  document.getElementById('ic-sub').value    = r.sub;
-  document.getElementById('ic-type').value   = r.type;
-  document.getElementById('ic-qty').value    = r.qty;
-  document.getElementById('ic-form-title').textContent = '✏️ 編輯預計進貨';
-  document.getElementById('ic-submit-btn').textContent = '確認修改';
-  document.getElementById('ic-cancel-btn').style.display = 'block';
-  document.getElementById('ic-date').scrollIntoView({behavior:'smooth'});
-}
-
-function cancelEditIncoming() {
-  document.getElementById('ic-rowid').value  = '';
-  document.getElementById('ic-date').value   = '';
-  document.getElementById('ic-qty').value    = '';
-  document.getElementById('ic-form-title').textContent = '➕ 新增預計進貨';
-  document.getElementById('ic-submit-btn').textContent = '新增預計進貨';
-  document.getElementById('ic-cancel-btn').style.display = 'none';
-}
-
-// ── 合併建案 ──
+// ── mergeByCase（含掛表日）──
 function mergeByCase(rows) {
   const map = {};
   rows.forEach(r => {
     const k = r.name+'|'+r.light+r.sub+'|'+(r.vendor||'N');
-    if (!map[k]) map[k] = { name:r.name, key:r.light+r.sub, vendor:r.vendor, cls:tagCls(r), est:0, actual:0, returned:0 };
-    if (r.type==='actual')   map[k].actual   += Number(r.qty);
-    else if (r.type==='return') map[k].returned += Number(r.qty);
-    else map[k].est += Number(r.qty);
+    if (!map[k]) map[k] = {
+      name:r.name, key:r.light+r.sub, vendor:r.vendor||'N',
+      cls:tagCls(r), est:0, actual:0, returned:0,
+      hangDate:r.hangDate||'', rowId:r.rowId, payment:r.payment||'', dept:r.dept
+    };
+    if (r.type==='actual')       map[k].actual   += Number(r.qty);
+    else if (r.type==='return')  map[k].returned += Number(r.qty);
+    else {
+      map[k].est += Number(r.qty);
+      if (r.hangDate) map[k].hangDate = r.hangDate;
+      if (r.rowId)    map[k].rowId    = r.rowId;
+      if (r.payment)  map[k].payment  = r.payment;
+    }
   });
   return Object.values(map).map(r=>({
     ...r,
     netActual: r.actual - r.returned,
-    pending: Math.max(0, r.est - (r.actual - r.returned))
-  })).sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
+    pending:   Math.max(0, r.est - (r.actual - r.returned)),
+    days:      daysFromToday(r.hangDate),
+  })).sort((a,b)=>{
+    // 依掛表日排序（由近到遠，無日期排最後）
+    if (!a.hangDate && !b.hangDate) return a.name.localeCompare(b.name,'zh-TW');
+    if (!a.hangDate) return 1;
+    if (!b.hangDate) return -1;
+    return (a.days??9999) - (b.days??9999);
+  });
 }
 
-// ── 業務部 ──
+// ── Biz ──
 function renderBiz() {
   let rows = allRecords.filter(r=>r.dept==='業務部');
-  // 篩選
-  const fType   = document.getElementById('biz-filter-type')?.value || '';
-  const fLight  = document.getElementById('biz-filter-light')?.value || '';
-  const fVendor = document.getElementById('biz-filter-vendor')?.value || '';
-  const fSearch = (document.getElementById('biz-search')?.value || '').trim();
+  const fType   = document.getElementById('biz-filter-type')?.value||'';
+  const fLight  = document.getElementById('biz-filter-light')?.value||'';
+  const fVendor = document.getElementById('biz-filter-vendor')?.value||'';
+  const fSearch = (document.getElementById('biz-search')?.value||'').trim();
   if (fType)   rows = rows.filter(r=>r.type===fType);
   if (fLight)  rows = rows.filter(r=>r.light===fLight);
   if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
   if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
-  
   const merged = mergeByCase(rows);
-  document.getElementById('biz-count').textContent=`共 ${merged.length} 筆`;
+  document.getElementById('biz-count').textContent = `共 ${merged.length} 筆`;
   const body = document.getElementById('biz-body');
-  if (!merged.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無記錄</td></tr>'; }
-  else { body.innerHTML = merged.map(r=>`<tr>
-    <td>${r.name}</td>
-    <td><span class="tag ${r.cls}">${r.key}</span></td>
-    <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
-    <td>${r.est}隻</td>
-    <td>${r.netActual}隻</td>
-    <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
-  </tr>`).join(''); }
+  if (!merged.length) { body.innerHTML='<tr><td colspan="8" class="no-data">尚無記錄</td></tr>'; }
+  else body.innerHTML = merged.map(r=>{
+    const urg = urgencyClass(r.days);
+    return `<tr class="${urg}">
+      <td style="font-weight:500;">${r.name}</td>
+      <td><span class="tag ${r.cls}">${r.key}</span></td>
+      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+      <td>${r.est}隻</td>
+      <td>${r.netActual}隻</td>
+      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};">${r.pending}隻</td>
+      <td>${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}</td>
+      <td>${urgencyBadge(r.days)}</td>
+    </tr>`;
+  }).join('');
   document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
 }
 
-// ── 工務部 ──
+// ── Eng ──
 function renderEng() {
   let rows = allRecords.filter(r=>r.dept==='工務部');
-  // 篩選
-  const fType   = document.getElementById('eng-filter-type')?.value || '';
-  const fLight  = document.getElementById('eng-filter-light')?.value || '';
-  const fVendor = document.getElementById('eng-filter-vendor')?.value || '';
-  const fPay    = document.getElementById('eng-filter-pay')?.value || '';
-  const fSearch = (document.getElementById('eng-search')?.value || '').trim();
+  const fType   = document.getElementById('eng-filter-type')?.value||'';
+  const fLight  = document.getElementById('eng-filter-light')?.value||'';
+  const fVendor = document.getElementById('eng-filter-vendor')?.value||'';
+  const fPay    = document.getElementById('eng-filter-pay')?.value||'';
+  const fSearch = (document.getElementById('eng-search')?.value||'').trim();
   if (fType)   rows = rows.filter(r=>r.type===fType);
   if (fLight)  rows = rows.filter(r=>r.light===fLight);
   if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
   if (fPay)    rows = rows.filter(r=>r.payment===fPay);
   if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
-
-  const merged = mergeByCase(rows);
-  document.getElementById('eng-count').textContent=`共 ${merged.length} 筆`;
-  const canPay = ['工務部','管理員'].includes(currentRole);
-  const body   = document.getElementById('eng-body');
-  if (!merged.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無記錄</td></tr>'; }
-  else { body.innerHTML = merged.map(r => {
-    const origRec = allRecords.find(rec=>rec.dept==='工務部'&&rec.name===r.name&&rec.light+rec.sub===r.key&&rec.type==='estimate');
-    const rowId   = origRec ? origRec.rowId : '';
-    const payment = origRec ? (origRec.payment||'') : '';
+  const merged  = mergeByCase(rows);
+  const canPay  = ['工務部','管理員'].includes(currentRole);
+  document.getElementById('eng-count').textContent = `共 ${merged.length} 筆`;
+  const body = document.getElementById('eng-body');
+  if (!merged.length) { body.innerHTML='<tr><td colspan="9" class="no-data">尚無記錄</td></tr>'; }
+  else body.innerHTML = merged.map(r=>{
+    const urg     = urgencyClass(r.days);
     const payHtml = canPay
-      ? `<td onclick="togglePayment('${rowId}','${payment}')" style="cursor:pointer;text-align:center;">
-          ${payment==='O'?'<span class="pay-o">O</span>':payment==='X'?'<span class="pay-x">X</span>':'<span class="pay-blank">—</span>'}
-         </td>`
-      : `<td style="text-align:center;">${payment==='O'?'<span class="pay-o">O</span>':payment==='X'?'<span class="pay-x">X</span>':'—'}</td>`;
-    return `<tr>
-      <td>${r.name}</td>
+      ? `<td onclick="togglePayment('${r.rowId}','${r.payment}')" style="cursor:pointer;text-align:center;">${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'<span class="pay-blank">—</span>'}</td>`
+      : `<td style="text-align:center;">${r.payment==='O'?'<span class="pay-o">O</span>':r.payment==='X'?'<span class="pay-x">X</span>':'—'}</td>`;
+    return `<tr class="${urg}">
+      <td style="font-weight:500;">${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
       <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
       <td>${r.est}隻</td>
       <td>${r.netActual}隻</td>
-      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--green)'};">${r.pending}隻</td>
+      <td style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};">${r.pending}隻</td>
+      <td>${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}</td>
+      <td>${urgencyBadge(r.days)}</td>
       ${payHtml}
     </tr>`;
-  }).join(''); }
+  }).join('');
   document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='工務部')), '工務部');
 }
 
-// ── 繳費切換 ──
+// ── 繳費 ──
 async function togglePayment(rowId, current) {
-  const next = current==='' ? 'O' : current==='O' ? 'X' : '';
+  const next = current===''?'O':current==='O'?'X':'';
   const rec  = allRecords.find(r=>String(r.rowId)===String(rowId));
   if (rec) rec.payment = next;
   renderAll();
-  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'updatePayment',rowId:Number(rowId),payment:next})}); }
-  catch(e) { console.log(e); }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'updatePayment',rowId:Number(rowId),payment:next})}); } catch(e){}
 }
 
-// ── 未繳費/已繳費 ──
+// ── 快速新增掛表日 ──
+async function quickUpdateHangDate(rowId, oldDate) {
+  const newDate = prompt('預計掛表日（民國格式，例：115.07.30）：', oldDate||'');
+  if (newDate === null) return;
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (rec) rec.hangDate = newDate;
+  clearCache();
+  renderAll();
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'updateHangDate',rowId:Number(rowId),hangDate:newDate})}); } catch(e){}
+}
+
+// ── 業務部快速新增 ──
+function showBizQuickAdd() {
+  const modal = document.getElementById('quickAddModal');
+  document.getElementById('qa-dept').value = '業務部';
+  document.getElementById('qa-title').textContent = '業務部 新增預估排程';
+  modal.classList.add('show');
+  populateCaseDropdown('qa-name-sel');
+}
+function showEngQuickAdd() {
+  const modal = document.getElementById('quickAddModal');
+  document.getElementById('qa-dept').value = '工務部';
+  document.getElementById('qa-title').textContent = '工務部 新增預估排程';
+  modal.classList.add('show');
+  populateCaseDropdown('qa-name-sel');
+}
+function closeQuickAdd() {
+  document.getElementById('quickAddModal').classList.remove('show');
+  document.getElementById('qa-name').value = '';
+  document.getElementById('qa-qty').value = '';
+  document.getElementById('qa-hangdate').value = '';
+  document.getElementById('qa-name-sel').value = '';
+  document.getElementById('qa-name').style.display = 'none';
+}
+async function submitQuickAdd() {
+  const dept    = document.getElementById('qa-dept').value;
+  const sel     = document.getElementById('qa-name-sel');
+  const nameInp = document.getElementById('qa-name').value.trim();
+  const name    = (sel.value && sel.value!=='__new__') ? sel.value : nameInp;
+  const light   = document.getElementById('qa-light').value;
+  const sub     = document.getElementById('qa-sub').value;
+  const vendor  = document.getElementById('qa-vendor').value;
+  const qty     = parseInt(document.getElementById('qa-qty').value);
+  const hangDate= document.getElementById('qa-hangdate').value.trim();
+  const today   = getTodayRoc();
+  if (!name||!qty||qty<1) { alert('請填寫建案名稱和數量'); return; }
+  const rec = { date:today, dept, name, light, sub, vendor, qty, type:'estimate', note:'', payment:'', hangDate };
+  const btn = document.getElementById('qa-submit');
+  btn.disabled=true; btn.textContent='送出中…';
+  let newRowId = Date.now();
+  try {
+    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
+    const d = await r.json();
+    if (d.rowId) newRowId=d.rowId;
+  } catch(e){}
+  allRecords.push({...rec, rowId:newRowId});
+  clearCache();
+  renderAll();
+  closeQuickAdd();
+  btn.disabled=false; btn.textContent='確認送出';
+}
+
+// ── 今天民國日期 ──
+function getTodayRoc() {
+  const now = new Date();
+  const roc = now.getFullYear()-1911;
+  return `${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+}
+
+// ── 繳費統計 ──
 function renderPaymentSections() {
   const canSeePay = ['工務部','倉管','管理員'].includes(currentRole);
   if (!canSeePay) return;
@@ -1148,38 +1358,32 @@ function renderPaymentSections() {
   const totals = {};
   unpaid.forEach(r=>{ const k=r.light+r.sub; totals[k]=(totals[k]||0)+Number(r.qty); });
   document.getElementById('unpaidGrid').innerHTML = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'].map(k=>`
-    <div class="unpaid-item">
-      <div class="ui-type">${k}</div>
-      <div class="ui-qty">${totals[k]||0}</div>
-      <div class="ui-unit">隻</div>
+    <div class="unpaid-num-box">
+      <div class="un-type">${k}</div>
+      <div class="un-val">${totals[k]||0}</div>
+      <div class="un-unit">隻</div>
     </div>`).join('');
   const ub = document.getElementById('unpaidBody');
-  if (!unpaid.length) {
-    ub.innerHTML = '<tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr>';
-  } else {
-    ub.innerHTML = unpaid.map(r=>`<tr>
-      <td style="font-weight:500;">${r.name}</td>
-      <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
-      <td style="font-weight:700;color:var(--red);">${r.qty}隻</td>
-      <td><span class="dept-tag ${r.dept==='業務部'?'dept-biz':'dept-eng'}">${r.dept}</span></td>
-    </tr>`).join('');
-  }
+  ub.innerHTML = !unpaid.length ? '<tr><td colspan="5" class="no-data">目前無未繳費建案</td></tr>'
+    : unpaid.map(r=>`<tr>
+        <td style="font-weight:500;">${r.name}</td>
+        <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+        <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+        <td style="font-weight:700;color:var(--red);">${r.qty}隻</td>
+        <td><span class="dept-tag ${r.dept==='業務部'?'dept-biz':'dept-eng'}">${r.dept}</span></td>
+      </tr>`).join('');
   const pb = document.getElementById('paidBody');
-  if (!paid.length) {
-    pb.innerHTML = '<tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr>';
-  } else {
-    pb.innerHTML = paid.map(r=>`<tr>
-      <td style="font-weight:500;">${r.name}</td>
-      <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
-      <td style="font-weight:700;color:var(--green);">${r.qty}隻</td>
-      <td><span class="dept-tag ${r.dept==='業務部'?'dept-biz':'dept-eng'}">${r.dept}</span></td>
-    </tr>`).join('');
-  }
+  pb.innerHTML = !paid.length ? '<tr><td colspan="5" class="no-data">目前無已繳費建案</td></tr>'
+    : paid.map(r=>`<tr>
+        <td style="font-weight:500;">${r.name}</td>
+        <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+        <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+        <td style="font-weight:700;color:var(--cyan);">${r.qty}隻</td>
+        <td><span class="dept-tag ${r.dept==='業務部'?'dept-biz':'dept-eng'}">${r.dept}</span></td>
+      </tr>`).join('');
 }
 
-// ── 統計 ──
+// ── 用量統計 ──
 function calcDeptStats(rows) {
   const est={}, actual={};
   ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'].forEach(k=>{est[k]=0;actual[k]=0;});
@@ -1191,126 +1395,167 @@ function calcDeptStats(rows) {
   });
   return {est,actual};
 }
-
 function renderStats({est,actual}, dept) {
   const keys=['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
   return `<table style="width:100%;border-collapse:collapse;font-size:12px;">
     <thead><tr>
-      <th style="padding:6px 8px;text-align:left;color:var(--muted);font-size:11px;border-bottom:1px solid var(--border);">種類</th>
-      <th style="padding:6px 8px;text-align:right;color:var(--purple);font-size:11px;border-bottom:1px solid var(--border);">預估總量</th>
-      <th style="padding:6px 8px;text-align:right;color:var(--green);font-size:11px;border-bottom:1px solid var(--border);">實際領出</th>
+      <th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;border-bottom:1px solid var(--border);">種類</th>
+      <th style="padding:6px 10px;text-align:right;color:var(--gold);font-size:10px;border-bottom:1px solid var(--border);">預估總量</th>
+      <th style="padding:6px 10px;text-align:right;color:var(--cyan);font-size:10px;border-bottom:1px solid var(--border);">實際領出</th>
     </tr></thead>
     <tbody>${keys.map(k=>`<tr>
-      <td style="padding:7px 8px;border-bottom:1px solid var(--border);color:var(--muted);">${k}</td>
-      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--purple);">${est[k]||0}隻</td>
-      <td style="padding:7px 8px;border-bottom:1px solid var(--border);text-align:right;">
-        <button class="sc-link" style="font-weight:700;color:var(--green);"
-          data-key="${k}" data-dept="${dept}"
-          onclick="openDeptActModal(this.dataset.key,this.dataset.dept)">
-          ${actual[k]||0}隻▸
-        </button>
+      <td style="padding:7px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${k}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--gold);">${est[k]||0}隻</td>
+      <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;">
+        <button class="sc-link" data-key="${k}" data-dept="${dept}" onclick="openDeptActModal(this.dataset.key,this.dataset.dept)">${actual[k]||0}隻▸</button>
       </td>
     </tr>`).join('')}</tbody>
   </table>`;
 }
 
-// ── 刪除表格 ──
-function renderDelTable() {
-  const canDel = ['倉管','管理員'].includes(currentRole);
-  if (!canDel) return;
-  const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
-  const body = document.getElementById('del-body');
-  if (!rows.length) { body.innerHTML='<tr><td colspan="8" class="no-data">尚無記錄</td></tr>'; return; }
-  body.innerHTML = rows.map(r=>`<tr>
-    <td>${r.date}</td><td>${r.name}</td><td>${r.qty}</td>
-    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
-    <td><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
-    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退回</span>':'<span class="badge-est">預估</span>'}</td>
-    <td><button class="btn-edit" data-rowid="${r.rowId}" onclick="openEditModal(this.dataset.rowid)">✏️</button></td>
-    <td><button class="btn-del" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
+// ── 預計進貨 ──
+function renderIncomingSection() {
+  if (!allIncoming.length) { document.getElementById('incomingSection').style.display='none'; return; }
+  document.getElementById('incomingSection').style.display='';
+  document.getElementById('incomingList').innerHTML = allIncoming.map(r=>
+    `<div class="incoming-item">
+      <div>
+        <div class="inc-name">${r.light}${r.sub}（${r.type}型・${r.vendor}）</div>
+        <div class="inc-date">預計到貨：${r.date}</div>
+      </div>
+      <span class="inc-qty">${r.qty}隻</span>
+    </div>`).join('');
+}
+function renderIncomingTable() {
+  const body = document.getElementById('incoming-body');
+  if (!body) return;
+  if (!allIncoming.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無預計進貨</td></tr>'; return; }
+  body.innerHTML = allIncoming.map(r=>`<tr>
+    <td>${r.date}</td>
+    <td style="font-size:11px;">${r.vendor}</td>
+    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
+    <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
+    <td><button class="btn-edit click-scale ripple-host" onclick="editIncoming('${r.rowId}')">✏️</button><button class="btn-del click-scale" data-rowid="${r.rowId}" onclick="deleteIncoming(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
 }
 
-// ── 新增記錄 ──
-async function submitRecord() {
-  const sel    = document.getElementById('f-name-sel');
-  const selVal = sel ? sel.value : '';
-  const nameInp = document.getElementById('f-name').value.trim();
-  const name   = (selVal&&selVal!=='__new__') ? selVal : nameInp;
-  const date   = document.getElementById('f-date').value.trim();
-  const dept   = document.getElementById('f-dept').value;
-  const light  = document.getElementById('f-light').value;
-  const sub    = document.getElementById('f-sub').value;
-  const vendor = document.getElementById('f-vendor').value;
-  const qty    = parseInt(document.getElementById('f-qty').value);
-  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-  const type = ['倉管','管理員'].includes(currentRole) ? recordType : 'estimate';
-  const rec  = { date, dept, name, light, sub, vendor, qty, type, note:'', payment:'' };
-  const btn  = document.getElementById('btnSub');
-  btn.disabled=true; btn.textContent='送出中…';
-  let newRowId = Date.now();
-  try {
-    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
-    const d = await r.json();
-    if (d.rowId) newRowId=d.rowId;
-  } catch(e) { console.log(e); }
-  allRecords.push({...rec,rowId:newRowId});
-  clearCache();
-  renderAll();
-  document.getElementById('f-date').value='';
-  document.getElementById('f-name').value='';
-  document.getElementById('f-qty').value='';
-  if (sel) { sel.value=''; populateCaseDropdown(); }
-  document.getElementById('f-name').style.display='none';
-  showOk();
-  btn.disabled=false; btn.textContent='確認送出';
+// ── 入庫記錄 ──
+function renderInboundTable() {
+  const body = document.getElementById('inbound-body');
+  if (!body) return;
+  if (!allInbound.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無入庫記錄</td></tr>'; return; }
+  body.innerHTML = allInbound.map(r=>`<tr>
+    <td>${r.date}</td>
+    <td style="font-size:11px;">${r.vendor}</td>
+    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
+    <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
+    <td style="font-size:11px;color:var(--muted);">${r.poNumber||'—'}</td>
+    <td><button class="btn-edit click-scale ripple-host" onclick="editInbound('${r.rowId}')">✏️</button><button class="btn-del click-scale" onclick="deleteInbound('${r.rowId}',this)">✕</button></td>
+  </tr>`).join('');
 }
 
-// ── 入庫 ──
+// ── 入庫 edit ──
+function editInbound(rowId) {
+  const r = allInbound.find(x=>String(x.rowId)===String(rowId));
+  if (!r) return;
+  document.getElementById('ib-rowid').value  = rowId;
+  document.getElementById('ib-date').value   = r.date;
+  document.getElementById('ib-vendor').value = r.vendor;
+  document.getElementById('ib-light').value  = r.light;
+  document.getElementById('ib-sub').value    = r.sub;
+  document.getElementById('ib-type').value   = r.type;
+  document.getElementById('ib-qty').value    = r.qty;
+  document.getElementById('ib-po').value     = r.poNumber||'';
+  document.getElementById('ib-note').value   = r.arrivalNote||'';
+  document.getElementById('ib-nextdate').value= r.nextDate||'';
+  document.getElementById('ib-form-title').textContent='✏️ 編輯入庫記錄';
+  document.getElementById('ib-submit-btn').textContent='確認修改';
+  document.getElementById('ib-cancel-btn').style.display='block';
+}
+function cancelEditInbound() {
+  document.getElementById('ib-rowid').value='';
+  document.getElementById('ib-date').value='';
+  document.getElementById('ib-qty').value='';
+  document.getElementById('ib-po').value='';
+  document.getElementById('ib-note').value='';
+  document.getElementById('ib-nextdate').value='';
+  document.getElementById('ib-verify').checked=false;
+  document.getElementById('ib-form-title').textContent='➕ 新增入庫（廠商送貨）';
+  document.getElementById('ib-submit-btn').textContent='確認入庫，更新庫存';
+  document.getElementById('ib-cancel-btn').style.display='none';
+}
 async function submitInbound() {
-  const rowId  = document.getElementById('ib-rowid').value;
-  const date   = document.getElementById('ib-date').value.trim();
-  const vendor = document.getElementById('ib-vendor').value;
-  const light  = document.getElementById('ib-light').value;
-  const sub    = document.getElementById('ib-sub').value;
-  const type   = document.getElementById('ib-type').value;
-  const qty    = parseInt(document.getElementById('ib-qty').value);
+  const rowId   = document.getElementById('ib-rowid').value;
+  const date    = document.getElementById('ib-date').value.trim();
+  const vendor  = document.getElementById('ib-vendor').value;
+  const light   = document.getElementById('ib-light').value;
+  const sub     = document.getElementById('ib-sub').value;
+  const type    = document.getElementById('ib-type').value;
+  const qty     = parseInt(document.getElementById('ib-qty').value);
+  const poNumber= document.getElementById('ib-po').value.trim();
+  const arrNote = document.getElementById('ib-note').value.trim();
+  const nextDate= document.getElementById('ib-nextdate').value.trim();
+  const verified= document.getElementById('ib-verify').checked ? '✓' : '';
   if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-  const rec = { date, vendor, light, sub, type, qty };
-  const k = light+sub+'-'+type;
-
+  if (!verified) { alert('請先勾選勾稽確認！'); return; }
+  const rec = { date, vendor, light, sub, type, qty, poNumber, arrivalNote:arrNote, nextDate, verified };
+  const k   = light+sub+'-'+type;
   if (rowId) {
-    // 編輯模式：先找舊的數量，還原庫存，再加新數量
     const old = allInbound.find(x=>String(x.rowId)===String(rowId));
-    if (old) {
-      const oldK = old.light+old.sub+'-'+old.type;
-      INIT[oldK] = (INIT[oldK]||0) - old.qty; // 還原舊庫存
-    }
+    if (old) { const oldK=old.light+old.sub+'-'+old.type; INIT[oldK]=(INIT[oldK]||0)-old.qty; }
     try {
       await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
-      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
-      const d = await r.json();
-      allInbound = allInbound.filter(x=>String(x.rowId)!==String(rowId));
-      allInbound.push({...rec, rowId: d.rowId||Date.now()});
-    } catch(e) { console.log(e); }
-    INIT[k] = (INIT[k]||0) + qty; // 加新庫存
+      const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+      const d=await r.json();
+      allInbound=allInbound.filter(x=>String(x.rowId)!==String(rowId));
+      allInbound.push({...rec, rowId:d.rowId||Date.now()});
+    } catch(e){}
+    INIT[k]=(INIT[k]||0)+qty;
     cancelEditInbound();
   } else {
-    // 新增模式
     try {
-      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
-      const d = await r.json();
+      const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+      const d=await r.json();
       allInbound.push({...rec, rowId:d.rowId||Date.now()});
-    } catch(e) { console.log(e); }
-    INIT[k] = (INIT[k]||0) + qty;
-    document.getElementById('ib-date').value='';
-    document.getElementById('ib-qty').value='';
+    } catch(e){}
+    INIT[k]=(INIT[k]||0)+qty;
+    cancelEditInbound();
   }
-  renderAll();
-  showOk();
+  clearCache(); renderAll(); showOk();
+}
+async function deleteInbound(rowId, btn) {
+  if (!confirm('確定要刪除這筆入庫記錄？⚠️ 庫存會減少！')) return;
+  if (btn) { btn.disabled=true; btn.textContent='…'; }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})}); } catch(e){}
+  const old = allInbound.find(x=>String(x.rowId)===String(rowId));
+  if (old) { const k=old.light+old.sub+'-'+old.type; INIT[k]=(INIT[k]||0)-old.qty; }
+  allInbound=allInbound.filter(r=>String(r.rowId)!==String(rowId));
+  clearCache(); renderAll();
 }
 
-// ── 預計進貨 ──
+// ── 預計進貨 edit ──
+function editIncoming(rowId) {
+  const r = allIncoming.find(x=>String(x.rowId)===String(rowId));
+  if (!r) return;
+  document.getElementById('ic-rowid').value  = rowId;
+  document.getElementById('ic-date').value   = r.date;
+  document.getElementById('ic-vendor').value = r.vendor;
+  document.getElementById('ic-light').value  = r.light;
+  document.getElementById('ic-sub').value    = r.sub;
+  document.getElementById('ic-type').value   = r.type;
+  document.getElementById('ic-qty').value    = r.qty;
+  document.getElementById('ic-form-title').textContent='✏️ 編輯預計進貨';
+  document.getElementById('ic-submit-btn').textContent='確認修改';
+  document.getElementById('ic-cancel-btn').style.display='block';
+}
+function cancelEditIncoming() {
+  document.getElementById('ic-rowid').value='';
+  document.getElementById('ic-date').value='';
+  document.getElementById('ic-qty').value='';
+  document.getElementById('ic-form-title').textContent='➕ 新增預計進貨';
+  document.getElementById('ic-submit-btn').textContent='新增預計進貨提醒';
+  document.getElementById('ic-cancel-btn').style.display='none';
+}
 async function submitIncoming() {
   const rowId  = document.getElementById('ic-rowid').value;
   const date   = document.getElementById('ic-date').value.trim();
@@ -1321,166 +1566,390 @@ async function submitIncoming() {
   const qty    = parseInt(document.getElementById('ic-qty').value);
   if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
   const rec = { date, vendor, light, sub, type, qty };
-
   if (rowId) {
-    // 編輯模式：刪舊的，新增新的
     try {
       await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})});
-      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
-      const d = await r.json();
-      allIncoming = allIncoming.filter(x=>String(x.rowId)!==String(rowId));
-      allIncoming.push({...rec, rowId: d.rowId||Date.now()});
-    } catch(e) { console.log(e); }
+      const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
+      const d=await r.json();
+      allIncoming=allIncoming.filter(x=>String(x.rowId)!==String(rowId));
+      allIncoming.push({...rec, rowId:d.rowId||Date.now()});
+    } catch(e){}
     cancelEditIncoming();
   } else {
-    // 新增模式
-    let newRowId = Date.now();
+    let newRowId=Date.now();
     try {
-      const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
-      const d = await r.json();
+      const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addIncoming',...rec})});
+      const d=await r.json();
       if (d.rowId) newRowId=d.rowId;
-    } catch(e) { console.log(e); }
+    } catch(e){}
     allIncoming.push({...rec, rowId:newRowId});
-    document.getElementById('ic-date').value='';
-    document.getElementById('ic-qty').value='';
+    cancelEditIncoming();
   }
-  renderAll();
-  showOk();
+  clearCache(); renderAll(); showOk();
 }
-
-// ── 刪除 ──
-async function deleteRecord(rowId, btn) {
-  if (!confirm('確定要刪除這筆記錄？')) return;
-  btn.disabled=true; btn.textContent='…';
-  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})}); }
-  catch(e) { console.log(e); }
-  allRecords=allRecords.filter(r=>String(r.rowId)!==String(rowId));
-  clearCache();
-  renderAll();
-}
-
 async function deleteIncoming(rowId, btn) {
   if (!confirm('確定要刪除這筆預計進貨？')) return;
-  btn.disabled=true; btn.textContent='…';
-  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})}); }
-  catch(e) { console.log(e); }
+  if (btn) { btn.disabled=true; btn.textContent='…'; }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})}); } catch(e){}
   allIncoming=allIncoming.filter(r=>String(r.rowId)!==String(rowId));
-  renderAll();
+  clearCache(); renderAll();
 }
 
-// ── 下拉選單 ──
-function populateCaseDropdown() {
-  const sel = document.getElementById('f-name-sel');
+// ── 刪除表格 ──
+function renderDelTable() {
+  const canDel = ['倉管','管理員'].includes(currentRole);
+  if (!canDel) return;
+  const body = document.getElementById('del-body');
+  if (!body) return;
+  const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  if (!rows.length) { body.innerHTML='<tr><td colspan="9" class="no-data">尚無記錄</td></tr>'; return; }
+  body.innerHTML = rows.map(r=>`<tr>
+    <td style="font-size:11px;">${r.date}</td>
+    <td style="font-weight:500;">${r.name}</td>
+    <td>${r.qty}</td>
+    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+    <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
+    <td style="font-size:11px;">${r.hangDate||'—'}</td>
+    <td><button class="btn-edit click-scale ripple-host" data-rowid="${r.rowId}" onclick="openEditModal(this.dataset.rowid)">✏️</button></td>
+    <td><button class="btn-del click-scale" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
+  </tr>`).join('');
+}
+
+// ── 新增記錄 ──
+async function submitRecord() {
+  const sel    = document.getElementById('f-name-sel');
+  const selVal = sel ? sel.value : '';
+  const nameInp= document.getElementById('f-name').value.trim();
+  const name   = (selVal&&selVal!=='__new__') ? selVal : nameInp;
+  const date   = document.getElementById('f-date').value.trim() || getTodayRoc();
+  const dept   = document.getElementById('f-dept').value;
+  const light  = document.getElementById('f-light').value;
+  const sub    = document.getElementById('f-sub').value;
+  const vendor = document.getElementById('f-vendor').value;
+  const qty    = parseInt(document.getElementById('f-qty').value);
+  const note   = document.getElementById('f-note').value.trim();
+  const hangDate= document.getElementById('f-hangdate').value.trim();
+  const verifyEl= document.getElementById('f-verify');
+  if (!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  if (verifyEl && !verifyEl.checked) { alert('請先勾選勾稽確認！'); return; }
+  const type = ['倉管','管理員'].includes(currentRole) ? recordType : 'estimate';
+  const rec  = { date, dept, name, light, sub, vendor, qty, type, note, payment:'', hangDate };
+  const btn  = document.getElementById('btnSub');
+  btn.disabled=true; btn.textContent='送出中…';
+  let newRowId=Date.now();
+  try {
+    const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
+    const d=await r.json();
+    if (d.rowId) newRowId=d.rowId;
+  } catch(e){}
+  allRecords.push({...rec, rowId:newRowId});
+  clearCache();
+  // 清除表單
+  document.getElementById('f-date').value='';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-qty').value='';
+  document.getElementById('f-note').value='';
+  document.getElementById('f-hangdate').value='';
+  if (verifyEl) verifyEl.checked=false;
+  if (sel) { sel.value=''; populateCaseDropdown('f-name-sel'); }
+  document.getElementById('f-name').style.display='none';
+  renderAll(); showOk();
+  btn.disabled=false; btn.textContent='➤ 確認送出資料';
+}
+
+// ── 刪除記錄 ──
+async function deleteRecord(rowId, btn) {
+  if (!confirm('確定要刪除這筆記錄？')) return;
+  if (btn) { btn.disabled=true; btn.textContent='…'; }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})}); } catch(e){}
+  allRecords=allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  clearCache(); renderAll();
+}
+
+// ── 編輯記錄 ──
+function openEditModal(rowId) {
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (!rec) return;
+  document.getElementById('edit-rowid').value   = rec.rowId;
+  document.getElementById('edit-date').value    = rec.date;
+  document.getElementById('edit-dept').value    = rec.dept;
+  document.getElementById('edit-name').value    = rec.name;
+  document.getElementById('edit-light').value   = rec.light;
+  document.getElementById('edit-sub').value     = rec.sub;
+  document.getElementById('edit-vendor').value  = rec.vendor||'N';
+  document.getElementById('edit-qty').value     = rec.qty;
+  document.getElementById('edit-type').value    = rec.type;
+  document.getElementById('edit-note').value    = rec.note||'';
+  document.getElementById('edit-hangdate').value= rec.hangDate||'';
+  document.getElementById('editOkMsg').style.display='none';
+  document.getElementById('editModalBg').classList.add('show');
+}
+function closeEditModal() { document.getElementById('editModalBg').classList.remove('show'); }
+async function submitEdit() {
+  const rowId   = document.getElementById('edit-rowid').value;
+  const date    = document.getElementById('edit-date').value.trim();
+  const dept    = document.getElementById('edit-dept').value;
+  const name    = document.getElementById('edit-name').value.trim();
+  const light   = document.getElementById('edit-light').value;
+  const sub     = document.getElementById('edit-sub').value;
+  const vendor  = document.getElementById('edit-vendor').value;
+  const qty     = parseInt(document.getElementById('edit-qty').value);
+  const type    = document.getElementById('edit-type').value;
+  const note    = document.getElementById('edit-note').value.trim();
+  const hangDate= document.getElementById('edit-hangdate').value.trim();
+  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (rec) { Object.assign(rec,{date,dept,name,light,sub,vendor,qty,type,note,hangDate}); }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'editRecord',rowId:Number(rowId),date,dept,name,light,sub,vendor,qty,type,note,hangDate})}); } catch(e){}
+  clearCache(); renderAll();
+  const ok=document.getElementById('editOkMsg');
+  ok.style.display='block';
+  setTimeout(()=>{ ok.style.display='none'; closeEditModal(); },1500);
+}
+
+// ── 記錄類型切換 ──
+function setType(t) { recordType = t; }
+function onRecordTypeChange(val) {
+  const normalFields   = document.getElementById('normalFields');
+  const inboundFields  = document.getElementById('inboundFields');
+  const incomingFields = document.getElementById('incomingFields');
+  if (!normalFields) return;
+  normalFields.style.display   = 'none';
+  inboundFields.style.display  = 'none';
+  incomingFields.style.display = 'none';
+  const btn = document.getElementById('btnSub');
+  const verifyRow = document.getElementById('verifyRow');
+  if (val==='inbound') {
+    inboundFields.style.display='block';
+    if (btn) { btn.textContent='確認入庫，更新庫存'; btn.style.background='var(--blue-btn)'; }
+    if (verifyRow) verifyRow.style.display='none';
+  } else if (val==='incoming') {
+    incomingFields.style.display='block';
+    if (btn) { btn.textContent='新增預計進貨提醒'; btn.style.background='#6d28d9'; }
+    if (verifyRow) verifyRow.style.display='none';
+  } else {
+    normalFields.style.display='block';
+    recordType=val;
+    const deptField=document.getElementById('deptField');
+    if (deptField) deptField.style.display=(val==='return')?'none':'';
+    if (btn) { btn.textContent='➤ 確認送出資料'; btn.style.background='var(--cyan)'; }
+    if (verifyRow) verifyRow.style.display=(val==='actual'||val==='return')?'flex':'none';
+  }
+}
+function handleSubmit() {
+  const type = document.getElementById('recordTypeSelect').value;
+  if (type==='inbound')  { submitInbound();  return; }
+  if (type==='incoming') { submitIncoming(); return; }
+  submitRecord();
+}
+function switchToType(type) {
+  const sel=document.getElementById('recordTypeSelect');
+  if (sel) { sel.value=type; onRecordTypeChange(type); }
+  switchPanel('manage', document.getElementById('tab-manage'));
+}
+
+// ── 建案下拉 ──
+function populateCaseDropdown(selId='f-name-sel') {
+  const sel = document.getElementById(selId);
   if (!sel) return;
   const names=[...new Set(allRecords.map(r=>r.name).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'zh-TW'));
   sel.innerHTML='<option value="">── 選擇現有建案 ──</option>';
   names.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; sel.appendChild(o); });
   const newOpt=document.createElement('option'); newOpt.value='__new__'; newOpt.textContent='＋ 輸入新建案名稱'; sel.appendChild(newOpt);
 }
-function onCaseSelect(val) {
-  const inp=document.getElementById('f-name');
+function onCaseSelect(val, nameId='f-name') {
+  const inp=document.getElementById(nameId);
+  if (!inp) return;
   if (val==='__new__'||val==='') { inp.value=''; inp.style.display='block'; if(val==='__new__') inp.focus(); }
   else { inp.value=val; inp.style.display='none'; }
 }
 
-// ── 記錄類型 ──
-function setType(t) {
-  recordType = t;
-}
-
-function onRecordTypeChange(val) {
-  const normalFields   = document.getElementById('normalFields');
-  const inboundFields  = document.getElementById('inboundFields');
-  const incomingFields = document.getElementById('incomingFields');
-  const deptField      = document.getElementById('deptField');
-
-  normalFields.style.display   = 'none';
-  inboundFields.style.display  = 'none';
-  incomingFields.style.display = 'none';
-
-  if (val === 'inbound') {
-    inboundFields.style.display = 'block';
-    document.getElementById('btnSub').textContent = '確認入庫，更新庫存';
-    document.getElementById('btnSub').style.background = 'var(--blue)';
-  } else if (val === 'incoming') {
-    incomingFields.style.display = 'block';
-    document.getElementById('btnSub').textContent = '新增預計進貨提醒';
-    document.getElementById('btnSub').style.background = 'var(--purple)';
-  } else {
-    normalFields.style.display = 'block';
-    recordType = val;
-    deptField.style.display = (val === 'return') ? 'none' : '';
-    document.getElementById('btnSub').textContent = '➤ 確認送出資料';
-    document.getElementById('btnSub').style.background = 'var(--green)';
+// ── 智慧配貨建議 ──
+function renderSmartAlloc() {
+  const body = document.getElementById('smart-body');
+  if (!body) return;
+  const { netActual, estByCase, actualByCase } = calcStock();
+  if (!allIncoming.length) {
+    document.getElementById('smart-empty').style.display='block';
+    body.innerHTML='';
+    return;
   }
-}
+  document.getElementById('smart-empty').style.display='none';
+  let html = '';
+  allIncoming.forEach(incoming=>{
+    const k    = incoming.light + incoming.sub + '-' + incoming.type;
+    const cur  = Math.max(0,(INIT[k]||0)-(netActual[k]||0));
+    const avail= cur + incoming.qty;
+    // 找出需要這種錶的建案（estimate，未繳費X不算，依掛表日排序）
+    const needy = allRecords
+      .filter(r => r.light+r.sub+'-'+(r.vendor||'N')===k && r.type==='estimate' && r.payment!=='X')
+      .reduce((map,r)=>{
+        const ck=r.name;
+        if (!map[ck]) map[ck]={ name:r.name, hangDate:r.hangDate||'', est:0, actual:0 };
+        map[ck].est += Number(r.qty);
+        return map;
+      }, {});
+    Object.keys(needy).forEach(n=>{
+      const ck=k+'|'+n;
+      needy[n].actual = Math.max(0, actualByCase[ck]||0);
+      needy[n].pending = Math.max(0, needy[n].est - needy[n].actual);
+      needy[n].days = daysFromToday(needy[n].hangDate);
+    });
+    const cases = Object.values(needy)
+      .filter(c=>c.pending>0)
+      .sort((a,b)=>{
+        if (!a.hangDate&&!b.hangDate) return a.name.localeCompare(b.name,'zh-TW');
+        if (!a.hangDate) return 1;
+        if (!b.hangDate) return -1;
+        return (a.days??9999)-(b.days??9999);
+      });
+    // 計算配貨
+    let leftover = avail;
+    cases.forEach(c=>{
+      c.alloc = Math.min(c.pending, leftover);
+      leftover = Math.max(0, leftover - c.alloc);
+      c.satisfied = c.alloc >= c.pending;
+    });
+    const satisfied = cases.filter(c=>c.satisfied).length;
+    const total     = cases.length;
+    const usedQty   = avail - leftover;
+    const pct       = avail>0 ? Math.round(usedQty/avail*100) : 0;
+    // 圓形圖數值
+    const circum = 88;
+    const sLen   = Math.round(pct/100*circum);
+    html += `
+    <div class="smart-batch">
+      <div class="smart-batch-hdr">
+        <div>
+          <div class="smart-batch-title">${incoming.light}${incoming.sub}（${incoming.type}型・${incoming.vendor}）</div>
+          <div class="smart-batch-sub">預計到貨：${incoming.date}　本批：${incoming.qty}隻　現有庫存：${cur}隻　→ 可用：<b style="color:var(--cyan);">${avail}隻</b></div>
+        </div>
+        <div class="smart-status-badge ${satisfied===total&&total>0?'badge-ok':satisfied>0?'badge-warn':'badge-none'}">
+          ${total>0?`可滿足 ${satisfied}/${total} 建案`:'暫無待配建案'}
+        </div>
+      </div>
 
-function switchToType(type) {
-  const sel = document.getElementById('recordTypeSelect');
-  if (sel) { sel.value = type; onRecordTypeChange(type); }
-  switchPanel('manage', document.querySelector('.nav-tab[onclick*="manage"]'));
-}
+      <div class="smart-content">
+        <!-- 左：圖表 -->
+        <div class="smart-chart-col">
+          <div class="chart-title">配貨分配圖</div>
+          <div class="donut-wrap" style="margin-bottom:14px;">
+            <svg width="100" height="100" viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="4"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="var(--cyan)" stroke-width="4"
+                stroke-dasharray="0 ${circum}" stroke-dashoffset="22"
+                transform="rotate(-90 18 18)"
+                style="transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1);"
+                data-target="${sLen} ${circum-sLen}"/>
+              <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="4"
+                stroke-dasharray="${circum-sLen} ${sLen}" stroke-dashoffset="${22-sLen}"
+                transform="rotate(-90 18 18)"/>
+              <text x="18" y="17" text-anchor="middle" fill="var(--cyan)" font-size="5.5" font-weight="bold">${pct}%</text>
+              <text x="18" y="22" text-anchor="middle" fill="var(--muted)" font-size="3.5">已分配</text>
+            </svg>
+            <div class="donut-legend">
+              <div class="leg-row"><div class="leg-dot" style="background:var(--cyan);"></div><span class="leg-lbl">已分配</span><span class="leg-val" style="color:var(--cyan);">${usedQty}隻</span></div>
+              <div class="leg-row"><div class="leg-dot" style="background:var(--border);"></div><span class="leg-lbl">剩餘</span><span class="leg-val">${leftover}隻</span></div>
+            </div>
+          </div>
+          <!-- 長條進度 -->
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">各建案配貨量</div>
+          ${cases.slice(0,4).map(c=>`
+          <div class="bar-row">
+            <span class="bar-label" style="width:72px;font-size:10px;">${c.name.substring(0,5)}</span>
+            <div class="bar-track">
+              <div class="bar-fill" style="background:${c.satisfied?'var(--cyan)':'var(--gold)'};"
+                data-w="${avail>0?Math.round(c.alloc/avail*100):0}"></div>
+            </div>
+            <span class="bar-val" style="color:${c.satisfied?'var(--cyan)':'var(--gold)'};">${c.alloc}隻</span>
+          </div>`).join('')}
+        </div>
 
-function handleSubmit() {
-  const type = document.getElementById('recordTypeSelect').value;
-  if (type === 'inbound')  { submitInbound();  return; }
-  if (type === 'incoming') { submitIncoming(); return; }
-  submitRecord();
+        <!-- 右：表格 -->
+        <div class="smart-table-col">
+          <table>
+            <thead><tr>
+              <th>建案名稱</th>
+              <th>預計掛表日</th>
+              <th>距今</th>
+              <th>尚欠</th>
+              <th>本批配貨</th>
+              <th>狀態</th>
+            </tr></thead>
+            <tbody>
+              ${cases.length ? cases.map(c=>{
+                const urg=urgencyClass(c.days);
+                return `<tr class="${urg}">
+                  <td style="font-weight:500;">${c.name}</td>
+                  <td style="font-size:11px;">${c.hangDate||'<span style="color:var(--muted);">未設定</span>'}</td>
+                  <td>${urgencyBadge(c.days)}</td>
+                  <td style="font-weight:700;color:var(--red);">${c.pending}隻</td>
+                  <td style="font-weight:700;color:${c.alloc>0?'var(--cyan)':'var(--muted)'};">${c.alloc}隻</td>
+                  <td>${c.satisfied?'<span class="smart-ok">✅ 可滿足</span>':c.alloc>0?'<span class="smart-warn">⚠️ 部分</span>':'<span class="smart-no">❌ 不足</span>'}</td>
+                </tr>`;
+              }).join('') : '<tr><td colspan="6" class="no-data">此類型暫無待配建案</td></tr>'}
+            </tbody>
+          </table>
+          ${leftover>0 ? `<div class="smart-leftover">本批配完後剩餘 <b style="color:var(--cyan);">${leftover}隻</b> 可彈性調度</div>` : ''}
+        </div>
+      </div>
+    </div>`;
+  });
+  body.innerHTML = html;
+  // 啟動圓形圖動畫
+  setTimeout(()=>{
+    body.querySelectorAll('circle[data-target]').forEach(el=>{
+      el.setAttribute('stroke-dasharray', el.dataset.target);
+    });
+    body.querySelectorAll('.bar-fill[data-w]').forEach(el=>{
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 200);
 }
 
 // ── Modal ──
 function openVendorModal(key, vendorLabel) {
-  // 顯示該廠商該種類的所有已領出社區（含盤點前）
-  const base = key.replace('-N','').replace('-M','');
-  
-  // 用 actualByCase 計算各社區總領出
-  const caseMap = {};
-  allRecords.forEach(r => {
-    if (r.light+r.sub+'-'+(r.vendor||'N') !== key) return;
-    if (r.type === 'actual') {
-      caseMap[r.name] = (caseMap[r.name]||0) + Number(r.qty);
-    } else if (r.type === 'return') {
-      caseMap[r.name] = (caseMap[r.name]||0) - Number(r.qty);
-    }
+  const base=key.replace('-N','').replace('-M','');
+  const caseMap={};
+  allRecords.forEach(r=>{
+    if (r.light+r.sub+'-'+(r.vendor||'N')!==key) return;
+    if (!caseMap[r.name]) caseMap[r.name]=0;
+    if (r.type==='actual') caseMap[r.name]+=Number(r.qty);
+    else if (r.type==='return') caseMap[r.name]-=Number(r.qty);
   });
-
-  const rows = Object.entries(caseMap)
-    .filter(([name, qty]) => qty > 0)
-    .sort((a,b) => b[1]-a[1]);
-
-  document.getElementById('modalTitle').textContent = base+' '+vendorLabel+' 已領社區明細';
-  document.getElementById('modalBody').innerHTML = !rows.length
-    ? `<div class="modal-empty">尚無領出記錄</div>`
-    : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
+  const rows=Object.entries(caseMap).filter(([,qty])=>qty>0).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('modalTitle').textContent=base+' '+vendorLabel+' 已領社區明細';
+  document.getElementById('modalBody').innerHTML=!rows.length
+    ?`<div class="modal-empty">尚無領出記錄</div>`
+    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead><tr>
         <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
         <th style="padding:8px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領出</th>
       </tr></thead>
       <tbody>${rows.map(([name,qty])=>`<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--green);">${qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${name}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--cyan);">${qty}隻</td>
       </tr>`).join('')}</tbody>
     </table>`;
   document.getElementById('modalBg').classList.add('show');
 }
-
 function openActModalBoth(keyN, keyM) {
-  const rows = allRecords.filter(r =>
-    (r.light+r.sub+'-'+(r.vendor||'N')===keyN || r.light+r.sub+'-'+(r.vendor||'N')===keyM) &&
-    (r.type==='actual' || r.type==='return') &&
-    (r.note||'').trim() !== '已含初始庫存'
+  const rows=allRecords.filter(r=>
+    (r.light+r.sub+'-'+(r.vendor||'N')===keyN||r.light+r.sub+'-'+(r.vendor||'N')===keyM)&&
+    (r.type==='actual'||r.type==='return')&&
+    (r.note||'').trim()!=='已含初始庫存'
   );
-  const base = keyN.replace('-N','');
-  const totalAct = rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
-  const totalRet = rows.filter(r=>r.type==='return').reduce((s,r)=>s+Number(r.qty),0);
-  const netTotal = totalAct - totalRet;
-  document.getElementById('modalTitle').textContent = base+' 已領出明細';
-  document.getElementById('modalBody').innerHTML = !rows.length
-    ? `<div class="modal-empty">尚無領出記錄</div>`
-    : `<div style="padding:10px 14px;background:var(--green-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
-        <span>領出 <b>${totalAct}</b>隻　退回 <b style="color:var(--amber)">${totalRet}</b>隻</span>
-        <span>淨領出 <b style="color:var(--green)">${netTotal}</b>隻</span>
-       </div>
+  const base=keyN.replace('-N','');
+  const totalAct=rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
+  const totalRet=rows.filter(r=>r.type==='return').reduce((s,r)=>s+Number(r.qty),0);
+  document.getElementById('modalTitle').textContent=base+' 本期領出明細';
+  document.getElementById('modalBody').innerHTML=!rows.length
+    ?`<div class="modal-empty">尚無本期領出記錄</div>`
+    :`<div style="padding:10px 14px;background:var(--cyan-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
+        <span>領出 <b>${totalAct}</b>隻　退料 <b style="color:var(--gold)">${totalRet}</b>隻</span>
+        <span>淨領出 <b style="color:var(--cyan)">${totalAct-totalRet}</b>隻</span>
+      </div>
       <table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead><tr>
         <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
@@ -1491,107 +1960,31 @@ function openActModalBoth(keyN, keyM) {
       </tr></thead>
       <tbody>${rows.map(r=>`<tr>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--amber)':'var(--green)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--gold)':'var(--cyan)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退回</span>'}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退料入庫</span>'}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.date}</td>
       </tr>`).join('')}</tbody>
     </table>`;
   document.getElementById('modalBg').classList.add('show');
 }
-
 function openEstModalBoth(keyN, keyM) {
-  const {actualByCase, estByCase} = calcStock();
-  const base = keyN.replace('-N','');
-  const caseNamesN = [...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyN&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
-  const caseNamesM = [...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyM&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
-  const allCases = [...new Set([...caseNamesN,...caseNamesM])];
-  document.getElementById('modalTitle').textContent = base+' 預估等待中';
-  if (!allCases.length) {
-    document.getElementById('modalBody').innerHTML = `<div class="modal-empty">目前無預估排程</div>`;
-  } else {
-    const rows = allCases.map(name => {
-      const ckN = keyN+'|'+name;
-      const ckM = keyM+'|'+name;
-      const est = (estByCase[ckN]||0) + (estByCase[ckM]||0);
-      const act = Math.max(0,(actualByCase[ckN]||0)) + Math.max(0,(actualByCase[ckM]||0));
-      const pending = Math.max(0, est-act);
-      const rec = allRecords.find(r=>(r.light+r.sub+'-'+(r.vendor||'N')===keyN||r.light+r.sub+'-'+(r.vendor||'N')===keyM)&&r.name===name&&r.type==='estimate');
-      return {name, est, act, pending, dept: rec?rec.dept:''};
-    }).filter(r=>r.pending>0);
-    document.getElementById('modalBody').innerHTML = !rows.length
-      ? `<div class="modal-empty">所有建案均已領完！</div>`
-      : `<table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead><tr>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
-        </tr></thead>
-        <tbody>${rows.map(r=>`<tr>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
-        </tr>`).join('')}</tbody>
-      </table>`;
-  }
-  document.getElementById('modalBg').classList.add('show');
-}
-
-function openActModal(key) {
-  // 顯示 actual 和 return 兩種記錄（排除已含初始庫存）
-  const rows = allRecords.filter(r =>
-    r.light+r.sub+'-'+(r.vendor||'N')===key &&
-    (r.type==='actual' || r.type==='return') &&
-    (r.note||'').trim() !== '已含初始庫存'
-  );
-  // 計算淨領出
-  const totalAct = rows.filter(r=>r.type==='actual').reduce((s,r)=>s+Number(r.qty),0);
-  const totalRet = rows.filter(r=>r.type==='return').reduce((s,r)=>s+Number(r.qty),0);
-  const netTotal = totalAct - totalRet;
-
-  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 本期領出明細';
-  document.getElementById('modalBody').innerHTML=!rows.length
-    ?`<div class="modal-empty">尚無本期領出記錄</div>`
-    :`<div style="padding:10px 14px;background:var(--green-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
-        <span>領出 <b>${totalAct}</b>隻　退回 <b style="color:var(--amber)">${totalRet}</b>隻</span>
-        <span>淨領出 <b style="color:var(--green)">${netTotal}</b>隻</span>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead><tr>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">狀態</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-      </tr></thead>
-      <tbody>${rows.map(r=>`<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--amber)':'var(--green)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退回</span>'}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
-  document.getElementById('modalBg').classList.add('show');
-}
-
-function openEstModal(key) {
-  const {actualByCase,estByCase}=calcStock();
-  const caseNames=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===key&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
-  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 預估等待中';
-  if (!caseNames.length) {
-    document.getElementById('modalBody').innerHTML=`<div class="modal-empty">目前無預估排程記錄</div>`;
-  } else {
-    const rows=caseNames.map(name=>{
-      const caseKey=key+'|'+name;
-      const est=estByCase[caseKey]||0;
-      const act=Math.max(0,actualByCase[caseKey]||0);
+  const { actualByCase, estByCase }=calcStock();
+  const base=keyN.replace('-N','');
+  const caseNamesN=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyN&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  const caseNamesM=[...new Set(allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===keyM&&r.type==='estimate'&&r.payment!=='X').map(r=>r.name))];
+  const allCases=[...new Set([...caseNamesN,...caseNamesM])];
+  document.getElementById('modalTitle').textContent=base+' 預估等待中';
+  if (!allCases.length) { document.getElementById('modalBody').innerHTML=`<div class="modal-empty">目前無預估排程</div>`; }
+  else {
+    const rows=allCases.map(name=>{
+      const ckN=keyN+'|'+name, ckM=keyM+'|'+name;
+      const est=(estByCase[ckN]||0)+(estByCase[ckM]||0);
+      const act=Math.max(0,actualByCase[ckN]||0)+Math.max(0,actualByCase[ckM]||0);
       const pending=Math.max(0,est-act);
-      const rec=allRecords.find(r=>r.light+r.sub+'-'+r.vendor===key&&r.name===name&&r.type==='estimate');
-      return {name,est,act,pending,dept:rec?rec.dept:''};
-    }).filter(r=>r.pending>0);
+      const rec=allRecords.find(r=>(r.light+r.sub+'-'+(r.vendor||'N')===keyN||r.light+r.sub+'-'+(r.vendor||'N')===keyM)&&r.name===name&&r.type==='estimate');
+      return {name,est,act,pending,dept:rec?rec.dept:'',hangDate:rec?rec.hangDate||'':'',days:daysFromToday(rec?rec.hangDate:'')};
+    }).filter(r=>r.pending>0).sort((a,b)=>(a.days??9999)-(b.days??9999));
     document.getElementById('modalBody').innerHTML=!rows.length
       ?`<div class="modal-empty">所有建案均已領完！</div>`
       :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
@@ -1600,133 +1993,63 @@ function openEstModal(key) {
           <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
           <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
           <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">部門</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">掛表日</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">距今</th>
         </tr></thead>
         <tbody>${rows.map(r=>`<tr>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.dept}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px;">${r.hangDate||'—'}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${urgencyBadge(r.days)}</td>
         </tr>`).join('')}</tbody>
       </table>`;
   }
   document.getElementById('modalBg').classList.add('show');
 }
-
+function openActModal(key) {
+  const rows=allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===key&&(r.type==='actual'||r.type==='return')&&(r.note||'').trim()!=='已含初始庫存');
+  document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 本期領出明細';
+  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無本期領出記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.date}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('modalBg').classList.add('show');
+}
 function openDeptActModal(key, dept) {
   const rows=allRecords.filter(r=>r.light+r.sub===key&&r.type==='actual'&&r.dept===dept);
   document.getElementById('modalTitle').textContent=dept+' '+key+' 實際領出明細';
-  document.getElementById('modalBody').innerHTML=!rows.length
-    ?`<div class="modal-empty">尚無實際領出記錄</div>`
-    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
-      <thead><tr>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-      </tr></thead>
-      <tbody>${rows.map(r=>`<tr>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.date}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
+  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td></tr>`).join('')}</tbody></table>`;
   document.getElementById('modalBg').classList.add('show');
 }
-
-function togglePaid() {
-  const body = document.getElementById('paidBody');
-  const icon = document.getElementById('paidToggleIcon');
-  if (!body) return;
-  if (body.style.display === 'none') {
-    body.style.display = 'block';
-    if (icon) icon.textContent = '收合 ▲';
-  } else {
-    body.style.display = 'none';
-    if (icon) icon.textContent = '展開 ▼';
-  }
-}
-
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
-
-// ── 編輯 Modal ──
-function openEditModal(rowId) {
-  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
-  if (!rec) return;
-  document.getElementById('edit-rowid').value  = rec.rowId;
-  document.getElementById('edit-date').value   = rec.date;
-  document.getElementById('edit-dept').value   = rec.dept;
-  document.getElementById('edit-name').value   = rec.name;
-  document.getElementById('edit-light').value  = rec.light;
-  document.getElementById('edit-sub').value    = rec.sub;
-  document.getElementById('edit-vendor').value = rec.vendor||'N';
-  document.getElementById('edit-qty').value    = rec.qty;
-  document.getElementById('edit-type').value   = rec.type;
-  document.getElementById('edit-note').value   = rec.note||'';
-  document.getElementById('editOkMsg').style.display='none';
-  document.getElementById('editModalBg').classList.add('show');
-}
-
-function closeEditModal() { document.getElementById('editModalBg').classList.remove('show'); }
-
-async function submitEdit() {
-  const rowId  = document.getElementById('edit-rowid').value;
-  const date   = document.getElementById('edit-date').value.trim();
-  const dept   = document.getElementById('edit-dept').value;
-  const name   = document.getElementById('edit-name').value.trim();
-  const light  = document.getElementById('edit-light').value;
-  const sub    = document.getElementById('edit-sub').value;
-  const vendor = document.getElementById('edit-vendor').value;
-  const qty    = parseInt(document.getElementById('edit-qty').value);
-  const type   = document.getElementById('edit-type').value;
-  const note   = document.getElementById('edit-note').value.trim();
-  if (!date||!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-
-  // 更新本地資料
-  const rec = allRecords.find(r=>String(r.rowId)===String(rowId));
-  if (rec) { rec.date=date; rec.dept=dept; rec.name=name; rec.light=light; rec.sub=sub; rec.vendor=vendor; rec.qty=qty; rec.type=type; rec.note=note; }
-
-  // 更新 GAS
-  try {
-    await fetch(GAS_URL, { method:'POST', body: JSON.stringify({
-      action:'editRecord', rowId:Number(rowId),
-      date, dept, name, light, sub, vendor, qty, type, note
-    })});
-  } catch(e) { console.log(e); }
-
-  renderAll();
-  const ok = document.getElementById('editOkMsg');
-  ok.style.display='block';
-  setTimeout(()=>{ ok.style.display='none'; closeEditModal(); }, 1500);
-}
 
 // ── Nav ──
 function switchPanel(name, el) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(el) el.classList.add('active');
-  if (name==='manage') {
-    populateCaseDropdown();
-    // 初始化下拉顯示狀態
-    const sel = document.getElementById('recordTypeSelect');
-    if (sel) onRecordTypeChange(sel.value);
-  }
+  const panel=document.getElementById('panel-'+name);
+  if (panel) panel.classList.add('active');
+  if (el) el.classList.add('active');
+  if (name==='manage') { populateCaseDropdown('f-name-sel'); const sel=document.getElementById('recordTypeSelect'); if(sel) onRecordTypeChange(sel.value); }
+  if (name==='smart')  renderSmartAlloc();
+  setTimeout(initRipples, 200);
 }
 
 // ── 工具 ──
-function tagCls(r){ return 't'+r.light.charAt(0)+(r.sub==='無子機'?'x':'v'); }
-function tagCls2(light,sub){ return 't'+light.charAt(0)+(sub==='無子機'?'x':'v'); }
+function tagCls(r){ return 't'+r.light.charAt(0)+((r.sub||'').includes('無')?'x':'v'); }
+function tagCls2(light,sub){ return 't'+light.charAt(0)+(sub.includes('無')?'x':'v'); }
 function tagLbl(r){ return r.light+r.sub; }
-function showOk(){ const ok=document.getElementById('okMsg'); ok.style.display='block'; setTimeout(()=>{ok.style.display='none';},3000); }
+function showOk(){ const ok=document.getElementById('okMsg'); if(ok){ ok.style.display='block'; setTimeout(()=>{ok.style.display='none';},3000); } }
 function setUpdatedTime(){
   const now=new Date(); const roc=now.getFullYear()-1911;
   const t=`${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   ['biz','eng'].forEach(d=>{ const el=document.getElementById('upd-'+d); if(el) el.textContent='更新時間：'+t; });
 }
-
+function togglePaid() {
+  const body=document.getElementById('paidBody'); const icon=document.getElementById('paidToggleIcon');
+  if (!body) return;
+  if (body.style.display==='none') { body.parentElement.style.display=''; icon&&(icon.textContent='收合 ▲'); }
+  else { body.parentElement.style.display='none'; icon&&(icon.textContent='展開 ▼'); }
+}
 </script>
 </body>
 </html>
