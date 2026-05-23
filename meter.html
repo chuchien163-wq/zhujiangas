@@ -15,55 +15,55 @@
   --r:10px;--rs:7px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:20px;}
 
 /* Login */
 #loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px;text-align:center;position:relative;overflow:hidden;}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:100%;max-width:380px;text-align:center;position:relative;overflow:hidden;}
 .login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 .login-logo-wrap{position:relative;width:64px;height:64px;margin:16px auto 18px;}
 .login-logo{width:64px;height:64px;background:var(--bg);border:1.5px solid var(--gold);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;font-weight:700;}
 .login-logo-ring{position:absolute;inset:-6px;border:1px solid var(--gold-dim);border-radius:20px;animation:ring 3s linear infinite;}
 @keyframes ring{to{transform:rotate(360deg);}}
-.login-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:3px;}
-.login-company{font-size:13px;color:var(--muted);margin-bottom:2px;}
-.login-sub{font-size:11px;color:var(--light);margin-bottom:26px;letter-spacing:.06em;}
+.login-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.login-company{font-size:20px;color:var(--muted);margin-bottom:2px;}
+.login-sub{font-size:20px;color:var(--light);margin-bottom:26px;letter-spacing:.06em;}
 .login-field{text-align:left;margin-bottom:12px;}
-.login-field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:4px;letter-spacing:.04em;}
-.login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;}
+.login-field label{display:block;font-size:20px;font-weight:500;color:var(--muted);margin-bottom:4px;letter-spacing:.04em;}
+.login-field input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:19px;font-family:inherit;outline:none;transition:border-color .2s;}
 .login-field input:focus{border-color:var(--gold);}
-.btn-login{width:100%;padding:11px;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:all .2s;position:relative;overflow:hidden;}
+.btn-login{width:100%;padding:11px;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:var(--rs);font-size:19px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:all .2s;position:relative;overflow:hidden;}
 .btn-login:hover{background:var(--gold-bg);}
-.login-err{font-size:12px;color:var(--red);min-height:18px;margin-top:8px;}
+.login-err{font-size:19px;color:var(--red);min-height:18px;margin-top:8px;}
 
 /* Loading */
 #loadingOverlay{display:none;position:fixed;inset:0;background:rgba(10,14,26,.95);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 .loading-spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:13px;color:var(--muted);letter-spacing:.06em;}
+.loading-text{font-size:20px;color:var(--muted);letter-spacing:.06em;}
 
 /* App */
 #appPage{display:none;}
 
 /* Header */
-.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 96px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .hdr-l{display:flex;align-items:center;gap:10px;}
-.logo{width:32px;height:32px;background:var(--bg);border:1.5px solid var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:14px;font-weight:700;flex-shrink:0;}
-.hdr-title{font-size:14px;font-weight:700;color:var(--text);}
-.sync{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--cyan);cursor:pointer;letter-spacing:.04em;transition:opacity .2s;}
+.logo{width:32px;height:32px;background:var(--bg);border:1.5px solid var(--gold);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:19px;font-weight:700;flex-shrink:0;}
+.hdr-title{font-size:20px;font-weight:700;color:var(--text);}
+.sync{display:flex;align-items:center;gap:4px;font-size:19px;color:var(--cyan);cursor:pointer;letter-spacing:.04em;transition:opacity .2s;}
 .sync:hover{opacity:.7;}
 .sync-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .user-chip{display:flex;align-items:center;gap:6px;border:1px solid var(--gold-dim);border-radius:20px;padding:4px 10px;}
-.user-av{width:22px;height:22px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:9px;font-weight:700;}
-.user-name{font-size:11px;color:var(--gold);}
-.btn-signout{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;transition:color .15s;}
+.user-av{width:22px;height:22px;border-radius:50%;background:var(--gold-bg);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:20px;font-weight:700;}
+.user-name{font-size:20px;color:var(--gold);}
+.btn-signout{font-size:20px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:inherit;padding:4px 8px;transition:color .15s;}
 .btn-signout:hover{color:var(--red);}
 
 /* Nav */
-.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 60px;position:sticky;top:52px;z-index:99;overflow-x:auto;scrollbar-width:none;}
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 96px;position:sticky;top:52px;z-index:99;overflow-x:auto;scrollbar-width:none;}
 .nav::-webkit-scrollbar{display:none;}
-.nav-tab{flex-shrink:0;padding:9px 20px;font-size:12px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s;position:relative;overflow:hidden;}
+.nav-tab{flex-shrink:0;padding:9px 20px;font-size:19px;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .2s;position:relative;overflow:hidden;}
 .nav-tab:hover{color:var(--text);}
 .nav-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
 
@@ -73,7 +73,7 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 @keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
 
 /* Main */
-.main{max-width:1200px;margin:0 auto;padding:14px 60px 32px;}
+.main{max-width:1200px;margin:0 auto;padding:16px 96px 40px;}
 
 /* Ripple */
 .ripple-host{position:relative;overflow:hidden;}
@@ -91,44 +91,44 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 .sc-scan{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,168,130,.04),transparent);animation:scan 3s linear infinite;pointer-events:none;}
 @keyframes scan{to{left:150%;}}
 .sc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-.sc-type{font-size:11px;color:var(--muted);letter-spacing:.04em;}
-.sc-badge{width:22px;height:22px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.sc-type{font-size:20px;color:var(--muted);letter-spacing:.04em;}
+.sc-badge{width:22px;height:22px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;}
 .sc-badge-4{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
 .sc-badge-6{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
-.sc-num{font-size:30px;font-weight:700;line-height:1;}
+.sc-num{font-size:34px;font-weight:700;line-height:1;}
 .sc-num.ok{color:var(--cyan);}
 .sc-num.warn{color:var(--gold);}
 .sc-num.danger{color:var(--red);}
-.sc-unit{font-size:10px;color:var(--muted);margin-bottom:8px;}
+.sc-unit{font-size:19px;color:var(--muted);margin-bottom:8px;}
 .sc-div{border-top:1px solid var(--border);margin:6px 0;}
 .sc-row{display:flex;justify-content:space-between;align-items:center;gap:4px;padding:2px 0;}
-.sc-lbl{color:var(--muted);white-space:nowrap;font-size:11px;flex-shrink:0;}
-.sc-link{color:var(--cyan);white-space:nowrap;font-size:11px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.sc-lbl{color:var(--muted);white-space:nowrap;font-size:20px;flex-shrink:0;}
+.sc-link{color:var(--cyan);white-space:nowrap;font-size:20px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
 .sc-link:hover{background:var(--cyan-bg);}
-.sc-link-gold{color:var(--gold);white-space:nowrap;font-size:11px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.sc-link-gold{color:var(--gold);white-space:nowrap;font-size:20px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
 .sc-link-gold:hover{background:var(--gold-bg);}
 .sc-bar{height:2px;background:var(--border);border-radius:1px;margin-top:6px;}
 .sc-bar-fill{height:2px;border-radius:1px;transition:width .3s;}
 .sc-bar-fill.ok{background:var(--cyan);}
 .sc-bar-fill.warn{background:var(--gold);}
 .sc-bar-fill.danger{background:var(--red);}
-.sc-gap{color:var(--red);font-size:11px;font-weight:500;white-space:nowrap;}
-.sc-safe{color:var(--cyan);font-size:11px;white-space:nowrap;}
-.buy-tag{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:0 var(--r) 0 6px;letter-spacing:.05em;animation:blink 2.5s ease-in-out infinite;}
+.sc-gap{color:var(--red);font-size:20px;font-weight:500;white-space:nowrap;}
+.sc-safe{color:var(--cyan);font-size:20px;white-space:nowrap;}
+.buy-tag{position:absolute;top:0;right:0;background:var(--red);color:#fff;font-size:20px;font-weight:700;padding:2px 8px;border-radius:0 var(--r) 0 6px;letter-spacing:.05em;animation:blink 2.5s ease-in-out infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.15;}}
 
 /* Charts */
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
-.chart-title{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:.04em;}
+.chart-title{font-size:19px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:.04em;}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.bar-label{font-size:10px;color:var(--muted);white-space:nowrap;width:64px;text-align:right;}
+.bar-label{font-size:19px;color:var(--muted);white-space:nowrap;width:64px;text-align:right;}
 .bar-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden;}
 .bar-fill{height:7px;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);}
-.bar-val{font-size:10px;white-space:nowrap;width:44px;text-align:right;}
+.bar-val{font-size:19px;white-space:nowrap;width:44px;text-align:right;}
 .donut-wrap{display:flex;align-items:center;gap:16px;}
 .donut-legend{display:flex;flex-direction:column;gap:7px;flex:1;}
-.leg-row{display:flex;align-items:center;gap:6px;font-size:11px;}
+.leg-row{display:flex;align-items:center;gap:6px;font-size:20px;}
 .leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .leg-lbl{color:var(--muted);white-space:nowrap;}
 .leg-val{margin-left:auto;font-weight:500;}
@@ -140,10 +140,10 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 /* Card */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;}
 .card-hdr{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.card-title{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.04em;}
-.card-note{font-size:10px;color:var(--muted);}
-.card-count{font-size:11px;color:var(--muted);}
-.card-action{font-size:11px;color:var(--cyan);cursor:pointer;background:none;border:1px solid var(--cyan-dim);border-radius:20px;font-family:inherit;padding:3px 10px;transition:background .15s;}
+.card-title{font-size:19px;font-weight:700;color:var(--gold);letter-spacing:.04em;}
+.card-note{font-size:19px;color:var(--muted);}
+.card-count{font-size:20px;color:var(--muted);}
+.card-action{font-size:20px;color:var(--cyan);cursor:pointer;background:none;border:1px solid var(--cyan-dim);border-radius:20px;font-family:inherit;padding:3px 10px;transition:background .15s;}
 .card-action:hover{background:var(--cyan-bg);}
 
 /* Tables */
@@ -152,25 +152,25 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 .twrap-scroll::-webkit-scrollbar{width:4px;}
 .twrap-scroll::-webkit-scrollbar-track{background:var(--bg);}
 .twrap-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
-thead th{padding:8px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);letter-spacing:.04em;white-space:nowrap;position:sticky;top:0;z-index:1;}
-tbody td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+table{width:100%;border-collapse:collapse;font-size:20px;}
+thead th{padding:8px 12px;text-align:left;color:var(--muted);font-weight:500;font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);letter-spacing:.04em;white-space:nowrap;position:sticky;top:0;z-index:1;}
+tbody td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:#0d1a2a;transition:background .15s;}
-.no-data{text-align:center;color:var(--muted);padding:24px;font-size:12px;letter-spacing:.04em;}
+.no-data{text-align:center;color:var(--muted);padding:24px;font-size:19px;letter-spacing:.04em;}
 
 /* Tags */
-.tag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.tag{display:inline-block;font-size:19px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .t4x{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
 .t4v{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
 .t6x{background:#1a0a20;color:#aa66cc;border:1px solid #aa66cc33;}
 .t6v{background:#1a0a14;color:#cc4488;border:1px solid #cc448833;}
-.ven-n{background:var(--cyan-bg);color:var(--cyan);font-size:10px;padding:2px 6px;border-radius:20px;border:1px solid var(--cyan-dim);display:inline-block;}
-.ven-m{background:var(--gold-bg);color:var(--gold);font-size:10px;padding:2px 6px;border-radius:20px;border:1px solid var(--gold-dim);display:inline-block;}
-.badge-act{background:var(--cyan-bg);color:var(--cyan);font-size:10px;padding:2px 7px;border-radius:20px;}
-.badge-est{background:var(--gold-bg);color:var(--gold);font-size:10px;padding:2px 7px;border-radius:20px;}
-.badge-ret{background:#1a1000;color:#aa8800;font-size:10px;padding:2px 7px;border-radius:20px;}
-.dept-tag{font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
+.ven-n{background:var(--cyan-bg);color:var(--cyan);font-size:19px;padding:2px 6px;border-radius:20px;border:1px solid var(--cyan-dim);display:inline-block;}
+.ven-m{background:var(--gold-bg);color:var(--gold);font-size:19px;padding:2px 6px;border-radius:20px;border:1px solid var(--gold-dim);display:inline-block;}
+.badge-act{background:var(--cyan-bg);color:var(--cyan);font-size:19px;padding:2px 7px;border-radius:20px;}
+.badge-est{background:var(--gold-bg);color:var(--gold);font-size:19px;padding:2px 7px;border-radius:20px;}
+.badge-ret{background:#1a1000;color:#aa8800;font-size:19px;padding:2px 7px;border-radius:20px;}
+.dept-tag{font-size:19px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
 .dept-biz{background:var(--cyan-bg);color:var(--cyan);}
 .dept-eng{background:var(--gold-bg);color:var(--gold);}
 .pay-o{color:var(--cyan);font-weight:700;}
@@ -178,7 +178,7 @@ tbody tr:hover td{background:#0d1a2a;transition:background .15s;}
 .pay-blank{color:var(--muted);}
 
 /* Hang date urgency */
-.days-badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.days-badge{font-size:19px;padding:2px 7px;border-radius:20px;font-weight:500;white-space:nowrap;}
 .days-urgent{background:var(--red-bg);color:var(--red);border:1px solid var(--red-dim);animation:blink 2.5s ease-in-out infinite;}
 .days-warning{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
 .days-ok{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
@@ -191,56 +191,56 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
 /* Incoming */
 .incoming-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px;}
 .incoming-item:last-child{border-bottom:none;}
-.inc-name{font-size:13px;color:var(--text);font-weight:500;white-space:nowrap;}
-.inc-date{font-size:10px;color:var(--muted);margin-top:2px;}
-.inc-qty{font-size:13px;font-weight:700;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.inc-name{font-size:20px;color:var(--text);font-weight:500;white-space:nowrap;}
+.inc-date{font-size:19px;color:var(--muted);margin-top:2px;}
+.inc-qty{font-size:20px;font-weight:700;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-dim);padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 
 /* Unpaid */
 .unpaid-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);}
 .unpaid-num-box{background:var(--red-bg);border:1px solid var(--red-dim);border-radius:8px;padding:8px;text-align:center;}
-.un-type{font-size:10px;color:var(--muted);margin-bottom:3px;}
-.un-val{font-size:20px;font-weight:700;color:var(--red);}
-.un-unit{font-size:10px;color:var(--muted);}
-.slabel{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px;font-weight:500;}
+.un-type{font-size:19px;color:var(--muted);margin-bottom:3px;}
+.un-val{font-size:24px;font-weight:700;color:var(--red);}
+.un-unit{font-size:19px;color:var(--muted);}
+.slabel{font-size:20px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px;font-weight:500;}
 
 /* Filter bar */
 .filter-bar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0 12px;align-items:center;}
-.filter-bar select,.filter-bar input{padding:7px 10px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text);font-size:12px;font-family:inherit;outline:none;transition:border-color .2s;cursor:pointer;}
+.filter-bar select,.filter-bar input{padding:7px 10px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text);font-size:19px;font-family:inherit;outline:none;transition:border-color .2s;cursor:pointer;}
 .filter-bar select:focus,.filter-bar input:focus{border-color:var(--gold);}
 .filter-bar input{min-width:160px;}
 
 /* Dept grid */
 .dash-grid{display:grid;grid-template-columns:3fr 1fr;gap:10px;}
-.updated{font-size:11px;color:var(--muted);text-align:right;padding-bottom:6px;}
+.updated{font-size:20px;color:var(--muted);text-align:right;padding-bottom:6px;}
 
 /* Form */
 .manage-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .fcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;}
-.fcard h4{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:4px;}
-.fcard-sub{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.fcard h4{font-size:20px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.fcard-sub{font-size:20px;color:var(--muted);margin-bottom:14px;}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .fg{display:flex;flex-direction:column;gap:4px;}
 .fg.ffull{grid-column:1/-1;}
-.fg label{font-size:11px;color:var(--muted);letter-spacing:.04em;font-weight:500;}
+.fg label{font-size:20px;color:var(--muted);letter-spacing:.04em;font-weight:500;}
 .fg label .hint{font-weight:400;color:var(--light);margin-left:4px;}
-.fg input,.fg select,.fg textarea{padding:9px 11px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;width:100%;}
+.fg input,.fg select,.fg textarea{padding:9px 11px;border:1px solid var(--border);border-radius:var(--rs);background:var(--bg);color:var(--text);font-size:20px;font-family:inherit;outline:none;transition:border-color .2s;width:100%;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--cyan);}
 .verify-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:var(--rs);margin-top:4px;cursor:pointer;}
 .verify-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--gold);}
-.verify-label{font-size:12px;color:var(--gold);}
+.verify-label{font-size:19px;color:var(--gold);}
 
 /* Buttons */
-.btn-green{width:100%;padding:11px;background:var(--cyan);color:#0a0e1a;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;margin-top:8px;}
+.btn-green{width:100%;padding:12px;background:var(--cyan);color:#0a0e1a;border:none;border-radius:var(--rs);font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;transition:opacity .15s;margin-top:8px;}
 .btn-green:hover{opacity:.85;}
 .btn-green:disabled{opacity:.5;cursor:not-allowed;}
-.btn-edit{background:none;border:none;cursor:pointer;font-size:14px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--gold);}
+.btn-edit{background:none;border:none;cursor:pointer;font-size:19px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--gold);}
 .btn-edit:hover{background:var(--gold-bg);}
-.btn-del{background:none;border:none;cursor:pointer;font-size:12px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--muted);}
+.btn-del{background:none;border:none;cursor:pointer;font-size:19px;padding:3px 6px;border-radius:4px;transition:background .15s;color:var(--muted);}
 .btn-del:hover{background:var(--red-bg);color:var(--red);}
-.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;margin-top:6px;display:none;}
+.btn-cancel{background:none;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:6px 14px;font-size:19px;font-family:inherit;cursor:pointer;margin-top:6px;display:none;}
 .btn-cancel:hover{color:var(--text);}
-.ok-msg{background:var(--cyan-bg);border:1px solid var(--cyan-dim);color:var(--cyan);padding:8px 14px;border-radius:var(--rs);font-size:13px;margin-bottom:12px;display:none;}
-.divider{display:flex;align-items:center;gap:10px;margin:16px 0 10px;font-size:11px;color:var(--muted);letter-spacing:.06em;}
+.ok-msg{background:var(--cyan-bg);border:1px solid var(--cyan-dim);color:var(--cyan);padding:8px 14px;border-radius:var(--rs);font-size:20px;margin-bottom:12px;display:none;}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0 10px;font-size:20px;color:var(--muted);letter-spacing:.06em;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
 /* Modal */
@@ -249,11 +249,11 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:560px;max-height:80vh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
 .modal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
-.modal-hdr h3{font-size:14px;font-weight:700;color:var(--gold);}
-.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px 8px;border-radius:4px;transition:color .15s;font-family:inherit;}
+.modal-hdr h3{font-size:19px;font-weight:700;color:var(--gold);}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:4px 8px;border-radius:4px;transition:color .15s;font-family:inherit;}
 .modal-close:hover{color:var(--text);}
 .modal-body{overflow-y:auto;flex:1;}
-.modal-empty{text-align:center;color:var(--muted);padding:32px;font-size:13px;}
+.modal-empty{text-align:center;color:var(--muted);padding:32px;font-size:20px;}
 
 /* Quick Add Modal */
 .quick-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px;}
@@ -263,25 +263,25 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
 
 /* Smart Alloc */
 .smart-header{margin-bottom:14px;}
-.smart-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:4px;}
-.smart-sub{font-size:12px;color:var(--muted);}
-.smart-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;}
+.smart-title{font-size:21px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+.smart-sub{font-size:19px;color:var(--muted);}
+.smart-empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:20px;}
 .smart-batch{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;position:relative;overflow:hidden;}
 .smart-batch::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--cyan);}
 .smart-batch-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px;}
-.smart-batch-title{font-size:14px;font-weight:700;color:var(--text);}
-.smart-batch-sub{font-size:11px;color:var(--muted);margin-top:3px;}
-.smart-status-badge{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.smart-batch-title{font-size:20px;font-weight:700;color:var(--text);}
+.smart-batch-sub{font-size:20px;color:var(--muted);margin-top:3px;}
+.smart-status-badge{font-size:20px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
 .badge-ok{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-dim);}
 .badge-warn{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-dim);}
 .badge-none{background:var(--border);color:var(--muted);}
 .smart-content{display:grid;grid-template-columns:1fr 2fr;gap:14px;}
 .smart-chart-col{min-width:0;}
 .smart-table-col{min-width:0;overflow:auto;}
-.smart-ok{color:var(--cyan);font-size:11px;font-weight:700;}
-.smart-warn{color:var(--gold);font-size:11px;font-weight:700;}
-.smart-no{color:var(--red);font-size:11px;font-weight:700;}
-.smart-leftover{font-size:11px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--border);margin-top:4px;}
+.smart-ok{color:var(--cyan);font-size:20px;font-weight:700;}
+.smart-warn{color:var(--gold);font-size:20px;font-weight:700;}
+.smart-no{color:var(--red);font-size:20px;font-weight:700;}
+.smart-leftover{font-size:20px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--border);margin-top:4px;}
 .smart-scan{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);animation:smartscan 4s linear infinite;pointer-events:none;z-index:0;}
 @keyframes smartscan{0%{transform:translateX(-100%);}100%{transform:translateX(100vw);}}
 
@@ -289,7 +289,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
 .manage-right{display:flex;flex-direction:column;gap:10px;}
 .form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
 .form-section-hdr{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.form-section-title{font-size:12px;font-weight:700;color:var(--gold);}
+.form-section-title{font-size:19px;font-weight:700;color:var(--gold);}
 .form-section-body{padding:14px;}
 </style>
 </head>
@@ -360,7 +360,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
     <div class="panel active" id="panel-dashboard">
       <div class="slabel" style="margin-bottom:8px;">庫存狀態</div>
       <div class="sg" id="stockGrid-N">
-        <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:13px;">載入中…</div>
+        <div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px;font-size:20px;">載入中…</div>
       </div>
       <div style="display:none;" id="stockGrid-M"></div>
 
@@ -485,7 +485,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <table>
               <thead><tr>
                 <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
-                <th>預計掛表日 <span style="font-size:9px;font-weight:400;color:var(--muted);">（實際領錶日→安裝到建案日）</span></th>
+                <th>預計掛表日 <span style="font-size:20px;font-weight:400;color:var(--muted);">（實際領錶日→安裝到建案日）</span></th>
                 <th>距今</th>
               </tr></thead>
               <tbody id="biz-body"><tr><td colspan="8" class="no-data">載入中…</td></tr></tbody>
@@ -495,7 +495,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         <div class="card">
           <div class="card-hdr"><span class="card-title">📊 業務部 用量統計</span></div>
           <div style="padding:12px 14px;">
-            <div style="font-size:10px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
+            <div style="font-size:19px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
             <div id="biz-stats"></div>
           </div>
         </div>
@@ -542,9 +542,9 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <table>
               <thead><tr>
                 <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
-                <th>預計掛表日 <span style="font-size:9px;font-weight:400;color:var(--muted);">（預計安裝到建案日）</span></th>
+                <th>預計掛表日 <span style="font-size:20px;font-weight:400;color:var(--muted);">（預計安裝到建案日）</span></th>
                 <th>距今</th>
-                <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:9px;font-weight:400;color:var(--muted);">點擊切換</span></th>
+                <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:20px;font-weight:400;color:var(--muted);">點擊切換</span></th>
               </tr></thead>
               <tbody id="eng-body"><tr><td colspan="9" class="no-data">載入中…</td></tr></tbody>
             </table>
@@ -553,7 +553,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         <div class="card">
           <div class="card-hdr"><span class="card-title">📊 工務部 用量統計</span></div>
           <div style="padding:12px 14px;">
-            <div style="font-size:10px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
+            <div style="font-size:19px;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);">點「已領出」數字可查看各社區明細</div>
             <div id="eng-stats"></div>
           </div>
         </div>
@@ -683,13 +683,13 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <button class="card-action ripple-host" onclick="switchToType('inbound')">＋ 新增入庫</button>
               </div>
             </div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <table style="width:100%;border-collapse:collapse;font-size:19px;">
               <thead><tr>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
-                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">採購單號</th>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
+                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">採購單號</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
               </tr></thead>
               <tbody id="inbound-body"><tr><td colspan="5" class="no-data">尚無入庫記錄</td></tr></tbody>
             </table>
@@ -703,16 +703,16 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             </div>
             <div style="padding:10px 14px;border-bottom:1px solid var(--border);">
               <div style="display:flex;justify-content:space-between;align-items:center;">
-                <span class="card-title">🚚 預計進貨排程 <span style="font-size:10px;color:var(--muted);font-weight:400;">不影響庫存計算</span></span>
+                <span class="card-title">🚚 預計進貨排程 <span style="font-size:19px;color:var(--muted);font-weight:400;">不影響庫存計算</span></span>
                 <button class="card-action ripple-host" onclick="switchToType('incoming')">＋ 新增</button>
               </div>
             </div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <table style="width:100%;border-collapse:collapse;font-size:19px;">
               <thead><tr>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">預計到貨日</th>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
-                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:10px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">預計到貨日</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">廠商/規格</th>
+                <th style="padding:7px 10px;text-align:right;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+                <th style="padding:7px 10px;text-align:left;color:var(--muted);font-size:19px;background:var(--bg);border-bottom:1px solid var(--border);">操作</th>
               </tr></thead>
               <tbody id="incoming-body"><tr><td colspan="4" class="no-data">尚無預計進貨</td></tr></tbody>
             </table>
@@ -1397,14 +1397,14 @@ function calcDeptStats(rows) {
 }
 function renderStats({est,actual}, dept) {
   const keys=['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
-  return `<table style="width:100%;border-collapse:collapse;font-size:12px;">
+  return `<table style="width:100%;border-collapse:collapse;font-size:19px;">
     <thead><tr>
-      <th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:10px;border-bottom:1px solid var(--border);">種類</th>
-      <th style="padding:6px 10px;text-align:right;color:var(--gold);font-size:10px;border-bottom:1px solid var(--border);">預估總量</th>
-      <th style="padding:6px 10px;text-align:right;color:var(--cyan);font-size:10px;border-bottom:1px solid var(--border);">實際領出</th>
+      <th style="padding:6px 10px;text-align:left;color:var(--muted);font-size:19px;border-bottom:1px solid var(--border);">種類</th>
+      <th style="padding:6px 10px;text-align:right;color:var(--gold);font-size:19px;border-bottom:1px solid var(--border);">預估總量</th>
+      <th style="padding:6px 10px;text-align:right;color:var(--cyan);font-size:19px;border-bottom:1px solid var(--border);">實際領出</th>
     </tr></thead>
     <tbody>${keys.map(k=>`<tr>
-      <td style="padding:7px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${k}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-size:20px;">${k}</td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--gold);">${est[k]||0}隻</td>
       <td style="padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;">
         <button class="sc-link" data-key="${k}" data-dept="${dept}" onclick="openDeptActModal(this.dataset.key,this.dataset.dept)">${actual[k]||0}隻▸</button>
@@ -1432,7 +1432,7 @@ function renderIncomingTable() {
   if (!allIncoming.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無預計進貨</td></tr>'; return; }
   body.innerHTML = allIncoming.map(r=>`<tr>
     <td>${r.date}</td>
-    <td style="font-size:11px;">${r.vendor}</td>
+    <td style="font-size:20px;">${r.vendor}</td>
     <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
     <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
     <td><button class="btn-edit click-scale ripple-host" onclick="editIncoming('${r.rowId}')">✏️</button><button class="btn-del click-scale" data-rowid="${r.rowId}" onclick="deleteIncoming(this.dataset.rowid,this)">✕</button></td>
@@ -1446,10 +1446,10 @@ function renderInboundTable() {
   if (!allInbound.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無入庫記錄</td></tr>'; return; }
   body.innerHTML = allInbound.map(r=>`<tr>
     <td>${r.date}</td>
-    <td style="font-size:11px;">${r.vendor}</td>
+    <td style="font-size:20px;">${r.vendor}</td>
     <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
     <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
-    <td style="font-size:11px;color:var(--muted);">${r.poNumber||'—'}</td>
+    <td style="font-size:20px;color:var(--muted);">${r.poNumber||'—'}</td>
     <td><button class="btn-edit click-scale ripple-host" onclick="editInbound('${r.rowId}')">✏️</button><button class="btn-del click-scale" onclick="deleteInbound('${r.rowId}',this)">✕</button></td>
   </tr>`).join('');
 }
@@ -1604,13 +1604,13 @@ function renderDelTable() {
   const rows = allRecords.slice().sort((a,b)=>a.date.localeCompare(b.date));
   if (!rows.length) { body.innerHTML='<tr><td colspan="9" class="no-data">尚無記錄</td></tr>'; return; }
   body.innerHTML = rows.map(r=>`<tr>
-    <td style="font-size:11px;">${r.date}</td>
+    <td style="font-size:20px;">${r.date}</td>
     <td style="font-weight:500;">${r.name}</td>
     <td>${r.qty}</td>
     <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
     <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
     <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
-    <td style="font-size:11px;">${r.hangDate||'—'}</td>
+    <td style="font-size:20px;">${r.hangDate||'—'}</td>
     <td><button class="btn-edit click-scale ripple-host" data-rowid="${r.rowId}" onclick="openEditModal(this.dataset.rowid)">✏️</button></td>
     <td><button class="btn-del click-scale" data-rowid="${r.rowId}" onclick="deleteRecord(this.dataset.rowid,this)">✕</button></td>
   </tr>`).join('');
@@ -1779,11 +1779,17 @@ function renderSmartAlloc() {
   let html = '';
   allIncoming.forEach(incoming=>{
     const k    = incoming.light + incoming.sub + '-' + incoming.type;
-    const cur  = Math.max(0,(INIT[k]||0)-(netActual[k]||0));
+    const kAlt = incoming.light + incoming.sub + '-' + (incoming.type==='N'?'M':'N');
+    // 現有庫存 = 同燈別+子機的 N型+M型 合計
+    const curN = Math.max(0,(INIT[incoming.light+incoming.sub+'-N']||0)-(netActual[incoming.light+incoming.sub+'-N']||0));
+    const curM = Math.max(0,(INIT[incoming.light+incoming.sub+'-M']||0)-(netActual[incoming.light+incoming.sub+'-M']||0));
+    const cur  = curN + curM;
     const avail= cur + incoming.qty;
     // 找出需要這種錶的建案（estimate，未繳費X不算，依掛表日排序）
+    // 配貨依燈別+子機匹配（不限廠商，M型錶可用於N型建案）
+    const lightSub = incoming.light + incoming.sub;
     const needy = allRecords
-      .filter(r => r.light+r.sub+'-'+(r.vendor||'N')===k && r.type==='estimate' && r.payment!=='X')
+      .filter(r => r.light+r.sub===lightSub && r.type==='estimate' && r.payment!=='X')
       .reduce((map,r)=>{
         const ck=r.name;
         if (!map[ck]) map[ck]={ name:r.name, hangDate:r.hangDate||'', est:0, actual:0 };
@@ -1791,8 +1797,10 @@ function renderSmartAlloc() {
         return map;
       }, {});
     Object.keys(needy).forEach(n=>{
-      const ck=k+'|'+n;
-      needy[n].actual = Math.max(0, actualByCase[ck]||0);
+      // 計算已領出：合計 N型+M型 的已領量
+      const ckN=lightSub+'-N|'+n;
+      const ckM=lightSub+'-M|'+n;
+      needy[n].actual = Math.max(0,(actualByCase[ckN]||0)+(actualByCase[ckM]||0));
       needy[n].pending = Math.max(0, needy[n].est - needy[n].actual);
       needy[n].days = daysFromToday(needy[n].hangDate);
     });
@@ -1854,10 +1862,10 @@ function renderSmartAlloc() {
             </div>
           </div>
           <!-- 長條進度 -->
-          <div style="font-size:11px;color:var(--muted);margin-bottom:8px;">各建案配貨量</div>
+          <div style="font-size:20px;color:var(--muted);margin-bottom:8px;">各建案配貨量</div>
           ${cases.slice(0,4).map(c=>`
           <div class="bar-row">
-            <span class="bar-label" style="width:72px;font-size:10px;">${c.name.substring(0,5)}</span>
+            <span class="bar-label" style="width:72px;font-size:19px;">${c.name.substring(0,5)}</span>
             <div class="bar-track">
               <div class="bar-fill" style="background:${c.satisfied?'var(--cyan)':'var(--gold)'};"
                 data-w="${avail>0?Math.round(c.alloc/avail*100):0}"></div>
@@ -1882,7 +1890,7 @@ function renderSmartAlloc() {
                 const urg=urgencyClass(c.days);
                 return `<tr class="${urg}">
                   <td style="font-weight:500;">${c.name}</td>
-                  <td style="font-size:11px;">${c.hangDate||'<span style="color:var(--muted);">未設定</span>'}</td>
+                  <td style="font-size:20px;">${c.hangDate||'<span style="color:var(--muted);">未設定</span>'}</td>
                   <td>${urgencyBadge(c.days)}</td>
                   <td style="font-weight:700;color:var(--red);">${c.pending}隻</td>
                   <td style="font-weight:700;color:${c.alloc>0?'var(--cyan)':'var(--muted)'};">${c.alloc}隻</td>
@@ -1922,10 +1930,10 @@ function openVendorModal(key, vendorLabel) {
   document.getElementById('modalTitle').textContent=base+' '+vendorLabel+' 已領社區明細';
   document.getElementById('modalBody').innerHTML=!rows.length
     ?`<div class="modal-empty">尚無領出記錄</div>`
-    :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+    :`<table style="width:100%;border-collapse:collapse;font-size:20px;">
       <thead><tr>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
-        <th style="padding:8px 12px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領出</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">社區／建案</th>
+        <th style="padding:8px 12px;text-align:right;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">已領出</th>
       </tr></thead>
       <tbody>${rows.map(([name,qty])=>`<tr>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${name}</td>
@@ -1946,24 +1954,24 @@ function openActModalBoth(keyN, keyM) {
   document.getElementById('modalTitle').textContent=base+' 本期領出明細';
   document.getElementById('modalBody').innerHTML=!rows.length
     ?`<div class="modal-empty">尚無本期領出記錄</div>`
-    :`<div style="padding:10px 14px;background:var(--cyan-bg);border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
+    :`<div style="padding:10px 14px;background:var(--cyan-bg);border-bottom:1px solid var(--border);font-size:19px;display:flex;justify-content:space-between;">
         <span>領出 <b>${totalAct}</b>隻　退料 <b style="color:var(--gold)">${totalRet}</b>隻</span>
         <span>淨領出 <b style="color:var(--cyan)">${totalAct-totalRet}</b>隻</span>
       </div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <table style="width:100%;border-collapse:collapse;font-size:20px;">
       <thead><tr>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">狀態</th>
-        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">狀態</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
       </tr></thead>
       <tbody>${rows.map(r=>`<tr>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.name}</td>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:${r.type==='return'?'var(--gold)':'var(--cyan)'};">${r.type==='return'?'-':''}${r.qty}隻</td>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
         <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':'<span class="badge-ret">退料入庫</span>'}</td>
-        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.date}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:20px;">${r.date}</td>
       </tr>`).join('')}</tbody>
     </table>`;
   document.getElementById('modalBg').classList.add('show');
@@ -1987,21 +1995,21 @@ function openEstModalBoth(keyN, keyM) {
     }).filter(r=>r.pending>0).sort((a,b)=>(a.days??9999)-(b.days??9999));
     document.getElementById('modalBody').innerHTML=!rows.length
       ?`<div class="modal-empty">所有建案均已領完！</div>`
-      :`<table style="width:100%;border-collapse:collapse;font-size:13px;">
+      :`<table style="width:100%;border-collapse:collapse;font-size:20px;">
         <thead><tr>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">掛表日</th>
-          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">距今</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">預估</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">已領</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">尚欠</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">掛表日</th>
+          <th style="padding:8px 12px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">距今</th>
         </tr></thead>
         <tbody>${rows.map(r=>`<tr>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;">${r.name}</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.est}隻</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);">${r.act}隻</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;color:var(--red);">${r.pending}隻</td>
-          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:11px;">${r.hangDate||'—'}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:20px;">${r.hangDate||'—'}</td>
           <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${urgencyBadge(r.days)}</td>
         </tr>`).join('')}</tbody>
       </table>`;
@@ -2011,13 +2019,13 @@ function openEstModalBoth(keyN, keyM) {
 function openActModal(key) {
   const rows=allRecords.filter(r=>r.light+r.sub+'-'+(r.vendor||'N')===key&&(r.type==='actual'||r.type==='return')&&(r.note||'').trim()!=='已含初始庫存');
   document.getElementById('modalTitle').textContent=key.replace('-N',' N型').replace('-M',' M型')+' 本期領出明細';
-  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無本期領出記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px;">${r.date}</td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無本期領出記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:20px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">日期</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);color:var(--muted);font-size:20px;">${r.date}</td></tr>`).join('')}</tbody></table>`;
   document.getElementById('modalBg').classList.add('show');
 }
 function openDeptActModal(key, dept) {
   const rows=allRecords.filter(r=>r.light+r.sub===key&&r.type==='actual'&&r.dept===dept);
   document.getElementById('modalTitle').textContent=dept+' '+key+' 實際領出明細';
-  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:right;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:11px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td></tr>`).join('')}</tbody></table>`;
+  document.getElementById('modalBody').innerHTML=!rows.length?`<div class="modal-empty">尚無記錄</div>`:`<table style="width:100%;border-collapse:collapse;font-size:20px;"><thead><tr><th style="padding:8px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">社區</th><th style="padding:8px;text-align:right;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">數量</th><th style="padding:8px;text-align:left;color:var(--muted);font-size:20px;background:var(--bg);border-bottom:1px solid var(--border);">廠商</th></tr></thead><tbody>${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid var(--border);">${r.name}</td><td style="padding:8px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:var(--cyan);">${r.qty}隻</td><td style="padding:8px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td></tr>`).join('')}</tbody></table>`;
   document.getElementById('modalBg').classList.add('show');
 }
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
