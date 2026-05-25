@@ -1282,7 +1282,7 @@ function renderBiz() {
   const body = document.getElementById('biz-body');
   if (!merged.length) { body.innerHTML='<tr><td colspan="8" class="no-data">尚無記錄</td></tr>'; }
   else body.innerHTML = merged.map(r=>{
-    const urg = urgencyClass(r.days);
+    const urg = r.pending===0 ? '' : urgencyClass(r.days);
     return `<tr class="${urg}">
       <td style="font-weight:500;">${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
@@ -1294,7 +1294,7 @@ function renderBiz() {
         ${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
-      <td>${urgencyBadge(r.days)}</td>
+      <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
       <td><button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','biz')" title="編輯此建案">✏️</button></td>
     </tr>`;
   }).join('');
@@ -1335,7 +1335,7 @@ function renderEng() {
         ${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
-      <td>${urgencyBadge(r.days)}</td>
+      <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
       <td><button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','eng')" title="編輯此建案">✏️</button></td>
       ${payHtml}
     </tr>`;
