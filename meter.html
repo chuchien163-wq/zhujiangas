@@ -1329,7 +1329,7 @@ function renderBiz() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td><button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','biz')" title="編輯此建案">✏️</button></td>
+      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.dept==='業務部'&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','biz')" title="編輯此建案">✏️</button>`:''}</td>
     </tr>`;
   }).join('');
   document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
@@ -1370,7 +1370,7 @@ function renderEng() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td><button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','eng')" title="編輯此建案">✏️</button></td>
+      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.dept==='工務部'&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','eng')" title="編輯此建案">✏️</button>`:''}</td>
       ${payHtml}
     </tr>`;
   }).join('');
@@ -1776,11 +1776,20 @@ function openEditModal(rowId) {
 }
 // ── 業務部/工務部 編輯 Modal ──
 function openDeptEditModal(rowId, dept) {
-  const rec = allRecords.find(r => String(r.rowId) === String(rowId));
-  if (!rec) return;
-  // 只允許編輯 estimate 記錄
-  if (rec.type !== 'estimate') {
-    alert('只能編輯「預估排程」記錄！\n已領出和退料記錄請聯絡倉管修改。');
+  // 先找點到的記錄
+  const clicked = allRecords.find(r => String(r.rowId) === String(rowId));
+  if (!clicked) return;
+  // 找同建案+種類+廠商的 estimate 記錄（不管點到哪一筆都能編輯預估）
+  const rec = allRecords.find(r =>
+    r.name === clicked.name &&
+    r.light === clicked.light &&
+    r.sub === clicked.sub &&
+    (r.vendor||'N') === (clicked.vendor||'N') &&
+    r.dept === clicked.dept &&
+    r.type === 'estimate'
+  );
+  if (!rec) {
+    alert('此建案尚無預估排程記錄！\n請先新增預估排程，或聯絡倉管修改已領出記錄。');
     return;
   }
   document.getElementById('de-rowid').value    = rec.rowId;
