@@ -343,7 +343,16 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
     <div class="login-title">換表庫存系統</div>
     <div class="login-company">竹建瓦斯股份有限公司</div>
     <div class="login-sub">Gas Meter Inventory System v3.0</div>
-    <div class="login-field"><label>工　號</label><input type="text" id="empId" placeholder="請輸入工號" inputmode="numeric" maxlength="6" onkeydown="if(event.key==='Enter')document.getElementById('pwd').focus()"></div>
+    <div class="login-field">
+      <label>部門／角色</label>
+      <select id="roleSelect" style="width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:18px;font-family:inherit;outline:none;cursor:pointer;">
+        <option value="">── 請選擇 ──</option>
+        <option value="業務部">業務部</option>
+        <option value="工務部">工務部</option>
+        <option value="倉管">倉管</option>
+        <option value="管理員">管理員</option>
+      </select>
+    </div>
     <div class="login-field"><label>密　碼</label><input type="password" id="pwd" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="btn-login ripple-host click-scale" onclick="doLogin()">登　入</button>
     <div class="login-err" id="loginErr"></div>
@@ -432,6 +441,25 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <div class="leg-row" style="margin-top:4px;"><span class="leg-lbl">整體缺口</span><span class="leg-val" id="legendGap">—</span></div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 今日動態 -->
+      <div id="todaySection" style="margin-bottom:14px;">
+        <div class="slabel">今日動態</div>
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">📋 今日新增記錄</span>
+            <span class="card-note" id="today-date"></span>
+          </div>
+          <div class="twrap-scroll" style="max-height:200px;">
+            <table>
+              <thead><tr>
+                <th>時間</th><th>操作者</th><th>社區建案</th><th>種類</th><th>數量</th><th>類型</th>
+              </tr></thead>
+              <tbody id="today-body"><tr><td colspan="6" class="no-data">今日尚無新增記錄</td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -963,12 +991,13 @@ function initRipples() {
 
 // ── Login ──
 function doLogin() {
-  const empId = document.getElementById('empId').value.trim();
-  const pwd   = document.getElementById('pwd').value.trim();
-  if (!empId||!pwd) { showLoginErr('請輸入工號和密碼'); return; }
-  const acc = ACCOUNTS.find(a=>a.empId===empId && a.pwd===pwd);
-  if (acc) { currentRole=acc.role; startApp(); }
-  else showLoginErr('工號或密碼錯誤，請再試一次');
+  const role = document.getElementById('roleSelect').value.trim();
+  const pwd  = document.getElementById('pwd').value.trim();
+  if (!role) { showLoginErr('請選擇部門／角色'); return; }
+  if (!pwd)  { showLoginErr('請輸入密碼'); return; }
+  const pwdMap = { '業務部':'6666', '工務部':'8888', '倉管':'1688', '管理員':'1688' };
+  if (pwdMap[role] === pwd) { currentRole=role; startApp(); }
+  else showLoginErr('密碼錯誤，請再試一次');
 }
 function showLoginErr(msg) { document.getElementById('loginErr').textContent = msg; }
 function signOut() {
@@ -1069,8 +1098,32 @@ function clearCache() { try { sessionStorage.removeItem(CACHE_KEY2); } catch(e){
 async function refreshData() { clearCache(); await loadData(true); }
 
 // ── Render All ──
+function renderTodayActivity() {
+  const body = document.getElementById('today-body');
+  const dateEl = document.getElementById('today-date');
+  if (!body) return;
+  const todayRoc = getTodayRoc().substring(0,8); // 115.05.25
+  if (dateEl) dateEl.textContent = todayRoc;
+  const todayRecs = allRecords
+    .filter(r => r.opTime && r.opTime.startsWith(todayRoc))
+    .sort((a,b) => b.opTime.localeCompare(a.opTime));
+  if (!todayRecs.length) {
+    body.innerHTML='<tr><td colspan="6" class="no-data">今日尚無新增記錄</td></tr>';
+    return;
+  }
+  body.innerHTML = todayRecs.map(r=>`<tr>
+    <td style="font-size:16px;color:var(--muted);white-space:nowrap;">${r.opTime.substring(9)||'—'}</td>
+    <td><span class="dept-tag ${r.operator==='業務部'?'dept-biz':'dept-eng'}">${r.operator||'—'}</span></td>
+    <td style="font-weight:500;">${r.name}</td>
+    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+    <td style="font-weight:700;">${r.qty}隻</td>
+    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
+  </tr>`).join('');
+}
+
 function renderAll() {
   renderStock();
+  renderTodayActivity();
   renderBiz();
   renderEng();
   renderDelTable();
@@ -1329,7 +1382,7 @@ function renderBiz() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.dept==='業務部'&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','biz')" title="編輯此建案">✏️</button>`:''}</td>
+      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal(this.dataset.id,'biz')" data-id="${r.rowId}" title="編輯此建案">✏️</button>`:''}</td>
     </tr>`;
   }).join('');
   document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
@@ -1370,7 +1423,7 @@ function renderEng() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.dept==='工務部'&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal('${r.rowId}','eng')" title="編輯此建案">✏️</button>`:''}</td>
+      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal(this.dataset.id,'eng')" data-id="${r.rowId}" title="編輯此建案">✏️</button>`:''}</td>
       ${payHtml}
     </tr>`;
   }).join('');
@@ -1432,7 +1485,9 @@ async function submitQuickAdd() {
   const hangDate= document.getElementById('qa-hangdate').value.trim();
   const today   = getTodayRoc();
   if (!name||!qty||qty<1) { alert('請填寫建案名稱和數量'); return; }
-  const rec = { date:today, dept, name, light, sub, vendor, qty, type:'estimate', note:'', payment:'', hangDate };
+  const now2 = new Date(); const roc2=now2.getFullYear()-1911;
+  const opTime2 = `${roc2}.${String(now2.getMonth()+1).padStart(2,'0')}.${String(now2.getDate()).padStart(2,'0')} ${String(now2.getHours()).padStart(2,'0')}:${String(now2.getMinutes()).padStart(2,'0')}`;
+  const rec = { date:today, dept, name, light, sub, vendor, qty, type:'estimate', note:'', payment:'', hangDate, operator:currentRole, opTime:opTime2 };
   const btn = document.getElementById('qa-submit');
   btn.disabled=true; btn.textContent='送出中…';
   let newRowId = Date.now();
@@ -1885,6 +1940,49 @@ function onRecordTypeChange(val) {
     if (verifyRow) verifyRow.style.display=(val==='actual'||val==='return')?'flex':'none';
   }
 }
+
+async function submitRecord() {
+  const sel    = document.getElementById('f-name-sel');
+  const selVal = sel ? sel.value : '';
+  const nameInp= document.getElementById('f-name').value.trim();
+  const name   = (selVal&&selVal!=='__new__') ? selVal : nameInp;
+  const date   = document.getElementById('f-date').value.trim() || getTodayRoc();
+  const dept   = document.getElementById('f-dept').value;
+  const light  = document.getElementById('f-light').value;
+  const sub    = document.getElementById('f-sub').value;
+  const vendor = document.getElementById('f-vendor').value;
+  const qty    = parseInt(document.getElementById('f-qty').value);
+  const note   = document.getElementById('f-note').value.trim();
+  const hangDate= document.getElementById('f-hangdate').value.trim();
+  const verifyEl= document.getElementById('f-verify');
+  if (!name||!qty||qty<1) { alert('請填寫所有欄位'); return; }
+  if (verifyEl && !verifyEl.checked) { alert('請先勾選勾稽確認！'); return; }
+  const type = ['倉管','管理員'].includes(currentRole) ? recordType : 'estimate';
+  const now  = new Date(); const roc=now.getFullYear()-1911;
+  const opTime = `${roc}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const rec  = { date, dept, name, light, sub, vendor, qty, type, note, payment:'', hangDate, operator:currentRole, opTime };
+  const btn  = document.getElementById('btnSub');
+  btn.disabled=true; btn.textContent='送出中…';
+  let newRowId=Date.now();
+  try {
+    const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addRecord',...rec})});
+    const d=await r.json();
+    if (d.rowId) newRowId=d.rowId;
+  } catch(e){}
+  allRecords.push({...rec, rowId:newRowId});
+  clearCache();
+  document.getElementById('f-date').value='';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-qty').value='';
+  document.getElementById('f-note').value='';
+  document.getElementById('f-hangdate').value='';
+  if (verifyEl) verifyEl.checked=false;
+  if (sel) { sel.value=''; populateCaseDropdown('f-name-sel'); }
+  document.getElementById('f-name').style.display='none';
+  renderAll(); showOk();
+  btn.disabled=false; btn.textContent='➤ 確認送出資料';
+}
+
 function handleSubmit() {
   const type = document.getElementById('recordTypeSelect').value;
   if (type==='inbound')  { submitInbound();  return; }
