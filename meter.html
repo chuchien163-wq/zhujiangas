@@ -1390,11 +1390,10 @@ function mergeByCase(rows) {
     pending:   Math.max(0, r.est - (r.actual - r.returned)),
     days:      daysFromToday(r.hangDate),
   })).sort((a,b)=>{
-    // 依掛表日排序（由近到遠，無日期排最後）
     if (!a.hangDate && !b.hangDate) return a.name.localeCompare(b.name,'zh-TW');
     if (!a.hangDate) return 1;
     if (!b.hangDate) return -1;
-    return (a.days??9999) - (b.days??9999);
+    return a.hangDate.localeCompare(b.hangDate);
   });
 }
 
