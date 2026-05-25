@@ -1430,13 +1430,20 @@ function renderBiz() {
       <td class="edit-cell" data-rowid="${r.rowId}" data-dept="biz" data-hasest="${['倉管','管理員'].includes(currentRole)||allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&x.type==='estimate')}"></td>
     </tr>`;
   }).join('');
-  // 補入編輯按鈕
+  // 補入編輯+刪除按鈕
   document.querySelectorAll('#biz-body .edit-cell[data-hasest="true"]').forEach(cell=>{
     const btn=document.createElement('button');
     btn.className='btn-edit click-scale ripple-host';
     btn.title='編輯此建案'; btn.textContent='✏️';
     btn.onclick=()=>openDeptEditModal(cell.dataset.rowid,'biz');
     cell.appendChild(btn);
+    if (['倉管','管理員'].includes(currentRole)){
+      const del=document.createElement('button');
+      del.className='btn-del click-scale';
+      del.title='刪除此建案'; del.textContent='✕';
+      del.onclick=()=>openDelCaseModal(cell.dataset.rowid,'biz');
+      cell.appendChild(del);
+    }
   });
   document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
 }
@@ -1480,13 +1487,20 @@ function renderEng() {
       ${payHtml}
     </tr>`;
   }).join('');
-  // 補入編輯按鈕
+  // 補入編輯+刪除按鈕
   document.querySelectorAll('#eng-body .edit-cell[data-hasest="true"]').forEach(cell=>{
     const btn=document.createElement('button');
     btn.className='btn-edit click-scale ripple-host';
     btn.title='編輯此建案'; btn.textContent='✏️';
     btn.onclick=()=>openDeptEditModal(cell.dataset.rowid,'eng');
     cell.appendChild(btn);
+    if (['倉管','管理員'].includes(currentRole)){
+      const del=document.createElement('button');
+      del.className='btn-del click-scale';
+      del.title='刪除此建案'; del.textContent='✕';
+      del.onclick=()=>openDelCaseModal(cell.dataset.rowid,'eng');
+      cell.appendChild(del);
+    }
   });
   document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='工務部')), '工務部');
 }
@@ -1746,6 +1760,14 @@ async function submitInbound() {
   }
   clearCache(); renderAll(); showOk();
 }
+async function deleteRecord(rowId, btn) {
+  if (!confirm('確定要刪除這筆記錄？')) return;
+  if (btn) { btn.disabled=true; btn.textContent='…'; }
+  try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteRecord',rowId:Number(rowId)})}); } catch(e){}
+  allRecords = allRecords.filter(r=>String(r.rowId)!==String(rowId));
+  clearCache(); renderAll();
+}
+
 async function deleteInbound(rowId, btn) {
   if (!confirm('確定要刪除這筆入庫記錄？⚠️ 庫存會減少！')) return;
   if (btn) { btn.disabled=true; btn.textContent='…'; }
@@ -2463,6 +2485,18 @@ function openPendingModal(rowId) {
       el.style.width = el.dataset.w + '%';
     });
   }, 100);
+}
+
+function openDelCaseModal(rowId, dept) {
+  const clicked = allRecords.find(r=>String(r.rowId)===String(rowId));
+  if (!clicked) return;
+  // 找同建案+種類的所有記錄
+  const cases = allRecords.filter(r=>
+    r.name===clicked.name && r.light===clicked.light && r.sub===clicked.sub
+  );
+  if (!confirm('確定要刪除「'+clicked.name+'」'+clicked.light+clicked.sub+'的所有記錄（共'+cases.length+'筆）？\n⚠️ 刪除後無法復原！')) return;
+  // 逐筆刪除
+  cases.forEach(r=>deleteRecord(r.rowId, null));
 }
 
 function closeModal() { document.getElementById('modalBg').classList.remove('show'); }
