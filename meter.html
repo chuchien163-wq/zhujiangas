@@ -790,7 +790,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
           <div class="twrap-scroll">
             <table>
               <thead><tr>
-                <th>社區建案</th><th>種類</th><th>廠商</th><th>預估／已領</th><th>尚欠</th><th>預計掛表日</th><th>展開明細</th>
+                <th>社區建案</th><th>種類</th><th>預估／已領</th><th>尚欠</th><th>▸ 明細</th>
               </tr></thead>
               <tbody id="del-body"></tbody>
             </table>
@@ -1033,8 +1033,8 @@ function startApp() {
     document.getElementById('tab-smart').style.display='';
     document.getElementById('delSection').style.display='';
   }
-  // 管理員也可以新增建案和修改掛表日
-  if (['管理員'].includes(currentRole)) {
+  // 倉管/管理員也可以新增建案
+  if (['倉管','管理員'].includes(currentRole)) {
     const btnBiz = document.getElementById('btn-biz-add');
     const btnEng = document.getElementById('btn-eng-add');
     if (btnBiz) btnBiz.style.display='';
@@ -1369,7 +1369,8 @@ function urgencyBadge(days) {
 function mergeByCase(rows) {
   const map = {};
   rows.forEach(r => {
-    const k = r.name+'|'+r.light+r.sub+'|'+(r.vendor||'N');
+    // N型+M型合併：只依建案+種類分組，不分廠商
+    const k = r.name+'|'+r.light+r.sub;
     if (!map[k]) map[k] = {
       name:r.name, key:r.light+r.sub, vendor:r.vendor||'N',
       cls:tagCls(r), est:0, actual:0, returned:0,
@@ -1823,12 +1824,11 @@ function renderDelTable() {
   if (!canDel) return;
   const body = document.getElementById('del-body');
   if (!body) return;
-  if (!allRecords.length) { body.innerHTML='<tr><td colspan="7" class="no-data">尚無記錄</td></tr>'; return; }
-  // 合併顯示：依建案+種類+廠商分組
+  if (!allRecords.length) { body.innerHTML='<tr><td colspan="5" class="no-data">尚無記錄</td></tr>'; return; }
   const map = {};
   allRecords.forEach(r=>{
-    const k = r.name+'|'+r.light+r.sub+'|'+(r.vendor||'N');
-    if (!map[k]) map[k] = { name:r.name, light:r.light, sub:r.sub, vendor:r.vendor||'N',
+    const k = r.name+'|'+r.light+r.sub;
+    if (!map[k]) map[k] = { name:r.name, light:r.light, sub:r.sub,
       est:0, actual:0, returned:0, rows:[], hangDate:'' };
     if (r.type==='actual')      map[k].actual   += Number(r.qty);
     else if (r.type==='return') map[k].returned += Number(r.qty);
@@ -1836,32 +1836,89 @@ function renderDelTable() {
     if (r.hangDate) map[k].hangDate = r.hangDate;
     map[k].rows.push(r);
   });
-  const groups = Object.values(map).sort((a,b)=>a.name.localeCompare(b.name,'zh-TW'));
+  const groups = Object.values(map).sort((a,b)=>{
+    if (!a.hangDate && !b.hangDate) return a.name.localeCompare(b.name,'zh-TW');
+    if (!a.hangDate) return 1;
+    if (!b.hangDate) return -1;
+    return a.hangDate.localeCompare(b.hangDate);
+  });
   body.innerHTML = groups.map((g,gi)=>{
     const netAct  = g.actual - g.returned;
     const pending = Math.max(0, g.est - netAct);
     const tagC    = 't'+g.light.charAt(0)+(g.sub.includes('無')?'x':'v');
-    const detailRows = g.rows.map(r=>`
-      <tr class="del-detail-row del-detail-${gi}" style="display:none;background:#060a14;">
-        <td style="padding-left:28px;color:var(--muted);font-size:16px;">${r.date}</td>
-        <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
-        <td style="font-weight:700;">${r.qty}隻</td>
-        <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
-        <td style="color:var(--muted);font-size:16px;">${r.note||'—'}</td>
-        <td><button class="btn-edit click-scale" onclick="openEditModal('${r.rowId}')">✏️</button></td>
-        <td><button class="btn-del click-scale" onclick="deleteRecord('${r.rowId}',this)">✕</button></td>
-      </tr>`).join('');
-    return `<tr style="cursor:pointer;" onclick="toggleDelDetail(${gi})">
-      <td style="font-weight:700;">${g.name} <span style="color:var(--muted);font-size:14px;">(${g.rows.length}筆)</span></td>
+    return `<tr style="cursor:pointer;" onclick="openDelModal(${gi})">
+      <td style="font-weight:700;">${g.name}</td>
       <td><span class="tag ${tagC}">${g.light}${g.sub}</span></td>
-      <td><span class="${g.vendor==='N'?'ven-n':'ven-m'}">${g.vendor}型</span></td>
       <td style="color:var(--muted);">預估${g.est}隻／已領${netAct}隻</td>
-      <td style="font-weight:700;color:${pending>0?'var(--red)':'var(--cyan)'};">${pending>0?pending+'隻':' ✅完成'}</td>
-      <td style="font-size:16px;">${g.hangDate||'—'}</td>
-      <td style="color:var(--gold);" id="del-arrow-${gi}">▸ 展開</td>
-    </tr>${detailRows}`;
+      <td style="font-weight:700;color:${pending>0?'var(--red)':'var(--cyan)'};">${pending>0?pending+'隻':'✅完成'}</td>
+      <td style="color:var(--gold);">▸ 明細</td>
+    </tr>`;
   }).join('');
+  // 暫存 groups 供 modal 使用
+  window._delGroups = groups;
 }
+
+function openDelModal(gi) {
+  const g = window._delGroups[gi];
+  if (!g) return;
+  const netAct = g.actual - g.returned;
+  const pending = Math.max(0, g.est - netAct);
+  const pct = g.est > 0 ? Math.round(netAct/g.est*100) : 0;
+  const barColor = pct>=100?'var(--cyan)':pct>=50?'var(--blue-btn)':'var(--gold)';
+  const details = g.rows.sort((a,b)=>a.date.localeCompare(b.date)).map(r=>`
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:15px;white-space:nowrap;">${r.date}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:700;">${r.qty}隻</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--muted);font-size:14px;">${r.note||'—'}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px;">${r.hangDate||'—'}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:center;">
+        <button class="btn-edit click-scale" onclick="openEditModal('${r.rowId}');closeModal();">✏️</button>
+        <button class="btn-del click-scale" onclick="deleteRecord('${r.rowId}',this);closeModal();">✕</button>
+      </td>
+    </tr>`).join('');
+  document.getElementById('modalTitle').textContent = g.name+' 領表明細';
+  document.getElementById('modalBody').innerHTML = `
+    <div style="padding:16px;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">預估總量</div>
+          <div style="font-size:20px;font-weight:700;color:var(--gold);">${g.est}隻</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">已領出</div>
+          <div style="font-size:20px;font-weight:700;color:var(--cyan);">${netAct}隻</div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">尚欠</div>
+          <div style="font-size:20px;font-weight:700;color:${pending>0?'var(--red)':'var(--cyan)'};">${pending>0?pending+'隻':'✅完成'}</div>
+        </div>
+      </div>
+      <div style="height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:14px;">
+        <div style="height:8px;border-radius:4px;background:${barColor};width:0;transition:width 1s;" data-w="${Math.min(100,pct)}"></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;">
+        <thead><tr>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">日期</th>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">類型</th>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">數量</th>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">廠商</th>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">備註</th>
+          <th style="padding:7px 12px;text-align:left;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">掛表日</th>
+          <th style="padding:7px 12px;text-align:center;color:var(--muted);font-size:13px;background:var(--surface2);border-bottom:1px solid var(--border);">操作</th>
+        </tr></thead>
+        <tbody>${details}</tbody>
+      </table>
+    </div>`;
+  document.getElementById('modalBg').classList.add('show');
+  setTimeout(()=>{
+    document.querySelectorAll('[data-w]').forEach(el=>{
+      el.style.width=el.dataset.w+'%';
+    });
+  },100);
+}
+
 
 function toggleDelDetail(gi) {
   const rows = document.querySelectorAll('.del-detail-'+gi);
@@ -1894,18 +1951,21 @@ function openDeptEditModal(rowId, dept) {
   // 先找點到的記錄
   const clicked = allRecords.find(r => String(r.rowId) === String(rowId));
   if (!clicked) return;
-  // 找同建案+種類+廠商的 estimate 記錄（不管點到哪一筆都能編輯預估）
-  const rec = allRecords.find(r =>
-    r.name === clicked.name &&
-    r.light === clicked.light &&
-    r.sub === clicked.sub &&
-    (r.vendor||'N') === (clicked.vendor||'N') &&
-    r.dept === clicked.dept &&
-    r.type === 'estimate'
-  );
-  if (!rec) {
-    alert('此建案尚無預估排程記錄！\n請先新增預估排程，或聯絡倉管修改已領出記錄。');
-    return;
+  // 倉管/管理員可以編輯任何記錄；業務部/工務部只能編輯 estimate
+  let rec;
+  if (['倉管','管理員'].includes(currentRole)) {
+    rec = clicked; // 倉管直接編輯點到的那筆
+  } else {
+    rec = allRecords.find(r =>
+      r.name === clicked.name &&
+      r.light === clicked.light &&
+      r.sub === clicked.sub &&
+      r.type === 'estimate'
+    );
+    if (!rec) {
+      alert('此建案尚無預估排程記錄！\n請聯絡倉管修改。');
+      return;
+    }
   }
   document.getElementById('de-rowid').value    = rec.rowId;
   document.getElementById('de-name').value     = rec.name;
