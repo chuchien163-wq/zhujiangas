@@ -1102,22 +1102,67 @@ function renderTodayActivity() {
   const body = document.getElementById('today-body');
   const dateEl = document.getElementById('today-date');
   if (!body) return;
-  const todayRoc = getTodayRoc().substring(0,8); // 115.05.25
+  const todayRoc = getTodayRoc().substring(0,8);
   if (dateEl) dateEl.textContent = todayRoc;
-  const todayRecs = allRecords
+
+  // 領表記錄（有 opTime 的）
+  const recRows = allRecords
     .filter(r => r.opTime && r.opTime.startsWith(todayRoc))
-    .sort((a,b) => b.opTime.localeCompare(a.opTime));
-  if (!todayRecs.length) {
+    .map(r => ({
+      time:     r.opTime.substring(9)||'—',
+      operator: r.operator||'—',
+      name:     r.name,
+      spec:     r.light+r.sub,
+      vendor:   r.vendor||'N',
+      qty:      r.qty,
+      category: r.type==='actual'?'<span class="badge-act">已領出</span>':
+                r.type==='return'?'<span class="badge-ret">退料入庫</span>':
+                '<span class="badge-est">預估</span>',
+      cls:      tagCls(r),
+    }));
+
+  // 廠商入庫（今日日期）
+  const ibRows = allInbound
+    .filter(r => r.date && r.date.startsWith(todayRoc))
+    .map(r => ({
+      time:     '—',
+      operator: '倉管',
+      name:     r.vendor||'廠商',
+      spec:     r.light+r.sub,
+      vendor:   r.type||'N',
+      qty:      r.qty,
+      category: '<span class="badge-ret" style="background:var(--blue-bg);color:var(--blue);">廠商入庫</span>',
+      cls:      tagCls2(r.light, r.sub),
+    }));
+
+  // 預計進貨（今日到貨）
+  const icRows = allIncoming
+    .filter(r => r.date && r.date.startsWith(todayRoc))
+    .map(r => ({
+      time:     '—',
+      operator: '倉管',
+      name:     r.vendor||'廠商',
+      spec:     r.light+r.sub,
+      vendor:   r.type||'N',
+      qty:      r.qty,
+      category: '<span style="background:#f3e8ff;color:#6d28d9;font-size:14px;padding:2px 7px;border-radius:20px;border:1px solid #d8b4fe;">預計到貨</span>',
+      cls:      tagCls2(r.light, r.sub),
+    }));
+
+  const all = [...recRows, ...ibRows, ...icRows]
+    .sort((a,b) => b.time.localeCompare(a.time));
+
+  if (!all.length) {
     body.innerHTML='<tr><td colspan="6" class="no-data">今日尚無新增記錄</td></tr>';
     return;
   }
-  body.innerHTML = todayRecs.map(r=>`<tr>
-    <td style="font-size:16px;color:var(--muted);white-space:nowrap;">${r.opTime.substring(9)||'—'}</td>
-    <td><span class="dept-tag ${r.operator==='業務部'?'dept-biz':'dept-eng'}">${r.operator||'—'}</span></td>
+  body.innerHTML = all.map(r=>`<tr>
+    <td style="color:var(--muted);white-space:nowrap;">${r.time}</td>
+    <td><span class="dept-tag ${r.operator==='業務部'?'dept-biz':r.operator==='工務部'?'dept-eng':''}" style="${r.operator==='倉管'||r.operator==='管理員'?'background:var(--gold-bg);color:var(--gold);border-radius:20px;padding:2px 8px;font-size:14px;':''}">${r.operator}</span></td>
     <td style="font-weight:500;">${r.name}</td>
-    <td><span class="tag ${tagCls(r)}">${tagLbl(r)}</span></td>
+    <td><span class="tag ${r.cls}">${r.spec}</span> <span class="${r.vendor==='N'?'ven-n':'ven-m'}">${r.vendor}型</span></td>
     <td style="font-weight:700;">${r.qty}隻</td>
-    <td>${r.type==='actual'?'<span class="badge-act">已領出</span>':r.type==='return'?'<span class="badge-ret">退料入庫</span>':'<span class="badge-est">預估</span>'}</td>
+    <td>${r.category}</td>
   </tr>`).join('');
 }
 
@@ -1382,9 +1427,17 @@ function renderBiz() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal(this.dataset.id,'biz')" data-id="${r.rowId}" title="編輯此建案">✏️</button>`:''}</td>
+      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="biz" data-hasest="${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')}"></td>
     </tr>`;
   }).join('');
+  // 補入編輯按鈕
+  document.querySelectorAll('#biz-body .edit-cell[data-hasest="true"]').forEach(cell=>{
+    const btn=document.createElement('button');
+    btn.className='btn-edit click-scale ripple-host';
+    btn.title='編輯此建案'; btn.textContent='✏️';
+    btn.onclick=()=>openDeptEditModal(cell.dataset.rowid,'biz');
+    cell.appendChild(btn);
+  });
   document.getElementById('biz-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='業務部')), '業務部');
 }
 
@@ -1423,10 +1476,18 @@ function renderEng() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td>${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')?`<button class="btn-edit click-scale ripple-host" onclick="openDeptEditModal(this.dataset.id,'eng')" data-id="${r.rowId}" title="編輯此建案">✏️</button>`:''}</td>
+      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="eng" data-hasest="${allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&(x.vendor||'N')===(r.vendor||'N')&&x.type==='estimate')}"></td>
       ${payHtml}
     </tr>`;
   }).join('');
+  // 補入編輯按鈕
+  document.querySelectorAll('#eng-body .edit-cell[data-hasest="true"]').forEach(cell=>{
+    const btn=document.createElement('button');
+    btn.className='btn-edit click-scale ripple-host';
+    btn.title='編輯此建案'; btn.textContent='✏️';
+    btn.onclick=()=>openDeptEditModal(cell.dataset.rowid,'eng');
+    cell.appendChild(btn);
+  });
   document.getElementById('eng-stats').innerHTML = renderStats(calcDeptStats(allRecords.filter(r=>r.dept==='工務部')), '工務部');
 }
 
