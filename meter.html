@@ -1018,7 +1018,7 @@ function startApp() {
   if (av) av.textContent = currentRole.charAt(0);
 
   const canManage  = ['業務部','工務部','倉管','管理員'].includes(currentRole);
-  const canPay     = ['工務部','管理員'].includes(currentRole);
+  const canPay     = ['工務部','倉管','管理員'].includes(currentRole);
   const canSeePay  = ['工務部','倉管','管理員'].includes(currentRole);
   const isAdmin    = ['倉管','管理員'].includes(currentRole);
 
@@ -1102,7 +1102,7 @@ function renderTodayActivity() {
   const body = document.getElementById('today-body');
   const dateEl = document.getElementById('today-date');
   if (!body) return;
-  const todayRoc = getTodayRoc().substring(0,8);
+  const todayRoc = getTodayRoc(); // 115.05.26 格式
   if (dateEl) dateEl.textContent = todayRoc;
 
   // 領表記錄（有 opTime 的）
@@ -1462,7 +1462,7 @@ function renderEng() {
   if (fPay)    rows = rows.filter(r=>r.payment===fPay);
   if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
   const merged  = mergeByCase(rows);
-  const canPay  = ['工務部','管理員'].includes(currentRole);
+  const canPay  = ['工務部','倉管','管理員'].includes(currentRole);
   document.getElementById('eng-count').textContent = `共 ${merged.length} 筆`;
   const body = document.getElementById('eng-body');
   if (!merged.length) { body.innerHTML='<tr><td colspan="9" class="no-data">尚無記錄</td></tr>'; }
