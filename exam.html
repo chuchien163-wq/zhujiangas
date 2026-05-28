@@ -7,28 +7,28 @@
 <title>考試資訊 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f0;color:#2c2c2e;}
 .wrap{display:flex;min-height:100vh;}
-.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
-.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-brand{font-size:16px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-sub{font-size:12px;color:#888;margin-top:2px;}
+.sb-section{font-size:12px;color:#888;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
 .sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:16px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
-.sb-item:hover{background:#1c1c1e;color:#fff;}
-.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
+.sb-item:hover{background:#f5f5f0;color:#fff;}
+.sb-item.active{background:#f5f5f0;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
 .sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
 .sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
+.sb-uname{font-size:13px;font-weight:700;color:#2c2c2e;}
 .sb-role{font-size:11px;color:#777;}
 .main{flex:1;padding:1.5rem;overflow:auto;max-width:calc(100% - 200px);}
-.main-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:1.5rem;}
+.main-title{font-size:22px;font-weight:700;color:#2c2c2e;margin-bottom:1.5rem;}
 
 /* 分類按鈕 */
 .cat-bar{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
-.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #3a3a3c;background:transparent;color:#ccc;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #e8e8e0;background:transparent;color:#ccc;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .cat-btn.active{background:#FFD60A;color:#000;border-color:#FFD60A;}
 .cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
 
@@ -38,9 +38,9 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 .schedule-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;}
 .schedule-table th{background:#1a3a5c;color:#fff;font-size:17px;padding:12px 14px;text-align:center;border:1px solid #2a4a6c;}
-.schedule-table td{padding:11px 12px;border:1px solid #3a3a3c;font-size:16px;background:#2c2c2e;vertical-align:middle;}
-.schedule-table tr:hover td{background:#3a3a3c;}
-.schedule-table td:first-child{font-weight:700;color:#fff;background:#252525;width:22%;}
+.schedule-table td{padding:11px 12px;border:1px solid #e8e8e0;font-size:16px;background:#fff;vertical-align:middle;}
+.schedule-table tr:hover td{background:#f9f9f5;}
+.schedule-table td:first-child{font-weight:700;color:#fff;background:#f9f9f5;width:22%;}
 .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;}
 .badge-1{background:#1a3a5c;color:#7ab8f5;}
 .badge-2{background:#1a3a1a;color:#7af57a;}
@@ -58,36 +58,36 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   --border:#e2e0dc;
 }
 .cal-section{margin-bottom:20px;}
-.cal-month-title{font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:8px;padding-left:2px;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.cal-dow{font-size:11px;color:var(--gray-400);text-align:center;padding:4px 0;font-weight:700;}
-.cal-dow.we{color:var(--red);}
-.cal-cell{min-height:72px;border-radius:8px;border:1px solid var(--border);padding:5px;background:#fff;position:relative;}
+.cal-month-title{font-size:16px;font-weight:700;color:#555;margin-bottom:8px;padding-left:2px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{font-size:13px;color:#aaa;text-align:center;padding:6px 0;font-weight:700;background:#f9f9f5;}
+.cal-dow.we{color:#d63031;}
+.cal-cell{min-height:80px;border-radius:6px;border:1px solid #e0e0d8;padding:5px;background:#fff;position:relative;}
 .cal-cell.empty{background:transparent;border-color:transparent;}
-.cal-cell.holiday{background:var(--gray-50);}
+.cal-cell.holiday{background:#fff5f5;}
 .cal-cell.has-sched{border-color:var(--blue-m);}
 .cal-cell.has-sched.all-done{border-color:var(--green);}
-.cal-daynum{font-size:11px;font-weight:700;color:var(--gray-400);margin-bottom:3px;}
+.cal-daynum{font-size:13px;font-weight:700;color:#aaa;margin-bottom:3px;}
 .cal-cell.has-sched .cal-daynum{color:var(--blue);}
 .cal-cell.holiday .cal-daynum{color:var(--red);}
-.cal-person{font-size:10px;padding:2px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.cal-person{font-size:12px;padding:3px 6px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
 .cal-person.exam{background:var(--amber-l);color:var(--amber);border:1px solid #f0c070;}
 .cal-person.permit{background:var(--green-l);color:var(--green);}
 .cal-person.result{background:var(--purple-l);color:var(--purple);}
 .cal-person.info{background:var(--blue-l);color:var(--blue);}
 
 /* 注意事項 */
-.notice-box{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
-.notice-title{font-size:18px;font-weight:700;color:#FFD60A;margin-bottom:10px;}
-.notice-item{font-size:17px;color:#ccc;line-height:2;padding-left:1rem;position:relative;}
+.notice-box{background:#fff;border:1px solid #e8e8e0;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
+.notice-title{font-size:18px;font-weight:700;color:#b87a00;margin-bottom:10px;}
+.notice-item{font-size:17px;color:#444;line-height:2;padding-left:1rem;position:relative;}
 .notice-item::before{content:'•';position:absolute;left:0;color:#FFD60A;}
 
 /* 倒數區 */
 .countdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
-.cd-card{background:#2c2c2e;border-radius:12px;padding:1rem;border:1px solid #3a3a3c;text-align:center;}
+.cd-card{background:#fff;border-radius:12px;padding:1rem;border:1px solid #e8e8e0;text-align:center;}
 .cd-label{font-size:17px;color:#fff;margin-bottom:8px;font-weight:500;}
 .cd-date{font-size:15px;color:#777;margin-bottom:8px;}
-.cd-num{font-size:36px;font-weight:700;line-height:1;}
+.cd-num{font-size:38px;font-weight:700;line-height:1;}
 .cd-unit{font-size:17px;color:#666;margin-top:4px;}
 .cd-card.done .cd-num{color:#555;font-size:20px;}
 .cd-card.urgent .cd-num{color:#ff453a;}
@@ -173,10 +173,10 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
       <!-- 凡例 -->
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a5c;border-radius:3px;"></div><span style="color:#aaa;">報名相關</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a1a;border-radius:3px;"></div><span style="color:#aaa;">准考證/公告</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#3a2a00;border-radius:3px;"></div><span style="color:#aaa;">考試日</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#2a1a3a;border-radius:3px;"></div><span style="color:#aaa;">成績相關</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a5c;border-radius:3px;"></div><span style="color:#888;">報名相關</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a1a;border-radius:3px;"></div><span style="color:#888;">准考證/公告</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#3a2a00;border-radius:3px;"></div><span style="color:#888;">考試日</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#2a1a3a;border-radius:3px;"></div><span style="color:#888;">成績相關</span></div>
       </div>
 
       <div class="cal-wrap" id="calContainer"></div>

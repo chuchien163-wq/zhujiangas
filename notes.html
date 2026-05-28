@@ -13,18 +13,18 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 /* 側欄 */
 .sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #e0e0d8;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-brand{font-size:16px;font-weight:700;color:#b87a00;letter-spacing:1px;}
 .sb-sub{font-size:13px;color:#999;margin-top:2px;}
-.sb-section{font-size:15px;color:#666;font-weight:700;letter-spacing:2px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:17px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-section{font-size:14px;color:#999;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.65rem 1rem;font-size:16px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
 .sb-item:hover{background:#f5f5f0;color:#2c2c2e;}
-.sb-item.active{background:#f5f5f0;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
-.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-item.active{background:#fff9e6;color:#b87a00;border-left-color:#FFD60A;font-weight:700;}
+.sb-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
 .sb-user{padding:1rem;border-top:1px solid #e0e0d8;display:flex;align-items:center;gap:8px;}
-.sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:14px;font-weight:700;color:#2c2c2e;}
-.sb-role{font-size:12px;color:#999;}
+.sb-av{width:36px;height:36px;border-radius:50%;background:#FFD60A;color:#000;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{font-size:15px;font-weight:700;color:#2c2c2e;}
+.sb-role{font-size:13px;color:#999;}
 
 /* 主區 */
 .main{flex:1;padding:1.5rem;overflow:auto;max-width:calc(100% - 200px);}
@@ -42,7 +42,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .form-input:focus{border-color:#FFD60A;}
 .form-textarea{width:100%;background:#f5f5f0;border:1.5px solid #e8e8e0;color:#fff;padding:10px 14px;font-size:15px;font-family:inherit;border-radius:8px;outline:none;resize:vertical;min-height:150px;line-height:1.7;}
 .form-textarea:focus{border-color:#FFD60A;}
-.photo-upload-area{border:2px dashed #3a3a3c;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s;}
+.photo-upload-area{border:2px dashed #e0e0d8;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s;}
 .photo-upload-area:hover{border-color:#FFD60A;}
 .photo-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:0.5rem;}
 .preview-wrap{position:relative;}
@@ -78,7 +78,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .btn-delete{background:transparent;border:1px solid #ff453a;color:#ff453a;padding:5px 14px;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;}
 
 /* 燈箱 */
-.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:200;align-items:center;justify-content:center;}
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;}
 .lightbox.show{display:flex;}
 .lightbox img{max-width:95vw;max-height:88vh;object-fit:contain;border-radius:10px;}
 .lightbox-close{position:absolute;top:1rem;right:1.5rem;color:#fff;font-size:32px;cursor:pointer;background:none;border:none;}
@@ -113,6 +113,9 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <a class="sb-item" href="videos.html"><span class="sb-icon">🎬</span>訓練影片</a>
     <a class="sb-item" href="games.html"><span class="sb-icon">🎮</span>遊戲挑戰</a>
     <a class="sb-item active"><span class="sb-icon">📝</span>上課筆記</a>
+    <a class="sb-item" href="photos.html"><span class="sb-icon">📸</span>實作照片</a>
+    <a class="sb-item" href="study.html"><span class="sb-icon">📚</span>學科資料</a>
+    <a class="sb-item" href="exam.html"><span class="sb-icon">📅</span>考試資訊</a>
     <a class="sb-item" href="photos.html"><span class="sb-icon">📸</span>實作照片</a>
     <div class="sb-section">個人</div>
     <a class="sb-item" href="progress.html"><span class="sb-icon">📊</span>我的進度</a>
