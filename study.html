@@ -7,51 +7,51 @@
 <title>學科資料 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f0;color:#2c2c2e;}
 .wrap{display:flex;min-height:100vh;}
-.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
-.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
-.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:15px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
-.sb-item:hover{background:#1c1c1e;color:#fff;}
-.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
+.sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #e0e0d8;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sb-brand{font-size:15px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-sub{font-size:13px;color:#999;margin-top:2px;}
+.sb-section{font-size:13px;color:#999;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:15px;color:#888;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#f5f5f0;color:#fff;}
+.sb-item.active{background:#f5f5f0;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
-.sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
+.sb-user{padding:1rem;border-top:1px solid #e0e0d8;display:flex;align-items:center;gap:8px;}
 .sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
-.sb-role{font-size:11px;color:#777;}
+.sb-uname{font-size:14px;font-weight:700;color:#2c2c2e;}
+.sb-role{font-size:12px;color:#999;}
 
 .main{flex:1;padding:1.5rem;overflow:auto;}
-.main-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:1.5rem;}
+.main-title{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:1.5rem;}
 
 /* 分類按鈕 */
 .cat-bar{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
-.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #3a3a3c;background:transparent;color:#ccc;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #e8e8e0;background:transparent;color:#ccc;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .cat-btn.active{background:#FFD60A;color:#000;border-color:#FFD60A;}
 .cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
 
 /* 卡片 */
-.section-title{font-size:16px;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-title{font-size:16px;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .section-title::before{content:'';display:inline-block;width:4px;height:16px;background:#FFD60A;border-radius:2px;}
 
-.link-card{background:#2c2c2e;border:1.5px solid #3a3a3c;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color 0.2s;}
+.link-card{background:#fff;border:1.5px solid #e8e8e0;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color 0.2s;}
 .link-card:hover{border-color:#FFD60A;}
 .card-left{display:flex;align-items:center;gap:14px;}
-.card-icon{width:46px;height:46px;border-radius:10px;background:#3a3a3c;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.card-icon{width:46px;height:46px;border-radius:10px;background:#e8e8e0;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .card-info{}
-.card-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
-.card-desc{font-size:13px;color:#aaa;line-height:1.5;}
+.card-name{font-size:16px;font-weight:700;color:#2c2c2e;margin-bottom:4px;}
+.card-desc{font-size:16px;color:#666;line-height:1.5;}
 .card-btn{padding:10px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:none;white-space:nowrap;flex-shrink:0;transition:opacity 0.15s;}
 .card-btn:hover{opacity:0.85;}
 .btn-gold{background:#FFD60A;color:#000;}
 .btn-outline{background:transparent;border:1.5px solid #FFD60A;color:#FFD60A;}
 
 /* 提示框 */
-.info-box{background:#2c2c2e;border-left:3px solid #FFD60A;border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-bottom:1.5rem;}
-.info-box p{font-size:14px;color:#aaa;line-height:1.8;}
+.info-box{background:#fff;border-left:3px solid #FFD60A;border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-bottom:1.5rem;}
+.info-box p{font-size:17px;color:#555;line-height:1.8;}
 .info-box strong{color:#FFD60A;}
 
 @media(max-width:700px){

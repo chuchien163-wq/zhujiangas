@@ -7,71 +7,71 @@
 <title>上課筆記 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f0;color:#2c2c2e;}
 .wrap{display:flex;min-height:100vh;}
 
 /* 側欄 */
-.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
-.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
-.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:2px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:14px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
-.sb-item:hover{background:#1c1c1e;color:#e0e0e0;}
-.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
+.sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #e0e0d8;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sb-brand{font-size:15px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-sub{font-size:13px;color:#999;margin-top:2px;}
+.sb-section{font-size:15px;color:#666;font-weight:700;letter-spacing:2px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:17px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#f5f5f0;color:#2c2c2e;}
+.sb-item.active{background:#f5f5f0;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
 .sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
-.sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
+.sb-user{padding:1rem;border-top:1px solid #e0e0d8;display:flex;align-items:center;gap:8px;}
 .sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
-.sb-role{font-size:11px;color:#777;}
+.sb-uname{font-size:14px;font-weight:700;color:#2c2c2e;}
+.sb-role{font-size:12px;color:#999;}
 
 /* 主區 */
 .main{flex:1;padding:1.5rem;overflow:auto;max-width:calc(100% - 200px);}
 .main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
-.main-title{font-size:20px;font-weight:700;color:#fff;}
+.main-title{font-size:22px;font-weight:700;color:#2c2c2e;}
 .btn-add{background:#FFD60A;color:#000;border:none;padding:9px 20px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:none;}
 
 /* 表單 */
-.admin-panel{background:#2c2c2e;border:1.5px solid #FFD60A;border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;display:none;}
+.admin-panel{background:#fff;border:1.5px solid #FFD60A;border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;display:none;}
 .admin-panel.show{display:block;}
 .admin-title{font-size:16px;font-weight:700;color:#FFD60A;margin-bottom:1rem;}
 .form-group{margin-bottom:1rem;}
-.form-group label{display:block;font-size:13px;color:#8e8e93;margin-bottom:6px;font-weight:700;}
-.form-input{width:100%;background:#1c1c1e;border:1.5px solid #3a3a3c;color:#fff;padding:10px 14px;font-size:15px;font-family:inherit;border-radius:8px;outline:none;transition:border-color 0.2s;}
+.form-group label{display:block;font-size:16px;color:#444;margin-bottom:6px;font-weight:700;}
+.form-input{width:100%;background:#f5f5f0;border:1.5px solid #e8e8e0;color:#fff;padding:10px 14px;font-size:15px;font-family:inherit;border-radius:8px;outline:none;transition:border-color 0.2s;}
 .form-input:focus{border-color:#FFD60A;}
-.form-textarea{width:100%;background:#1c1c1e;border:1.5px solid #3a3a3c;color:#fff;padding:10px 14px;font-size:15px;font-family:inherit;border-radius:8px;outline:none;resize:vertical;min-height:150px;line-height:1.7;}
+.form-textarea{width:100%;background:#f5f5f0;border:1.5px solid #e8e8e0;color:#fff;padding:10px 14px;font-size:15px;font-family:inherit;border-radius:8px;outline:none;resize:vertical;min-height:150px;line-height:1.7;}
 .form-textarea:focus{border-color:#FFD60A;}
 .photo-upload-area{border:2px dashed #3a3a3c;border-radius:8px;padding:1.5rem;text-align:center;cursor:pointer;transition:border-color 0.2s;}
 .photo-upload-area:hover{border-color:#FFD60A;}
 .photo-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:0.5rem;}
 .preview-wrap{position:relative;}
-.preview-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:1px solid #3a3a3c;}
+.preview-img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;border:1px solid #e8e8e0;}
 .preview-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.7);color:#ff453a;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;}
 .btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;}
 .btn-save{background:#FFD60A;color:#000;}
-.btn-cancel{background:#3a3a3c;color:#aeaeb2;}
+.btn-cancel{background:#e8e8e0;color:#444;}
 
 /* 筆記卡片 */
 .notes-list{display:flex;flex-direction:column;gap:12px;}
-.note-card{background:#2c2c2e;border:1.5px solid #3a3a3c;border-radius:14px;overflow:hidden;transition:border-color 0.2s;}
+.note-card{background:#fff;border:1.5px solid #e8e8e0;border-radius:14px;overflow:hidden;transition:border-color 0.2s;}
 .note-card:hover{border-color:#FFD60A;}
 .note-header{padding:1rem 1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .note-meta{display:flex;align-items:center;gap:12px;flex:1;}
-.note-icon{width:44px;height:44px;border-radius:10px;background:#3a3a3c;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.note-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
-.note-date{font-size:13px;color:#8e8e93;}
+.note-icon{width:44px;height:44px;border-radius:10px;background:#e8e8e0;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.note-title{font-size:19px;font-weight:700;color:#2c2c2e;margin-bottom:4px;}
+.note-date{font-size:16px;color:#444;}
 .note-arrow{color:#8e8e93;font-size:20px;transition:transform 0.2s;flex-shrink:0;}
 .note-card.open .note-arrow{transform:rotate(90deg);}
-.note-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid #3a3a3c;}
+.note-body{display:none;padding:0 1.2rem 1.2rem;border-top:1px solid #e8e8e0;}
 .note-card.open .note-body{display:block;}
-.note-text{font-size:15px;color:#d0d0d0;line-height:1.9;margin-top:1rem;white-space:pre-wrap;}
+.note-text{font-size:17px;color:#444;line-height:1.9;margin-top:1rem;white-space:pre-wrap;}
 .note-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:1rem;}
 .note-photo{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid #3a3a3c;transition:all 0.2s;}
 .note-photo:hover{border-color:#FFD60A;transform:scale(1.02);}
 .note-footer{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:8px;}
-.note-tag{font-size:12px;color:#555;}
+.note-tag{font-size:15px;color:#666;}
 .note-admin-btns{display:none;gap:6px;}
 .note-admin-btns.show{display:flex;}
 .btn-edit{background:transparent;border:1px solid #FFD60A;color:#FFD60A;padding:5px 14px;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;}
@@ -84,7 +84,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .lightbox-close{position:absolute;top:1rem;right:1.5rem;color:#fff;font-size:32px;cursor:pointer;background:none;border:none;}
 
 /* 空狀態 */
-.empty-state{text-align:center;padding:3rem;color:#555;}
+.empty-state{text-align:center;padding:3rem;color:#888;}
 .empty-state .emoji{font-size:48px;margin-bottom:1rem;}
 
 /* RWD */
@@ -153,7 +153,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         <label>上傳照片（可多選）</label>
         <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
           <div style="font-size:32px;">📷</div>
-          <p style="font-size:14px;color:#555;margin-top:8px;">點擊上傳照片</p>
+          <p style="font-size:17px;color:#555;margin-top:8px;">點擊上傳照片</p>
         </div>
         <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotos(this)"/>
         <div class="photo-preview" id="photoPreview"></div>
