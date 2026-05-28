@@ -36,9 +36,9 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .section-title{font-size:22px;font-weight:700;color:#2c2c2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#FFD60A;border-radius:2px;}
 
-.schedule-table{width:100%;max-width:900px;border-collapse:collapse;margin:0 auto 1.5rem;}
+.schedule-table{width:100%;max-width:1200px;border-collapse:collapse;margin:0 auto 1.5rem;}
 .schedule-table th{background:#1a3a5c;color:#fff;font-size:20px;padding:14px 16px;text-align:center;border:1px solid #2a4a6c;}
-.schedule-table td{padding:13px 16px;border:1px solid #e8e8e0;font-size:20px;background:#fff;vertical-align:middle;}
+.schedule-table td{padding:13px 16px;border:1px solid #e8e8e0;font-size:20px;background:#fff;vertical-align:middle;white-space:nowrap;}
 .schedule-table tr:hover td{background:#f9f9f5;}
 .schedule-table td:first-child{font-weight:700;color:#2c2c2e;background:#f5f5f0;width:25%;font-size:20px;}
 .badge{display:inline-block;padding:4px 14px;border-radius:6px;font-size:18px;font-weight:700;}
@@ -132,6 +132,12 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .cal-event.permit{background:var(--green-l);color:var(--green);}
 .cal-event.result{background:var(--purple-l);color:var(--purple);}
 .cal-event.info{background:var(--blue-l);color:var(--blue);}
+
+/* 術科待公布提示橫幅 */
+.exam-notice{display:flex;align-items:center;gap:12px;background:#fff8ec;border:1px solid #f0d9a8;border-left:4px solid #e0a020;border-radius:10px;padding:12px 16px;margin-bottom:16px;}
+.exam-notice-icon{font-size:26px;flex-shrink:0;}
+.exam-notice-title{font-size:16px;font-weight:700;color:#b87a00;}
+.exam-notice-text{font-size:14px;color:#777;margin-top:2px;}
 
 /* 考試日脈動高亮 */
 @keyframes examGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,159,10,0);}50%{box-shadow:0 0 0 4px rgba(255,159,10,0.28);}}
@@ -233,6 +239,14 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:var(--purple);border-radius:3px;"></div><span style="color:#888;">成績相關</span></div>
       </div>
 
+      <div class="exam-notice reveal" style="animation-delay:.28s">
+        <span class="exam-notice-icon">🔧</span>
+        <div>
+          <div class="exam-notice-title">術科（實作）測試・日期待公布</div>
+          <div class="exam-notice-text">術科測試日期將標示於准考證，確定後會更新到月曆。</div>
+        </div>
+      </div>
+
       <div class="cal-wrap" id="calContainer"></div>
     </div>
 
@@ -253,7 +267,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
           <tr><td>報名日期</td><td>115/01/02–01/13</td><td style="color:#30d158;font-weight:700;">115/04/24–05/05</td><td>115/08/27–09/07</td></tr>
           <tr><td>准考證寄送日期</td><td>115/02/24（二）</td><td style="color:#FFD60A;font-weight:700;">115/06/16（二）</td><td>115/10/20（二）</td></tr>
           <tr><td>網站公告試場位置</td><td>115/03/12（四）</td><td style="color:#FFD60A;font-weight:700;">115/07/02（四）</td><td>115/11/05（四）</td></tr>
-          <tr><td>學科測試日期</td><td>115/03/15（日）</td><td style="color:#ff9f0a;font-weight:700;font-size:15px;">⭐ 115/07/05（日）</td><td>115/11/08（日）</td></tr>
+          <tr><td>學科測試日期</td><td>115/03/15（日）</td><td style="color:#ff9f0a;font-weight:700;">⭐ 115/07/05（日）</td><td>115/11/08（日）</td></tr>
           <tr><td>學科試題疑義提出期限</td><td>115/03/16–03/22</td><td style="color:#FFD60A;font-weight:700;">115/07/06–07/12</td><td>115/11/09–11/15</td></tr>
           <tr><td>學科成績網路公告</td><td>115/04/10（五）</td><td style="color:#bf5af2;font-weight:700;">115/07/31（五）</td><td>115/12/04（五）</td></tr>
           <tr><td>學科測試成績單寄送</td><td>115/04/14（二）</td><td style="color:#bf5af2;font-weight:700;">115/08/04（二）</td><td>115/12/08（二）</td></tr>
@@ -343,6 +357,7 @@ const MONTHS=[
   {year:2026,month:6,label:'2026年6月'},
   {year:2026,month:7,label:'2026年7月'},
   {year:2026,month:8,label:'2026年8月'},
+  {year:2026,month:9,label:'2026年9月'},
 ];
 
 const container=document.getElementById('calContainer');
