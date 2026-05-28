@@ -469,8 +469,8 @@ async function submitRSVP() {
       出席人數: String(attendees.length || (attendChoice === 'decline' ? 0 : 1)),
       出席狀態: attendChoice === 'attend' ? '出席' : '不出席',
       來源: 'QR Code',
-      由誰帶來: '',
-      備註: attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、')
+      由誰帶來: contactPhone,
+      備註: '聯絡人：' + contactName + '　電話：' + contactPhone + (attendees.length > 0 ? '　出席名單：' + attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、') : '')
     });
 
     await new Promise((resolve, reject) => {
