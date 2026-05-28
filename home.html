@@ -2,170 +2,132 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
 <title>學習主頁 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
-
-/* 整體佈局 */
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f0;color:#2c2c2e;}
 .wrap{display:flex;min-height:100vh;}
 
-/* 左側導覽 */
-.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
-.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:16px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
-.sb-sub{font-size:13px;color:#aaa;margin-top:3px;}
-.sb-section{font-size:13px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.7rem 1rem;font-size:16px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
-.sb-item:hover{background:#1c1c1e;color:#e0e0e0;}
-.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
-.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+/* 側欄 */
+.sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #e0e0d8;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sb-brand{font-size:15px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-sub{font-size:12px;color:#999;margin-top:2px;}
+.sb-section{font-size:13px;color:#999;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.65rem 1rem;font-size:16px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#f5f5f0;color:#2c2c2e;}
+.sb-item.active{background:#fff9e6;color:#b87a00;border-left-color:#FFD60A;font-weight:700;}
+.sb-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
-.sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
-.sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:15px;font-weight:700;color:#e0e0e0;}
-.sb-role{font-size:13px;color:#777;}
-.sb-logout{background:transparent;border:none;color:#555;font-size:11px;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;}
-.sb-logout:hover{color:#ff453a;}
+.sb-user{padding:1rem;border-top:1px solid #e0e0d8;display:flex;align-items:center;gap:8px;}
+.sb-av{width:36px;height:36px;border-radius:50%;background:#FFD60A;color:#000;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{font-size:14px;font-weight:700;color:#2c2c2e;}
+.sb-role{font-size:12px;color:#999;}
+.sb-logout{background:transparent;border:none;color:#bbb;font-size:12px;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;}
+.sb-logout:hover{color:#d63031;}
 
-/* 右側主區 */
+/* 主區 */
 .main{flex:1;padding:1.5rem;overflow:auto;max-width:calc(100% - 200px);}
-.main-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;}
-.main-title{font-size:22px;font-weight:700;color:#fff;}
-.main-badge{background:#2c2c2e;border:1px solid #3a3a3c;padding:5px 14px;border-radius:20px;font-size:13px;color:#8e8e93;}
+.main-title{font-size:22px;font-weight:700;color:#2c2c2e;margin-bottom:1.2rem;}
 
 /* 歡迎橫幅 */
-.welcome-banner{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;overflow:hidden;position:relative;}
-.wb-greeting{font-size:26px;font-weight:700;color:#FFD60A;margin-bottom:6px;}
-.wb-msg{font-size:17px;color:#fff;}
-
+.welcome-banner{background:linear-gradient(135deg,#fff9e6,#fff3cc);border:1px solid #ffe08a;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;}
+.wb-greeting{font-size:26px;font-weight:700;color:#b87a00;margin-bottom:5px;}
+.wb-msg{font-size:18px;color:#666;}
 
 /* 統計卡 */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
-.stat{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
-.stat-label{font-size:17px;color:#fff;margin-bottom:10px;font-weight:500;}
-.stat-num{font-size:40px;font-weight:700;line-height:1;}
-.stat-sub{font-size:15px;color:#fff;margin-top:8px;}
-.stat.g .stat-num{font-size:40px;font-weight:700;line-height:1;}
-.stat.o .stat-num{font-size:40px;font-weight:700;line-height:1;}
-.stat.b .stat-num{font-size:40px;font-weight:700;line-height:1;}
-.stat.p .stat-num{font-size:40px;font-weight:700;line-height:1;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem;}
+.stat{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.stat-label{font-size:16px;color:#555;margin-bottom:8px;font-weight:500;}
+.stat-num{font-size:38px;font-weight:700;line-height:1;}
+.stat-sub{font-size:15px;color:#888;margin-top:6px;}
+.stat.g .stat-num{color:#2a9d5c;}
+.stat.o .stat-num{color:#e07b00;}
+.stat.b .stat-num{color:#1a6fb5;}
+.stat.p .stat-num{color:#7b4fa6;}
 
 /* 倒數 */
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.5rem;}
-.cd-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
-.cd-box-title{font-size:13px;font-weight:700;color:#8e8e93;margin-bottom:8px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;}
+.cd-box{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.cd-box-title{font-size:18px;font-weight:700;color:#2c2c2e;margin-bottom:10px;}
 .legend{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:4px;font-size:15px;color:#fff;}
-.leg-dot{width:8px;height:8px;border-radius:50%;}
+.leg{display:flex;align-items:center;gap:5px;font-size:16px;color:#555;}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
 .cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.cd{background:#1c1c1e;border-radius:8px;padding:0.7rem;border-left:3px solid #3a3a3c;}
-.cd-lbl{font-size:15px;color:#fff;margin-bottom:6px;font-weight:500;}
-.cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
-.cd-date{font-size:14px;color:#fff;margin-top:6px;}
-.cd.urgent{border-left-color:#ff453a;background:#1a0a0a;}
-.cd.urgent .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
-.cd.urgent .cd-lbl{font-size:15px;color:#fff;margin-bottom:6px;font-weight:500;}
-.cd.warning{border-left-color:#ff9f0a;background:#1a1200;}
-.cd.warning .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
-.cd.done{border-left-color:#555;}
-.cd.done .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
+.cd{background:#f9f9f5;border-radius:10px;padding:0.8rem;border-left:3px solid #e0e0d8;}
+.cd-lbl{font-size:16px;color:#555;margin-bottom:4px;font-weight:500;}
+.cd-num{font-size:2.6rem;font-weight:700;line-height:1;color:#2c2c2e;}
+.cd-date{font-size:15px;color:#888;margin-top:5px;}
+.cd.urgent{border-left-color:#d63031;background:#fff5f5;}
+.cd.urgent .cd-num{color:#d63031;}
+.cd.urgent .cd-lbl{color:#d63031;}
+.cd.warning{border-left-color:#e07b00;background:#fff8f0;}
+.cd.warning .cd-num{color:#e07b00;}
+.cd.done{border-left-color:#ccc;}
+.cd.done .cd-num{color:#ccc;font-size:1.2rem;}
+.cd.done .cd-lbl{color:#bbb;}
+.cd.done .cd-date{color:#bbb;}
 
 /* 進度 */
-.prog-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;}
-.prog-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;}
-.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.prog-label{font-size:14px;color:#fff;width:65px;flex-shrink:0;}
-.prog-bar{flex:1;height:5px;background:#3a3a3c;border-radius:3px;overflow:hidden;}
-.prog-fill{height:100%;border-radius:3px;}
-.fill-g{background:#30d158;}
-.fill-o{background:#ff9f0a;}
-
-/* 功能格 */
-.feat-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;margin-bottom:1.5rem;}
-.feat-box-title{font-size:13px;font-weight:700;color:#8e8e93;margin-bottom:10px;}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.feat{background:#1c1c1e;border-radius:8px;padding:0.8rem;text-align:center;cursor:pointer;border:1px solid #2a2a2a;transition:border-color 0.15s;}
-.feat:hover{border-color:#FFD60A;}
-.feat-icon{font-size:26px;margin-bottom:6px;}
-.feat-name{font-size:17px;font-weight:700;color:#fff;}
-.feat-sub{font-size:14px;color:#aaa;margin-top:4px;}
+.prog-box{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.prog-title{font-size:18px;font-weight:700;color:#2c2c2e;margin-bottom:10px;}
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.prog-label{font-size:16px;color:#555;width:70px;flex-shrink:0;}
+.prog-bar{flex:1;height:7px;background:#e8e8e0;border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;}
+.fill-g{background:#2a9d5c;}
+.fill-o{background:#e07b00;}
 
 /* 公告 */
-.bul-box{background:#2c2c2e;border-radius:10px;padding:1rem;border:1px solid #3a3a3c;margin-bottom:1.5rem;}
-.bul-title{font-size:16px;font-weight:700;color:#FFD60A;margin-bottom:8px;}
-.bul-item{font-size:15px;color:#fff;line-height:2;}
+.bul-box{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);margin-top:10px;}
+.bul-title{font-size:18px;font-weight:700;color:#b87a00;margin-bottom:8px;}
+.bul-item{font-size:18px;color:#444;line-height:2.1;}
+
+/* 功能格 */
+.feat-box{background:#fff;border-radius:12px;border:1px solid #e8e8e0;padding:1.1rem;margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.feat-box-title{font-size:18px;font-weight:700;color:#555;margin-bottom:10px;}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.feat{background:#f9f9f5;border-radius:10px;padding:0.9rem;text-align:center;cursor:pointer;border:1px solid #e8e8e0;transition:all 0.15s;}
+.feat:hover{border-color:#FFD60A;background:#fff9e6;}
+.feat-icon{font-size:26px;margin-bottom:5px;}
+.feat-name{font-size:16px;font-weight:700;color:#2c2c2e;}
+.feat-sub{font-size:13px;color:#888;margin-top:3px;}
 
 /* 課程梯次 */
-.sched-box{background:#2c2c2e;border-radius:10px;border:1px solid #3a3a3c;overflow:hidden;margin-bottom:1.5rem;}
-.sched-header{background:#3a3a3c;color:#FFD60A;padding:0.7rem 1rem;font-size:13px;font-weight:700;}
-.sched-row{display:flex;align-items:center;gap:10px;padding:0.7rem 1rem;border-bottom:1px solid #3a3a3c;}
+.sched-box{background:#fff;border-radius:12px;border:1px solid #e8e8e0;overflow:hidden;margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.sched-header{background:#b87a00;color:#fff;padding:0.8rem 1rem;font-size:17px;font-weight:700;}
+.sched-row{display:flex;align-items:center;gap:10px;padding:0.8rem 1rem;border-bottom:1px solid #e8e8e0;}
 .sched-row:last-child{border-bottom:none;}
-.sched-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.dot-done{background:#3a3a3c;}
-.dot-now{background:#ff9f0a;}
-.dot-next{background:#3a3a3c;border:2px solid #30d158;}
-.sched-date{font-size:15px;font-weight:700;color:#fff;min-width:95px;}
-.sched-label{font-size:15px;color:#fff;flex:1;}
-.sched-tag{font-size:12px;padding:3px 10px;font-weight:700;border-radius:4px;}
-.t-done{background:#2a2a2a;color:#555;}
-.t-now{background:#1a1200;color:#ff9f0a;border:1px solid #8a5a00;}
-.t-next{background:#0a1a0a;color:#30d158;border:1px solid #1a5c1a;}
+.sched-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.dot-done{background:#ccc;}
+.dot-now{background:#e07b00;}
+.dot-next{background:#e8e8e0;border:2px solid #2a9d5c;}
+.sched-date{font-size:16px;font-weight:700;color:#555;min-width:110px;white-space:nowrap;}
+.sched-label{font-size:16px;color:#888;flex:1;}
+.sched-tag{font-size:14px;padding:4px 12px;font-weight:700;border-radius:6px;white-space:nowrap;}
+.t-done{background:#f0f0f0;color:#aaa;}
+.t-now{background:#fff3e0;color:#e07b00;border:1px solid #e07b00;}
+.t-next{background:#e8f5e9;color:#2a9d5c;border:1px solid #2a9d5c;}
 
-/* RWD 手機版 */
-
-@media(max-width:700px){
-  .sidebar{display:none;}
-  .main{max-width:100%;padding:1rem !important;}
-  .stats-row{grid-template-columns:repeat(2,1fr) !important;}
-  .row2{grid-template-columns:1fr !important;}
-  .cd-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .cd-num{font-size:2rem !important;}
-  .stat-num{font-size:30px !important;}
-  .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .wb-greeting{font-size:20px !important;}
-  .main-title{font-size:18px !important;}
-  .sched-row{flex-wrap:wrap !important;gap:4px !important;}
-
-  .row2{grid-template-columns:1fr !important;}
-  .cd-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .cd-num{font-size:2.8rem;font-weight:700;line-height:1;color:#fff;}
-  .stat-num{font-size:40px;font-weight:700;line-height:1;}
-  .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .wb-greeting{font-size:20px !important;}
-  .main-title{font-size:18px !important;}
-
-  .feat-grid{grid-template-columns:repeat(2,1fr) !important;}
-  .feat-name{font-size:14px !important;white-space:nowrap !important;}
-  .feat-sub{font-size:11px !important;}
-  .feat-icon{font-size:22px !important;}
-  .sched-row{gap:6px !important;}
-  .sched-date{font-size:15px;font-weight:700;color:#fff;min-width:95px;}
-  .sched-label{font-size:15px;color:#fff;flex:1;}
-  .sched-tag{font-size:11px !important;padding:3px 8px !important;white-space:nowrap !important;}
-  .stats-row{grid-template-columns:repeat(2,1fr) !important;}
-  .row2{grid-template-columns:1fr !important;}
-  .cd-grid{grid-template-columns:1fr 1fr !important;}
-  .main{padding:1rem !important;}
-  .main-title{font-size:18px !important;}
-  .wb-greeting{font-size:18px !important;}
-}
+/* RWD */
 @media(max-width:700px){
   .sidebar{display:none;}
   .main{max-width:100%;padding:1rem;}
   .stats-row{grid-template-columns:repeat(2,1fr);}
   .row2{grid-template-columns:1fr;}
-  .feat-grid{grid-template-columns:repeat(3,1fr);}
   .cd-grid{grid-template-columns:1fr 1fr;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .cd-num{font-size:2rem;}
+  .stat-num{font-size:30px;}
+  .wb-greeting{font-size:20px;}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- 左側導覽 -->
   <div class="sidebar">
     <div class="sb-logo">
       <img src="data:image/png;base64,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" width="28" height="28" style="object-fit:contain;flex-shrink:0;"/>
@@ -175,7 +137,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
     <div class="sb-section">學習</div>
-    <div class="sb-item active"><span class="sb-icon">🏠</span>首頁</div>
+    <a class="sb-item active"><span class="sb-icon">🏠</span>首頁</a>
     <a class="sb-item" href="videos.html"><span class="sb-icon">🎬</span>訓練影片</a>
     <a class="sb-item" href="games.html"><span class="sb-icon">🎮</span>遊戲挑戰</a>
     <a class="sb-item" href="notes.html"><span class="sb-icon">📝</span>上課筆記</a>
@@ -195,40 +157,33 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
   </div>
-
-  <!-- 右側主區 -->
   <div class="main">
-    <div class="main-header">
-      <div class="main-title">儀表板</div>
-      <div class="main-badge" id="timeBadge">👋 歡迎回來</div>
-    </div>
+    <div class="main-title">儀表板</div>
 
     <div class="welcome-banner">
-      <div>
-        <div class="wb-greeting" id="wbGreeting">歡迎回來！</div>
-        <div class="wb-msg" id="wbMsg">今天也要繼續加油！</div>
-      </div>
+      <div class="wb-greeting" id="wbGreeting">歡迎回來！</div>
+      <div class="wb-msg" id="wbMsg">乙級技術士，你一定做得到！💪</div>
     </div>
 
     <div class="stats-row">
       <div class="stat g">
         <div class="stat-label">已看影片</div>
-        <div class="stat-num" id="statVideo">0<span style="font-size:14px;color:#aaa;font-weight:400;"> / 13</span></div>
+        <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 13</span></div>
         <div class="stat-sub" id="statVideoSub">完成率 0%</div>
       </div>
       <div class="stat o">
         <div class="stat-label">遊戲挑戰</div>
-        <div class="stat-num" id="statGame">0<span style="font-size:14px;color:#aaa;font-weight:400;"> 次</span></div>
+        <div class="stat-num" id="statGame">0<span style="font-size:18px;color:#aaa;font-weight:400;"> 次</span></div>
         <div class="stat-sub">繼續加油！</div>
       </div>
       <div class="stat b">
         <div class="stat-label">距離考試</div>
-        <div class="stat-num" id="statExam">-<span style="font-size:14px;color:#aaa;font-weight:400;"> 天</span></div>
+        <div class="stat-num" id="statExam">-<span style="font-size:18px;color:#aaa;font-weight:400;"> 天</span></div>
         <div class="stat-sub">115/07/05</div>
       </div>
       <div class="stat p">
         <div class="stat-label">課程進度</div>
-        <div class="stat-num" id="statPct">0<span style="font-size:14px;color:#aaa;font-weight:400;"> %</span></div>
+        <div class="stat-num" id="statPct">0<span style="font-size:18px;color:#aaa;font-weight:400;"> %</span></div>
         <div class="stat-sub" id="statRemain">剩 13 部影片</div>
       </div>
     </div>
@@ -237,10 +192,10 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       <div class="cd-box">
         <div class="cd-box-title">⏳ 重要日期倒數</div>
         <div class="legend">
-          <div class="leg"><div class="leg-dot" style="background:#fff;"></div>一般</div>
-          <div class="leg"><div class="leg-dot" style="background:#ff9f0a;"></div>10天內</div>
-          <div class="leg"><div class="leg-dot" style="background:#ff453a;"></div>3天內</div>
-          <div class="leg"><div class="leg-dot" style="background:#555;"></div>已過</div>
+          <div class="leg"><div class="leg-dot" style="background:#2c2c2e;"></div>一般</div>
+          <div class="leg"><div class="leg-dot" style="background:#e07b00;"></div>10天內</div>
+          <div class="leg"><div class="leg-dot" style="background:#d63031;"></div>3天內</div>
+          <div class="leg"><div class="leg-dot" style="background:#ccc;"></div>已過</div>
         </div>
         <div class="cd-grid">
           <div class="cd" id="c1"><div class="cd-lbl">📅 第四次上課</div><div class="cd-num" id="cd1">-</div><div class="cd-date">115/06/23（二）</div></div>
@@ -255,15 +210,15 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         <div class="prog-row">
           <div class="prog-label">影片觀看</div>
           <div class="prog-bar"><div class="prog-fill fill-g" id="videoFill" style="width:0%"></div></div>
-          <div style="font-size:12px;font-weight:700;width:36px;text-align:right;color:#30d158;" id="videoVal">0/13</div>
+          <div style="font-size:16px;font-weight:700;width:45px;text-align:right;color:#2a9d5c;" id="videoVal">0/13</div>
         </div>
         <div class="prog-row">
           <div class="prog-label">遊戲挑戰</div>
           <div class="prog-bar"><div class="prog-fill fill-o" id="gameFill" style="width:0%"></div></div>
-          <div style="font-size:12px;font-weight:700;width:36px;text-align:right;color:#ff9f0a;" id="gameVal">0次</div>
+          <div style="font-size:16px;font-weight:700;width:45px;text-align:right;color:#e07b00;" id="gameVal">0次</div>
         </div>
-        <div style="margin-top:14px;border-top:1px solid #3a3a3c;padding-top:12px;">
-          <div class="bul-title" style="font-size:16px;color:#FFD60A;margin-bottom:8px;font-weight:700;">📢 公告</div>
+        <div style="margin-top:14px;border-top:1px solid #e8e8e0;padding-top:12px;">
+          <div class="bul-title">📢 公告</div>
           <div class="bul-item">🎉 第三次上課（115/05/13）已完成！<br/>📅 第四次上課：115/06/23（二）<br/>📺 13部影片已上傳，快去複習！<br/>🎮 遊戲挑戰開放中！</div>
         </div>
       </div>
@@ -276,10 +231,10 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         <div class="feat" onclick="location.href='games.html'"><div class="feat-icon">🎮</div><div class="feat-name">遊戲挑戰</div><div class="feat-sub">2 款遊戲</div></div>
         <div class="feat" onclick="location.href='notes.html'"><div class="feat-icon">📝</div><div class="feat-name">上課筆記</div><div class="feat-sub">老師重點</div></div>
         <div class="feat" onclick="location.href='photos.html'"><div class="feat-icon">📸</div><div class="feat-name">實作照片</div><div class="feat-sub">課程記錄</div></div>
+        <div class="feat" onclick="location.href='study.html'"><div class="feat-icon">📚</div><div class="feat-name">學科資料</div><div class="feat-sub">測驗＋教材</div></div>
+        <div class="feat" onclick="location.href='exam.html'"><div class="feat-icon">📅</div><div class="feat-name">考試資訊</div><div class="feat-sub">日程行事曆</div></div>
         <div class="feat" onclick="location.href='progress.html'"><div class="feat-icon">📊</div><div class="feat-name">我的進度</div><div class="feat-sub">學習統計</div></div>
         <div class="feat" onclick="location.href='signin.html'"><div class="feat-icon">✍️</div><div class="feat-name">訓練簽到</div><div class="feat-sub">出席記錄</div></div>
-        <div class="feat" onclick="location.href='study.html'"><div class="feat-icon">📚</div><div class="feat-name">學科資料</div><div class="feat-sub">測驗＋教材</div></div>
-        <div class="feat" onclick="location.href='exam.html'"><div class="feat-icon">📅</div><div class="feat-name">考試資訊</div><div class="feat-sub">日程＋行事曆</div></div>
       </div>
     </div>
 
@@ -294,6 +249,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 </div>
 
 <script>
+
 (function(){const u=sessionStorage.getItem('user');if(!u)window.location.href='index.html';})();
 const user=JSON.parse(sessionStorage.getItem('user')||'{"name":"訪客","isAdmin":false}');
 
@@ -384,6 +340,7 @@ function logout(){
     window.location.href='index.html';
   }
 }
+
 </script>
 </body>
 </html>

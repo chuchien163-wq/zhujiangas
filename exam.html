@@ -37,34 +37,44 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .section-title::before{content:'';display:inline-block;width:4px;height:18px;background:#FFD60A;border-radius:2px;}
 
 .schedule-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;}
-.schedule-table th{background:#1a3a5c;color:#fff;font-size:15px;padding:12px 16px;text-align:center;border:1px solid #2a4a6c;}
-.schedule-table td{padding:11px 16px;border:1px solid #3a3a3c;font-size:14px;background:#2c2c2e;vertical-align:middle;}
+.schedule-table th{background:#1a3a5c;color:#fff;font-size:17px;padding:12px 14px;text-align:center;border:1px solid #2a4a6c;}
+.schedule-table td{padding:11px 12px;border:1px solid #3a3a3c;font-size:16px;background:#2c2c2e;vertical-align:middle;}
 .schedule-table tr:hover td{background:#3a3a3c;}
-.schedule-table td:first-child{font-weight:700;color:#fff;background:#252525;}
+.schedule-table td:first-child{font-weight:700;color:#fff;background:#252525;width:22%;}
 .badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;}
 .badge-1{background:#1a3a5c;color:#7ab8f5;}
 .badge-2{background:#1a3a1a;color:#7af57a;}
 .badge-3{background:#3a2a1a;color:#f5c07a;}
 
-/* 行事曆 */
-.cal-wrap{margin-bottom:1.5rem;}
-.cal-month{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;overflow:hidden;margin-bottom:1rem;}
-.cal-header{background:#1a3a5c;padding:0.8rem 1.2rem;font-size:16px;font-weight:700;color:#fff;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
-.cal-dow{text-align:center;padding:8px 4px;font-size:13px;font-weight:700;color:#aaa;background:#252525;}
-.cal-dow.we{color:#ff453a;}
-.cal-cell{min-height:64px;border:0.5px solid #3a3a3c;padding:6px;background:#2c2c2e;position:relative;}
-.cal-cell.empty{background:#1c1c1e;}
-.cal-cell.holiday{background:#1a1010;}
-.cal-daynum{font-size:12px;color:#aaa;margin-bottom:3px;font-weight:700;}
-.cal-cell.holiday .cal-daynum{color:#ff453a;}
-.cal-cell.has-event .cal-daynum{color:#FFD60A;}
-.cal-event{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.4;}
-.ev-blue{background:#1a3a5c;color:#7ab8f5;}
-.ev-green{background:#1a3a1a;color:#30d158;}
-.ev-orange{background:#3a2a00;color:#ff9f0a;}
-.ev-red{background:#3a1a1a;color:#ff453a;}
-.ev-purple{background:#2a1a3a;color:#bf5af2;}
+/* 行事曆 - 簽到系統風格 */
+:root{
+  --blue:#1a5fa8;--blue-d:#134a84;--blue-l:#e8f1fb;--blue-m:#4a8fd4;
+  --green:#1a7a4a;--green-l:#e6f5ed;
+  --amber:#b45e0a;--amber-l:#fef3e2;
+  --purple:#5b3ea8;--purple-l:#f0ecfb;
+  --red:#c0392b;--red-l:#fdecea;
+  --gray-50:#f8f8f7;--gray-100:#f0efed;--gray-200:#e2e0dc;
+  --gray-400:#9e9b94;--gray-600:#5a5752;--gray-800:#2c2a27;
+  --border:#e2e0dc;
+}
+.cal-section{margin-bottom:20px;}
+.cal-month-title{font-size:15px;font-weight:700;color:var(--gray-600);margin-bottom:8px;padding-left:2px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.cal-dow{font-size:11px;color:var(--gray-400);text-align:center;padding:4px 0;font-weight:700;}
+.cal-dow.we{color:var(--red);}
+.cal-cell{min-height:72px;border-radius:8px;border:1px solid var(--border);padding:5px;background:#fff;position:relative;}
+.cal-cell.empty{background:transparent;border-color:transparent;}
+.cal-cell.holiday{background:var(--gray-50);}
+.cal-cell.has-sched{border-color:var(--blue-m);}
+.cal-cell.has-sched.all-done{border-color:var(--green);}
+.cal-daynum{font-size:11px;font-weight:700;color:var(--gray-400);margin-bottom:3px;}
+.cal-cell.has-sched .cal-daynum{color:var(--blue);}
+.cal-cell.holiday .cal-daynum{color:var(--red);}
+.cal-person{font-size:10px;padding:2px 5px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.cal-person.exam{background:var(--amber-l);color:var(--amber);border:1px solid #f0c070;}
+.cal-person.permit{background:var(--green-l);color:var(--green);}
+.cal-person.result{background:var(--purple-l);color:var(--purple);}
+.cal-person.info{background:var(--blue-l);color:var(--blue);}
 
 /* 注意事項 */
 .notice-box{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
@@ -256,13 +266,13 @@ cdItems.forEach(({id,numId,y,m,d})=>{
 
 // 行事曆
 const EVENTS = {
-  '06/16': [{text:'准考證寄送',cls:'ev-green'}],
-  '07/02': [{text:'公告試場',cls:'ev-blue'}],
-  '07/05': [{text:'⭐學科測試',cls:'ev-orange'}],
-  '07/06': [{text:'疑義提出開始',cls:'ev-purple'}],
-  '07/12': [{text:'疑義提出截止',cls:'ev-purple'}],
-  '07/31': [{text:'成績公告',cls:'ev-purple'}],
-  '08/04': [{text:'成績單寄送',cls:'ev-purple'}],
+  '06/16': [{text:'📮 准考證寄送',type:'permit'}],
+  '07/02': [{text:'📢 公告試場位置',type:'info'}],
+  '07/05': [{text:'⭐ 學科測試',type:'exam'},{text:'考試加油！',type:'exam'}],
+  '07/06': [{text:'📝 疑義提出開始',type:'info'}],
+  '07/12': [{text:'📝 疑義提出截止',type:'info'}],
+  '07/31': [{text:'📊 成績公告',type:'result'}],
+  '08/04': [{text:'📬 成績單寄送',type:'result'}],
 };
 
 const WD=['一','二','三','四','五','六','日'];
