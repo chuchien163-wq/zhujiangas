@@ -1462,6 +1462,7 @@ const API = 'https://script.google.com/macros/s/AKfycbxPovUknAuT7YpKc7kvkRiQChDH
 const IMG_BASE = 'https://chuchien163-wq.github.io/zhujiangas/invite-cards/';
 
 let currentActId = 'EVT001';
+const VENUE_FEE = 6000;          // 璀璨廳場地費
 let allActivities = [];
 let allStaff = [];
 let externalData = [];
@@ -1683,7 +1684,7 @@ function renderDashboard() {
 
   // 狀態chips（菜單＝定案菜單，邀請卡＝單一定案版）
   const chips = [];
-  const menuPicked = menuData.find(m => m['老闆選定'] === '✓') || menuData[0] || null;
+  const menuPicked = menuData.find(m => m['老闆選定'] === '✓') || menuData[0] || { '方案名稱':'璀璨廳定案菜單', '每桌單價':8000 };
   if(menuPicked) chips.push([menuPicked['方案名稱']+'（定案）','chip-green']);
   else chips.push(['菜單未設定','chip-amber']);
   chips.push(['邀請卡已定案','chip-green']);
@@ -1775,14 +1776,14 @@ function renderDashboard() {
     <div class="fee-row"><span class="fee-lbl">菜單方案</span><span class="fee-val ${mPicked?'':'fee-warn'}">${mPicked?mPicked['方案名稱']+'（$'+(parseInt(mPicked['每桌單價'])||8000).toLocaleString()+'/桌）':'未設定'}</span></div>
     <div class="fee-row"><span class="fee-lbl">桌數</span><span class="fee-val fee-warn">${act['桌數範圍']||'待確認'}</span></div>
     <div class="fee-row"><span class="fee-lbl">服務費</span><span class="fee-val">每桌×10%</span></div>
-    <div class="fee-row"><span class="fee-lbl">租金</span><span class="fee-val">$6,000</span></div>
+    <div class="fee-row"><span class="fee-lbl">場地費</span><span class="fee-val">$${VENUE_FEE.toLocaleString()}</span></div>
     <div class="fee-row"><span class="fee-lbl">卡拉OK</span><span class="fee-val fee-warn">待確認</span></div>
     <hr class="fee-divider">
     <div class="fee-range-box">
-      <div class="fee-range-title">費用區間試算（含服務費＋租金）</div>
-      <div class="fee-range-row">7桌：$${Math.round(7*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
-      <div class="fee-range-row">8桌：$${Math.round(8*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
-      <div class="fee-range-row">9桌：$${Math.round(9*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
+      <div class="fee-range-title">費用區間試算（含服務費＋場地費）</div>
+      <div class="fee-range-row">7桌：$${Math.round(7*(fPrice||8000)*1.1+VENUE_FEE).toLocaleString()}</div>
+      <div class="fee-range-row">8桌：$${Math.round(8*(fPrice||8000)*1.1+VENUE_FEE).toLocaleString()}</div>
+      <div class="fee-range-row">9桌：$${Math.round(9*(fPrice||8000)*1.1+VENUE_FEE).toLocaleString()}</div>
     </div>`;
 
   // 進度條
@@ -1950,9 +1951,11 @@ async function renderVenuePage() {
 
   document.getElementById('venue-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
 
-  try { await loadVenuePhotos(); } catch(e) { console.error('loadVenuePhotos:', e); }
-  try { await loadVenueCaptions(); } catch(e) { console.error('loadVenueCaptions:', e); }
-  try { await loadVenueYoutube(); } catch(e) { console.error('loadVenueYoutube:', e); }
+  try { await Promise.all([
+    loadVenuePhotos().catch(function(e){ console.error('loadVenuePhotos:', e); }),
+    loadVenueCaptions().catch(function(e){ console.error('loadVenueCaptions:', e); }),
+    loadVenueYoutube().catch(function(e){ console.error('loadVenueYoutube:', e); })
+  ]); } catch(e) { console.error('venue load:', e); }
 
   // ── 資訊卡片 ──
   var fields = [
@@ -2122,8 +2125,10 @@ async function saveAllAfterCaptions() {
 
 async function renderAfterPage() {
   document.getElementById('after-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
-  await loadAfterPhotos();
-  await loadAfterCaptions();
+  await Promise.all([
+    loadAfterPhotos().catch(function(e){ console.error('loadAfterPhotos:', e); }),
+    loadAfterCaptions().catch(function(e){ console.error('loadAfterCaptions:', e); })
+  ]);
 
   const slots = Array.from({length:20}, (_,i) => {
     const savedImg = getAfterPhotoUrl(i);
@@ -2394,19 +2399,15 @@ function getMenuDetailKey(actId, planName) {
 
 async function renderMenuPage() {
   document.getElementById('menu-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入照片中...</div>';
-  await loadMenuPhotos();
-  await loadMenuDetails();
+  await Promise.all([
+    loadMenuPhotos().catch(function(e){ console.error('loadMenuPhotos:', e); }),
+    loadMenuDetails().catch(function(e){ console.error('loadMenuDetails:', e); })
+  ]);
 
-  if(!menuData || menuData.length === 0) {
-    document.getElementById('menu-content').innerHTML =
-      '<p style="font-size:13px;color:var(--text-muted);padding:20px;text-align:center">尚無菜單資料，請於 Google 試算表「菜單紀錄」新增方案。</p>';
-    return;
-  }
-
-  // 單一定案展示：優先顯示老闆選定，否則顯示第一筆
+  // 單一定案展示：優先老闆選定 → 第一筆 → 內建預設（璀璨廳 8000）
   const picked = menuData.find(m => m['老闆選定'] === '✓');
-  const m = picked || menuData[0];
-  const i = menuData.indexOf(m);
+  const m = picked || menuData[0] || { '方案名稱':'璀璨廳定案菜單', '每桌單價':8000, '老闆選定':'✓' };
+  const i = Math.max(0, menuData.indexOf(m));
   const price = parseInt(m['每桌單價']) || 8000;
   const savedImg = getMenuPhotoUrl(m['方案名稱']);
   const savedDetail = getMenuDetailVal(m['方案名稱']);
@@ -2423,9 +2424,10 @@ async function renderMenuPage() {
       <div class="menu-price">$${price.toLocaleString()}</div>
       <div class="menu-unit">每桌單價（另收服務費 1 成 ＝ $${Math.round(price*0.1).toLocaleString()}/桌）</div>
       <div class="menu-range">
-        7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong>　
-        8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong>　
-        9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px">總費用 ＝ 桌數×${price.toLocaleString()}×1.1 ＋ 場地費 $${VENUE_FEE.toLocaleString()}</div>
+        7桌：NT$ <strong>${Math.round(price*7*1.1+VENUE_FEE).toLocaleString()}</strong>　
+        8桌：NT$ <strong>${Math.round(price*8*1.1+VENUE_FEE).toLocaleString()}</strong>　
+        9桌：NT$ <strong>${Math.round(price*9*1.1+VENUE_FEE).toLocaleString()}</strong>
       </div>
 
       <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜單照片</div>
@@ -2582,15 +2584,15 @@ function renderFeePage() {
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
       <div class="form-field">
-        <label class="form-label">包廂費</label>
+        <label class="form-label">場地費</label>
         <select class="form-input" id="fee-hasroom" onchange="calcFee()">
-          <option value="0">不收包廂費</option>
-          <option value="1">收包廂費</option>
+          <option value="1" selected>收場地費</option>
+          <option value="0">不收場地費</option>
         </select>
       </div>
       <div class="form-field">
-        <label class="form-label">包廂費金額 (NT$)</label>
-        <input type="number" class="form-input" id="fee-room" value="0" oninput="calcFee()">
+        <label class="form-label">場地費金額 (NT$)</label>
+        <input type="number" class="form-input" id="fee-room" value="6000" oninput="calcFee()">
       </div>
       <div class="form-field">
         <label class="form-label">卡拉OK費 (NT$)</label>
@@ -2621,7 +2623,7 @@ function calcFee() {
   rows.innerHTML = `
     <div class="fee-row"><span class="fee-lbl">桌費（$${price.toLocaleString()}×${t}桌）</span><span class="fee-val">NT$ ${base.toLocaleString()}</span></div>
     <div class="fee-row"><span class="fee-lbl">服務費（${svcMode==='per'?'每桌×10%':'合計×10%'}）</span><span class="fee-val">NT$ ${Math.round(svc).toLocaleString()}</span></div>
-    <div class="fee-row"><span class="fee-lbl">包廂費</span><span class="fee-val ${room?'':'fee-warn'}">${room?'NT$ '+room.toLocaleString():'—'}</span></div>
+    <div class="fee-row"><span class="fee-lbl">場地費</span><span class="fee-val ${room?'':'fee-warn'}">${room?'NT$ '+room.toLocaleString():'—'}</span></div>
     <hr class="fee-divider">`;
   document.getElementById('fee-grand').textContent = 'NT$ ' + Math.round(total).toLocaleString() + (ktv===0?' ＋KTV待確認':'');
   document.getElementById('fee-ktv-note').textContent = ktv>0?'卡拉OK：NT$ '+ktv.toLocaleString():'＊卡拉OK費用待確認，尚未計入合計';
