@@ -467,6 +467,42 @@ if(exam<=3)examEl.style.color='#ff453a';
 else if(exam<=10)examEl.style.color='#ff9f0a';
 animateNum(examEl,exam,v=>v+'<span style="font-size:14px;color:#aaa;font-weight:400;"> 天</span>',1000);
 
+// 👀 總經理觀摩視角（其他人完全不受影響）
+if(user.name==='總經理'){
+  // 稱呼與身份
+  document.getElementById('wbGreeting').textContent='歡迎回來，總經理！';
+  document.getElementById('wbMsg').textContent='感謝您關心同仁的訓練進度，以下是目前概況。';
+  document.getElementById('sbRole').textContent='觀摩中';
+  // 隱藏個人進度（學員專屬）
+  const hide=s=>{const el=document.querySelector(s);if(el)el.style.display='none';};
+  hide('.stats-row');      // 個人統計卡
+  hide('.bunny-box');      // 兔子衝刺（個人）
+  hide('.donut-row');      // 個人圓餅圖
+  const pt=document.querySelector('.prog-title'); if(pt)pt.textContent='📢 公告';
+  const bt=document.querySelector('.bul-title');  if(bt)bt.style.display='none';
+  // 訓練概況面板（資料皆為真實、現成）
+  const examDays=calcDays(115,7,5);
+  const trainees=['林孟賢','陳人豪','張鈞豪','劉建彣','黃禹竣','王璽凱','林琮炫','蔡凱程','陳東彥'];
+  const u=t=>'<span style="font-size:18px;color:#aaa;font-weight:400;"> '+t+'</span>';
+  const panel=document.createElement('div');
+  panel.className='feat-box reveal';
+  panel.style.animationDelay='.05s';
+  panel.innerHTML=
+    '<div class="feat-box-title">📊 訓練概況（觀摩中）</div>'+
+    '<div class="stats-row" style="margin-bottom:14px;">'+
+      '<div class="stat g"><div class="stat-label">受訓學員</div><div class="stat-num">9'+u('位')+'</div><div class="stat-sub">乙級導管配管</div></div>'+
+      '<div class="stat o"><div class="stat-label">上課進度</div><div class="stat-num">3'+u('/ 4 次')+'</div><div class="stat-sub">第四次 6/23</div></div>'+
+      '<div class="stat b"><div class="stat-label">距離學科測試</div><div class="stat-num">'+examDays+u('天')+'</div><div class="stat-sub">115/07/05</div></div>'+
+      '<div class="stat p"><div class="stat-label">影片教材</div><div class="stat-num">15'+u('部')+'</div><div class="stat-sub">線上隨時看</div></div>'+
+    '</div>'+
+    '<div style="font-size:15px;color:#888;font-weight:700;margin-bottom:8px;">👥 受訓學員名單</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;">'+
+      trainees.map(n=>'<span style="background:#fff9e6;border:1px solid #ffe08a;color:#b87a00;font-weight:700;padding:6px 14px;border-radius:20px;font-size:15px;">'+n+'</span>').join('')+
+    '</div>';
+  const banner=document.querySelector('.welcome-banner');
+  if(banner)banner.insertAdjacentElement('afterend',panel);
+}
+
 function logout(){
   if(confirm('確定要登出嗎？')){
     sessionStorage.removeItem('user');
