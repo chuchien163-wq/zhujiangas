@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
+<title>考試資訊 — 竹建學習網</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#1c1c1e;color:#e0e0e0;}
+.wrap{display:flex;min-height:100vh;}
+.sidebar{width:200px;background:#111;border-right:1px solid #2a2a2a;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #2a2a2a;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.sb-brand{font-size:15px;font-weight:700;color:#FFD60A;letter-spacing:1px;}
+.sb-sub{font-size:12px;color:#aaa;margin-top:2px;}
+.sb-section{font-size:12px;color:#aaa;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:15px;color:#ccc;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#1c1c1e;color:#fff;}
+.sb-item.active{background:#1c1c1e;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
+.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-flex{flex:1;}
+.sb-user{padding:1rem;border-top:1px solid #2a2a2a;display:flex;align-items:center;gap:8px;}
+.sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{font-size:13px;font-weight:700;color:#e0e0e0;}
+.sb-role{font-size:11px;color:#777;}
+.main{flex:1;padding:1.5rem;overflow:auto;max-width:calc(100% - 200px);}
+.main-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:1.5rem;}
+
+/* 分類按鈕 */
+.cat-bar{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #3a3a3c;background:transparent;color:#ccc;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cat-btn.active{background:#FFD60A;color:#000;border-color:#FFD60A;}
+.cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
+
+/* 日程表 */
+.section-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-title::before{content:'';display:inline-block;width:4px;height:18px;background:#FFD60A;border-radius:2px;}
+
+.schedule-table{width:100%;border-collapse:collapse;margin-bottom:1.5rem;}
+.schedule-table th{background:#1a3a5c;color:#fff;font-size:15px;padding:12px 16px;text-align:center;border:1px solid #2a4a6c;}
+.schedule-table td{padding:11px 16px;border:1px solid #3a3a3c;font-size:14px;background:#2c2c2e;vertical-align:middle;}
+.schedule-table tr:hover td{background:#3a3a3c;}
+.schedule-table td:first-child{font-weight:700;color:#fff;background:#252525;}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;}
+.badge-1{background:#1a3a5c;color:#7ab8f5;}
+.badge-2{background:#1a3a1a;color:#7af57a;}
+.badge-3{background:#3a2a1a;color:#f5c07a;}
+
+/* 行事曆 */
+.cal-wrap{margin-bottom:1.5rem;}
+.cal-month{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;overflow:hidden;margin-bottom:1rem;}
+.cal-header{background:#1a3a5c;padding:0.8rem 1.2rem;font-size:16px;font-weight:700;color:#fff;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-dow{text-align:center;padding:8px 4px;font-size:13px;font-weight:700;color:#aaa;background:#252525;}
+.cal-dow.we{color:#ff453a;}
+.cal-cell{min-height:64px;border:0.5px solid #3a3a3c;padding:6px;background:#2c2c2e;position:relative;}
+.cal-cell.empty{background:#1c1c1e;}
+.cal-cell.holiday{background:#1a1010;}
+.cal-daynum{font-size:12px;color:#aaa;margin-bottom:3px;font-weight:700;}
+.cal-cell.holiday .cal-daynum{color:#ff453a;}
+.cal-cell.has-event .cal-daynum{color:#FFD60A;}
+.cal-event{font-size:10px;padding:2px 5px;border-radius:4px;margin-bottom:2px;line-height:1.4;}
+.ev-blue{background:#1a3a5c;color:#7ab8f5;}
+.ev-green{background:#1a3a1a;color:#30d158;}
+.ev-orange{background:#3a2a00;color:#ff9f0a;}
+.ev-red{background:#3a1a1a;color:#ff453a;}
+.ev-purple{background:#2a1a3a;color:#bf5af2;}
+
+/* 注意事項 */
+.notice-box{background:#2c2c2e;border:1px solid #3a3a3c;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
+.notice-title{font-size:15px;font-weight:700;color:#FFD60A;margin-bottom:10px;}
+.notice-item{font-size:14px;color:#ccc;line-height:2;padding-left:1rem;position:relative;}
+.notice-item::before{content:'•';position:absolute;left:0;color:#FFD60A;}
+
+/* 倒數區 */
+.countdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.cd-card{background:#2c2c2e;border-radius:12px;padding:1rem;border:1px solid #3a3a3c;text-align:center;}
+.cd-label{font-size:14px;color:#fff;margin-bottom:8px;font-weight:500;}
+.cd-date{font-size:12px;color:#777;margin-bottom:8px;}
+.cd-num{font-size:36px;font-weight:700;line-height:1;}
+.cd-unit{font-size:14px;color:#aaa;margin-top:4px;}
+.cd-card.done .cd-num{color:#555;font-size:20px;}
+.cd-card.urgent .cd-num{color:#ff453a;}
+.cd-card.warning .cd-num{color:#ff9f0a;}
+.cd-card.normal .cd-num{color:#fff;}
+
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .main{max-width:100%;padding:1rem;}
+  .countdown-grid{grid-template-columns:repeat(2,1fr);}
+  .schedule-table{font-size:12px;}
+  .schedule-table th,.schedule-table td{padding:8px 10px;}
+  .cal-cell{min-height:50px;}
+  .cal-event{font-size:9px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="sidebar">
+    <div class="sb-logo">
+      <img src="data:image/png;base64,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" width="28" height="28" style="object-fit:contain;flex-shrink:0;"/>
+      <div>
+        <div class="sb-brand">竹建學習網</div>
+        <div class="sb-sub">乙級導管配管培訓</div>
+      </div>
+    </div>
+    <div class="sb-section">學習</div>
+    <a class="sb-item" href="home.html"><span class="sb-icon">🏠</span>首頁</a>
+    <a class="sb-item" href="videos.html"><span class="sb-icon">🎬</span>訓練影片</a>
+    <a class="sb-item" href="games.html"><span class="sb-icon">🎮</span>遊戲挑戰</a>
+    <a class="sb-item" href="notes.html"><span class="sb-icon">📝</span>上課筆記</a>
+    <a class="sb-item" href="photos.html"><span class="sb-icon">📸</span>實作照片</a>
+    <a class="sb-item" href="study.html"><span class="sb-icon">📚</span>學科資料</a>
+    <a class="sb-item active"><span class="sb-icon">📅</span>考試資訊</a>
+    <div class="sb-section">個人</div>
+    <a class="sb-item" href="progress.html"><span class="sb-icon">📊</span>我的進度</a>
+    <a class="sb-item" href="signin.html"><span class="sb-icon">✍️</span>訓練簽到</a>
+    <div class="sb-flex"></div>
+    <div class="sb-user">
+      <div class="sb-av" id="sbAv">?</div>
+      <div>
+        <div class="sb-uname" id="sbName">載入中</div>
+        <div class="sb-role" id="sbRole">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="main-title">📅 考試資訊</div>
+
+    <!-- 倒數 -->
+    <div class="countdown-grid">
+      <div class="cd-card" id="cd-permit">
+        <div class="cd-label">📮 准考證寄送</div>
+        <div class="cd-date">115/06/16（二）</div>
+        <div class="cd-num" id="cdNum1">-</div>
+        <div class="cd-unit">天</div>
+      </div>
+      <div class="cd-card" id="cd-exam">
+        <div class="cd-label">📝 學科測試</div>
+        <div class="cd-date">115/07/05（日）</div>
+        <div class="cd-num" id="cdNum2">-</div>
+        <div class="cd-unit">天</div>
+      </div>
+      <div class="cd-card" id="cd-result">
+        <div class="cd-label">📊 成績公告</div>
+        <div class="cd-date">115/07/31（五）</div>
+        <div class="cd-num" id="cdNum3">-</div>
+        <div class="cd-unit">天</div>
+      </div>
+    </div>
+
+    <div class="cat-bar">
+      <button class="cat-btn active" onclick="showTab('calendar',this)">📅 考試行事曆</button>
+      <button class="cat-btn" onclick="showTab('schedule',this)">📋 日程總表</button>
+      <button class="cat-btn" onclick="showTab('notice',this)">⚠️ 注意事項</button>
+    </div>
+
+    <!-- 考試行事曆 -->
+    <div id="tab-calendar">
+      <div class="section-title">115年度 第二梯次 考試行事曆</div>
+
+      <!-- 凡例 -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a5c;border-radius:3px;"></div><span style="color:#aaa;">報名相關</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a1a;border-radius:3px;"></div><span style="color:#aaa;">准考證/公告</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#3a2a00;border-radius:3px;"></div><span style="color:#aaa;">考試日</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#2a1a3a;border-radius:3px;"></div><span style="color:#aaa;">成績相關</span></div>
+      </div>
+
+      <div class="cal-wrap" id="calContainer"></div>
+    </div>
+
+    <!-- 日程總表 -->
+    <div id="tab-schedule" style="display:none;">
+      <div class="section-title">115年度 技術士技能檢定 重要日程表</div>
+      <table class="schedule-table">
+        <thead>
+          <tr>
+            <th style="width:30%">重要工作內容</th>
+            <th><span class="badge badge-1">第一梯次</span></th>
+            <th><span class="badge badge-2">第二梯次</span></th>
+            <th><span class="badge badge-3">第三梯次</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>簡章及報名書表發售</td><td>114/12/26–115/01/13</td><td style="color:#30d158;font-weight:700;">115/04/17–05/05</td><td>115/08/20–09/07</td></tr>
+          <tr><td>報名日期</td><td>115/01/02–01/13</td><td style="color:#30d158;font-weight:700;">115/04/24–05/05</td><td>115/08/27–09/07</td></tr>
+          <tr><td>准考證寄送日期</td><td>115/02/24（二）</td><td style="color:#FFD60A;font-weight:700;">115/06/16（二）</td><td>115/10/20（二）</td></tr>
+          <tr><td>網站公告試場位置</td><td>115/03/12（四）</td><td style="color:#FFD60A;font-weight:700;">115/07/02（四）</td><td>115/11/05（四）</td></tr>
+          <tr><td>學科測試日期</td><td>115/03/15（日）</td><td style="color:#ff9f0a;font-weight:700;font-size:15px;">⭐ 115/07/05（日）</td><td>115/11/08（日）</td></tr>
+          <tr><td>學科試題疑義提出期限</td><td>115/03/16–03/22</td><td style="color:#FFD60A;font-weight:700;">115/07/06–07/12</td><td>115/11/09–11/15</td></tr>
+          <tr><td>學科成績網路公告</td><td>115/04/10（五）</td><td style="color:#bf5af2;font-weight:700;">115/07/31（五）</td><td>115/12/04（五）</td></tr>
+          <tr><td>學科測試成績單寄送</td><td>115/04/14（二）</td><td style="color:#bf5af2;font-weight:700;">115/08/04（二）</td><td>115/12/08（二）</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px;color:#777;margin-top:8px;">※ 並非所有職類、級別每梯次皆有辦理　※ 我們參加的是<span style="color:#FFD60A;font-weight:700;">第二梯次</span></p>
+    </div>
+
+    <!-- 注意事項 -->
+    <div id="tab-notice" style="display:none;">
+      <div class="section-title">注意事項</div>
+      <div class="notice-box">
+        <div class="notice-title">📋 術科測試說明</div>
+        <div class="notice-item">術科測試日期並非固定全國統一日，各考區會依簡章時程及報名人數安排術科（實作）測試。</div>
+        <div class="notice-item">術科通常安排於學科測試後數週至數月內完成，准考證上會標示詳細術科測試日期與地點。</div>
+      </div>
+      <div class="notice-box" style="margin-top:1rem;">
+        <div class="notice-title">📅 我們的考試梯次（第二梯次）</div>
+        <div class="notice-item">准考證寄送：115/06/16（二）</div>
+        <div class="notice-item">網站公告試場位置：115/07/02（四）</div>
+        <div class="notice-item">學科測試日期：115/07/05（日）⭐</div>
+        <div class="notice-item">學科試題疑義提出：115/07/06–07/12</div>
+        <div class="notice-item">學科成績公告：115/07/31（五）</div>
+        <div class="notice-item">學科成績單寄送：115/08/04（二）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){const u=sessionStorage.getItem('user');if(!u)window.location.href='index.html';})();
+const user=JSON.parse(sessionStorage.getItem('user')||'{}');
+document.getElementById('sbAv').textContent=user.name?user.name[0]:'?';
+document.getElementById('sbName').textContent=user.name||'訪客';
+document.getElementById('sbRole').textContent=user.isAdmin?'管理者':'學員';
+
+function showTab(tab,btn){
+  ['calendar','schedule','notice'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+  document.getElementById('tab-'+tab).style.display='block';
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// 倒數
+function calcDays(y,m,d){
+  const t=new Date(y+1911,m-1,d);
+  const n=new Date();n.setHours(0,0,0,0);
+  return Math.ceil((t-n)/(1000*60*60*24));
+}
+const cdItems=[
+  {id:'cd-permit',numId:'cdNum1',y:115,m:6,d:16},
+  {id:'cd-exam',numId:'cdNum2',y:115,m:7,d:5},
+  {id:'cd-result',numId:'cdNum3',y:115,m:7,d:31},
+];
+cdItems.forEach(({id,numId,y,m,d})=>{
+  const days=calcDays(y,m,d);
+  const card=document.getElementById(id);
+  const el=document.getElementById(numId);
+  if(days<0){el.textContent='已過';card.classList.add('done');}
+  else if(days<=3){el.textContent=days;card.classList.add('urgent');}
+  else if(days<=10){el.textContent=days;card.classList.add('warning');}
+  else{el.textContent=days;card.classList.add('normal');}
+});
+
+// 行事曆
+const EVENTS = {
+  '06/16': [{text:'准考證寄送',cls:'ev-green'}],
+  '07/02': [{text:'公告試場',cls:'ev-blue'}],
+  '07/05': [{text:'⭐學科測試',cls:'ev-orange'}],
+  '07/06': [{text:'疑義提出開始',cls:'ev-purple'}],
+  '07/12': [{text:'疑義提出截止',cls:'ev-purple'}],
+  '07/31': [{text:'成績公告',cls:'ev-purple'}],
+  '08/04': [{text:'成績單寄送',cls:'ev-purple'}],
+};
+
+const WD=['一','二','三','四','五','六','日'];
+const MONTHS=[
+  {year:2026,month:6,label:'2026年6月'},
+  {year:2026,month:7,label:'2026年7月'},
+  {year:2026,month:8,label:'2026年8月'},
+];
+
+const container=document.getElementById('calContainer');
+MONTHS.forEach(m=>{
+  const days=new Date(m.year,m.month,0).getDate();
+  const firstDow=new Date(m.year,m.month-1,1).getDay();
+  const startDow=firstDow===0?6:firstDow-1;
+
+  let html=`<div class="cal-month"><div class="cal-header">${m.label}</div><div class="cal-grid">`;
+  ['一','二','三','四','五','六','日'].forEach((d,i)=>{
+    html+=`<div class="cal-dow${i>=5?' we':''}">{d}</div>`;
+  });
+  html=html.replace('{d}','一').replace('{d}','二').replace('{d}','三').replace('{d}','四').replace('{d}','五').replace('{d}','六').replace('{d}','日');
+
+  // 重新生成
+  html=`<div class="cal-month"><div class="cal-header">${m.label}</div><div class="cal-grid">`;
+  ['一','二','三','四','五','六','日'].forEach((d,i)=>{
+    html+=`<div class="cal-dow${i>=5?' we':''}">${d}</div>`;
+  });
+
+  for(let i=0;i<startDow;i++) html+=`<div class="cal-cell empty"></div>`;
+  for(let day=1;day<=days;day++){
+    const dow=(startDow+day-1)%7;
+    const isWE=dow>=5;
+    const mmdd=String(m.month).padStart(2,'0')+'/'+String(day).padStart(2,'0');
+    const evs=EVENTS[mmdd]||[];
+    const hasEv=evs.length>0;
+    html+=`<div class="cal-cell${isWE?' holiday':''}${hasEv?' has-event':''}">`;
+    html+=`<div class="cal-daynum">${day}</div>`;
+    evs.forEach(ev=>{ html+=`<div class="cal-event ${ev.cls}">${ev.text}</div>`; });
+    html+=`</div>`;
+  }
+  const total=startDow+days;
+  const rem=total%7;
+  if(rem>0){for(let i=0;i<7-rem;i++) html+=`<div class="cal-cell empty"></div>`;}
+  html+=`</div></div>`;
+
+  const div=document.createElement('div');
+  div.innerHTML=html;
+  container.appendChild(div.firstChild);
+});
+</script>
+</body>
+</html>
