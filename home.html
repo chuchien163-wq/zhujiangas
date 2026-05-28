@@ -127,6 +127,18 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .donut-cap{font-size:12px;color:#888;margin-top:3px;}
 .donut-sub{font-size:13px;color:#888;margin-top:9px;font-weight:500;}
 
+/* 🐇 兔子衝刺進度條 */
+.bunny-box{background:#fff;border-radius:12px;border:1px solid #e8e8e0;padding:1.1rem 1.3rem;margin-bottom:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.bunny-title{font-size:18px;font-weight:700;color:#b87a00;margin-bottom:24px;}
+.bunny-track{position:relative;height:16px;background:#f0efe6;border-radius:10px;margin:0 42px 0 10px;box-shadow:inset 0 1px 2px rgba(0,0,0,0.06);}
+.bunny-fill{position:absolute;left:0;top:0;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,#FFD60A,#e07b00);transition:width 2s cubic-bezier(.34,.8,.3,1);}
+.bunny-runner{position:absolute;top:50%;left:0;transform:translateX(-50%);transition:left 2s cubic-bezier(.34,.8,.3,1);will-change:left;}
+.bunny-hop{display:inline-block;font-size:32px;line-height:1;animation:bunnyhop .45s ease-in-out infinite;}
+@keyframes bunnyhop{0%,100%{transform:translateY(-52%) scaleX(-1);}50%{transform:translateY(-84%) scaleX(-1);}}
+.bunny-goal{position:absolute;top:50%;right:-36px;transform:translateY(-50%);font-size:28px;}
+.bunny-cap{font-size:15px;color:#888;margin-top:16px;}
+.bunny-pct{font-weight:700;color:#e07b00;}
+
 /* hover 浮起 */
 .feat:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(0,0,0,0.10);}
 .stat{transition:transform .18s ease,box-shadow .18s ease;}
@@ -143,8 +155,8 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 尊重使用者「減少動態」設定 */
 @media(prefers-reduced-motion:reduce){
-  .reveal,.welcome-banner::after,.cd.urgent{animation:none!important;opacity:1!important;}
-  .donut-fill{transition:none!important;}
+  .reveal,.welcome-banner::after,.cd.urgent,.bunny-hop{animation:none!important;opacity:1!important;}
+  .donut-fill,.bunny-fill,.bunny-runner{transition:none!important;}
 }
 
 /* RWD */
@@ -283,6 +295,16 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
 
+    <div class="bunny-box reveal" style="animation-delay:.22s">
+      <div class="bunny-title">🐇 學習衝刺進度</div>
+      <div class="bunny-track">
+        <div class="bunny-fill" id="bunnyFill"></div>
+        <div class="bunny-runner" id="bunnyRunner"><span class="bunny-hop">🐇</span></div>
+        <div class="bunny-goal">🏁</div>
+      </div>
+      <div class="bunny-cap" id="bunnyCap">準備出發…</div>
+    </div>
+
     <div class="feat-box reveal" style="animation-delay:.24s">
       <div class="feat-box-title">🚀 學習功能</div>
       <div class="feat-grid" id="featGrid">
@@ -331,12 +353,11 @@ const msgs=[
 const shortName = user.name.length >= 2 ? user.name.slice(-2) : user.name;
 document.getElementById('wbGreeting').textContent='歡迎回來，'+shortName+'！';
 document.getElementById('wbMsg').textContent=msgs[Math.floor(Math.random()*msgs.length)];
-const badge=hour<12?'☀️ 早安！'+user.name:hour<18?'🌤 午安！'+user.name:'🌙 晚安！'+user.name;
-document.getElementById('timeBadge').textContent=badge;
 
 // 數字跳動動畫
 function easeOutCubic(p){return 1-Math.pow(1-p,3);}
 function animateNum(el,target,render,dur){
+  if(!el)return;
   dur=dur||900;const t0=performance.now();
   function tick(now){
     const p=Math.min((now-t0)/dur,1);
@@ -348,6 +369,7 @@ function animateNum(el,target,render,dur){
 // 圓餅圖（環圈圖）
 function drawDonut(id,pctVal){
   const c=document.getElementById(id);
+  if(!c)return;
   const r=c.r.baseVal.value;
   const circ=2*Math.PI*r;
   c.style.strokeDasharray=circ;
@@ -378,6 +400,23 @@ const gamePct=Math.min(gameCount/GAME_GOAL*100,100);
 drawDonut('donutGame',gamePct);
 animateNum(document.getElementById('donutPctG'),gameCount,v=>String(v),1100);
 document.getElementById('donutSubG').textContent='目標 '+GAME_GOAL+' 次';
+
+// 🐇 兔子衝刺進度條
+(function(){
+  const fill=document.getElementById('bunnyFill');
+  const runner=document.getElementById('bunnyRunner');
+  const cap=document.getElementById('bunnyCap');
+  if(!fill||!runner)return;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    fill.style.width=pct+'%';
+    runner.style.left=pct+'%';
+  }));
+  if(cap){
+    cap.innerHTML = pct>=100
+      ? '🥕 全部 '+TOTAL_VIDEOS+' 部影片都看完了，太厲害了！'
+      : '已看 <span class="bunny-pct">'+watched+' / '+TOTAL_VIDEOS+'</span> 部，小兔子正在往考試衝刺，繼續加油！';
+  }
+})();
 
 
 // 管理者後台按鈕
