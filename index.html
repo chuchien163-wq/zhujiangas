@@ -239,8 +239,9 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
     <div class="bulletin">
       <div class="bulletin-title">— 最新公告 —</div>
       <div class="bulletin-text">
-        🎉 第二次上課（115/04/24）已順利完成！<br/>
-        📺 課程影片已上傳共 <strong style="color:#c9a84c;">13部</strong>，歡迎隨時觀看！
+        🎉 第三次上課（115/05/13）已順利完成！<br/>
+        📺 課程影片已上傳共 <strong style="color:#c9a84c;">15部</strong>，歡迎隨時觀看！<br/>
+        📅 第四次上課：115/06/23（二）
       </div>
     </div>
   </div>
@@ -250,7 +251,7 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
   <div class="cards-label">— 學習功能 —</div>
   <div class="cards-grid">
     <div class="card" onclick="goPage('videos.html')">
-      <div class="card-badge">13部</div>
+      <div class="card-badge">15部</div>
       <div class="card-emoji">🎬</div>
       <div class="card-name">訓練影片</div>
       <div class="card-sub">線上觀看</div>
@@ -281,9 +282,9 @@ footer{background:#000;border-top:1px solid #111;color:#585858;text-align:center
 <div class="schedule-section">
   <div class="schedule-label">— 課程梯次 —</div>
   <div class="sched-row"><div class="sched-num num-done">1</div><div class="sched-date">115 / 03 / 17</div><div class="sched-label-text">第一次上課</div><div class="sched-tag t-done">已結束</div></div>
-  <div class="sched-row"><div class="sched-num num-now">2</div><div class="sched-date">115 / 04 / 24</div><div class="sched-label-text">第二次上課</div><div class="sched-tag t-now">已完成</div></div>
-  <div class="sched-row"><div class="sched-num num-next">3</div><div class="sched-date">115 / 05 / 13</div><div class="sched-label-text">第三次上課</div><div class="sched-tag t-next">即將到來</div></div>
-  <div class="sched-row"><div class="sched-num num-next">4</div><div class="sched-date">待定</div><div class="sched-label-text">第四次上課</div><div class="sched-tag t-next">即將到來</div></div>
+  <div class="sched-row"><div class="sched-num num-done">2</div><div class="sched-date">115 / 04 / 24</div><div class="sched-label-text">第二次上課</div><div class="sched-tag t-done">已結束</div></div>
+  <div class="sched-row"><div class="sched-num num-now">3</div><div class="sched-date">115 / 05 / 13</div><div class="sched-label-text">第三次上課</div><div class="sched-tag t-now">已完成</div></div>
+  <div class="sched-row"><div class="sched-num num-next">4</div><div class="sched-date">115 / 06 / 23</div><div class="sched-label-text">第四次上課</div><div class="sched-tag t-next">即將到來</div></div>
 </div>
 
 <footer>竹建瓦斯股份有限公司　|　350苗栗縣竹南鎮環市路二段163號　|　037-462871</footer>
@@ -322,7 +323,18 @@ function doLogin(){
   if(found){loginSuccess(found.姓名,管理者工號.includes(pw));}
   else{error.classList.add('show');document.getElementById('pwInput').value='';document.getElementById('pwInput').focus();}
 }
+function pushToSheet(payload){
+  fetch('https://script.google.com/macros/s/AKfycbzYOYilJM0lEGcp7-_O0Nn1hG5eUA2OuJBnzA2jCuTC3eFxtdlaux8PeZo4qcERFaFn/exec',{method:'POST',body:JSON.stringify(payload)}).catch(()=>{});
+}
+
 function loginSuccess(name,isAdmin){
+  // 記錄登入到 Google Sheets
+  pushToSheet({
+    action:'記錄登入',
+    姓名:name,
+    工號:'',
+    裝置:navigator.userAgent.includes('Mobile')?'手機':'電腦'
+  });
   document.getElementById('modalName').textContent='歡迎回來，'+name+'！';
   document.getElementById('modal').classList.add('show');
   sessionStorage.setItem('user',JSON.stringify({name,isAdmin}));
