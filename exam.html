@@ -76,6 +76,11 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .cal-person.result{background:var(--purple-l);color:var(--purple);}
 .cal-person.info{background:var(--blue-l);color:var(--blue);}
 
+/* 月曆：雙欄橫向排列（六月｜七月、八月｜…，以此類推） */
+.cal-wrap{display:grid;grid-template-columns:1fr 1fr;gap:22px 26px;align-items:start;}
+.cal-month{background:#fff;border:1px solid #e8e8e0;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
+.cal-header{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:10px;padding-left:2px;}
+
 /* 注意事項 */
 .notice-box{background:#fff;border:1px solid #e8e8e0;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
 .notice-title{font-size:22px;font-weight:700;color:#b87a00;margin-bottom:10px;}
@@ -94,6 +99,49 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .cd-card.warning .cd-num{color:#ff9f0a;}
 .cd-card.normal .cd-num{color:#2c2c2e;}
 
+/* === 動畫 === */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;animation:fadeUp .5s cubic-bezier(.2,.7,.3,1) forwards;}
+
+/* 倒數卡 hover 浮起 */
+.cd-card{transition:transform .18s ease,box-shadow .18s ease;}
+.cd-card:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(0,0,0,0.08);}
+
+/* 分頁切換動畫 */
+@keyframes tabIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.tab-in{animation:tabIn .4s cubic-bezier(.2,.7,.3,1);}
+
+/* 月份卡片左右滑入 */
+@keyframes calInL{from{opacity:0;transform:translateX(-26px);}to{opacity:1;transform:none;}}
+@keyframes calInR{from{opacity:0;transform:translateX(26px);}to{opacity:1;transform:none;}}
+.cal-month{animation:calInL .55s cubic-bezier(.2,.7,.3,1) both;}
+.cal-month:nth-child(even){animation-name:calInR;}
+.cal-month:nth-child(2){animation-delay:.08s;}
+.cal-month:nth-child(3){animation-delay:.16s;}
+.cal-month:nth-child(4){animation-delay:.24s;}
+
+/* 月曆格 hover 浮起 */
+.cal-cell:not(.empty){transition:transform .15s ease,box-shadow .15s ease,background .15s ease;}
+.cal-cell:not(.empty):hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(0,0,0,0.10);z-index:2;}
+.cal-cell.has-event{background:#fffdf5;}
+
+/* 事件標記上色 + 漸入 */
+@keyframes evIn{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:scale(1);}}
+.cal-event{font-size:13px;padding:3px 6px;border-radius:5px;margin-bottom:3px;font-weight:600;line-height:1.35;animation:evIn .45s ease both;}
+.cal-event.exam{background:var(--amber-l);color:var(--amber);border:1px solid #f0c070;}
+.cal-event.permit{background:var(--green-l);color:var(--green);}
+.cal-event.result{background:var(--purple-l);color:var(--purple);}
+.cal-event.info{background:var(--blue-l);color:var(--blue);}
+
+/* 考試日脈動高亮 */
+@keyframes examGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,159,10,0);}50%{box-shadow:0 0 0 4px rgba(255,159,10,0.28);}}
+.cal-event.exam{animation:evIn .45s ease both, examGlow 1.8s ease-in-out .6s infinite;}
+
+/* 尊重減少動態設定 */
+@media(prefers-reduced-motion:reduce){
+  .reveal,.cal-month,.cal-event,.tab-in{animation:none!important;opacity:1!important;transform:none!important;}
+}
+
 @media(max-width:700px){
   .sidebar{display:none;}
   .main{max-width:100%;padding:1rem;}
@@ -102,6 +150,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   .schedule-table th,.schedule-table td{padding:13px 16px;border:1px solid #e8e8e0;font-size:20px;background:#fff;vertical-align:middle;}
   .cal-cell{min-height:50px;}
   .cal-event{font-size:9px;}
+  .cal-wrap{grid-template-columns:1fr;}
 }
 /* 側欄 */
 .sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
@@ -146,19 +195,19 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
     <!-- 倒數 -->
     <div class="countdown-grid">
-      <div class="cd-card" id="cd-permit">
+      <div class="cd-card reveal" id="cd-permit" style="animation-delay:0s">
         <div class="cd-label">📮 准考證寄送</div>
         <div class="cd-date">115/06/16（二）</div>
         <div class="cd-num" id="cdNum1">-</div>
         <div class="cd-unit">天</div>
       </div>
-      <div class="cd-card" id="cd-exam">
+      <div class="cd-card reveal" id="cd-exam" style="animation-delay:.07s">
         <div class="cd-label">📝 學科測試</div>
         <div class="cd-date">115/07/05（日）</div>
         <div class="cd-num" id="cdNum2">-</div>
         <div class="cd-unit">天</div>
       </div>
-      <div class="cd-card" id="cd-result">
+      <div class="cd-card reveal" id="cd-result" style="animation-delay:.14s">
         <div class="cd-label">📊 成績公告</div>
         <div class="cd-date">115/07/31（五）</div>
         <div class="cd-num" id="cdNum3">-</div>
@@ -166,7 +215,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
 
-    <div class="cat-bar">
+    <div class="cat-bar reveal" style="animation-delay:.2s">
       <button class="cat-btn active" onclick="showTab('calendar',this)">📅 考試行事曆</button>
       <button class="cat-btn" onclick="showTab('schedule',this)">📋 日程總表</button>
       <button class="cat-btn" onclick="showTab('notice',this)">⚠️ 注意事項</button>
@@ -174,14 +223,14 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
     <!-- 考試行事曆 -->
     <div id="tab-calendar">
-      <div class="section-title">115年度 第二梯次 考試行事曆</div>
+      <div class="section-title reveal" style="animation-delay:.24s">115年度 第二梯次 考試行事曆</div>
 
       <!-- 凡例 -->
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;">
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a5c;border-radius:3px;"></div><span style="color:#888;">報名相關</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#1a3a1a;border-radius:3px;"></div><span style="color:#888;">准考證/公告</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#3a2a00;border-radius:3px;"></div><span style="color:#888;">考試日</span></div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:#2a1a3a;border-radius:3px;"></div><span style="color:#888;">成績相關</span></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem;" class="reveal" id="calLegend">
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:var(--green);border-radius:3px;"></div><span style="color:#888;">准考證寄送</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:var(--blue);border-radius:3px;"></div><span style="color:#888;">公告 / 疑義</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:var(--amber);border-radius:3px;"></div><span style="color:#888;">考試日</span></div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:13px;"><div style="width:12px;height:12px;background:var(--purple);border-radius:3px;"></div><span style="color:#888;">成績相關</span></div>
       </div>
 
       <div class="cal-wrap" id="calContainer"></div>
@@ -243,7 +292,9 @@ document.getElementById('sbRole').textContent=user.isAdmin?'管理者':'學員';
 
 function showTab(tab,btn){
   ['calendar','schedule','notice'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
-  document.getElementById('tab-'+tab).style.display='block';
+  const el=document.getElementById('tab-'+tab);
+  el.style.display='block';
+  el.classList.remove('tab-in');void el.offsetWidth;el.classList.add('tab-in');
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
 }
@@ -259,14 +310,21 @@ const cdItems=[
   {id:'cd-exam',numId:'cdNum2',y:115,m:7,d:5},
   {id:'cd-result',numId:'cdNum3',y:115,m:7,d:31},
 ];
+// 數字跳動
+function animateNum(el,target,dur){
+  if(!el)return;
+  dur=dur||900;const t0=performance.now();
+  function tick(now){const p=Math.min((now-t0)/dur,1);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick);}
+  requestAnimationFrame(tick);
+}
 cdItems.forEach(({id,numId,y,m,d})=>{
   const days=calcDays(y,m,d);
   const card=document.getElementById(id);
   const el=document.getElementById(numId);
   if(days<0){el.textContent='已過';card.classList.add('done');}
-  else if(days<=3){el.textContent=days;card.classList.add('urgent');}
-  else if(days<=10){el.textContent=days;card.classList.add('warning');}
-  else{el.textContent=days;card.classList.add('normal');}
+  else if(days<=3){animateNum(el,days);card.classList.add('urgent');}
+  else if(days<=10){animateNum(el,days);card.classList.add('warning');}
+  else{animateNum(el,days);card.classList.add('normal');}
 });
 
 // 行事曆
@@ -314,7 +372,7 @@ MONTHS.forEach(m=>{
     const hasEv=evs.length>0;
     html+=`<div class="cal-cell${isWE?' holiday':''}${hasEv?' has-event':''}">`;
     html+=`<div class="cal-daynum">${day}</div>`;
-    evs.forEach(ev=>{ html+=`<div class="cal-event ${ev.cls}">${ev.text}</div>`; });
+    evs.forEach(ev=>{ html+=`<div class="cal-event ${ev.type}">${ev.text}</div>`; });
     html+=`</div>`;
   }
   const total=startDow+days;
