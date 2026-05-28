@@ -50,13 +50,13 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 倒數 */
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;}
-.cd-box{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.cd-box{background:#fff;border-radius:12px;padding:1.1rem;border:1px solid #e8e8e0;box-shadow:0 2px 8px rgba(0,0,0,0.05);display:flex;flex-direction:column;}
 .cd-box-title{font-size:18px;font-weight:700;color:#2c2c2e;margin-bottom:10px;}
 .legend{display:flex;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
 .leg{display:flex;align-items:center;gap:5px;font-size:16px;color:#555;}
 .leg-dot{width:10px;height:10px;border-radius:50%;}
-.cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.cd{background:#f9f9f5;border-radius:10px;padding:0.8rem;border-left:3px solid #e0e0d8;}
+.cd-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;flex:1;}
+.cd{background:#f9f9f5;border-radius:10px;padding:0.8rem;border-left:3px solid #e0e0d8;display:flex;flex-direction:column;justify-content:center;}
 .cd-lbl{font-size:16px;color:#555;margin-bottom:4px;font-weight:500;}
 .cd-num{font-size:2.6rem;font-weight:700;line-height:1;color:#2c2c2e;}
 .cd-date{font-size:15px;color:#888;margin-top:5px;}
@@ -111,6 +111,42 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .t-now{background:#fff3e0;color:#e07b00;border:1px solid #e07b00;}
 .t-next{background:#e8f5e9;color:#2a9d5c;border:1px solid #2a9d5c;}
 
+/* === 動畫 === */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+.reveal{opacity:0;animation:fadeUp .55s cubic-bezier(.2,.7,.3,1) forwards;}
+
+/* 圓餅圖（環圈圖） */
+.donut-row{display:flex;justify-content:center;gap:18px;margin:6px 0 2px;flex-wrap:wrap;}
+.donut-item{display:flex;flex-direction:column;align-items:center;}
+.donut-wrap{position:relative;width:118px;height:118px;}
+.donut-svg{width:118px;height:118px;transform:rotate(-90deg);}
+.donut-track{fill:none;stroke:#ececec;stroke-width:11;}
+.donut-fill{fill:none;stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.7,.3,1);}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-pct{font-size:24px;font-weight:700;line-height:1;}
+.donut-cap{font-size:12px;color:#888;margin-top:3px;}
+.donut-sub{font-size:13px;color:#888;margin-top:9px;font-weight:500;}
+
+/* hover 浮起 */
+.feat:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(0,0,0,0.10);}
+.stat{transition:transform .18s ease,box-shadow .18s ease;}
+.stat:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,0.09);}
+
+/* 緊急倒數脈動（剩≤3天才觸發） */
+@keyframes cdpulse{0%,100%{box-shadow:0 0 0 0 rgba(214,48,49,0);}50%{box-shadow:0 0 0 5px rgba(214,48,49,0.13);}}
+.cd.urgent{animation:cdpulse 1.7s ease-in-out infinite;}
+
+/* 歡迎橫幅微光 */
+.welcome-banner{position:relative;overflow:hidden;}
+.welcome-banner::after{content:"";position:absolute;top:0;left:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,0.45),transparent);transform:skewX(-20deg);animation:wbshine 5s ease-in-out infinite;pointer-events:none;}
+@keyframes wbshine{0%{left:-60%;}45%{left:130%;}100%{left:130%;}}
+
+/* 尊重使用者「減少動態」設定 */
+@media(prefers-reduced-motion:reduce){
+  .reveal,.welcome-banner::after,.cd.urgent{animation:none!important;opacity:1!important;}
+  .donut-fill{transition:none!important;}
+}
+
 /* RWD */
 @media(max-width:700px){
   .sidebar{display:none;}
@@ -160,12 +196,12 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   <div class="main">
     <div class="main-title">儀表板</div>
 
-    <div class="welcome-banner">
+    <div class="welcome-banner reveal" style="animation-delay:0s">
       <div class="wb-greeting" id="wbGreeting">歡迎回來！</div>
       <div class="wb-msg" id="wbMsg">乙級技術士，你一定做得到！💪</div>
     </div>
 
-    <div class="stats-row">
+    <div class="stats-row reveal" style="animation-delay:.08s">
       <div class="stat g">
         <div class="stat-label">已看影片</div>
         <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 15</span></div>
@@ -188,7 +224,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
 
-    <div class="row2">
+    <div class="row2 reveal" style="animation-delay:.16s">
       <div class="cd-box">
         <div class="cd-box-title">⏳ 重要日期倒數</div>
         <div class="legend">
@@ -207,15 +243,27 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
       <div class="prog-box">
         <div class="prog-title">📈 學習進度</div>
-        <div class="prog-row">
-          <div class="prog-label">影片觀看</div>
-          <div class="prog-bar"><div class="prog-fill fill-g" id="videoFill" style="width:0%"></div></div>
-          <div style="font-size:16px;font-weight:700;width:45px;text-align:right;color:#2a9d5c;" id="videoVal">0/13</div>
-        </div>
-        <div class="prog-row">
-          <div class="prog-label">遊戲挑戰</div>
-          <div class="prog-bar"><div class="prog-fill fill-o" id="gameFill" style="width:0%"></div></div>
-          <div style="font-size:16px;font-weight:700;width:45px;text-align:right;color:#e07b00;" id="gameVal">0次</div>
+        <div class="donut-row">
+          <div class="donut-item">
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 118 118">
+                <circle class="donut-track" cx="59" cy="59" r="50"></circle>
+                <circle class="donut-fill" id="donutVideo" cx="59" cy="59" r="50" style="stroke:#2a9d5c"></circle>
+              </svg>
+              <div class="donut-center"><div class="donut-pct" id="donutPctV" style="color:#2a9d5c">0%</div><div class="donut-cap">影片完成率</div></div>
+            </div>
+            <div class="donut-sub" id="donutSubV">0 / 15 部</div>
+          </div>
+          <div class="donut-item">
+            <div class="donut-wrap">
+              <svg class="donut-svg" viewBox="0 0 118 118">
+                <circle class="donut-track" cx="59" cy="59" r="50"></circle>
+                <circle class="donut-fill" id="donutGame" cx="59" cy="59" r="50" style="stroke:#e07b00"></circle>
+              </svg>
+              <div class="donut-center"><div class="donut-pct" id="donutPctG" style="color:#e07b00">0</div><div class="donut-cap">遊戲挑戰</div></div>
+            </div>
+            <div class="donut-sub" id="donutSubG">目標 10 次</div>
+          </div>
         </div>
         <div style="margin-top:14px;border-top:1px solid #e8e8e0;padding-top:12px;">
           <div class="bul-title">📢 公告</div>
@@ -235,7 +283,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
 
-    <div class="feat-box">
+    <div class="feat-box reveal" style="animation-delay:.24s">
       <div class="feat-box-title">🚀 學習功能</div>
       <div class="feat-grid" id="featGrid">
         <div class="feat" onclick="location.href='videos.html'"><div class="feat-icon">🎬</div><div class="feat-name">訓練影片</div><div class="feat-sub">15 部課程</div></div>
@@ -249,7 +297,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
     </div>
 
-    <div class="sched-box">
+    <div class="sched-box reveal" style="animation-delay:.32s">
       <div class="sched-header">📅 課程梯次</div>
       <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 03 / 17</div><div class="sched-label">第一次上課</div><div class="sched-tag t-done">已結束</div></div>
       <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 04 / 24</div><div class="sched-label">第二次上課</div><div class="sched-tag t-done">已結束</div></div>
@@ -286,20 +334,51 @@ document.getElementById('wbMsg').textContent=msgs[Math.floor(Math.random()*msgs.
 const badge=hour<12?'☀️ 早安！'+user.name:hour<18?'🌤 午安！'+user.name:'🌙 晚安！'+user.name;
 document.getElementById('timeBadge').textContent=badge;
 
+// 數字跳動動畫
+function easeOutCubic(p){return 1-Math.pow(1-p,3);}
+function animateNum(el,target,render,dur){
+  dur=dur||900;const t0=performance.now();
+  function tick(now){
+    const p=Math.min((now-t0)/dur,1);
+    el.innerHTML=render(Math.round(target*easeOutCubic(p)));
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+// 圓餅圖（環圈圖）
+function drawDonut(id,pctVal){
+  const c=document.getElementById(id);
+  const r=c.r.baseVal.value;
+  const circ=2*Math.PI*r;
+  c.style.strokeDasharray=circ;
+  c.style.strokeDashoffset=circ;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    c.style.strokeDashoffset=circ*(1-Math.min(Math.max(pctVal,0),100)/100);
+  }));
+}
+
 // 進度
+const TOTAL_VIDEOS=15, GAME_GOAL=10;
+const sub=(t)=>'<span style="font-size:14px;color:#aaa;font-weight:400;">'+t+'</span>';
 const watched=JSON.parse(localStorage.getItem('watched_'+user.name)||'[]').length;
-const pct=Math.round(watched/13*100);
-document.getElementById('statVideo').innerHTML=watched+'<span style="font-size:14px;color:#aaa;font-weight:400;"> / 15</span>';
+const pct=Math.round(watched/TOTAL_VIDEOS*100);
+animateNum(document.getElementById('statVideo'),watched,v=>v+sub(' / '+TOTAL_VIDEOS));
 document.getElementById('statVideoSub').textContent='完成率 '+pct+'%';
-document.getElementById('statPct').innerHTML=pct+'<span style="font-size:14px;color:#aaa;font-weight:400;"> %</span>';
-document.getElementById('statRemain').textContent='剩 '+(13-watched)+' 部影片';
-document.getElementById('videoFill').style.width=pct+'%';
-document.getElementById('videoVal').textContent=watched+'/13';
+animateNum(document.getElementById('statPct'),pct,v=>v+sub(' %'));
+document.getElementById('statRemain').textContent='剩 '+(TOTAL_VIDEOS-watched)+' 部影片';
 
 const gameCount=parseInt(localStorage.getItem('game_'+user.name)||'0');
-document.getElementById('statGame').innerHTML=gameCount+'<span style="font-size:14px;color:#aaa;font-weight:400;"> 次</span>';
-document.getElementById('gameFill').style.width=Math.min(gameCount/10*100,100)+'%';
-document.getElementById('gameVal').textContent=gameCount+'次';
+animateNum(document.getElementById('statGame'),gameCount,v=>v+sub(' 次'));
+
+// 圓餅圖資料
+drawDonut('donutVideo',pct);
+animateNum(document.getElementById('donutPctV'),pct,v=>v+'%',1100);
+document.getElementById('donutSubV').textContent=watched+' / '+TOTAL_VIDEOS+' 部';
+const gamePct=Math.min(gameCount/GAME_GOAL*100,100);
+drawDonut('donutGame',gamePct);
+animateNum(document.getElementById('donutPctG'),gameCount,v=>String(v),1100);
+document.getElementById('donutSubG').textContent='目標 '+GAME_GOAL+' 次';
+
 
 // 管理者後台按鈕
 if(user.isAdmin){
@@ -328,22 +407,26 @@ const dates=[
   {cid:'c3',nd:'cd3',y:115,m:7,d:5},
   {cid:'c4',nd:'cd4',y:115,m:7,d:31}
 ];
+const suffix='<span style="font-size:1.1rem;font-weight:400;opacity:.55;"> 天</span>';
 dates.forEach(({cid,nd,y,m,d})=>{
   const days=calcDays(y,m,d);
   const card=document.getElementById(cid);
   const el=document.getElementById(nd);
+  card.classList.remove('done','urgent','warning');
   if(days<0){el.textContent='已過';card.classList.add('done');}
   else if(days===0){el.textContent='今天！';card.classList.add('urgent');}
-  else if(days<=3){el.textContent=days;card.classList.add('urgent');}
-  else if(days<=10){el.textContent=days;card.classList.add('warning');}
-  else{el.textContent=days;el.style.color='#fff';}
+  else{
+    if(days<=3)card.classList.add('urgent');
+    else if(days<=10)card.classList.add('warning');
+    animateNum(el,days,v=>v+suffix,1000);
+  }
 });
 
 const exam=calcDays(115,7,5);
 const examEl=document.getElementById('statExam');
-examEl.innerHTML=exam+'<span style="font-size:14px;color:#aaa;font-weight:400;"> 天</span>';
 if(exam<=3)examEl.style.color='#ff453a';
 else if(exam<=10)examEl.style.color='#ff9f0a';
+animateNum(examEl,exam,v=>v+'<span style="font-size:14px;color:#aaa;font-weight:400;"> 天</span>',1000);
 
 function logout(){
   if(confirm('確定要登出嗎？')){
