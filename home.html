@@ -168,7 +168,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <div class="stats-row">
       <div class="stat g">
         <div class="stat-label">已看影片</div>
-        <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 13</span></div>
+        <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 15</span></div>
         <div class="stat-sub" id="statVideoSub">完成率 0%</div>
       </div>
       <div class="stat o">
@@ -238,7 +238,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <div class="feat-box">
       <div class="feat-box-title">🚀 學習功能</div>
       <div class="feat-grid" id="featGrid">
-        <div class="feat" onclick="location.href='videos.html'"><div class="feat-icon">🎬</div><div class="feat-name">訓練影片</div><div class="feat-sub">13 部課程</div></div>
+        <div class="feat" onclick="location.href='videos.html'"><div class="feat-icon">🎬</div><div class="feat-name">訓練影片</div><div class="feat-sub">15 部課程</div></div>
         <div class="feat" onclick="location.href='games.html'"><div class="feat-icon">🎮</div><div class="feat-name">遊戲挑戰</div><div class="feat-sub">2 款遊戲</div></div>
         <div class="feat" onclick="location.href='notes.html'"><div class="feat-icon">📝</div><div class="feat-name">上課筆記</div><div class="feat-sub">老師重點</div></div>
         <div class="feat" onclick="location.href='photos.html'"><div class="feat-icon">📸</div><div class="feat-name">實作照片</div><div class="feat-sub">課程記錄</div></div>
@@ -289,7 +289,7 @@ document.getElementById('timeBadge').textContent=badge;
 // 進度
 const watched=JSON.parse(localStorage.getItem('watched_'+user.name)||'[]').length;
 const pct=Math.round(watched/13*100);
-document.getElementById('statVideo').innerHTML=watched+'<span style="font-size:14px;color:#aaa;font-weight:400;"> / 13</span>';
+document.getElementById('statVideo').innerHTML=watched+'<span style="font-size:14px;color:#aaa;font-weight:400;"> / 15</span>';
 document.getElementById('statVideoSub').textContent='完成率 '+pct+'%';
 document.getElementById('statPct').innerHTML=pct+'<span style="font-size:14px;color:#aaa;font-weight:400;"> %</span>';
 document.getElementById('statRemain').textContent='剩 '+(13-watched)+' 部影片';

@@ -2,92 +2,79 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="icon" type="image/png" href="data:image/png;base64,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"/>
 <title>訓練影片 — 竹建學習網</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-serif;background:#f5f5f0;color:#2c2c2e;}
 .wrap{display:flex;min-height:100vh;}
-
 /* 側欄 */
 .sidebar{width:200px;background:#fff;border-right:1px solid #e0e0d8;padding:1.2rem 0;flex-shrink:0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
 .sb-logo{padding:0 1rem 1.2rem;border-bottom:1px solid #e0e0d8;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
-.sb-brand{font-size:15px;font-weight:700;color:#b87a00;letter-spacing:1px;}
+.sb-brand{font-size:16px;font-weight:700;color:#b87a00;letter-spacing:1px;}
 .sb-sub{font-size:13px;color:#999;margin-top:2px;}
-.sb-section{font-size:13px;color:#999;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:0.6rem 1rem;font-size:15px;color:#888;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
-.sb-item:hover{background:#f5f5f0;color:#fff;}
-.sb-item.active{background:#f5f5f0;color:#FFD60A;border-left-color:#FFD60A;font-weight:700;}
-.sb-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-section{font-size:14px;color:#999;font-weight:700;letter-spacing:1px;padding:0 1rem;margin:1rem 0 0.4rem;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:0.65rem 1rem;font-size:16px;color:#555;cursor:pointer;border-left:3px solid transparent;transition:all 0.15s;text-decoration:none;}
+.sb-item:hover{background:#f0f0ea;color:#2c2c2e;}
+.sb-item.active{background:#fff9e6;color:#b87a00;border-left-color:#FFD60A;font-weight:700;}
+.sb-icon{font-size:17px;width:22px;text-align:center;flex-shrink:0;}
 .sb-flex{flex:1;}
 .sb-user{padding:1rem;border-top:1px solid #e0e0d8;display:flex;align-items:center;gap:8px;}
-.sb-av{width:34px;height:34px;border-radius:50%;background:#FFD60A;color:#000;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sb-uname{font-size:14px;font-weight:700;color:#2c2c2e;}
-.sb-role{font-size:12px;color:#999;}
-.sb-logout{background:transparent;border:none;color:#666;font-size:11px;cursor:pointer;font-family:inherit;padding:0;margin-top:2px;}
-.sb-logout:hover{color:#ff453a;}
-
+.sb-av{width:36px;height:36px;border-radius:50%;background:#FFD60A;color:#000;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sb-uname{font-size:15px;font-weight:700;color:#2c2c2e;}
+.sb-role{font-size:13px;color:#999;}
 /* 主區 */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;max-width:calc(100% - 200px);}
-
-/* 分類Bar */
-.cat-bar{background:#fff;border-bottom:1px solid #e8e8e0;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.cat-btn{padding:8px 18px;border-radius:20px;border:1.5px solid #e8e8e0;background:transparent;color:#ccc;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+/* 分類Bar 凍結 */
+.cat-bar{background:#fff;border-bottom:1px solid #e8e8e0;padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:0;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.cat-btn{padding:8px 18px;border-radius:20px;border:1.5px solid #e0e0d8;background:transparent;color:#555;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .cat-btn.active{background:#FFD60A;color:#000;border-color:#FFD60A;}
-.cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
-.prog-text{font-size:17px;color:#555;margin-left:auto;}
+.cat-btn:hover:not(.active){border-color:#FFD60A;color:#b87a00;}
+.prog-text{font-size:15px;color:#888;margin-left:auto;}
 .prog-text span{color:#bf5af2;font-weight:700;}
-
-/* 影片列表 */
-.video-content{flex:1;overflow-y:auto;padding:1rem 1.5rem;}
-.video-item{background:#fff;border:1.5px solid #e8e8e0;border-radius:12px;padding:1rem;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;transition:border-color 0.15s;}
-.video-item:hover{border-color:#FFD60A;}
-.video-item.watched{border-color:#bf5af2;}
-.v-thumb{width:140px;height:80px;border-radius:8px;background:#e8e8e0;flex-shrink:0;overflow:hidden;position:relative;cursor:pointer;}
-.v-thumb img{width:100%;height:100%;object-fit:cover;}
-.v-play-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:28px;transition:background 0.15s;}
-.v-thumb:hover .v-play-overlay{background:rgba(0,0,0,0.2);}
-.v-info{flex:1;min-width:0;}
-.v-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
-.v-num{font-size:15px;color:#666;font-weight:700;}
-.v-check{font-size:16px;color:#bf5af2;font-weight:700;}
-.v-name{font-size:18px;font-weight:700;color:#2c2c2e;margin-bottom:4px;}
-.v-date{font-size:16px;color:#666;margin-bottom:6px;}
-.v-desc{font-size:13px;color:#999;margin-bottom:10px;line-height:1.5;}
-.btn-done{padding:7px 18px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid;transition:all 0.15s;}
-.btn-watched{background:transparent;color:#bf5af2;border-color:#bf5af2;}
-.btn-unwatched{background:transparent;color:#ccc;border-color:#3a3a3c;}
-.btn-unwatched:hover{border-color:#FFD60A;color:#FFD60A;}
-
-/* 影片播放彈窗 */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;}
+/* 影片格子 */
+.video-content{flex:1;padding:1.2rem 1.5rem;overflow-y:auto;background:#f5f5f0;}
+.video-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.v-card{background:#fff;border:1.5px solid #e8e8e0;border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+.v-card:hover{border-color:#FFD60A;transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.1);}
+.v-card.watched{border-color:#bf5af2;}
+.v-thumb{width:100%;aspect-ratio:16/9;background:#e8e8e0;position:relative;overflow:hidden;}
+.v-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.v-play{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:28px;opacity:0;transition:opacity 0.2s;}
+.v-card:hover .v-play{opacity:1;}
+.v-done-mark{position:absolute;top:8px;right:8px;background:#bf5af2;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
+.v-body{padding:10px 12px 12px;}
+.v-num{font-size:13px;color:#888;margin-bottom:3px;font-weight:700;}
+.v-name{font-size:15px;font-weight:700;color:#2c2c2e;margin-bottom:4px;line-height:1.4;}
+.v-date{font-size:13px;color:#aaa;margin-bottom:6px;}
+.v-desc{font-size:13px;color:#888;line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.btn-done{width:100%;padding:7px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:1.5px solid;transition:all 0.15s;}
+.btn-watched{background:#f9f0ff;color:#bf5af2;border-color:#bf5af2;}
+.btn-unwatched{background:transparent;color:#aaa;border-color:#e0e0d8;}
+.btn-unwatched:hover{border-color:#FFD60A;color:#b87a00;}
+/* 彈窗 */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:200;align-items:center;justify-content:center;flex-direction:column;}
 .modal.show{display:flex;}
 .modal-close{position:absolute;top:1rem;right:1.5rem;color:#fff;font-size:28px;cursor:pointer;background:none;border:none;}
 .modal-video{width:90vw;max-width:800px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;}
 .modal-video iframe{width:100%;height:100%;border:none;}
 .modal-title{color:#fff;font-size:16px;font-weight:700;margin-top:1rem;}
-
 @media(max-width:700px){
   .sidebar{display:none;}
-  .main{max-width:100%;}
-  .v-thumb{width:100px;height:58px;}
-  .cat-bar{padding:0.8rem 1rem;}
+  .video-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .video-content{padding:0.8rem;}
+  .cat-bar{padding:0.8rem 1rem;gap:8px;}
   .cat-btn{font-size:13px;padding:6px 14px;}
-  .video-content{padding:0.8rem 1rem;}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <div class="sidebar">
     <div class="sb-logo">
       <img src="data:image/png;base64,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" width="28" height="28" style="object-fit:contain;flex-shrink:0;"/>
-      <div>
-        <div class="sb-brand">竹建學習網</div>
-        <div class="sb-sub">乙級導管配管培訓</div>
-      </div>
+      <div><div class="sb-brand">竹建學習網</div><div class="sb-sub">乙級導管配管培訓</div></div>
     </div>
     <div class="sb-section">學習</div>
     <a class="sb-item" href="home.html"><span class="sb-icon">🏠</span>首頁</a>
@@ -95,28 +82,29 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <a class="sb-item" href="games.html"><span class="sb-icon">🎮</span>遊戲挑戰</a>
     <a class="sb-item" href="notes.html"><span class="sb-icon">📝</span>上課筆記</a>
     <a class="sb-item" href="photos.html"><span class="sb-icon">📸</span>實作照片</a>
+    <a class="sb-item" href="study.html"><span class="sb-icon">📚</span>學科資料</a>
+    <a class="sb-item" href="exam.html"><span class="sb-icon">📅</span>考試資訊</a>
     <div class="sb-section">個人</div>
     <a class="sb-item" href="progress.html"><span class="sb-icon">📊</span>我的進度</a>
     <a class="sb-item" href="signin.html"><span class="sb-icon">✍️</span>訓練簽到</a>
     <div class="sb-flex"></div>
     <div class="sb-user">
       <div class="sb-av" id="sbAv">?</div>
-      <div>
-        <div class="sb-uname" id="sbName">載入中</div>
-        <div class="sb-role" id="sbRole">—</div>
-        <button class="sb-logout" onclick="logout()">登出</button>
-      </div>
+      <div><div class="sb-uname" id="sbName">載入中</div><div class="sb-role" id="sbRole">—</div></div>
     </div>
   </div>
 
   <div class="main">
     <div class="cat-bar">
-      <button class="cat-btn active" onclick="filterVid('all',this)">全部 13部</button>
+      <button class="cat-btn active" onclick="filterVid('all',this)">全部 15部</button>
       <button class="cat-btn" onclick="filterVid('317',this)">📅 3/17 上課（6部）</button>
       <button class="cat-btn" onclick="filterVid('424',this)">📅 4/24 上課（7部）</button>
-      <div class="prog-text">已看 <span id="doneCount">0</span> / 13 部</div>
+      <button class="cat-btn" onclick="filterVid('513',this)">📅 5/13 上課（2部）</button>
+      <div class="prog-text">已看 <span id="doneCount">0</span> / 15 部</div>
     </div>
-    <div class="video-content" id="videoList"></div>
+    <div class="video-content">
+      <div class="video-grid" id="videoGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -136,58 +124,50 @@ document.getElementById('sbAv').textContent=user.name?user.name[0]:'?';
 document.getElementById('sbName').textContent=user.name||'訪客';
 document.getElementById('sbRole').textContent=user.isAdmin?'管理者':'學員';
 
-function pushToSheet(payload){fetch('https://script.google.com/macros/s/AKfycbzYOYilJM0lEGcp7-_O0Nn1hG5eUA2OuJBnzA2jCuTC3eFxtdlaux8PeZo4qcERFaFn/exec',{method:'POST',body:JSON.stringify(payload)}).catch(()=>{});}
-const VIDEOS=[{"no": "01", "name": "1150317-01", "url": "https://youtu.be/SrgsYD3dFMM", "cat": "317", "date": "115/03/17"}, {"no": "02", "name": "1150317-02", "url": "https://youtu.be/Sv75VPYGHSk", "cat": "317", "date": "115/03/17"}, {"no": "03", "name": "1150317-03", "url": "https://youtu.be/L_E5QMMEnGs", "cat": "317", "date": "115/03/17"}, {"no": "04", "name": "1150317-04", "url": "https://youtu.be/uGOVCqyGz2k", "cat": "317", "date": "115/03/17"}, {"no": "05", "name": "1150317-05", "url": "https://youtu.be/R5GV9UKWFOw", "cat": "317", "date": "115/03/17"}, {"no": "06", "name": "1150317-06", "url": "https://youtu.be/FpoOq_Z5XvE", "cat": "317", "date": "115/03/17"}, {"no": "07", "name": "1150424-01", "url": "https://youtu.be/sBvazzn_g5M", "cat": "424", "date": "115/04/24", "title": "汗水與鋼管的交響樂！乙級導管配管練習日誌", "desc": "邁向專業技術士之路！紀錄乙級導管配管實作練習過程。從管路量測、套絲加工到最終組裝，每一個直角與彎度都必須精準到位。"}, {"no": "08", "name": "1150424-02", "url": "https://youtu.be/F0FW94nZMpM", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-01", "desc": "直擊實作解說現場。講師剖析管路組裝關鍵技巧：管徑偏差、螺紋加工嚴格要求，每一步驟都是職人精神的極致追求。"}, {"no": "09", "name": "1150424-03", "url": "https://youtu.be/Uwj_bRT6KVo", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-02", "desc": "講師解說「三通」與「大彎」位置不對所產生的連鎖反應，考生必看的避坑指南！"}, {"no": "10", "name": "1150424-04", "url": "https://youtu.be/BGevh9zcyyI", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-03", "desc": "講師解析「組裝順序」與「空間位移」：三通位置偏離1公分，整線高度會產生多大的連鎖誤差？"}, {"no": "11", "name": "1150424-05", "url": "https://youtu.be/Y8MH45ygubE", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-04", "desc": "位移連鎖效應、鎖緊的藝術、職人素養叮嚀：不要摔工具！利用水平儀與P型夾進行動態校正心法。"}, {"no": "12", "name": "1150424-06", "url": "https://youtu.be/7NjWLH8so8Q", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-01", "desc": "老師示範乙級導管配管完整組裝過程，不只是技術的展現，更是一場關於精準度的藝術。"}, {"no": "13", "name": "1150424-07", "url": "https://youtu.be/VQ8ZYuQXQCU", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-02", "desc": "老師示範乙級導管配管完整組裝過程，每一個動作都是關鍵細節，精準度的極致展現。"}];
+const VIDEOS=[{"no": "01", "name": "1150317-01", "url": "https://youtu.be/SrgsYD3dFMM", "cat": "317", "date": "115/03/17", "title": "1150317-01", "desc": "第一次上課課程內容"}, {"no": "02", "name": "1150317-02", "url": "https://youtu.be/Sv75VPYGHSk", "cat": "317", "date": "115/03/17", "title": "1150317-02", "desc": "第一次上課課程內容"}, {"no": "03", "name": "1150317-03", "url": "https://youtu.be/L_E5QMMEnGs", "cat": "317", "date": "115/03/17", "title": "1150317-03", "desc": "第一次上課課程內容"}, {"no": "04", "name": "1150317-04", "url": "https://youtu.be/uGOVCqyGz2k", "cat": "317", "date": "115/03/17", "title": "1150317-04", "desc": "第一次上課課程內容"}, {"no": "05", "name": "1150317-05", "url": "https://youtu.be/R5GV9UKWFOw", "cat": "317", "date": "115/03/17", "title": "1150317-05", "desc": "第一次上課課程內容"}, {"no": "06", "name": "1150317-06", "url": "https://youtu.be/FpoOq_Z5XvE", "cat": "317", "date": "115/03/17", "title": "1150317-06", "desc": "第一次上課課程內容"}, {"no": "07", "name": "1150424-01", "url": "https://youtu.be/sBvazzn_g5M", "cat": "424", "date": "115/04/24", "title": "汗水與鋼管的交響樂！乙級導管配管練習日誌", "desc": "邁向專業技術士之路！紀錄乙級導管配管實作練習過程。從管路量測、套絲加工到最終組裝，每一個直角與彎度都必須精準到位。"}, {"no": "08", "name": "1150424-02", "url": "https://youtu.be/F0FW94nZMpM", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-01", "desc": "直擊實作解說現場。講師剖析管路組裝關鍵技巧：管徑偏差、螺紋加工嚴格要求，每一步驟都是職人精神的極致追求。"}, {"no": "09", "name": "1150424-03", "url": "https://youtu.be/Uwj_bRT6KVo", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-02", "desc": "講師解說「三通」與「大彎」位置不對所產生的連鎖反應，考生必看的避坑指南！"}, {"no": "10", "name": "1150424-04", "url": "https://youtu.be/BGevh9zcyyI", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-03", "desc": "講師解析「組裝順序」與「空間位移」：三通位置偏離1公分，整線高度會產生多大的連鎖誤差？"}, {"no": "11", "name": "1150424-05", "url": "https://youtu.be/Y8MH45ygubE", "cat": "424", "date": "115/04/24", "title": "【職人現場】揭秘組裝藝術與關鍵細節-04", "desc": "位移連鎖效應、鎖緊的藝術、職人素養叮嚀：不要摔工具！利用水平儀與P型夾進行動態校正心法。"}, {"no": "12", "name": "1150424-06", "url": "https://youtu.be/7NjWLH8so8Q", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-01", "desc": "老師示範乙級導管配管完整組裝過程，不只是技術的展現，更是一場關於精準度的藝術。"}, {"no": "13", "name": "1150424-07", "url": "https://youtu.be/VQ8ZYuQXQCU", "cat": "424", "date": "115/04/24", "title": "【乙級配管實戰】老師親自示範關鍵細節-02", "desc": "老師示範乙級導管配管完整組裝過程，每一個動作都是關鍵細節，精準度的極致展現。"}, {"no": "14", "name": "1150513-01", "url": "https://youtu.be/yrYpQ7Epw2w", "cat": "513", "date": "115/05/13", "title": "乙級導管第三次上課問題解答", "desc": "【配管職人秘笈】鎖死≠不漏氣！手鎖緊再加半圈的黃金心法｜克服身高限制的配管組裝術。管件壞了還是工法錯了？螺紋不是鎖死就好！配管組裝「不漏氣」與「克服身高」全解析"}, {"no": "15", "name": "1150513-02", "url": "https://youtu.be/yN3URlLnOHI", "cat": "513", "date": "115/05/13", "title": "【沉浸式配管教學】真實施作環境音", "desc": "沒有華麗口號，只有最真實的施作環境音：手鎖緊、迫半圈，老師在一旁的安靜守護"}];
+const GAS_URL='https://script.google.com/macros/s/AKfycbzYOYilJM0lEGcp7-_O0Nn1hG5eUA2OuJBnzA2jCuTC3eFxtdlaux8PeZo4qcERFaFn/exec';
 const watchKey='watched_'+user.name;
 let watchedSet=new Set(JSON.parse(localStorage.getItem(watchKey)||'[]'));
 let curFilter='all';
 
-function updateCount(){
-  document.getElementById('doneCount').textContent=watchedSet.size;
-}
+function updateCount(){document.getElementById('doneCount').textContent=watchedSet.size;}
 
 function saveWatched(no){
   watchedSet.add(no);
   localStorage.setItem(watchKey,JSON.stringify([...watchedSet]));
   updateCount();
-  // 記錄到 Google Sheets
   const v=VIDEOS.find(x=>x.no===no);
-  pushToSheet({action:'記錄觀看',姓名:user.name||'',工號:user.no||'',影片編號:no,影片名稱:v?v.name:'',完成狀態:'✅ 完成'});
+  fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'記錄觀看',姓名:user.name||'',工號:user.no||'',影片編號:no,影片名稱:v?v.name:'',完成狀態:'✅ 完成'})}).catch(()=>{});
 }
 
-function getYtId(url){
-  const m=url.match(/youtu\.be\/([^?]+)/);
-  return m?m[1]:'';
-}
+function getYtId(url){const m=url.match(/youtu\.be\/([^?]+)/);return m?m[1]:'';}
 
 function render(){
-  const list=document.getElementById('videoList');
+  const grid=document.getElementById('videoGrid');
   const filtered=curFilter==='all'?VIDEOS:VIDEOS.filter(v=>v.cat===curFilter);
-  list.innerHTML='';
+  grid.innerHTML='';
   filtered.forEach(v=>{
     const watched=watchedSet.has(v.no);
     const ytId=getYtId(v.url);
     const thumb=`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
-    const item=document.createElement('div');
-    item.className='video-item'+(watched?' watched':'');
-    item.innerHTML=`
-      <div class="v-thumb" onclick="openModal('${v.url}','${v.name}')">
+    const card=document.createElement('div');
+    card.className='v-card'+(watched?' watched':'');
+    card.innerHTML=`
+      <div class="v-thumb" onclick="openModal('${v.url}','${v.title||v.name}')">
         <img src="${thumb}" alt="${v.name}" onerror="this.style.display='none'"/>
-        <div class="v-play-overlay">▶</div>
+        <div class="v-play">▶</div>
+        ${watched?'<div class="v-done-mark">✓</div>':''}
       </div>
-      <div class="v-info">
-        <div class="v-top">
-          <div class="v-num">NO. ${v.no}</div>
-          <div class="v-check">${watched?'✓':''}</div>
-        </div>
+      <div class="v-body">
+        <div class="v-num">NO. ${v.no}</div>
         <div class="v-name">${v.title||v.name}</div>
-        ${v.desc?`<div class="v-desc">${v.desc}</div>`:''}
         <div class="v-date">📅 ${v.date}</div>
-        <button class="btn-done ${watched?'btn-watched':'btn-unwatched'}" id="btn_${v.no}" onclick="markWatched('${v.no}',this)">
+        ${v.desc&&v.cat!=='317'?`<div class="v-desc">${v.desc}</div>`:''}
+        <button class="btn-done ${watched?'btn-watched':'btn-unwatched'}" id="btn_${v.no}" onclick="event.stopPropagation();markWatched('${v.no}',this)">
           ${watched?'✅ 已看完':'☐ 我已看完此影片'}
         </button>
       </div>`;
-    list.appendChild(item);
+    grid.appendChild(card);
   });
 }
 
@@ -196,8 +176,14 @@ function markWatched(no,btn){
   saveWatched(no);
   btn.textContent='✅ 已看完';
   btn.className='btn-done btn-watched';
-  btn.closest('.video-item').classList.add('watched');
-  btn.closest('.video-item').querySelector('.v-check').textContent='✓';
+  const card=btn.closest('.v-card');
+  card.classList.add('watched');
+  const thumb=card.querySelector('.v-thumb');
+  if(!thumb.querySelector('.v-done-mark')){
+    const mark=document.createElement('div');
+    mark.className='v-done-mark';mark.textContent='✓';
+    thumb.appendChild(mark);
+  }
 }
 
 function filterVid(cat,btn){
@@ -219,10 +205,7 @@ function closeModal(){
   document.getElementById('modalIframe').src='';
 }
 
-function logout(){
-  if(confirm('確定要登出嗎？')){sessionStorage.removeItem('user');window.location.href='index.html';}
-}
-
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 updateCount();
 render();
 </script>
