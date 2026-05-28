@@ -1003,6 +1003,20 @@ select.inline-sel {
   </div>
 </div>
 
+<!-- ── 進場載入動畫 ── -->
+<div id="bootLoader" style="display:none;position:fixed;inset:0;z-index:9000;background:linear-gradient(160deg,#1a1f2e 0%,#243049 55%,#2c4a73 100%);flex-direction:column;align-items:center;justify-content:center;gap:22px;transition:opacity .5s ease">
+  <div style="font-family:'Bebas Neue',sans-serif;letter-spacing:4px;font-size:30px;color:#d9b56a">ZHUJIAN GAS</div>
+  <div style="position:relative;width:64px;height:64px">
+    <div style="position:absolute;inset:0;border:4px solid rgba(217,181,106,.18);border-top-color:#d9b56a;border-radius:50%;animation:bootspin 0.9s linear infinite"></div>
+  </div>
+  <div id="bootLoaderText" style="color:#c8d2e0;font-size:14px;letter-spacing:1px">系統載入中…</div>
+  <div style="color:#6b7a90;font-size:12px">竹建瓦斯股份有限公司　餐會管理系統</div>
+</div>
+<style>
+@keyframes bootspin { to { transform: rotate(360deg); } }
+#bootLoader.show { display:flex !important; }
+</style>
+
 
 <div class="layout">
 
@@ -1032,7 +1046,7 @@ select.inline-sel {
     <div class="sb-item" onclick="showPage('menu')"><i class="ti ti-clipboard-list"></i> 菜單比較</div>
     <div class="sb-item" onclick="showPage('fee')"><i class="ti ti-calculator"></i> 費用試算</div>
     <div class="sb-section">邀請管理</div>
-    <div class="sb-item" id="nav-invite" onclick="showPage('invite')"><i class="ti ti-mail"></i> 邀請卡版本<span class="sb-badge" id="invite-badge">待裁示</span></div>
+    <div class="sb-item" id="nav-invite" onclick="showPage('invite')"><i class="ti ti-mail"></i> 邀請卡</div>
     <div class="sb-item" onclick="showPage('attend')"><i class="ti ti-users"></i> 出席管理</div>
     <div class="sb-section">記錄</div>
     <div class="sb-item" onclick="showPage('after')"><i class="ti ti-camera"></i> 餐後紀錄</div>
@@ -1169,15 +1183,8 @@ select.inline-sel {
     <!-- ── 邀請卡 ── -->
     <div id="page-invite" class="page">
       <div class="panel">
-        <div class="panel-title">邀請卡版本選擇（老闆裁示）</div>
-        <div class="invite-result-bar">
-          <span class="invite-result-lbl">老闆選定：</span>
-          <span id="invite-result-txt" class="invite-result-none">尚未選定</span>
-        </div>
+        <div class="panel-title">邀請卡（已定案）</div>
         <div class="invite-grid" id="invite-grid"></div>
-        <div class="save-bar">
-          <button class="btn btn-gold btn-decision" onclick="saveInviteDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
-        </div>
       </div>
     </div>
 
@@ -1542,18 +1549,38 @@ function showPage(id) {
   if(id === 'history') renderHistoryPage();
   if(id === 'staff') renderStaffPage();
   if(id === 'venue') renderVenuePage();
+  if(id === 'after') renderAfterPage();
   if(id === 'seating') requestAnimationFrame(() => requestAnimationFrame(renderSeatingPage));
 }
 
 // ── 初始化 ──
+function bootText(t){ var el=document.getElementById('bootLoaderText'); if(el) el.textContent=t; }
+function showBoot(){ var el=document.getElementById('bootLoader'); if(el){ el.style.opacity='1'; el.classList.add('show'); } }
+function hideBoot(){
+  var el=document.getElementById('bootLoader');
+  if(el){ el.style.opacity='0'; setTimeout(function(){ el.classList.remove('show'); el.style.display='none'; }, 500); }
+}
+
 async function init() {
+  showBoot();
   try {
+    bootText('讀取活動清單…');
     allActivities = await api({action:'getActivities'});
+    bootText('讀取人員資料…');
     allStaff = await api({action:'getStaff'});
+    // 每場專屬網址：?act=EVT001 直接開到該場（找不到就用預設）
+    var urlAct = new URLSearchParams(window.location.search).get('act');
+    if(urlAct && allActivities.some(function(a){ return a['活動ID'] === urlAct; })) {
+      currentActId = urlAct;
+    }
     populateActivitySelect();
+    bootText('載入活動內容…');
     await loadActivityData(currentActId);
+    bootText('完成');
   } catch(e) {
     showToast('⚠️ 無法連接後端，請確認網路或重新整理');
+  } finally {
+    hideBoot();
   }
 }
 
@@ -1622,6 +1649,12 @@ async function loadActivityData(actId) {
 async function switchActivity(actId) {
   document.getElementById('dash-loading').style.display = 'flex';
   document.getElementById('dash-content').style.display = 'none';
+  // 同步更新網址（不重整），方便複製這場的專屬連結分享
+  try {
+    var url = new URL(window.location);
+    url.searchParams.set('act', actId);
+    history.replaceState(null, '', url);
+  } catch(e) {}
   await loadActivityData(actId);
 }
 
@@ -1648,13 +1681,12 @@ function renderDashboard() {
     act['狀態'] === '已完成' ? '活動已完成' : '籌備進行中';
   document.getElementById('dash-status-sub').textContent = daysLeft;
 
-  // 狀態chips
+  // 狀態chips（菜單＝定案菜單，邀請卡＝單一定案版）
   const chips = [];
-  const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
-  if(!menuPicked) chips.push(['菜單待裁示','chip-amber']);
-  else chips.push([menuPicked['方案名稱']+'已選定','chip-green']);
-  if(!pickedInvite) chips.push(['邀請卡待裁示','chip-amber']);
-  else chips.push([pickedInvite['版本名稱']+'已選定','chip-green']);
+  const menuPicked = menuData.find(m => m['老闆選定'] === '✓') || menuData[0] || null;
+  if(menuPicked) chips.push([menuPicked['方案名稱']+'（定案）','chip-green']);
+  else chips.push(['菜單未設定','chip-amber']);
+  chips.push(['邀請卡已定案','chip-green']);
   const pendingExt = externalData.filter(e => e['出席狀態']==='待確認').length;
   if(pendingExt > 0) chips.push([`出席確認中(${pendingExt})`, 'chip-blue']);
   if(act['備註'] && act['備註'].includes('待確認')) chips.push(['KTV費待確認','chip-gray']);
@@ -1664,12 +1696,9 @@ function renderDashboard() {
   // 統計
   document.getElementById('stat-units').textContent = externalData.length;
   document.getElementById('stat-tables').textContent = act['桌數範圍'] || '—';
-  const tables = [7,8,9];
-  const minA = 7*8000*1.1, maxA = 9*8000*1.1;
-  const minB = 7*10000*1.1, maxB = 9*10000*1.1;
   if(!menuPicked) {
-    document.getElementById('stat-fee').textContent = '待裁示';
-    document.getElementById('stat-fee-note').textContent = 'A方案: $'+Math.round(minA/1000)+'K~$'+Math.round(maxA/1000)+'K';
+    document.getElementById('stat-fee').textContent = '—';
+    document.getElementById('stat-fee-note').textContent = '菜單未設定';
   } else {
     const price = parseInt(menuPicked['每桌單價'])||8000;
     document.getElementById('stat-fee').textContent = '$'+(price*8*1.1).toLocaleString();
@@ -1680,7 +1709,7 @@ function renderDashboard() {
   if(act['地點']) progress += 20;
   if(externalData.length > 0) progress += 10;
   if(menuPicked) progress += 20;
-  if(pickedInvite) progress += 20;
+  progress += 20; // 邀請卡已定案
   const confirmed = externalData.filter(e=>e['出席狀態']==='確認出席').length;
   if(confirmed > 0) progress += Math.min(20, Math.round(confirmed/externalData.length*20));
   if(progress < 10) progress = 10;
@@ -1688,12 +1717,11 @@ function renderDashboard() {
   document.getElementById('stat-progress-note').innerHTML =
     '<span class="' + (progress>=80?'hi':'warn') + '">' + (progress>=80?'即將完成':'進行中') + '</span>';
 
-  // 菜單卡
-  document.getElementById('dash-menu-cards').innerHTML = menuData.slice(0,2).map(m => {
+  // 菜單卡（單一定案）
+  document.getElementById('dash-menu-cards').innerHTML = (menuPicked ? [menuPicked] : []).map(m => {
     const price = parseInt(m['每桌單價'])||0;
-    const isBoss = m['老闆選定'] === '✓';
-    return `<div class="menu-card ${isBoss?'selected-boss':''}">
-      <div class="menu-tag ${m['方案名稱']==='方案A'?'tag-a':'tag-b'}">${m['方案名稱']}</div>
+    return `<div class="menu-card selected-boss">
+      <div class="menu-tag tag-a">${m['方案名稱']}</div>
       <div class="menu-price">$${price.toLocaleString()}</div>
       <div class="menu-unit">每桌單價</div>
       <div class="menu-range">
@@ -1701,7 +1729,7 @@ function renderDashboard() {
         8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong><br>
         9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
       </div>
-      ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : '<div class="menu-pending-badge">待裁示</div>'}
+      <div class="menu-boss-badge">✓ 定案菜單</div>
     </div>`;
   }).join('');
 
@@ -1709,8 +1737,8 @@ function renderDashboard() {
   const todos = [
     {done: !!(act['地點']), text: '確認場地及廳別檔期', tag: '完成'},
     {done: externalData.length > 0, text: '盤點邀請單位名單', tag: externalData.length>0?'完成':'未開始'},
-    {done: !!menuPicked, text: '老闆裁示菜單方案', tag: menuPicked?'完成':'待裁示', urgent: !menuPicked},
-    {done: !!pickedInvite, text: '老闆選定邀請卡版本', tag: pickedInvite?'完成':'待裁示', urgent: !pickedInvite},
+    {done: !!menuPicked, text: '確認定案菜單', tag: menuPicked?'完成':'未設定', urgent: !menuPicked},
+    {done: true, text: '邀請卡定案', tag: '完成'},
     {done: false, text: '確認卡拉OK等額外費用', tag: '待確認'},
     {done: confirmed===externalData.length && externalData.length>0,
      text: '發送邀請卡並收回回覆', tag: confirmed>0?`${confirmed}/${externalData.length}已確認`:'未開始'},
@@ -1741,26 +1769,27 @@ function renderDashboard() {
     </table>`;
 
   // 費用
-  const mPicked = menuData.find(m=>m['老闆選定']==='✓');
+  const mPicked = menuPicked;
   const fPrice = mPicked ? parseInt(mPicked['每桌單價'])||8000 : null;
   document.getElementById('dash-fee').innerHTML = `
-    <div class="fee-row"><span class="fee-lbl">菜單方案</span><span class="fee-val ${mPicked?'':'fee-warn'}">${mPicked?mPicked['方案名稱']+'（$'+parseInt(mPicked['每桌單價']).toLocaleString()+'/桌）':'待老闆裁示'}</span></div>
+    <div class="fee-row"><span class="fee-lbl">菜單方案</span><span class="fee-val ${mPicked?'':'fee-warn'}">${mPicked?mPicked['方案名稱']+'（$'+(parseInt(mPicked['每桌單價'])||8000).toLocaleString()+'/桌）':'未設定'}</span></div>
     <div class="fee-row"><span class="fee-lbl">桌數</span><span class="fee-val fee-warn">${act['桌數範圍']||'待確認'}</span></div>
     <div class="fee-row"><span class="fee-lbl">服務費</span><span class="fee-val">每桌×10%</span></div>
-    <div class="fee-row"><span class="fee-lbl">包廂費</span><span class="fee-val fee-warn">待確認</span></div>
+    <div class="fee-row"><span class="fee-lbl">租金</span><span class="fee-val">$6,000</span></div>
     <div class="fee-row"><span class="fee-lbl">卡拉OK</span><span class="fee-val fee-warn">待確認</span></div>
     <hr class="fee-divider">
     <div class="fee-range-box">
-      <div class="fee-range-title">費用區間試算（含服務費）</div>
-      <div class="fee-range-row">方案A：$${Math.round(7*8000*1.1).toLocaleString()} ~ $${Math.round(9*8000*1.1).toLocaleString()}</div>
-      <div class="fee-range-row">方案B：$${Math.round(7*10000*1.1).toLocaleString()} ~ $${Math.round(9*10000*1.1).toLocaleString()}</div>
+      <div class="fee-range-title">費用區間試算（含服務費＋租金）</div>
+      <div class="fee-range-row">7桌：$${Math.round(7*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
+      <div class="fee-range-row">8桌：$${Math.round(8*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
+      <div class="fee-range-row">9桌：$${Math.round(9*(fPrice||8000)*1.1+6000).toLocaleString()}</div>
     </div>`;
 
   // 進度條
   const progItems = [
     {label:'場地確認', pct: act['地點']?100:0},
-    {label:'菜單規劃（方案已備，待裁示）', pct: menuPicked?100:60},
-    {label:'邀請卡製作（版本已備，待裁示）', pct: pickedInvite?100:75},
+    {label:'菜單（已定案）', pct: menuPicked?100:50},
+    {label:'邀請卡（已定案）', pct: 100},
     {label:'出席名單確認', pct: externalData.length>0 ? Math.round(confirmed/externalData.length*100)||5 : 5},
     {label:'費用確認', pct: menuPicked?40:20},
   ];
@@ -1801,7 +1830,7 @@ function getVenueCaption(idx) {
   return '';
 }
 
-async function saveAllVenueCaptions() {
+async function saveAllVenueCaptions(silent) {
   var captions = [];
   for(var i = 0; i < 20; i++) {
     var el = document.getElementById('venue-cap-'+i);
@@ -1809,8 +1838,8 @@ async function saveAllVenueCaptions() {
   }
   try {
     await apiPost({action:'saveVenueCaptions', actId: currentActId, captions: captions});
-    showToast('✓ 說明文字已儲存');
-  } catch(e) { showToast('❌ 儲存失敗'); }
+    if(!silent) showToast('✓ 說明文字已儲存');
+  } catch(e) { if(!silent) showToast('❌ 儲存失敗'); }
 }
 
 async function loadVenuePhotos() {
@@ -1825,15 +1854,12 @@ async function loadVenuePhotos() {
 }
 
 function getVenuePhotoUrl(slotIdx) {
-  // 優先用本地快取（localStorage）
-  const localKey = 'venue_local_' + currentActId + '_' + slotIdx;
-  const local = localStorage.getItem(localKey);
-  if(local) return local;
-  // 其次用 Drive URL（需要登入 Google）
+  // Drive 優先（跨裝置都看得到），localStorage 只當網路尚未回應時的瞬間後備
   const photos = venuePhotosCache[currentActId] || [];
   const found = photos.find(p => p.slotIdx === slotIdx);
-  if(found && found.local) return found.local;
-  return found ? found.url : '';
+  if(found) return found.url;
+  const localKey = 'venue_local_' + currentActId + '_' + slotIdx;
+  return localStorage.getItem(localKey) || '';
 }
 
 function getYoutubeEmbed(url) {
@@ -2035,11 +2061,16 @@ async function renderVenuePage() {
         if(im) openLightbox(im.src, capInput ? capInput.value : '');
       };
     }
-    if(capInput) capInput.oninput = function(){
-      localStorage.setItem(storKey+'_cap', capInput.value);
-      if(!venueCaptionCache[currentActId]) venueCaptionCache[currentActId] = {};
-      venueCaptionCache[currentActId][i] = capInput.value;
-    };
+    if(capInput) {
+      var capTimer = null;
+      capInput.oninput = function(){
+        localStorage.setItem(storKey+'_cap', capInput.value);
+        if(!venueCaptionCache[currentActId]) venueCaptionCache[currentActId] = {};
+        venueCaptionCache[currentActId][i] = capInput.value;
+        clearTimeout(capTimer);
+        capTimer = setTimeout(function(){ saveAllVenueCaptions(true); }, 1500);
+      };
+    }
   });
 }
 
@@ -2052,13 +2083,88 @@ function toggleVenueEdit() {
 }
 
 
+// ════════ 餐後紀錄（跨裝置同步）════════
+let afterPhotosCache = {};
+let afterCaptionsCache = {};
+let afterCapTimers = {};
+
+async function loadAfterPhotos() {
+  try {
+    const res = await apiPost({action:'getAfterPhotos', actId: currentActId});
+    afterPhotosCache[currentActId] = (res && res.success) ? (res.photos||[]) : [];
+  } catch(e) { afterPhotosCache[currentActId] = []; }
+}
+async function loadAfterCaptions() {
+  try {
+    const res = await apiPost({action:'getAfterCaptions', actId: currentActId});
+    afterCaptionsCache[currentActId] = {};
+    if(res && res.success) (res.captions||[]).forEach(c => afterCaptionsCache[currentActId][c.idx] = c.text);
+  } catch(e) { afterCaptionsCache[currentActId] = {}; }
+}
+function getAfterPhotoUrl(slotIdx) {
+  const photos = afterPhotosCache[currentActId] || [];
+  const found = photos.find(p => p.slotIdx === slotIdx);
+  if(found) return found.url;
+  return localStorage.getItem('after_local_' + currentActId + '_' + slotIdx) || '';
+}
+function getAfterCaption(idx) {
+  const cache = afterCaptionsCache[currentActId];
+  return (cache && cache[idx]) || '';
+}
+async function saveAllAfterCaptions() {
+  const captions = [];
+  for(let i=0; i<20; i++) {
+    const el = document.getElementById('after-cap-'+i);
+    if(el && el.value) captions.push({idx:i, text:el.value});
+  }
+  try { await apiPost({action:'saveAfterCaptions', actId:currentActId, captions}); } catch(e){}
+}
+
+async function renderAfterPage() {
+  document.getElementById('after-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
+  await loadAfterPhotos();
+  await loadAfterCaptions();
+
+  const slots = Array.from({length:20}, (_,i) => {
+    const savedImg = getAfterPhotoUrl(i);
+    const savedCap = getAfterCaption(i).replace(/"/g,'&quot;');
+    return `<div style="border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);background:var(--bg)">
+      <div style="position:relative;aspect-ratio:4/3;overflow:hidden" id="after-imgarea-${i}" class="venue-photo-slot">
+        ${savedImg
+          ? `<img id="after-img-${i}" src="${savedImg}" class="venue-photo-img" style="width:100%;height:100%;object-fit:cover;cursor:zoom-in">`
+          : `<div class="venue-photo-placeholder" id="after-ph-${i}" style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text-hint);cursor:pointer"><i class="ti ti-camera" style="font-size:24px"></i><span style="font-size:12px">上傳照片</span></div>`
+        }
+        <div class="venue-photo-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;gap:6px">
+          <div class="menu-img-action" id="after-enlarge-${i}"><i class="ti ti-eye"></i> 放大</div>
+          <div class="menu-img-action" id="after-upbtn-${i}"><i class="ti ti-upload"></i> 換圖</div>
+          <div class="menu-img-action" onclick="removeAfterImg(${i})"><i class="ti ti-trash"></i> 刪除</div>
+        </div>
+      </div>
+      <input class="venue-caption-input" id="after-cap-${i}" placeholder="說明文字（選填）" value="${savedCap}">
+    </div>`;
+  }).join('');
+
+  document.getElementById('after-content').innerHTML =
+    '<div style="font-size:12px;color:var(--text-muted);margin-bottom:10px">餐會結束後上傳活動照片留檔（最多 20 張），照片存 Google Drive、說明自動同步，換裝置都看得到。</div>' +
+    '<div class="after-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">'+slots+'</div>';
+
+  // hover 顯示工具列
+  document.querySelectorAll('#after-content .venue-photo-slot').forEach(slot => {
+    const ov = slot.querySelector('.venue-photo-overlay');
+    if(!ov) return;
+    slot.addEventListener('mouseenter', () => { ov.style.display='flex'; });
+    slot.addEventListener('mouseleave', () => { ov.style.display='none'; });
+  });
+  bindAfterPhotoInputs();
+}
+
 async function handleAfterImg(input, idx) {
   const file = input.files[0];
   if(!file) return;
   showToast('⏳ 上傳中...');
   const reader = new FileReader();
   reader.onload = async e => {
-    const compressed = await compressImage(e.target.result, 800, 0.7);
+    const compressed = await compressImage(e.target.result, 1000, 0.75);
     try {
       const act = allActivities.find(a => a['活動ID'] === currentActId) || {};
       const res = await apiPost({
@@ -2071,19 +2177,12 @@ async function handleAfterImg(input, idx) {
       });
       if(res && res.success) {
         localStorage.setItem('after_local_' + currentActId + '_' + idx, compressed);
-        const area = document.getElementById('after-imgarea-' + idx);
-        const ph = area.querySelector('.venue-photo-placeholder');
-        if(ph) ph.remove();
-        let img = area.querySelector('img');
-        if(!img) {
-          img = document.createElement('img');
-          img.className = 'venue-photo-img';
-          img.style.cursor = 'zoom-in';
-          area.insertBefore(img, area.firstChild);
-        }
-        img.src = compressed;
-        img.onclick = () => openLightbox(img.src, '');
-        showToast('✓ 餐後照片已上傳');
+        if(!afterPhotosCache[currentActId]) afterPhotosCache[currentActId] = [];
+        const cache = afterPhotosCache[currentActId];
+        const ex = cache.findIndex(p => p.slotIdx === idx);
+        if(ex >= 0) cache[ex].url = res.url; else cache.push({slotIdx:idx, url:res.url, fileId:res.fileId});
+        showToast('✓ 餐後照片已上傳到 Google Drive');
+        renderAfterPage();
       } else {
         showToast('❌ 上傳失敗');
       }
@@ -2092,21 +2191,16 @@ async function handleAfterImg(input, idx) {
   reader.readAsDataURL(file);
 }
 
-function removeAfterImg(idx) {
+async function removeAfterImg(idx) {
+  try { await apiPost({action:'deleteAfterPhoto', actId:currentActId, slotIdx:idx}); } catch(e){}
+  if(afterPhotosCache[currentActId])
+    afterPhotosCache[currentActId] = afterPhotosCache[currentActId].filter(p => p.slotIdx !== idx);
   localStorage.removeItem('after_local_' + currentActId + '_' + idx);
-  const area = document.getElementById('after-imgarea-' + idx);
-  const img = area.querySelector('img');
-  if(img) img.remove();
-  if(!area.querySelector('.venue-photo-placeholder')) {
-    const ph = document.createElement('div');
-    ph.className = 'venue-photo-placeholder';
-    ph.innerHTML = '<i class="ti ti-camera"></i><span>上傳照片</span>';
-    area.insertBefore(ph, area.firstChild);
-  }
   showToast('照片已刪除');
+  renderAfterPage();
 }
 
-// 綁定餐後照片按鈕（在 renderVenuePage 後呼叫）
+// 綁定餐後照片按鈕（在 renderAfterPage 後呼叫）
 function bindAfterPhotoInputs() {
   document.querySelectorAll('.after-file-input').forEach(el => el.remove());
   Array.from({length:20}, (_,slotIdx) => {
@@ -2122,9 +2216,15 @@ function bindAfterPhotoInputs() {
     const capInput = document.getElementById('after-cap-' + slotIdx);
     if(ph) ph.onclick = () => fi.click();
     if(upBtn) upBtn.onclick = () => fi.click();
-    if(img) img.onclick = () => openLightbox(img.src, '');
-    if(enlargeBtn) enlargeBtn.onclick = () => { const i=document.getElementById('after-img-'+slotIdx); if(i) openLightbox(i.src,''); };
-    if(capInput) capInput.oninput = () => localStorage.setItem('after_cap_' + currentActId + '_' + slotIdx, capInput.value);
+    if(img) img.onclick = () => openLightbox(img.src, (capInput?capInput.value:''));
+    if(enlargeBtn) enlargeBtn.onclick = () => { const im=document.getElementById('after-img-'+slotIdx); if(im) openLightbox(im.src, (capInput?capInput.value:'')); };
+    if(capInput) capInput.oninput = () => {
+      localStorage.setItem('after_cap_' + currentActId + '_' + slotIdx, capInput.value);
+      if(!afterCaptionsCache[currentActId]) afterCaptionsCache[currentActId] = {};
+      afterCaptionsCache[currentActId][slotIdx] = capInput.value;
+      clearTimeout(afterCapTimers[slotIdx]);
+      afterCapTimers[slotIdx] = setTimeout(saveAllAfterCaptions, 1500);
+    };
   });
 }
 
@@ -2205,6 +2305,9 @@ async function handleVenueImg(input, idx) {
 function saveVenueCaption(idx) {
   const val = (document.getElementById('venue-cap-' + idx)||{value:''}).value || '';
   localStorage.setItem(getVenueImgKey(currentActId, idx) + '_cap', val);
+  if(!venueCaptionCache[currentActId]) venueCaptionCache[currentActId] = {};
+  venueCaptionCache[currentActId][idx] = val;
+  saveAllVenueCaptions(true);
 }
 
 async function removeVenueImg(idx) {
@@ -2245,6 +2348,8 @@ async function saveVenue() {
 
 // ── 菜單照片 Drive 快取 ──
 let menuPhotosCache = {};
+let menuDetailsCache = {};
+let menuDetailTimers = {};
 
 async function loadMenuPhotos() {
   try {
@@ -2257,13 +2362,27 @@ async function loadMenuPhotos() {
   }
 }
 
+async function loadMenuDetails() {
+  try {
+    const res = await apiPost({action:'getMenuDetails', actId: currentActId});
+    if(res && res.success) menuDetailsCache[currentActId] = res.details || {};
+  } catch(e) { menuDetailsCache[currentActId] = {}; }
+}
+
+function getMenuDetailVal(planName) {
+  const cache = menuDetailsCache[currentActId] || {};
+  if(cache[planName] !== undefined && cache[planName] !== '') return cache[planName];
+  const m = (menuData || []).find(x => x['方案名稱'] === planName);
+  return (m && m['菜色明細']) || '';
+}
+
 function getMenuPhotoUrl(planName) {
-  const localKey = 'menu_local_' + currentActId + '_' + planName;
-  const local = localStorage.getItem(localKey);
-  if(local) return local;
+  // Drive 優先，localStorage 只當瞬間後備
   const photos = menuPhotosCache[currentActId] || [];
   const found = photos.find(p => p.planName === planName);
-  return found ? found.url : '';
+  if(found) return found.url;
+  const localKey = 'menu_local_' + currentActId + '_' + planName;
+  return localStorage.getItem(localKey) || '';
 }
 
 function getMenuImgKey(actId, planName) {
@@ -2276,72 +2395,60 @@ function getMenuDetailKey(actId, planName) {
 async function renderMenuPage() {
   document.getElementById('menu-content').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入照片中...</div>';
   await loadMenuPhotos();
-  const menuPicked = menuData.find(m => m['老闆選定'] === '✓');
+  await loadMenuDetails();
+
+  if(!menuData || menuData.length === 0) {
+    document.getElementById('menu-content').innerHTML =
+      '<p style="font-size:13px;color:var(--text-muted);padding:20px;text-align:center">尚無菜單資料，請於 Google 試算表「菜單紀錄」新增方案。</p>';
+    return;
+  }
+
+  // 單一定案展示：優先顯示老闆選定，否則顯示第一筆
+  const picked = menuData.find(m => m['老闆選定'] === '✓');
+  const m = picked || menuData[0];
+  const i = menuData.indexOf(m);
+  const price = parseInt(m['每桌單價']) || 8000;
+  const savedImg = getMenuPhotoUrl(m['方案名稱']);
+  const savedDetail = getMenuDetailVal(m['方案名稱']);
+
   document.getElementById('menu-content').innerHTML = `
     <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">
-      請老闆選擇方案後按「儲存裁示結果」，選定結果將記錄至試算表。可為每個方案上傳菜單照片。
+      本場次菜單（已定案）。可上傳菜單照片、編輯菜色明細，內容會自動儲存並跨裝置同步。
     </p>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px">
-      ${menuData.map((m,i) => {
-        const price = parseInt(m['每桌單價'])||0;
-        const isBoss = m['老闆選定'] === '✓';
-        const tagClass = i===0?'tag-a':i===1?'tag-b':'tag-c';
-        const detailKey = getMenuDetailKey(currentActId, m['方案名稱']);
-        const savedImg = getMenuPhotoUrl(m['方案名稱']);
-        const savedDetail = localStorage.getItem(detailKey) || m['菜色明細'] || '';
-        return `<div class="menu-card ${isBoss?'selected-boss':''}" id="menu-opt-${i}">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <div class="menu-tag ${tagClass}">${m['方案名稱']}</div>
-            ${isBoss ? '<div class="menu-boss-badge">✓ 老闆選定</div>' : ''}
-          </div>
-          <div class="menu-price">$${price.toLocaleString()}</div>
-          <div class="menu-unit">每桌單價（含服務費 $${Math.round(price*0.1).toLocaleString()}/桌）</div>
-          <div class="menu-range">
-            7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong>　
-            8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong>　
-            9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
-          </div>
+    <div class="menu-card selected-boss" id="menu-opt-${i}" style="max-width:520px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="menu-tag tag-a">${m['方案名稱']}</div>
+        <div class="menu-boss-badge">✓ 定案菜單</div>
+      </div>
+      <div class="menu-price">$${price.toLocaleString()}</div>
+      <div class="menu-unit">每桌單價（另收服務費 1 成 ＝ $${Math.round(price*0.1).toLocaleString()}/桌）</div>
+      <div class="menu-range">
+        7桌：NT$ <strong>${Math.round(price*7*1.1).toLocaleString()}</strong>　
+        8桌：NT$ <strong>${Math.round(price*8*1.1).toLocaleString()}</strong>　
+        9桌：NT$ <strong>${Math.round(price*9*1.1).toLocaleString()}</strong>
+      </div>
 
-          <!-- 菜單圖片 -->
-          <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜單照片</div>
-          <div class="menu-img-wrap" id="menu-imgwrap-${i}">
-            ${savedImg
-              ? `<img src="${savedImg}" id="menu-img-${i}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${m['方案名稱']}')">`
-              : `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${i}').click()">
-                  <i class="ti ti-camera"></i>
-                  <span>點此上傳菜單照片</span>
-                </div>`
-            }
-            <div class="menu-img-overlay">
-              <div class="menu-img-action" onclick="openLightbox((document.getElementById('menu-img-${i}')||{}).src,'${m['方案名稱']}')"><i class="ti ti-eye"></i> 放大</div>
-              <div class="menu-img-action" onclick="document.getElementById('menu-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
-              <div class="menu-img-action" onclick="removeMenuImg(${i},'${m['方案名稱']}')"><i class="ti ti-trash"></i> 刪除</div>
-            </div>
-          </div>
-          <input type="file" id="menu-file-${i}" accept="image/*" style="display:none"
-            onchange="handleMenuImg(this,${i},'${m['方案名稱']}')">
+      <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜單照片</div>
+      <div class="menu-img-wrap" id="menu-imgwrap-${i}">
+        ${savedImg
+          ? `<img src="${savedImg}" id="menu-img-${i}" alt="菜單照片" style="cursor:zoom-in" onclick="openLightbox(this.src,'${m['方案名稱']}')">`
+          : `<div class="menu-img-placeholder" onclick="document.getElementById('menu-file-${i}').click()">
+              <i class="ti ti-camera"></i><span>點此上傳菜單照片</span>
+            </div>`
+        }
+        <div class="menu-img-overlay">
+          <div class="menu-img-action" onclick="openLightbox((document.getElementById('menu-img-${i}')||{}).src,'${m['方案名稱']}')"><i class="ti ti-eye"></i> 放大</div>
+          <div class="menu-img-action" onclick="document.getElementById('menu-file-${i}').click()"><i class="ti ti-upload"></i> 換圖</div>
+          <div class="menu-img-action" onclick="removeMenuImg(${i},'${m['方案名稱']}')"><i class="ti ti-trash"></i> 刪除</div>
+        </div>
+      </div>
+      <input type="file" id="menu-file-${i}" accept="image/*" style="display:none"
+        onchange="handleMenuImg(this,${i},'${m['方案名稱']}')">
 
-          <!-- 菜色明細文字 -->
-          <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜色明細</div>
-          <textarea class="menu-detail-textarea" id="menu-detail-${i}"
-            placeholder="輸入菜色內容，例：佛跳牆、龍蝦沙拉..."
-            onchange="saveMenuDetail(${i},'${m['方案名稱']}')"
-            oninput="saveMenuDetail(${i},'${m['方案名稱']}')">${savedDetail}</textarea>
-
-          <div style="margin-top:10px">
-            <button class="btn btn-decision ${isBoss?'btn-green':'btn-gold'}" style="width:100%;justify-content:center"
-              onclick="selectMenu(${i})">
-              ${isBoss ? '✓ 已選定此方案' : '選擇此方案'}
-            </button>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>
-    <div class="save-bar">
-      <span style="font-size:12px;color:var(--text-muted)" id="menu-pick-hint">
-        ${menuPicked ? '目前選定：'+menuPicked['方案名稱'] : '請點選方案後儲存'}
-      </span>
-      <button class="btn btn-gold btn-decision" onclick="saveMenuDecision()"><i class="ti ti-check"></i> 儲存裁示結果</button>
+      <div style="font-size:11px;color:var(--text-muted);margin:10px 0 5px;font-weight:500">菜色明細</div>
+      <textarea class="menu-detail-textarea" id="menu-detail-${i}"
+        placeholder="輸入菜色內容，例：佛跳牆、龍蝦沙拉..."
+        oninput="saveMenuDetail(${i},'${m['方案名稱']}')">${savedDetail.replace(/</g,'&lt;')}</textarea>
     </div>`;
 }
 
@@ -2412,7 +2519,13 @@ async function removeMenuImg(idx, planName) {
 
 function saveMenuDetail(idx, planName) {
   const val = (document.getElementById('menu-detail-' + idx)||{value:''}).value || '';
-  localStorage.setItem(getMenuDetailKey(currentActId, planName), val);
+  if(!menuDetailsCache[currentActId]) menuDetailsCache[currentActId] = {};
+  menuDetailsCache[currentActId][planName] = val;
+  localStorage.setItem(getMenuDetailKey(currentActId, planName), val); // 瞬間後備
+  clearTimeout(menuDetailTimers[planName]);
+  menuDetailTimers[planName] = setTimeout(function(){
+    apiPost({action:'saveMenuDetail', actId:currentActId, '方案名稱':planName, '菜色明細':val});
+  }, 1500);
 }
 
 let selectedMenuIdx = null;
@@ -2551,89 +2664,67 @@ function getInviteImgKey(actId, ver) {
   return `invite_img_${actId}_${ver}`;
 }
 
+const INVITE_FINAL_VER = 'final';
+const INVITE_NOTE_HTML = `
+  <div style="background:var(--bg);border-radius:var(--radius);border:0.5px solid var(--border);padding:14px 16px;line-height:1.8;font-size:13px">
+    <div style="font-weight:600;color:var(--text);margin-bottom:8px"><i class="ti ti-note" style="color:var(--gold)"></i> 製作備註</div>
+    <div style="color:var(--text-muted)">
+      圖片由 <strong>GPT 生成</strong>、<strong>Photoshop 修改內容</strong>、<strong>Claude 轉製 17×24cm 列印檔</strong>，彩色列印，共 <strong>7 份</strong>（6 送、備 1）。
+    </div>
+    <div style="font-weight:600;color:var(--text);margin:12px 0 6px"><i class="ti ti-truck-delivery" style="color:var(--gold)"></i> 致送方式（總經理親自致送）</div>
+    <div style="color:var(--text-muted)">
+      中油公用營業處、竹南服務中心、苗栗服務中心、自來水公司、裕苗、台電（共 6 個單位）
+    </div>
+  </div>`;
+
 async function renderInvitePage() {
   initInviteImages();
+  document.getElementById('invite-grid').innerHTML = '<div class="loading"><i class="ti ti-loader spin"></i> 載入中...</div>';
   await loadInvitePhotos();
-  // 若 inviteData 仍為空，強制填入預設值
-  if(!inviteData || inviteData.length === 0) {
-    inviteData = [
-      {版本編號:'版本1', 版本名稱:'金色牡丹', 風格說明:'金色邊框＋牡丹花，附回條', 老闆選定:''},
-      {版本編號:'版本2', 版本名稱:'金色梅花', 風格說明:'梅花插圖，版面較簡潔', 老闆選定:''},
-      {版本編號:'版本3', 版本名稱:'銀杏水墨', 風格說明:'銀杏葉＋海浪底紋', 老闆選定:''},
-      {版本編號:'版本4', 版本名稱:'青花瓷', 風格說明:'深藍青花瓷風格', 老闆選定:''},
-      {版本編號:'版本5', 版本名稱:'綠葉植物', 風格說明:'清新綠葉水彩', 老闆選定:''},
-      {版本編號:'版本6', 版本名稱:'青綠渲染', 風格說明:'青綠渲染底色', 老闆選定:''},
-      {版本編號:'版本7', 版本名稱:'粉藍花卉', 風格說明:'淡藍花卉插圖', 老闆選定:''},
-      {版本編號:'版本8', 版本名稱:'極簡現代', 風格說明:'黑白極簡線條', 老闆選定:''},
-    ];
-  }
-  const styles = ['金色牡丹','金色梅花','銀杏水墨','青花瓷','綠葉植物','青綠渲染','粉藍花卉','極簡現代'];
-  const styleColors = ['chip-amber','chip-amber','chip-gray','chip-blue','chip-green','chip-blue','chip-blue','chip-gray'];
 
-  // 先把 input 附在 body 外層避免被 innerHTML 清掉
-  document.getElementById('invite-grid').innerHTML = inviteData.map((card,i) => {
-    const isBoss = card['老闆選定'] === '✓';
-    const savedImg = getInviteImgSrc(card['版本編號']||('版本'+(i+1)));
-    return `<div class="invite-card ${isBoss?'boss-pick':''}" id="icard-${i}">
-      ${isBoss ? '<div class="invite-boss-badge">✓ 老闆選定</div>' : '<div class="invite-pending-badge">待裁示</div>'}
-      <div class="invite-img-wrap" id="invite-imgwrap-${i}">
-        ${savedImg
-          ? `<img class="invite-img" src="${savedImg}" alt="${card['版本名稱']}" style="cursor:zoom-in">`
-          : `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-hint);font-size:12px;gap:6px">
-              <i class="ti ti-camera" style="font-size:26px"></i>
-              <span>尚未上傳圖片</span>
-            </div>`
-        }
+  // 取定案卡圖：優先 'final'，否則取快取中任何一張
+  let imgSrc = getInviteImgSrc(INVITE_FINAL_VER);
+  if(!imgSrc) {
+    const keys = Object.keys(inviteImgCache || {});
+    if(keys.length) imgSrc = inviteImgCache[keys[0]];
+  }
+
+  document.getElementById('invite-grid').innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+      <div style="flex:0 0 auto;width:min(320px,90vw)">
+        <div class="invite-img-wrap" id="invite-imgwrap-0"
+          style="width:100%;aspect-ratio:17/24;border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center">
+          ${imgSrc
+            ? `<img class="invite-img" id="invite-img-0" src="${imgSrc}" alt="定案邀請卡" style="width:100%;height:100%;object-fit:contain;cursor:zoom-in">`
+            : `<div style="display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-hint);font-size:13px">
+                 <i class="ti ti-camera" style="font-size:30px"></i><span>尚未上傳定案邀請卡</span>
+               </div>`
+          }
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button class="btn" id="invite-upbtn-0" style="flex:1;justify-content:center;font-size:12px">
+            <i class="ti ti-upload"></i> ${imgSrc?'更換邀請卡':'上傳邀請卡'}
+          </button>
+          ${imgSrc ? `<button class="btn" style="font-size:12px;padding:6px 10px" onclick="openLightbox((document.getElementById('invite-img-0')||{src:''}).src,'定案邀請卡')"><i class="ti ti-eye"></i> 放大</button>` : ''}
+        </div>
       </div>
-      <div style="display:flex;gap:6px;padding:6px 0 2px">
-        <button class="btn" style="flex:1;font-size:11px;padding:5px;justify-content:center" id="invite-upbtn-${i}">
-          <i class="ti ti-upload"></i> ${savedImg?'換圖':'上傳圖片'}
-        </button>
-        ${savedImg ? `<button class="btn" style="font-size:11px;padding:5px 8px" onclick="openLightbox((document.querySelector('#invite-imgwrap-${i} img')||{src:''}).src,'${card['版本名稱']}')"><i class="ti ti-eye"></i></button>` : ''}
-        ${savedImg ? `<button class="btn btn-red" style="font-size:11px;padding:5px 8px" onclick="removeInviteImg(${i},'${card['版本編號']||i}')"><i class="ti ti-trash"></i></button>` : ''}
-      </div>
-      <div class="invite-footer">
-        <div class="invite-ver">${card['版本編號']}</div>
-        <div class="invite-name">${card['版本名稱']}</div>
-        <div><span class="chip ${styleColors[i]||'chip-gray'} invite-style-tag">${styles[i]||card['版本名稱']||''}</span></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">${card['風格說明']||''}</div>
-        <button class="invite-pick-btn ${isBoss?'active':''}" onclick="pickInviteCard(${i})">
-          ${isBoss ? '✓ 已選定' : '老闆選定此版本'}
-        </button>
+      <div style="flex:1;min-width:260px">
+        <div style="font-size:15px;font-weight:600;margin-bottom:4px">115年第1次苗栗縣公用事業管線聯繫會報餐敘</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px">已定案・單一版本</div>
+        ${INVITE_NOTE_HTML}
       </div>
     </div>`;
-  }).join('');
 
-  // 清掉舊的 file input
+  // 綁定上傳
   document.querySelectorAll('.invite-file-input').forEach(el => el.remove());
-
-  // 為每張卡建立 file input 並綁定上傳按鈕（按鈕在 wrap 外面，不受 overflow 影響）
-  inviteData.forEach((card, i) => {
-    const ver = card['版本編號']||i;
-    const fi = document.createElement('input');
-    fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none'; fi.className = 'venue-file-input';
-    fi.className = 'invite-file-input';
-    fi.onchange = () => handleInviteImg(fi, i, ver);
-    document.body.appendChild(fi);
-
-    const upBtn = document.getElementById('invite-upbtn-' + i);
-    if(upBtn) upBtn.onclick = () => fi.click();
-
-    const imgEl = document.querySelector('#invite-imgwrap-' + i + ' img');
-    if(imgEl) imgEl.onclick = () => openLightbox(imgEl.src, card['版本名稱']||'');
-  });
-
-  const picked = inviteData.find(c=>c['老闆選定']==='✓');
-  const resultEl = document.getElementById('invite-result-txt');
-  if(picked) {
-    resultEl.className = 'invite-result-val';
-    resultEl.textContent = picked['版本編號'] + '　' + picked['版本名稱'];
-  } else {
-    resultEl.className = 'invite-result-none';
-    resultEl.textContent = '尚未選定';
-  }
-  const badge = document.getElementById('invite-badge');
-  if(badge) badge.style.display = picked ? 'none' : '';
+  const fi = document.createElement('input');
+  fi.type = 'file'; fi.accept = 'image/*'; fi.style.display = 'none'; fi.className = 'invite-file-input';
+  fi.onchange = () => handleInviteImg(fi, 0, INVITE_FINAL_VER);
+  document.body.appendChild(fi);
+  const upBtn = document.getElementById('invite-upbtn-0');
+  if(upBtn) upBtn.onclick = () => fi.click();
+  const imgEl = document.getElementById('invite-img-0');
+  if(imgEl) imgEl.onclick = () => openLightbox(imgEl.src, '定案邀請卡');
 }
 
 async function handleInviteImg(input, idx, ver) {
@@ -2656,14 +2747,8 @@ async function handleInviteImg(input, idx, ver) {
       if(res && res.success) {
         setInviteImgCache(ver, compressed);
         localStorage.setItem('invite_img_custom_' + ver, compressed);
-        const wrap = document.getElementById('invite-imgwrap-' + idx);
-        const ph = wrap.querySelector('.invite-img-placeholder');
-        if(ph) ph.remove();
-        let img = wrap.querySelector('img');
-        if(!img) { img = document.createElement('img'); img.className = 'invite-img'; img.style.cursor='zoom-in'; wrap.insertBefore(img, wrap.firstChild); }
-        img.src = compressed;
-        img.onclick = () => openLightbox(img.src, ver);
-        showToast('✓ 邀請卡照片已上傳');
+        showToast('✓ 邀請卡已上傳');
+        renderInvitePage();
       } else {
         showToast('❌ 上傳失敗');
       }
@@ -2961,16 +3046,15 @@ async function submitNewActivity() {
 // ── 匯出報告 ──
 function exportReport() {
   const act = allActivities.find(a=>a['活動ID']===currentActId)||{};
-  const menuPicked = menuData.find(m=>m['老闆選定']==='✓');
-  const invPicked = inviteData.find(c=>c['老闆選定']==='✓');
+  const menuPicked = menuData.find(m=>m['老闆選定']==='✓') || menuData[0] || null;
   let txt = `【竹建瓦斯 餐會管理報告】\n`;
   txt += `活動：${act['活動名稱']}\n`;
   txt += `日期：${act['日期']} ${act['星期']||''}\n`;
   txt += `地點：${act['地點']} ${act['廳別']}\n`;
   txt += `承辦：${act['承辦聯絡人']}\n`;
   txt += `桌數：${act['桌數範圍']}\n\n`;
-  txt += `【菜單裁示】${menuPicked?menuPicked['方案名稱']+'（$'+parseInt(menuPicked['每桌單價']).toLocaleString()+'/桌）':'待裁示'}\n`;
-  txt += `【邀請卡】${invPicked?invPicked['版本編號']+' '+invPicked['版本名稱']:'待裁示'}\n\n`;
+  txt += `【定案菜單】${menuPicked?menuPicked['方案名稱']+'（$'+(parseInt(menuPicked['每桌單價'])||8000).toLocaleString()+'/桌）':'未設定'}\n`;
+  txt += `【邀請卡】已定案（單一版本）\n\n`;
   txt += `【邀請單位出席】\n`;
   externalData.forEach((e,i)=>{ txt += `${i+1}. ${e['邀請單位']}　${e['代表姓名']||'待填'}　${e['職稱']||''}　${e['出席狀態']}\n`; });
   txt += `\n【內部工作人員】\n`;
