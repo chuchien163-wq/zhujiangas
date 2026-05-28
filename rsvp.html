@@ -466,17 +466,15 @@ async function submitRSVP() {
   try {
     const cbName = 'cb_' + Math.random().toString(36).slice(2);
     const params = new URLSearchParams({
-      action: 'saveExternal',
+      action: 'saveRSVP',
       actId: 'EVT001',
       callback: cbName,
-      邀請單位: unit,
-      代表姓名: contactName,
-      職稱: attendees.length > 0 ? attendees[0].title : '',
+      貴單位名稱: unit,
+      出席意願: attendChoice === 'attend' ? '出席' : '不出席',
+      出席人員名單: attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、'),
       出席人數: String(attendees.length || (attendChoice === 'decline' ? 0 : 1)),
-      出席狀態: attendChoice === 'attend' ? '出席' : '不出席',
-      來源: 'QR Code',
-      由誰帶來: contactPhone,
-      備註: '聯絡人：' + contactName + '　電話：' + contactPhone + (attendees.length > 0 ? '　出席名單：' + attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、') : '')
+      聯絡人: contactName,
+      聯絡人電話: contactPhone
     });
 
     await new Promise((resolve, reject) => {
