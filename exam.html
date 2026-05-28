@@ -33,15 +33,15 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
 
 /* 日程表 */
-.section-title{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-title{font-size:22px;font-weight:700;color:#2c2c2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#FFD60A;border-radius:2px;}
 
 .schedule-table{width:100%;max-width:900px;border-collapse:collapse;margin:0 auto 1.5rem;}
-.schedule-table th{background:#1a3a5c;color:#fff;font-size:18px;padding:12px 14px;text-align:center;border:1px solid #2a4a6c;}
-.schedule-table td{padding:12px 14px;border:1px solid #e8e8e0;font-size:16px;background:#fff;vertical-align:middle;}
+.schedule-table th{background:#1a3a5c;color:#fff;font-size:20px;padding:14px 16px;text-align:center;border:1px solid #2a4a6c;}
+.schedule-table td{padding:13px 16px;border:1px solid #e8e8e0;font-size:20px;background:#fff;vertical-align:middle;}
 .schedule-table tr:hover td{background:#f9f9f5;}
-.schedule-table td:first-child{font-weight:700;color:#2c2c2e;background:#f5f5f0;width:22%;}
-.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;}
+.schedule-table td:first-child{font-weight:700;color:#2c2c2e;background:#f5f5f0;width:25%;font-size:20px;}
+.badge{display:inline-block;padding:4px 14px;border-radius:6px;font-size:18px;font-weight:700;}
 .badge-1{background:#1a3a5c;color:#7ab8f5;}
 .badge-2{background:#1a3a1a;color:#7af57a;}
 .badge-3{background:#3a2a1a;color:#f5c07a;}
@@ -58,19 +58,19 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   --border:#e2e0dc;
 }
 .cal-section{margin-bottom:20px;}
-.cal-month-title{font-size:18px;font-weight:700;color:#2c2c2e;margin-bottom:8px;padding-left:2px;}
+.cal-month-title{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:8px;padding-left:2px;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
-.cal-dow{font-size:15px;color:#888;text-align:center;padding:6px 0;font-weight:700;background:#f9f9f5;}
+.cal-dow{font-size:16px;color:#888;text-align:center;padding:8px 0;font-weight:700;background:#f9f9f5;}
 .cal-dow.we{color:#d63031;}
 .cal-cell{min-height:80px;border-radius:6px;border:1px solid #e0e0d8;padding:5px;background:#fff;position:relative;}
 .cal-cell.empty{background:transparent;border-color:transparent;}
 .cal-cell.holiday{background:#fff5f5;}
 .cal-cell.has-sched{border-color:var(--blue-m);}
 .cal-cell.has-sched.all-done{border-color:var(--green);}
-.cal-daynum{font-size:15px;font-weight:700;color:#888;margin-bottom:3px;}
-.cal-cell.has-sched .cal-daynum{color:var(--blue);}
-.cal-cell.holiday .cal-daynum{color:var(--red);}
-.cal-person{font-size:13px;padding:3px 6px;border-radius:3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
+.cal-daynum{font-size:16px;font-weight:700;color:#888;margin-bottom:3px;}
+.cal-cell.has-sched .cal-daynum{font-size:16px;font-weight:700;color:#888;margin-bottom:3px;}
+.cal-cell.holiday .cal-daynum{font-size:16px;font-weight:700;color:#888;margin-bottom:3px;}
+.cal-person{font-size:14px;padding:4px 6px;border-radius:4px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;}
 .cal-person.exam{background:var(--amber-l);color:var(--amber);border:1px solid #f0c070;}
 .cal-person.permit{background:var(--green-l);color:var(--green);}
 .cal-person.result{background:var(--purple-l);color:var(--purple);}
@@ -78,14 +78,14 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 注意事項 */
 .notice-box{background:#fff;border:1px solid #e8e8e0;border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1rem;}
-.notice-title{font-size:20px;font-weight:700;color:#b87a00;margin-bottom:10px;}
-.notice-item{font-size:18px;color:#444;line-height:2;padding-left:1rem;position:relative;}
+.notice-title{font-size:22px;font-weight:700;color:#b87a00;margin-bottom:10px;}
+.notice-item{font-size:20px;color:#444;line-height:2;padding-left:1rem;position:relative;}
 .notice-item::before{content:'•';position:absolute;left:0;color:#FFD60A;}
 
 /* 倒數區 */
 .countdown-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;max-width:700px;}
 .cd-card{background:#fff;border-radius:12px;padding:1rem;border:1px solid #e8e8e0;text-align:center;}
-.cd-label{font-size:18px;color:#444;margin-bottom:8px;font-weight:600;}
+.cd-label{font-size:20px;color:#444;margin-bottom:8px;font-weight:600;}
 .cd-date{font-size:15px;color:#777;margin-bottom:8px;}
 .cd-num{font-size:38px;font-weight:700;line-height:1;}
 .cd-unit{font-size:17px;color:#666;margin-top:4px;}
@@ -99,7 +99,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
   .main{max-width:100%;padding:1rem;}
   .countdown-grid{grid-template-columns:repeat(2,1fr);}
   .schedule-table{font-size:12px;}
-  .schedule-table th,.schedule-table td{padding:8px 10px;}
+  .schedule-table th,.schedule-table td{padding:13px 16px;border:1px solid #e8e8e0;font-size:20px;background:#fff;vertical-align:middle;}
   .cal-cell{min-height:50px;}
   .cal-event{font-size:9px;}
 }
