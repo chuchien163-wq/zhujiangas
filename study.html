@@ -37,17 +37,38 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 .section-title{font-size:16px;font-weight:700;color:#888;letter-spacing:1px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .section-title::before{content:'';display:inline-block;width:4px;height:16px;background:#FFD60A;border-radius:2px;}
 
-.link-card{background:#fff;border:1.5px solid #e8e8e0;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:border-color 0.2s;}
-.link-card:hover{border-color:#FFD60A;}
+.link-card{background:#fff;border:1.5px solid #e8e8e0;border-radius:14px;padding:1.4rem 1.6rem;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:18px;transition:transform .18s ease,box-shadow .18s ease,border-color 0.2s;}
+.link-card:hover{border-color:#FFD60A;transform:translateY(-4px);box-shadow:0 12px 24px rgba(0,0,0,0.08);}
 .card-left{display:flex;align-items:center;gap:14px;}
-.card-icon{width:46px;height:46px;border-radius:10px;background:#e8e8e0;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.card-icon{width:50px;height:50px;border-radius:10px;background:#e8e8e0;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;transition:transform .2s ease;}
 .card-info{}
-.card-name{font-size:16px;font-weight:700;color:#2c2c2e;margin-bottom:4px;}
-.card-desc{font-size:16px;color:#666;line-height:1.5;}
-.card-btn{padding:10px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:none;white-space:nowrap;flex-shrink:0;transition:opacity 0.15s;}
+.card-name{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:5px;}
+.card-desc{font-size:17px;color:#666;line-height:1.5;}
+.card-btn{padding:12px 22px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;border:none;white-space:nowrap;flex-shrink:0;width:100%;text-align:center;position:relative;overflow:hidden;transition:opacity 0.15s,transform .18s ease;}
 .card-btn:hover{opacity:0.85;}
 .btn-gold{background:#FFD60A;color:#000;}
 .btn-outline{background:transparent;border:1.5px solid #FFD60A;color:#FFD60A;}
+
+/* 連結左右並排 */
+.link-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem;}
+
+/* 進場淡入 */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.anim-in{animation:fadeUp .5s cubic-bezier(.2,.7,.3,1) both;}
+
+/* hover：按鈕箭頭滑動 + 圖示微動 */
+.link-card:hover .card-btn{transform:translateX(4px);}
+.link-card:hover .card-icon{transform:scale(1.12) rotate(-6deg);}
+
+/* 點擊漣漪 */
+.ripple{position:absolute;border-radius:50%;background:rgba(0,0,0,0.22);transform:scale(0);animation:ripple .5s ease-out;pointer-events:none;}
+@keyframes ripple{to{transform:scale(3.5);opacity:0;}}
+
+/* 尊重減少動態設定 */
+@media(prefers-reduced-motion:reduce){
+  .anim-in,.ripple{animation:none!important;opacity:1!important;}
+  .link-card:hover,.link-card:hover .card-btn,.link-card:hover .card-icon{transform:none!important;}
+}
 
 /* 提示框 */
 .info-box{background:#fff;border-left:3px solid #FFD60A;border-radius:0 10px 10px 0;padding:1rem 1.2rem;margin-bottom:1.5rem;}
@@ -57,6 +78,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 @media(max-width:700px){
   .sidebar{display:none;}
   .main{padding:1rem;}
+  .link-grid{grid-template-columns:1fr;}
   .link-card{flex-direction:column;align-items:flex-start;gap:10px;}
   .card-btn{width:100%;text-align:center;}
 }
@@ -113,6 +135,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
       <div class="section-title">線上測驗平台</div>
 
+      <div class="link-grid">
       <div class="link-card">
         <div class="card-left">
           <div class="card-icon">🖥️</div>
@@ -134,6 +157,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         </div>
         <button class="card-btn btn-outline" onclick="window.open('https://techbank.wda.gov.tw/','_blank')">前往網站 →</button>
       </div>
+      </div>
     </div>
 
     <!-- 電子教材 -->
@@ -143,6 +167,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       </div>
       <div class="section-title">電子教材下載</div>
 
+      <div class="link-grid">
       <div class="link-card">
         <div class="card-left">
           <div class="card-icon">📁</div>
@@ -152,6 +177,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
           </div>
         </div>
         <button class="card-btn btn-gold" onclick="window.open('https://drive.google.com/drive/folders/19pZa03g91G1n7vBiuHggC4aC-AlrQvdw?usp=drive_link','_blank')">開啟資料夾 →</button>
+      </div>
       </div>
     </div>
   </div>
@@ -169,7 +195,37 @@ function showTab(tab,btn){
   document.getElementById('tab-material').style.display=tab==='material'?'block':'none';
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  animateTab('tab-'+tab);
 }
+
+// 進場淡入（載入與切換分頁都觸發，依序錯開）
+function animateTab(id){
+  const els=document.querySelectorAll('#'+id+' .info-box, #'+id+' .section-title, #'+id+' .link-card');
+  els.forEach((el,i)=>{
+    el.classList.remove('anim-in');
+    void el.offsetWidth;
+    el.style.animationDelay=(i*0.08)+'s';
+    el.classList.add('anim-in');
+  });
+}
+
+// 點擊漣漪
+document.querySelectorAll('.card-btn').forEach(btn=>{
+  btn.addEventListener('click',function(e){
+    const d=Math.max(this.offsetWidth,this.offsetHeight);
+    const rect=this.getBoundingClientRect();
+    const r=document.createElement('span');
+    r.className='ripple';
+    r.style.width=r.style.height=d+'px';
+    r.style.left=(e.clientX-rect.left-d/2)+'px';
+    r.style.top=(e.clientY-rect.top-d/2)+'px';
+    this.appendChild(r);
+    setTimeout(()=>r.remove(),500);
+  });
+});
+
+// 載入時先跑一次目前分頁
+animateTab('tab-test');
 </script>
 </body>
 </html>
