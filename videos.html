@@ -153,7 +153,7 @@ function render(){
     const card=document.createElement('div');
     card.className='v-card'+(watched?' watched':'');
     card.innerHTML=`
-      <div class="v-thumb" onclick="openModal('${v.url}','${v.title||v.name}')">
+      <div class="v-thumb" onclick="openModal('${v.url}','${v.title||v.name}','${v.no}')">
         <img src="${thumb}" alt="${v.name}" onerror="this.style.display='none'"/>
         <div class="v-play">▶</div>
         ${watched?'<div class="v-done-mark">✓</div>':''}
@@ -163,27 +163,9 @@ function render(){
         <div class="v-name">${v.title||v.name}</div>
         <div class="v-date">📅 ${v.date}</div>
         ${v.desc&&v.cat!=='317'?`<div class="v-desc">${v.desc}</div>`:''}
-        <button class="btn-done ${watched?'btn-watched':'btn-unwatched'}" id="btn_${v.no}" onclick="event.stopPropagation();markWatched('${v.no}',this)">
-          ${watched?'✅ 已看完':'☐ 我已看完此影片'}
-        </button>
       </div>`;
     grid.appendChild(card);
   });
-}
-
-function markWatched(no,btn){
-  if(watchedSet.has(no))return;
-  saveWatched(no);
-  btn.textContent='✅ 已看完';
-  btn.className='btn-done btn-watched';
-  const card=btn.closest('.v-card');
-  card.classList.add('watched');
-  const thumb=card.querySelector('.v-thumb');
-  if(!thumb.querySelector('.v-done-mark')){
-    const mark=document.createElement('div');
-    mark.className='v-done-mark';mark.textContent='✓';
-    thumb.appendChild(mark);
-  }
 }
 
 function filterVid(cat,btn){
@@ -193,11 +175,12 @@ function filterVid(cat,btn){
   render();
 }
 
-function openModal(url,name){
+function openModal(url,name,no){
   const ytId=getYtId(url);
   document.getElementById('modalIframe').src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
   document.getElementById('modalTitle').textContent=name;
   document.getElementById('modal').classList.add('show');
+  if(no&&!watchedSet.has(no)){ saveWatched(no); render(); }
 }
 
 function closeModal(){
