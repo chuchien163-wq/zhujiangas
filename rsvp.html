@@ -471,10 +471,10 @@ async function submitRSVP() {
       callback: cbName,
       貴單位名稱: unit,
       出席意願: attendChoice === 'attend' ? '出席' : '不出席',
-      出席人員名單: attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、'),
       出席人數: String(attendees.length || (attendChoice === 'decline' ? 0 : 1)),
       聯絡人: contactName,
-      聯絡人電話: contactPhone
+      聯絡人電話: contactPhone,
+      出席人員名單: attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、')
     });
 
     await new Promise((resolve, reject) => {
