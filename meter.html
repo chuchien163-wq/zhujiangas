@@ -445,6 +445,27 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         </div>
       </div>
 
+      <!-- 廠商入庫記錄（總覽） -->
+      <div id="inboundDashSection" style="margin-bottom:14px;">
+        <div class="slabel">廠商入庫記錄</div>
+        <div class="card">
+          <div class="card-hdr">
+            <span class="card-title">📦 入庫明細</span>
+            <span class="card-note">實際到貨，已計入庫存</span>
+          </div>
+          <div class="twrap-scroll" style="max-height:180px;">
+            <table>
+              <thead><tr>
+                <th>日期</th><th>廠商</th><th>規格</th><th>數量</th><th>採購單號</th>
+              </tr></thead>
+              <tbody id="inbound-dash-body">
+                <tr><td colspan="5" class="no-data">尚無入庫記錄</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- 今日動態 -->
       <div id="todaySection" style="margin-bottom:14px;">
         <div class="slabel">今日動態</div>
@@ -648,7 +669,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <!-- 一般記錄欄位（預估/領出/退料）-->
             <div id="normalFields">
               <div class="fgrid">
-                <div class="fg"><label>實際領錶日期（民國格式）<span class="hint">例：115.05.18</span></label><input type="text" id="f-date" placeholder="115.05.22"></div>
+                <div class="fg"><label>實際領錶日期（民國格式）<span class="hint">例：115.05.18</span></label><input type="text" id="f-date" onblur="onDateBlur(this)" placeholder="115.05.22"></div>
                 <div class="fg" id="deptField"><label>部門</label>
                   <select id="f-dept"><option value="業務部">業務部</option><option value="工務部">工務部</option></select>
                 </div>
@@ -669,7 +690,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <div class="fg"><label>數量（隻）</label><input type="number" id="f-qty" min="1" placeholder="0"></div>
                 <div class="fg ffull">
                   <label>預計掛表日（民國格式）<span class="hint">預計安裝到建案的日期，例：115.07.30</span></label>
-                  <input type="text" id="f-hangdate" placeholder="115.07.30（60天內系統會提醒倉管備料）">
+                  <input type="text" id="f-hangdate" onblur="onDateBlur(this)" placeholder="115.07.30（60天內系統會提醒倉管備料）">
                 </div>
                 <div class="fg ffull"><label>備註</label><input type="text" id="f-note" placeholder="例：已含初始庫存／換表等量"></div>
               </div>
@@ -682,7 +703,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <!-- 廠商入庫欄位 -->
             <div id="inboundFields" style="display:none;">
               <div class="fgrid">
-                <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" placeholder="115.05.28"></div>
+                <div class="fg"><label>入庫日期</label><input type="text" id="ib-date" onblur="onDateBlur(this)" placeholder="115.05.28"></div>
                 <div class="fg"><label>廠商</label>
                   <select id="ib-vendor"><option value="台北貿易">台北貿易（N型）</option><option value="力泰瓦斯">力泰瓦斯（M型）</option></select>
                 </div>
@@ -698,7 +719,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ib-qty" min="1" placeholder="0"></div>
                 <div class="fg ffull"><label>採購單號 <span class="hint">對應紙本採購單</span></label><input type="text" id="ib-po" placeholder="PO-115-001"></div>
                 <div class="fg ffull"><label>本次到貨說明 <span class="hint">例：第一批，共兩批</span></label><input type="text" id="ib-note" placeholder="本次到貨說明"></div>
-                <div class="fg ffull"><label>下一批預計日期 <span class="hint">如有分批到貨</span></label><input type="text" id="ib-nextdate" placeholder="115.06.20（無則留空）"></div>
+                <div class="fg ffull"><label>下一批預計日期 <span class="hint">如有分批到貨</span></label><input type="text" id="ib-nextdate" onblur="onDateBlur(this)" placeholder="115.06.20（無則留空）"></div>
               </div>
               <div class="verify-row">
                 <input type="checkbox" id="ib-verify">
@@ -710,7 +731,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <!-- 預計進貨欄位 -->
             <div id="incomingFields" style="display:none;">
               <div class="fgrid">
-                <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" placeholder="115.06.15"></div>
+                <div class="fg"><label>預計到貨日</label><input type="text" id="ic-date" onblur="onDateBlur(this)" placeholder="115.06.15"></div>
                 <div class="fg"><label>廠商</label>
                   <select id="ic-vendor"><option value="台北貿易">台北貿易（N型）</option><option value="力泰瓦斯">力泰瓦斯（M型）</option></select>
                 </div>
@@ -724,6 +745,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                   <select id="ic-type"><option value="N">N型</option><option value="M">M型</option></select>
                 </div>
                 <div class="fg"><label>數量（隻）</label><input type="number" id="ic-qty" min="1" placeholder="0"></div>
+                <div class="fg ffull"><label>採購單號 <span class="hint">對應廠商入庫單號</span></label><input type="text" id="ic-po" placeholder="例：115073"></div>
               </div>
               <input type="hidden" id="ic-rowid">
             </div>
@@ -841,7 +863,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         <div class="fg"><label>數量（隻）</label><input type="number" id="qa-qty" min="1" placeholder="0"></div>
         <div class="fg ffull">
           <label>預計掛表日 <span class="hint">預計安裝到建案的日期</span></label>
-          <input type="text" id="qa-hangdate" placeholder="115.07.30（60天內自動警示）">
+          <input type="text" id="qa-hangdate" onblur="onDateBlur(this)" placeholder="115.07.30（60天內自動警示）">
         </div>
       </div>
       <button class="btn-green ripple-host click-scale" id="qa-submit" onclick="submitQuickAdd()">確認送出</button>
@@ -902,7 +924,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         </div>
         <div class="fg ffull">
           <label>預計掛表日 <span class="hint">民國格式，例：115.07.30</span></label>
-          <input type="text" id="de-hangdate" placeholder="115.07.30">
+          <input type="text" id="de-hangdate" onblur="onDateBlur(this)" placeholder="115.07.30">
         </div>
         <div class="fg ffull">
           <label>備註</label>
@@ -948,7 +970,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         </div>
         <div class="fg ffull">
           <label>預計掛表日（民國格式）<span class="hint">預計安裝到建案的日期</span></label>
-          <input type="text" id="edit-hangdate" placeholder="115.07.30（留空則不設定）">
+          <input type="text" id="edit-hangdate" onblur="onDateBlur(this)" placeholder="115.07.30（留空則不設定）">
         </div>
         <div class="fg ffull"><label>備註</label><input type="text" id="edit-note" placeholder="備註（選填）"></div>
       </div>
@@ -1098,6 +1120,25 @@ function clearCache() { try { sessionStorage.removeItem(CACHE_KEY2); } catch(e){
 async function refreshData() { clearCache(); await loadData(true); }
 
 // ── Render All ──
+function renderInboundDash() {
+  const body = document.getElementById('inbound-dash-body');
+  if (!body) return;
+  const sec = document.getElementById('inboundDashSection');
+  if (!allInbound.length) {
+    if (sec) sec.style.display='none';
+    return;
+  }
+  if (sec) sec.style.display='';
+  const sorted = allInbound.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  body.innerHTML = sorted.map(r=>`<tr>
+    <td style="white-space:nowrap;">${r.date}</td>
+    <td>${r.vendor}</td>
+    <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span></td>
+    <td style="font-weight:700;text-align:right;">${r.qty}隻</td>
+    <td style="color:var(--muted);">${r.poNumber||'—'}</td>
+  </tr>`).join('');
+}
+
 function renderTodayActivity() {
   const body = document.getElementById('today-body');
   const dateEl = document.getElementById('today-date');
@@ -1169,6 +1210,7 @@ function renderTodayActivity() {
 function renderAll() {
   renderStock();
   renderTodayActivity();
+  renderInboundDash();
   renderBiz();
   renderEng();
   renderDelTable();
@@ -1579,6 +1621,16 @@ async function submitQuickAdd() {
 }
 
 // ── 今天民國日期 ──
+function formatRocDate(val) {
+  // 支援 1150529 → 115.05.29 或 115.5.29 → 115.05.29
+  const v = val.replace(/[.\-\/]/g,'').trim();
+  if (v.length===7) return v.substring(0,3)+'.'+v.substring(3,5)+'.'+v.substring(5,7);
+  if (v.length===6) return v.substring(0,2)+'.'+v.substring(2,4)+'.'+v.substring(4,6);
+  return val; // 無法辨識就原樣回傳
+}
+function onDateBlur(el) {
+  if (el.value) el.value = formatRocDate(el.value);
+}
 function getTodayRoc() {
   const now = new Date();
   const roc = now.getFullYear()-1911;
@@ -1657,8 +1709,8 @@ function renderIncomingSection() {
   document.getElementById('incomingList').innerHTML = allIncoming.map(r=>
     `<div class="incoming-item">
       <div>
-        <div class="inc-name">${r.light}${r.sub}（${r.type}型・${r.vendor}）</div>
-        <div class="inc-date">預計到貨：${r.date}</div>
+        <div class="inc-name">${r.light}${r.sub}（${r.type}型・${r.vendor}）${r.poNumber?'<span style="font-size:14px;color:var(--muted);margin-left:6px;">採購單：'+r.poNumber+'</span>':''}</div>
+        <div class="inc-date">預計到貨：${r.date}${allInbound.some(x=>x.poNumber===r.poNumber&&r.poNumber)?'　<span style="color:var(--cyan);font-size:13px;font-weight:500;">✅ 已到貨</span>':'　<span style="color:var(--muted);font-size:13px;">⏳ 待到貨</span>'}</div>
       </div>
       <span class="inc-qty">${r.qty}隻</span>
     </div>`).join('');
@@ -1789,6 +1841,7 @@ function editIncoming(rowId) {
   document.getElementById('ic-sub').value    = r.sub;
   document.getElementById('ic-type').value   = r.type;
   document.getElementById('ic-qty').value    = r.qty;
+  if (document.getElementById('ic-po')) document.getElementById('ic-po').value = r.poNumber||'';
   document.getElementById('ic-form-title').textContent='✏️ 編輯預計進貨';
   document.getElementById('ic-submit-btn').textContent='確認修改';
   document.getElementById('ic-cancel-btn').style.display='block';
@@ -1797,6 +1850,7 @@ function cancelEditIncoming() {
   document.getElementById('ic-rowid').value='';
   document.getElementById('ic-date').value='';
   document.getElementById('ic-qty').value='';
+  if (document.getElementById('ic-po')) document.getElementById('ic-po').value='';
   document.getElementById('ic-form-title').textContent='➕ 新增預計進貨';
   document.getElementById('ic-submit-btn').textContent='新增預計進貨提醒';
   document.getElementById('ic-cancel-btn').style.display='none';
@@ -1809,8 +1863,9 @@ async function submitIncoming() {
   const sub    = document.getElementById('ic-sub').value;
   const type   = document.getElementById('ic-type').value;
   const qty    = parseInt(document.getElementById('ic-qty').value);
+  const poNumber = (document.getElementById('ic-po')?.value||'').trim();
   if (!date||!qty||qty<1) { alert('請填寫所有欄位'); return; }
-  const rec = { date, vendor, light, sub, type, qty };
+  const rec = { date, vendor, light, sub, type, qty, poNumber };
   if (rowId) {
     try {
       await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteIncoming',rowId:Number(rowId)})});
