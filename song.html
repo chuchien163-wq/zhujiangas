@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>點歌｜竹建瓦斯餐敘</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans TC',sans-serif;background:linear-gradient(135deg,#7b141d 0%,#a8323d 100%);min-height:100vh;padding:24px 18px;color:#3a2a1a}
+.box{max-width:480px;margin:0 auto}
+.head{text-align:center;color:#fff;padding:18px 0 24px}
+.head .t{font-family:'Noto Serif TC',serif;font-size:28px;font-weight:600;margin-bottom:6px}
+.head .s{font-size:14px;opacity:.85;line-height:1.6}
+.card{background:#fff;border-radius:18px;padding:26px 22px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.label{font-size:15px;font-weight:500;color:#7b141d;margin-bottom:8px;display:block}
+.req{color:#c0392b}
+input{width:100%;padding:15px 16px;font-size:17px;border:2px solid #e3d5c5;border-radius:12px;outline:none;background:#fdf8f2;margin-bottom:20px;font-family:inherit}
+input:focus{border-color:#a8323d;background:#fff}
+.btn{width:100%;padding:16px;background:linear-gradient(135deg,#7b141d,#a8323d);color:#fff;border:none;border-radius:12px;font-size:18px;font-weight:600;letter-spacing:2px;cursor:pointer;font-family:inherit}
+.btn:active{opacity:.85}
+.btn:disabled{opacity:.5}
+.note{text-align:center;font-size:13px;color:#fff;opacity:.8;margin-top:18px;line-height:1.7}
+/* 成功 */
+.ok{display:none;text-align:center;background:#fff;border-radius:18px;padding:48px 24px;box-shadow:0 8px 30px rgba(0,0,0,.18)}
+.ok .ic{font-size:60px;margin-bottom:18px}
+.ok .t{font-family:'Noto Serif TC',serif;font-size:24px;color:#7b141d;margin-bottom:12px}
+.ok .x{font-size:15px;color:#6a4a2a;line-height:1.8}
+.ok .song{font-size:20px;font-weight:700;color:#a8323d;margin:14px 0}
+.again{margin-top:24px;background:none;border:2px solid #a8323d;color:#a8323d;padding:12px 28px;border-radius:24px;font-size:15px;cursor:pointer;font-family:inherit}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="head">
+    <div class="t">🎤 歡唱點歌</div>
+    <div class="s">115/6/10 苗栗縣公用事業管線聯繫會報<br>會後餐敘・歡唱時間</div>
+  </div>
+
+  <div class="card" id="form">
+    <label class="label">您的大名 <span class="req">*</span></label>
+    <input id="name" type="text" placeholder="請輸入姓名" autocomplete="off">
+    <label class="label">想點的歌 <span class="req">*</span></label>
+    <input id="song" type="text" placeholder="請輸入歌名（或歌手）" autocomplete="off">
+    <button class="btn" id="submitBtn" onclick="submitSong()">送出點歌 🎵</button>
+  </div>
+
+  <div class="ok" id="ok">
+    <div class="ic">🎉</div>
+    <div class="t">點歌成功！</div>
+    <div class="x">您點的歌是</div>
+    <div class="song" id="okSong"></div>
+    <div class="x">主持人會盡快為您安排<br>敬請期待～</div>
+    <button class="again" onclick="reset()">再點一首</button>
+  </div>
+
+  <div class="note" id="note">輸入姓名與歌名，按送出即可<br>主持人會看到您的點歌</div>
+</div>
+
+<script>
+// ⬇⬇⬇ 部署 Apps Script 後，把網址貼到這裡 ⬇⬇⬇
+const API_URL = 'https://script.google.com/macros/s/AKfycbxCAylLgzOpVOTl3yxp72L1qUrpdDmfRRUZKJmH2lcoOcVn3JluMh0WXnwq-5xblP2TmQ/exec';
+
+function submitSong(){
+  const name=document.getElementById('name').value.trim();
+  const song=document.getElementById('song').value.trim();
+  if(!name){alert('請輸入您的姓名');return;}
+  if(!song){alert('請輸入想點的歌');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true; btn.textContent='送出中...';
+
+  const cbName='cb_'+Math.random().toString(36).slice(2);
+  const params=new URLSearchParams({
+    action:'addSong',
+    callback:cbName,
+    name:name,
+    song:song
+  });
+  window[cbName]=(res)=>{
+    delete window[cbName];
+    document.getElementById('form').style.display='none';
+    document.getElementById('note').style.display='none';
+    document.getElementById('okSong').textContent=song;
+    document.getElementById('ok').style.display='block';
+  };
+  const s=document.createElement('script');
+  s.onerror=()=>{
+    alert('送出失敗，請再試一次');
+    btn.disabled=false; btn.textContent='送出點歌 🎵';
+  };
+  s.src=API_URL+'?'+params.toString();
+  document.body.appendChild(s);
+}
+function reset(){
+  document.getElementById('name').value='';
+  document.getElementById('song').value='';
+  document.getElementById('ok').style.display='none';
+  document.getElementById('form').style.display='block';
+  document.getElementById('note').style.display='block';
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=false; btn.textContent='送出點歌 🎵';
+}
+</script>
+</body>
+</html>
