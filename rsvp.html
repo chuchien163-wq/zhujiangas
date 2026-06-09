@@ -15,220 +15,75 @@ body {
   padding: 20px 16px 40px;
   color: #3a2a1a;
 }
-.container {
-  max-width: 600px;
-  margin: 0 auto;
-}
+.container { max-width: 600px; margin: 0 auto; }
 .header {
   text-align: center;
   padding: 28px 24px 20px;
   background: linear-gradient(135deg, #6b4c11 0%, #9a6f2e 100%);
   border-radius: 16px 16px 0 0;
   color: #fff;
-  margin-bottom: 0;
 }
 .logo-wrap { margin-bottom: 12px; }
 .logo-wrap img { width: 64px; height: 64px; border-radius: 50%; background: #fff; padding: 6px; }
-.company-name {
-  font-size: 13px; letter-spacing: 2px;
-  opacity: 0.8; margin-bottom: 6px;
-}
-.title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 26px; font-weight: 600;
-  margin-bottom: 6px;
-}
+.company-name { font-size: 13px; letter-spacing: 2px; opacity: 0.8; margin-bottom: 6px; }
+.title { font-family: 'Noto Serif TC', serif; font-size: 26px; font-weight: 600; margin-bottom: 6px; }
 .subtitle { font-size: 13px; opacity: 0.75; line-height: 1.6; }
-
-.event-card {
-  background: #fff;
-  border: 0.5px solid #e0d4b8;
-  padding: 20px 24px;
-  margin-bottom: 0;
-}
+.event-card { background: #fff; border: 0.5px solid #e0d4b8; padding: 20px 24px; }
 .event-row {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 8px 0;
-  border-bottom: 0.5px solid #f0e8d4;
-  font-size: 14px;
+  padding: 8px 0; border-bottom: 0.5px solid #f0e8d4; font-size: 14px;
 }
 .event-row:last-child { border-bottom: none; }
 .event-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
 .event-label { color: #8a6a3a; font-size: 12px; margin-bottom: 2px; }
 .event-value { font-weight: 500; color: #3a2a1a; }
-
-.map-section {
-  background: #fff;
-  border: 0.5px solid #e0d4b8;
-  padding: 0;
-  overflow: hidden;
-  margin-bottom: 0;
-}
-.map-section iframe {
-  width: 100%; height: 200px; border: none; display: block;
-}
+.map-section { background: #fff; border: 0.5px solid #e0d4b8; overflow: hidden; }
+.map-section iframe { width: 100%; height: 200px; border: none; display: block; }
 .map-link {
-  display: block; text-align: center;
-  padding: 10px;
-  background: #fdf6e3;
-  color: #9a6f2e;
-  font-size: 13px;
-  text-decoration: none;
-  border-top: 0.5px solid #e0d4b8;
+  display: block; text-align: center; padding: 10px;
+  background: #fdf6e3; color: #9a6f2e; font-size: 13px;
+  text-decoration: none; border-top: 0.5px solid #e0d4b8;
 }
 .map-link:hover { background: #f8f0d8; }
-
 .contact-bar {
-  background: #f8f0d8;
-  border: 0.5px solid #e0d4b8;
-  padding: 10px 20px;
-  display: flex; gap: 16px; flex-wrap: wrap;
-  font-size: 12px; color: #6a4a1a;
-  margin-bottom: 0;
-  justify-content: center;
+  background: #f8f0d8; border: 0.5px solid #e0d4b8;
+  padding: 10px 20px; display: flex; gap: 16px; flex-wrap: wrap;
+  font-size: 12px; color: #6a4a1a; justify-content: center;
 }
-
-.form-card {
+/* 已截止卡片 */
+.closed-card {
   background: #fff;
   border: 0.5px solid #e0d4b8;
-  padding: 24px;
   border-radius: 0 0 16px 16px;
-}
-.form-section-title {
-  font-size: 13px; font-weight: 600;
-  color: #9a6f2e; margin-bottom: 16px;
-  padding-bottom: 6px;
-  border-bottom: 1.5px solid #e0d4b8;
-  display: flex; align-items: center; gap: 6px;
-}
-.form-group { margin-bottom: 16px; }
-.form-label {
-  display: block; font-size: 13px; font-weight: 500;
-  margin-bottom: 6px; color: #5a3a18;
-}
-.required { color: #c0392b; margin-left: 2px; }
-select, input[type="text"], input[type="tel"] {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d4b896;
-  border-radius: 8px;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: 14px;
-  color: #3a2a1a;
-  background: #fdf8f0;
-  outline: none;
-  transition: border-color 0.15s;
-}
-select:focus, input:focus {
-  border-color: #9a6f2e;
-  background: #fff;
-}
-.radio-group { display: flex; gap: 10px; }
-.radio-option {
-  flex: 1;
-  border: 1.5px solid #d4b896;
-  border-radius: 10px;
-  padding: 12px;
-  cursor: pointer;
+  padding: 48px 28px;
   text-align: center;
-  transition: all 0.15s;
-  background: #fdf8f0;
 }
-.radio-option:hover { border-color: #9a6f2e; }
-.radio-option input[type="radio"] { display: none; }
-.radio-option.selected {
-  border-color: #9a6f2e;
-  background: linear-gradient(135deg, #fdf0d0, #fbe8b0);
+.closed-icon { font-size: 56px; margin-bottom: 18px; }
+.closed-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px; font-weight: 600;
+  color: #6b4c11; margin-bottom: 14px;
 }
-.radio-option .emoji { font-size: 24px; margin-bottom: 4px; }
-.radio-option .label { font-size: 13px; font-weight: 500; }
-
-.attendee-list { margin-bottom: 10px; }
-.attendee-row {
-  display: flex; gap: 8px; align-items: center;
-  margin-bottom: 8px; flex-wrap: wrap;
+.closed-text {
+  font-size: 15px; color: #6a4a2a; line-height: 1.9;
 }
-.attendee-row input { flex: 1; min-width: 120px; }
-.attendee-row select { width: 100px; flex-shrink: 0; }
-@media (max-width: 480px) {
-  .attendee-row { flex-direction: column; align-items: stretch; }
-  .attendee-row input { width: 100%; }
-  .attendee-row select { width: 100%; }
-  .btn-remove { align-self: flex-end; }
+.closed-divider {
+  width: 48px; height: 2px;
+  background: #d4b896;
+  margin: 22px auto;
+  border-radius: 2px;
 }
-.btn-remove {
-  width: 32px; height: 32px; flex-shrink: 0;
-  border: 1px solid #e0b8a0; border-radius: 6px;
-  background: #fff5f0; color: #c0392b;
-  cursor: pointer; font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
+.closed-note {
+  font-size: 13px; color: #8a6a3a; line-height: 1.7;
 }
-.btn-add {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px;
-  border: 1.5px dashed #9a6f2e;
-  border-radius: 8px;
-  background: transparent;
-  color: #9a6f2e;
-  font-size: 13px;
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  transition: background 0.15s;
-}
-.btn-add:hover { background: #fdf0d0; }
-
-.collapsible-header {
-  display: flex; align-items: center; justify-content: space-between;
-  cursor: pointer; padding: 10px 0;
-  color: #9a6f2e; font-size: 13px; font-weight: 500;
-}
-.collapsible-content { display: none; }
-.collapsible-content.show { display: block; }
-
-.btn-submit {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #6b4c11, #9a6f2e);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-family: 'Noto Sans TC', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: opacity 0.15s;
-}
-.btn-submit:hover { opacity: 0.9; }
-.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
 .footer-note {
-  text-align: center;
-  font-size: 12px; color: #8a6a3a;
+  text-align: center; font-size: 12px; color: #8a6a3a;
   margin-top: 14px; line-height: 1.6;
 }
-
-.success-card {
-  display: none;
-  text-align: center;
-  background: #fff;
-  border: 0.5px solid #e0d4b8;
-  border-radius: 0 0 16px 16px;
-  padding: 40px 24px;
-}
-.success-icon { font-size: 48px; margin-bottom: 16px; }
-.success-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 20px; color: #6b4c11;
-  margin-bottom: 10px;
-}
-.success-text { font-size: 14px; color: #8a6a3a; line-height: 1.6; }
 </style>
 </head>
 <body>
 <div class="container">
-
   <!-- 標題 -->
   <div class="header">
     <div class="logo-wrap">
@@ -236,9 +91,8 @@ select:focus, input:focus {
     </div>
     <div class="company-name">竹建瓦斯股份有限公司</div>
     <div class="title">餐敘出席回覆</div>
-    <div class="subtitle">115年苗栗縣公用事業管線聯繫會報<br>會後餐敘・誠摯邀請 敬請回覆</div>
+    <div class="subtitle">115年苗栗縣公用事業管線聯繫會報<br>會後餐敘</div>
   </div>
-
   <!-- 活動資訊 -->
   <div class="event-card">
     <div class="event-row">
@@ -263,7 +117,6 @@ select:focus, input:focus {
       </div>
     </div>
   </div>
-
   <!-- 地圖 -->
   <div class="map-section">
     <iframe
@@ -274,229 +127,29 @@ select:focus, input:focus {
       📌 點此開啟導航 →
     </a>
   </div>
-
   <!-- 聯絡資訊 -->
   <div class="contact-bar">
     <span>📠 傳真：037-474450</span>
     <span>📞 聯絡人：白沛豫　037-462871</span>
   </div>
-
-  <!-- 表單 -->
-  <div class="form-card" id="formCard">
-    <div class="form-section-title">🏢 貴單位資訊</div>
-
-    <div class="form-group">
-      <label class="form-label">貴單位名稱 <span class="required">*</span></label>
-      <select id="unitSelect" onchange="handleUnitChange()">
-        <option value="">── 請選擇 ──</option>
-        <option value="台灣電力股份有限公司">台灣電力股份有限公司</option>
-        <option value="台灣自來水股份有限公司第三區管理處">台灣自來水股份有限公司第三區管理處</option>
-        <option value="中華電信股份有限公司苗栗營運處">中華電信股份有限公司苗栗營運處</option>
-        <option value="台灣中油股份有限公司天然氣事業部公用天然氣營業處（苗栗服務中心）">台灣中油股份有限公司天然氣事業部公用天然氣營業處（苗栗服務中心）</option>
-        <option value="台灣中油股份有限公司天然氣事業部公用天然氣營業處（竹南服務中心）">台灣中油股份有限公司天然氣事業部公用天然氣營業處（竹南服務中心）</option>
-        <option value="台灣中油股份有限公司探採事業部">台灣中油股份有限公司探採事業部</option>
-        <option value="苗栗縣政府工商發展處">苗栗縣政府工商發展處</option>
-        <option value="裕苗天然氣股份有限公司">裕苗天然氣股份有限公司</option>
-        <option value="遠傳電信股份有限公司">遠傳電信股份有限公司</option>
-        <option value="台灣大哥大股份有限公司">台灣大哥大股份有限公司</option>
-        <option value="苗栗縣政府">苗栗縣政府</option>
-        <option value="other">其他（請填寫）</option>
-      </select>
-      <input type="text" id="unitOther" placeholder="請填寫單位名稱" style="display:none;margin-top:8px">
+  <!-- 已截止 -->
+  <div class="closed-card">
+    <div class="closed-icon">🙏</div>
+    <div class="closed-title">出席回覆已截止</div>
+    <div class="closed-text">
+      感謝您的支持與參與，<br>
+      本次餐敘出席回覆已截止填寫。
     </div>
-
-    <div class="form-group">
-      <label class="form-label">出席意願 <span class="required">*</span></label>
-      <div class="radio-group">
-        <label class="radio-option" id="opt-attend" onclick="selectAttend('attend')">
-          <input type="radio" name="attend" value="attend">
-          <div class="emoji">🙋</div>
-          <div class="label">敬表出席</div>
-        </label>
-        <label class="radio-option" id="opt-decline" onclick="selectAttend('decline')">
-          <input type="radio" name="attend" value="decline">
-          <div class="emoji">🙏</div>
-          <div class="label">敬謝不克</div>
-        </label>
-      </div>
-    </div>
-
-    <!-- 出席人員 -->
-    <div id="attendeeSection">
-      <div class="form-section-title">👥 出席人員名單</div>
-      <div class="attendee-list" id="attendeeList">
-        <div class="attendee-row">
-          <input type="text" placeholder="姓名" class="attendee-name">
-          <select class="attendee-title">
-            <option value="">職稱</option>
-            <option>處長</option><option>副處長</option>
-            <option>總經理</option><option>副總經理</option>
-            <option>經理</option><option>副理</option>
-            <option>課長</option><option>科長</option>
-            <option>主任</option><option>主任秘書</option>
-            <option>組長</option><option>管理師</option>
-            <option>專員</option><option>工程師</option>
-            <option>秘書</option><option>其他</option>
-          </select>
-          <select class="attendee-food">
-            <option value="葷">葷食</option>
-            <option value="素">素食</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn-add" onclick="addAttendee()">＋ 新增出席人</button>
-    </div>
-
-    <!-- 聯絡人 -->
-    <div style="margin-top:20px">
-      <div class="collapsible-header" onclick="toggleContact()">
-        <span class="form-section-title" style="margin-bottom:0">📋 貴單位聯絡人資訊</span>
-        <span id="contactArrow">▸</span>
-      </div>
-      <div class="collapsible-content" id="contactSection">
-        <div class="form-group" style="margin-top:12px">
-          <label class="form-label">聯絡人姓名 <span class="required">*</span></label>
-          <input type="text" id="contactName" placeholder="請填寫聯絡人姓名">
-        </div>
-        <div class="form-group">
-          <label class="form-label">聯絡電話 <span class="required">*</span></label>
-          <input type="tel" id="contactPhone" placeholder="請填寫聯絡電話">
-        </div>
-      </div>
-    </div>
-
-    <button class="btn-submit" onclick="submitRSVP()">確認送出回覆</button>
-
-    <div class="footer-note">
-      如有任何問題，請聯繫竹建瓦斯管理部<br>
-      白沛豫小姐　037-462871 ／ 傳真 037-474450
+    <div class="closed-divider"></div>
+    <div class="closed-note">
+      如有任何問題或需更動，<br>
+      敬請來電竹建瓦斯管理部<br>
+      白沛豫小姐　037-462871
     </div>
   </div>
-
-  <!-- 成功畫面 -->
-  <div class="success-card" id="successCard">
-    <div class="success-icon">✅</div>
-    <div class="success-title">回覆已送出，謝謝！</div>
-    <div class="success-text">
-      感謝您的回覆，我們已收到您的出席意願。<br>
-      如需更改回覆，請來電 037-462871
-    </div>
+  <div class="footer-note">
+    竹建瓦斯股份有限公司　敬上
   </div>
-
 </div>
-
-<script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbxPovUknAuT7YpKc7kvkRiQChDHj0qql5pW8Z33XLlZZY568rA1xGas_MDbDF4ptgX3/exec';
-let attendChoice = '';
-
-function handleUnitChange() {
-  const val = document.getElementById('unitSelect').value;
-  document.getElementById('unitOther').style.display = val === 'other' ? 'block' : 'none';
-}
-
-function selectAttend(choice) {
-  attendChoice = choice;
-  document.getElementById('opt-attend').classList.toggle('selected', choice === 'attend');
-  document.getElementById('opt-decline').classList.toggle('selected', choice === 'decline');
-  document.getElementById('attendeeSection').style.display = choice === 'attend' ? 'block' : 'none';
-}
-
-function addAttendee() {
-  const list = document.getElementById('attendeeList');
-  const row = document.createElement('div');
-  row.className = 'attendee-row';
-  row.innerHTML = `
-    <input type="text" placeholder="姓名" class="attendee-name">
-    <select class="attendee-title">
-      <option value="">職稱</option>
-      <option>處長</option><option>副處長</option>
-      <option>總經理</option><option>副總經理</option>
-      <option>經理</option><option>副理</option>
-      <option>課長</option><option>科長</option>
-      <option>主任</option><option>主任秘書</option>
-      <option>組長</option><option>管理師</option>
-      <option>專員</option><option>工程師</option>
-      <option>秘書</option><option>其他</option>
-    </select>
-    <select class="attendee-food">
-      <option value="葷">葷食</option>
-      <option value="素">素食</option>
-    </select>
-    <button class="btn-remove" onclick="this.parentElement.remove()">✕</button>`;
-  list.appendChild(row);
-}
-
-function toggleContact() {
-  const section = document.getElementById('contactSection');
-  const arrow = document.getElementById('contactArrow');
-  const show = !section.classList.contains('show');
-  section.classList.toggle('show', show);
-  arrow.textContent = show ? '▾' : '▸';
-}
-
-// 自動展開聯絡人
-toggleContact();
-
-async function submitRSVP() {
-  const unitVal = document.getElementById('unitSelect').value;
-  const unit = unitVal === 'other'
-    ? document.getElementById('unitOther').value.trim()
-    : unitVal;
-  const contactName = document.getElementById('contactName').value.trim();
-  const contactPhone = document.getElementById('contactPhone').value.trim();
-
-  if(!unit) { alert('請選擇貴單位名稱'); return; }
-  if(!attendChoice) { alert('請選擇出席意願'); return; }
-  if(!contactName || !contactPhone) { alert('請填寫聯絡人資訊'); return; }
-
-  const attendees = [];
-  if(attendChoice === 'attend') {
-    document.querySelectorAll('.attendee-row').forEach(row => {
-      const name = row.querySelector('.attendee-name').value.trim();
-      const title = row.querySelector('.attendee-title').value;
-      const food = row.querySelector('.attendee-food').value;
-      if(name) attendees.push({ name, title, food });
-    });
-  }
-
-  const btn = document.querySelector('.btn-submit');
-  btn.disabled = true;
-  btn.textContent = '送出中...';
-
-  try {
-    const cbName = 'cb_' + Math.random().toString(36).slice(2);
-    const params = new URLSearchParams({
-      action: 'saveRSVP',
-      actId: 'EVT001',
-      callback: cbName,
-      貴單位名稱: unit,
-      出席意願: attendChoice === 'attend' ? '出席' : '不出席',
-      出席人數: String(attendees.length || (attendChoice === 'decline' ? 0 : 1)),
-      聯絡人: contactName,
-      聯絡人電話: contactPhone,
-      出席人員名單: attendees.map(a => a.name + (a.title ? '(' + a.title + ')' : '') + '[' + a.food + ']').join('、')
-    });
-
-    await new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      window[cbName] = (data) => {
-        delete window[cbName];
-        document.body.removeChild(script);
-        resolve(data);
-      };
-      script.onerror = () => reject(new Error('送出失敗'));
-      script.src = API_URL + '?' + params.toString();
-      document.body.appendChild(script);
-    });
-
-    document.getElementById('formCard').style.display = 'none';
-    document.getElementById('successCard').style.display = 'block';
-  } catch(e) {
-    alert('送出失敗，請稍後再試或來電 037-462871');
-    btn.disabled = false;
-    btn.textContent = '確認送出回覆';
-  }
-}
-</script>
 </body>
 </html>
