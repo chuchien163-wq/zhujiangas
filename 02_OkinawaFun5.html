@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歡樂沖繩5日 ─ 行程儀表板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --p1: #B5D5E8;   /* 主色：粉藍 */
+  --p2: #F4C4A0;   /* 主色：蜜桃橘 */
+  --p3: #E8F4F8;   /* 淡藍底 */
+  --accent: #4A9BB8; /* 強調藍 */
+  --accent2: #D4845A; /* 強調橘 */
+  --deep: #2A6A85;
+  --ok: #2A9D5C;
+  --warn: #D4845A;
+  --text: #2A3A4A;
+  --muted: #7A8A96;
+  --card: rgba(255,255,255,0.82);
+  --card-border: rgba(255,255,255,0.9);
+  --border: rgba(180,210,230,0.5);
+  --left-w: 210px;
+  --right-w: 270px;
+  --top-h: 68px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  /* 水彩風格背景 */
+  background-color: #EEF6FB;
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(244,196,160,0.55) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(244,196,160,0.4) 0%, transparent 45%),
+    radial-gradient(ellipse at 15% 40%, rgba(181,213,232,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 60%, rgba(181,213,232,0.55) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(181,213,232,0.4) 0%, transparent 55%),
+    radial-gradient(ellipse at 30% 70%, rgba(244,196,160,0.3) 0%, transparent 40%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* ══ TOP HEADER ════════════════════════════ */
+.top-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-h);
+  background: linear-gradient(90deg,
+    rgba(42,106,133,0.92) 0%,
+    rgba(74,155,184,0.88) 55%,
+    rgba(212,132,90,0.82) 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 18px;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(42,106,133,0.2);
+}
+.top-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 3px;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0,0,0,.2);
+}
+.top-logo span { color: #FFE4CC; }
+.top-divider { width: 1px; height: 32px; background: rgba(255,255,255,.35); }
+.top-sub { font-size: 13px; color: rgba(255,255,255,.85); line-height: 1.4; }
+.top-tags { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.top-tag {
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  color: #fff;
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+}
+
+/* ══ LAYOUT ════════════════════════════════ */
+.layout {
+  display: flex;
+  margin-top: var(--top-h);
+  min-height: calc(100vh - var(--top-h));
+}
+
+/* ══ LEFT NAV ══════════════════════════════ */
+.left-nav {
+  width: var(--left-w);
+  flex-shrink: 0;
+  position: sticky;
+  top: var(--top-h);
+  height: calc(100vh - var(--top-h));
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(181,213,232,0.5);
+  overflow-y: auto;
+  padding: 16px 0 80px;
+  box-shadow: 2px 0 12px rgba(42,106,133,.08);
+}
+.nav-section-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 18px 4px;
+  font-weight: 600;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: all .2s;
+  font-size: 15px;
+  color: #4A6A7A;
+  text-decoration: none;
+}
+.nav-item:hover { background: rgba(181,213,232,.25); color: var(--deep); border-left-color: var(--accent); }
+.nav-item.active { background: rgba(181,213,232,.35); color: var(--deep); border-left-color: var(--deep); font-weight: 700; }
+.nav-item.warn-nav:hover, .nav-item.warn-nav.active { color: var(--warn); border-left-color: var(--warn); background: rgba(212,132,90,.12); }
+.nav-item.free-nav:hover, .nav-item.free-nav.active { color: var(--ok); border-left-color: var(--ok); background: rgba(42,157,92,.1); }
+.nav-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(74,155,184,.4); flex-shrink: 0; }
+.nav-item.active .nav-dot { background: var(--deep); }
+.nav-item.warn-nav.active .nav-dot { background: var(--warn); }
+.nav-item.free-nav.active .nav-dot { background: var(--ok); }
+.nav-day-num { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; line-height: 1; }
+.nav-day-sub { font-size: 13px; line-height: 1.4; margin-top: 2px; color: var(--muted); }
+.nav-item.active .nav-day-sub { color: var(--deep); opacity: .75; }
+.nav-item.warn-nav.active .nav-day-sub { color: var(--warn); opacity: .75; }
+.nav-item.free-nav.active .nav-day-sub { color: var(--ok); opacity: .75; }
+.nav-divider { height: 1px; background: rgba(181,213,232,.5); margin: 10px 18px; }
+
+/* ══ MAIN CONTENT ══════════════════════════ */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 28px 80px;
+  min-width: 0;
+}
+
+.day-section { display: none; animation: fadeIn .25s ease; }
+.day-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+/* Day Header Card */
+.day-header-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(42,106,133,.1), 0 1px 4px rgba(255,255,255,.8) inset;
+  backdrop-filter: blur(8px);
+}
+.day-header-card.warn-day { border-color: rgba(212,132,90,.3); background: rgba(255,248,244,.88); }
+.day-header-card.free-day { border-color: rgba(42,157,92,.25); background: rgba(240,250,245,.88); }
+.day-header-card.hotel-day { border-color: rgba(212,132,90,.25); background: rgba(255,248,244,.88); }
+
+.day-num-big { font-family: 'Bebas Neue', sans-serif; font-size: 56px; letter-spacing: 4px; line-height: 1; color: var(--deep); margin-bottom: 6px; }
+.warn-day .day-num-big { color: var(--warn); }
+.free-day .day-num-big { color: var(--ok); }
+.day-title-big { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+.day-sub-text { font-size: 15px; color: var(--muted); }
+
+.day-header-stats { display: flex; gap: 12px; flex-wrap: wrap; }
+.stat-pill {
+  background: rgba(181,213,232,.3);
+  border: 1px solid rgba(181,213,232,.6);
+  border-radius: 12px;
+  padding: 12px 18px;
+  text-align: center;
+  min-width: 90px;
+  backdrop-filter: blur(4px);
+}
+.warn-day .stat-pill { background: rgba(212,132,90,.12); border-color: rgba(212,132,90,.3); }
+.stat-pill-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 1px; color: var(--deep); line-height: 1; }
+.warn-day .stat-pill-num { color: var(--warn); }
+.stat-pill-lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* Spots Grid */
+.spots-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.spot-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 2px 12px rgba(42,106,133,.08);
+  transition: box-shadow .2s, transform .15s;
+  backdrop-filter: blur(6px);
+}
+.spot-card:hover { box-shadow: 0 6px 20px rgba(42,106,133,.15); transform: translateY(-2px); }
+.spot-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.spot-emoji { font-size: 26px; }
+.spot-name-text { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.spot-rating { font-size: 13px; color: #C8850A; margin-top: 2px; }
+.spot-meta-text { font-size: 14px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
+.spot-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.spot-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; padding: 6px 14px; border-radius: 8px;
+  text-decoration: none; font-weight: 600; transition: opacity .15s, transform .1s;
+}
+.spot-btn:hover { opacity: .85; transform: translateY(-1px); }
+.btn-intro { background: rgba(74,155,184,.15); color: var(--deep); border: 1px solid rgba(74,155,184,.35); }
+.btn-map { background: rgba(42,157,92,.12); color: #1A7A45; border: 1px solid rgba(42,157,92,.3); }
+
+/* Meal Block */
+.meal-block {
+  display: flex; gap: 0;
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(244,196,160,.5);
+  border-radius: 14px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(212,132,90,.08);
+}
+.meal-item { flex: 1; padding: 14px 16px; border-right: 1px solid rgba(244,196,160,.4); }
+.meal-item:last-child { border-right: none; }
+.meal-label { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #A07020; font-weight: 700; margin-bottom: 6px; }
+.meal-content { font-size: 14px; color: var(--text); line-height: 1.6; font-weight: 500; }
+.meal-price { font-size: 12px; color: #A07020; margin-top: 3px; }
+.meal-self { font-style: italic; color: var(--muted); }
+
+/* Alert Box */
+.alert-box {
+  background: rgba(255,248,240,.85);
+  border: 1px solid rgba(212,132,90,.35);
+  border-left: 4px solid var(--warn);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #7A3A10;
+  margin-bottom: 20px;
+  display: flex; gap: 12px; align-items: flex-start;
+  line-height: 1.8;
+  backdrop-filter: blur(4px);
+}
+.alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+
+/* Segments */
+.seg-block {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(42,106,133,.08);
+  backdrop-filter: blur(6px);
+}
+.seg-block-title {
+  padding: 14px 20px;
+  font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); border-bottom: 1px solid rgba(181,213,232,.4);
+  background: rgba(181,213,232,.15); font-weight: 600;
+}
+.seg-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+.seg-table th {
+  text-align: left; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); padding: 12px 18px; border-bottom: 1px solid rgba(181,213,232,.3);
+  font-weight: 600; background: rgba(181,213,232,.1);
+}
+.seg-table td { padding: 14px 18px; border-bottom: 1px solid rgba(181,213,232,.2); vertical-align: middle; }
+.seg-table tr:last-child td { border-bottom: none; }
+.seg-table tr:hover td { background: rgba(181,213,232,.1); }
+.seg-route-main { font-weight: 600; font-size: 15px; color: var(--text); }
+.seg-route-note { font-size: 13px; color: var(--muted); margin-top: 3px; }
+.seg-center { text-align: center; font-weight: 700; font-size: 16px; color: var(--text); }
+.map-link { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; color: var(--accent); text-decoration: none; opacity: .7; margin-left: 6px; }
+.map-link:hover { opacity: 1; }
+.badge-ok { display: inline-block; background: rgba(42,157,92,.12); color: #1A7A45; border: 1px solid rgba(42,157,92,.3); border-radius: 8px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+.badge-warn { display: inline-block; background: rgba(212,132,90,.12); color: var(--warn); border: 1px solid rgba(212,132,90,.3); border-radius: 8px; padding: 4px 12px; font-size: 13px; font-weight: 700; }
+
+/* Day Stats Row */
+.day-stats-row { display: flex; border-top: 1px solid rgba(181,213,232,.3); background: rgba(181,213,232,.1); }
+.day-stat { flex: 1; text-align: center; padding: 14px 8px; border-right: 1px solid rgba(181,213,232,.3); }
+.day-stat:last-child { border-right: none; }
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1px; color: var(--deep); line-height: 1; }
+.stat-lbl { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+/* Free Day */
+.free-center {
+  text-align: center; padding: 48px 20px;
+  background: var(--card); border: 1px solid rgba(42,157,92,.25);
+  border-radius: 16px; box-shadow: 0 4px 16px rgba(42,106,133,.08);
+  backdrop-filter: blur(6px);
+}
+.free-big-emoji { font-size: 60px; display: block; margin-bottom: 18px; }
+.free-big-title { font-size: 24px; font-weight: 700; color: var(--ok); margin-bottom: 10px; }
+.free-big-sub { font-size: 16px; color: var(--muted); line-height: 1.9; }
+
+/* Recommend */
+.recommend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 20px; }
+.rec-card {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 16px;
+  box-shadow: 0 2px 10px rgba(42,106,133,.07);
+  transition: box-shadow .2s, transform .15s; backdrop-filter: blur(6px);
+}
+.rec-card:hover { box-shadow: 0 6px 18px rgba(42,106,133,.12); transform: translateY(-2px); }
+.rec-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rec-emoji { font-size: 24px; }
+.rec-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.rec-station { display: inline-block; background: rgba(74,155,184,.15); color: var(--deep); border: 1px solid rgba(74,155,184,.3); border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.rec-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.rail-info {
+  background: rgba(181,213,232,.2); border: 1px solid rgba(181,213,232,.5);
+  border-radius: 12px; padding: 16px 20px; margin-top: 16px;
+  font-size: 14px; color: #2A4A5A; line-height: 1.8; backdrop-filter: blur(4px);
+}
+.rail-info-title { font-weight: 700; color: var(--deep); font-size: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+
+/* RIGHT PANEL */
+.right-panel {
+  width: var(--right-w); flex-shrink: 0;
+  position: sticky; top: var(--top-h);
+  height: calc(100vh - var(--top-h));
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid rgba(181,213,232,.4);
+  overflow-y: auto; padding: 20px 18px 80px;
+  box-shadow: -2px 0 12px rgba(42,106,133,.06);
+}
+.panel-title { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid rgba(181,213,232,.4); }
+.kpi-mini { background: rgba(181,213,232,.2); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; border: 1px solid rgba(181,213,232,.5); backdrop-filter: blur(4px); }
+.kpi-mini-val { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 1px; color: var(--deep); line-height: 1; }
+.kpi-mini.warn-kpi { background: rgba(212,132,90,.1); border-color: rgba(212,132,90,.3); }
+.kpi-mini.warn-kpi .kpi-mini-val { color: var(--warn); }
+.kpi-mini.ok-kpi { background: rgba(42,157,92,.1); border-color: rgba(42,157,92,.25); }
+.kpi-mini.ok-kpi .kpi-mini-val { color: var(--ok); }
+.kpi-mini-lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.panel-divider { height: 1px; background: rgba(181,213,232,.4); margin: 16px 0; }
+.legend-mini-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #4A5A6A; margin-bottom: 10px; line-height: 1.5; }
+.ldot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.hotel-alert-mini { background: rgba(255,245,240,.85); border: 1px solid rgba(212,132,90,.3); border-radius: 10px; padding: 14px; font-size: 14px; color: #6A3020; line-height: 1.7; margin-bottom: 12px; }
+.upgrade-box { background: rgba(255,248,235,.85); border: 1px solid rgba(212,132,90,.25); border-radius: 10px; padding: 14px; font-size: 14px; }
+.upgrade-title { color: var(--warn); font-weight: 700; margin-bottom: 6px; font-size: 15px; }
+.upgrade-item { color: #5A3010; line-height: 1.9; }
+
+/* 希爾頓特別標注 */
+.hotel-highlight {
+  background: rgba(74,155,184,.12);
+  border: 1px solid rgba(74,155,184,.35);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--deep);
+  margin-bottom: 20px;
+  line-height: 1.8;
+  backdrop-filter: blur(4px);
+}
+
+@media(max-width: 900px) {
+  .left-nav, .right-panel { display: none; }
+  .top-tags { display: none; }
+  .mobile-tabs { display: flex !important; overflow-x: auto; background: rgba(255,255,255,.85); border-bottom: 2px solid rgba(181,213,232,.5); padding: 0 8px; position: sticky; top: var(--top-h); z-index: 90; backdrop-filter: blur(8px); }
+  .mobile-tab { padding: 14px 16px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; transition: all .2s; }
+  .mobile-tab.active { color: var(--deep); border-bottom-color: var(--deep); }
+  .main-content { padding: 16px; }
+}
+.mobile-tabs { display: none; }
+</style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<div class="top-header">
+  <div class="top-logo">🌺 歡樂<span>沖繩</span> 5日</div>
+  <div class="top-divider"></div>
+  <div class="top-sub">竹建瓦斯員工旅遊<br>行程距離驗證報告</div>
+  <div class="top-tags">
+    <span class="top-tag">✈ 長榮航空 BR186</span>
+    <span class="top-tag">🚌 遊覽車全程</span>
+    <span class="top-tag">5天4夜</span>
+    <span class="top-tag">🏨 希爾頓逸林／美居</span>
+  </div>
+</div>
+
+<!-- MOBILE TABS -->
+<div class="mobile-tabs">
+  <div class="mobile-tab active" onclick="showDay('d1',this)">DAY 1</div>
+  <div class="mobile-tab" onclick="showDay('d2',this)">DAY 2 ⚠️</div>
+  <div class="mobile-tab" onclick="showDay('d3',this)">DAY 3</div>
+  <div class="mobile-tab" onclick="showDay('d4',this)">DAY 4</div>
+  <div class="mobile-tab" onclick="showDay('d5',this)">DAY 5</div>
+  <div class="mobile-tab" onclick="showDay('hotel',this)">🏨 住宿</div>
+  <div class="mobile-tab" onclick="showDay('summary',this)">📋 總覽</div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- LEFT NAV -->
+  <nav class="left-nav">
+    <div class="nav-section-label">行程天數</div>
+    <a class="nav-item active" onclick="showDay('d1',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 1</div><div class="nav-day-sub">抵達・那霸</div></div>
+    </a>
+    <a class="nav-item warn-nav" onclick="showDay('d2',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 2</div><div class="nav-day-sub">⚠️ 北上遠征</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('d3',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 3</div><div class="nav-day-sub">首里城・玉泉洞</div></div>
+    </a>
+    <a class="nav-item free-nav" onclick="showDay('d4',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 4</div><div class="nav-day-sub">🚝 自由活動</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('d5',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 5</div><div class="nav-day-sub">系滿・iias・回程</div></div>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">其他資訊</div>
+    <a class="nav-item" onclick="showDay('hotel',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num" style="font-size:18px;letter-spacing:0">🏨 住宿</div><div class="nav-day-sub">說明・升等選項</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('summary',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num" style="font-size:18px;letter-spacing:0">📋 總覽</div><div class="nav-day-sub">全程彙整</div></div>
+    </a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <!-- DAY 1 -->
+    <div id="d1" class="day-section active">
+      <div class="day-header-card">
+        <div>
+          <div class="day-num-big">DAY 1</div>
+          <div class="day-title-big">桃園機場 → 那霸空港 → 飯店</div>
+          <div class="day-sub-text">抵達日 ｜ 長榮 BR186 16:25 起飛，18:55 抵達那霸</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~5</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~15</div><div class="stat-pill-lbl">分鐘</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">1</div><div class="stat-pill-lbl">段路程</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">出發前・自理</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">出發前・自理</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">機上輕食</div><div class="meal-price meal-self">BR186 機上</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">✈️</div><div><div class="spot-name-text">那霸空港（國際線）</div><div class="spot-rating">⭐ 4.1</div></div></div>
+          <div class="spot-meta-text">26.2001°N 127.6466°E<br>長榮 BR186 抵達，由導遊接機</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/那霸空港" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🏨</div><div><div class="spot-name-text">那霸希爾頓逸林酒店</div><div class="spot-rating">⭐ 4.4 ｜ ★★★★</div></div></div>
+          <div class="spot-meta-text">26.2121°N 127.6793°E<br>那霸市區，DoubleTree by Hilton，品質明顯優於商務型飯店</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/DoubleTree+by+Hilton+Naha" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>公路距離</th><th>行車時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="seg-route-main">✈️ 那霸機場 → 🏨 那霸飯店 <a class="map-link" href="https://www.google.com/maps/dir/26.2001,127.6466/26.2121,127.6793" target="_blank">🗺</a></div><div class="seg-route-note">市區直達，約3km，下高速收費道路</div></td>
+              <td class="seg-center">約 5 km</td><td class="seg-center">約 15 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num">~5 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num">~15 分</div><div class="stat-lbl">行車時間</div></div>
+          <div class="day-stat"><div class="stat-num">1 段</div><div class="stat-lbl">移動路段</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div id="d2" class="day-section">
+      <div class="day-header-card warn-day">
+        <div>
+          <div class="day-num-big">DAY 2</div>
+          <div class="day-title-big">⚠️ 海洋博公園・水族館 → 北谷美國村 → 國際通</div>
+          <div class="day-sub-text">北上遠征日 ｜ 行車距離長，建議早上 8:00 前出發</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~155</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~3.2</div><div class="stat-pill-lbl">小時行車</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">4</div><div class="stat-pill-lbl">段路程</div></div>
+        </div>
+      </div>
+      <div class="alert-box">
+        <div class="alert-icon">⚠️</div>
+        <div>飯店→海洋博公園單程約 <strong>73 km / 90 分鐘</strong>，是全行程最長單段。建議<strong>早上 7:30~8:00 出發</strong>，確保水族館有足夠停留時間。</div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price" style="color:var(--ok)">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">海洋博自助餐<br>或 日式料理</div><div class="meal-price">¥ 1,950 / 人</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">海鮮火鍋阿古豬吃到飽<br>或 和洋式自助餐</div><div class="meal-price">含泡盛飲料無限暢飲</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🐬</div><div><div class="spot-name-text">海洋博紀念公園・美麗海水族館</div><div class="spot-rating">⭐ 4.5</div></div></div>
+          <div class="spot-meta-text">26.6943°N 127.8780°E<br>亞洲最大水族館，鯨鯊・鬼蝠魟・海豚劇場</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://www.gltjp.com/zh-hant/article/item/21171/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/沖繩美麗海水族館" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🇺🇸</div><div><div class="spot-name-text">北谷美國村</div><div class="spot-rating">⭐ 4.0</div></div></div>
+          <div class="spot-meta-text">26.3880°N 127.7546°E<br>美日混合文化商圈，電影館・餐廳・進口雜貨，戀戰沖繩取景地</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://okinawa.letsgojp.com/archives/397765/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/北谷美國村" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🛍️</div><div><div class="spot-name-text">國際通大道</div><div class="spot-rating">⭐ 4.3</div></div></div>
+          <div class="spot-meta-text">26.2161°N 127.6881°E<br>那霸最熱鬧購物街，全長1.6km，伴手禮・藥妝・美食</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/那霸+國際通" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>公路距離</th><th>行車時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="seg-route-main">🏨 那霸飯店 → 🐬 海洋博公園 <a class="map-link" href="https://www.google.com/maps/dir/26.2121,127.6793/26.6943,127.8780" target="_blank">🗺</a></div><div class="seg-route-note">沖繩自動車道→許田IC，建議早出發</div></td>
+              <td class="seg-center">約 73 km</td><td class="seg-center">約 90 分</td><td><span class="badge-warn">⚠️ 行車長</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🐬 海洋博 → 🇺🇸 北谷美國村 <a class="map-link" href="https://www.google.com/maps/dir/26.6943,127.8780/26.3880,127.7546" target="_blank">🗺</a></div><div class="seg-route-note">南下沖繩自動車道，北中城→北谷</div></td>
+              <td class="seg-center">約 55 km</td><td class="seg-center">約 65 分</td><td><span class="badge-warn">⚠️ 行車長</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🇺🇸 美國村 → 🛍️ 國際通 <a class="map-link" href="https://www.google.com/maps/dir/26.3880,127.7546/26.2161,127.6881" target="_blank">🗺</a></div><div class="seg-route-note">南下那霸市區，約25km</div></td>
+              <td class="seg-center">約 25 km</td><td class="seg-center">約 35 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🛍️ 國際通 → 🏨 那霸飯店 <a class="map-link" href="https://www.google.com/maps/dir/26.2161,127.6881/26.2121,127.6793" target="_blank">🗺</a></div><div class="seg-route-note">市區內步行或短車程</div></td>
+              <td class="seg-center">約 2 km</td><td class="seg-center">約 10 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num" style="color:var(--warn)">~155 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num" style="color:var(--warn)">~3.2 hr</div><div class="stat-lbl">行車時間</div></div>
+          <div class="day-stat"><div class="stat-num">4 段</div><div class="stat-lbl">移動路段</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div id="d3" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="day-num-big">DAY 3</div>
+          <div class="day-title-big">首里城 → 免稅店 → 玉泉洞 → 瀨長島</div>
+          <div class="day-sub-text">文化＋購物＋景觀日 ｜ 路程適中，輕鬆</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~55</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~80</div><div class="stat-pill-lbl">分鐘</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">4</div><div class="stat-pill-lbl">段路程</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price" style="color:var(--ok)">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">玉泉洞自助餐<br>或 日式套餐</div><div class="meal-price">¥ 1,980 / 人</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">燒肉自助餐<br>＋飲料無限暢飲</div><div class="meal-price">含飲料無限暢飲</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🏯</div><div><div class="spot-name-text">首里城（守禮門・外城）</div><div class="spot-rating">⭐ 4.3</div></div></div>
+          <div class="spot-meta-text">26.2172°N 127.7191°E<br>世界文化遺產，琉球王朝代表建築，登高俯瞰那霸</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://okinawa.letsgojp.com/archives/21617/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/首里城" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🕳️</div><div><div class="spot-name-text">玉泉洞王國村（含泡盛工廠）</div><div class="spot-rating">⭐ 4.3</div></div></div>
+          <div class="spot-meta-text">26.1403°N 127.7494°E<br>日本第二大鐘乳石洞，琉球大鼓秀，泡盛見學</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://okinawa.letsgojp.com/archives/757370/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/玉泉洞+沖繩世界" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🌅</div><div><div class="spot-name-text">瀨長島 Umikaji Terrace</div><div class="spot-rating">⭐ 4.3</div></div></div>
+          <div class="spot-meta-text">26.1767°N 127.6404°E<br>希臘風白色建築，夕陽海景，距機場15分鐘</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://bobbyfun.tw/2024-01-08-2707/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/瀨長島+Umikaji+Terrace" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>公路距離</th><th>行車時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="seg-route-main">🏨 那霸飯店 → 🏯 首里城 <a class="map-link" href="https://www.google.com/maps/dir/26.2121,127.6793/26.2172,127.7191" target="_blank">🗺</a></div><div class="seg-route-note">市區東側，單軌首里站附近</div></td>
+              <td class="seg-center">約 5 km</td><td class="seg-center">約 15 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🏯 首里城 → 🕳️ 玉泉洞 <a class="map-link" href="https://www.google.com/maps/dir/26.2172,127.7191/26.1403,127.7494" target="_blank">🗺</a></div><div class="seg-route-note">南下南城市，走那霸自動車道</div></td>
+              <td class="seg-center">約 16 km</td><td class="seg-center">約 25 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🕳️ 玉泉洞 → 🌅 瀨長島 <a class="map-link" href="https://www.google.com/maps/dir/26.1403,127.7494/26.1767,127.6404" target="_blank">🗺</a></div><div class="seg-route-note">往西北豐見城，約30分</div></td>
+              <td class="seg-center">約 22 km</td><td class="seg-center">約 30 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🌅 瀨長島 → 🏨 那霸飯店 <a class="map-link" href="https://www.google.com/maps/dir/26.1767,127.6404/26.2121,127.6793" target="_blank">🗺</a></div><div class="seg-route-note">北上那霸市區</div></td>
+              <td class="seg-center">約 12 km</td><td class="seg-center">約 20 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num">~55 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num">~80 分</div><div class="stat-lbl">行車時間</div></div>
+          <div class="day-stat"><div class="stat-num">4 段</div><div class="stat-lbl">移動路段</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div id="d4" class="day-section">
+      <div class="day-header-card free-day">
+        <div>
+          <div class="day-num-big">DAY 4</div>
+          <div class="day-title-big">🚝 全日自由活動 ─ 歡樂趴趴走</div>
+          <div class="day-sub-text">無遊覽車行程 ｜ 搭乘 Yui Rail 單軌電車自由探索那霸</div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price" style="color:var(--ok)">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">自由選擇</div><div class="meal-price meal-self">逛街自理</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">自由選擇</div><div class="meal-price meal-self">逛街自理</div></div>
+      </div>
+      <div class="rail-info">
+        <div class="rail-info-title">🚝 Yui Rail 單軌電車使用說明</div>
+        全線 19 站自由搭乘。2025年3月起可直接刷信用卡進站，一天最多扣 800 日圓，超划算！<br>
+        首班 06:00 ／末班 23:30 ｜每 4~15 分鐘一班
+      </div>
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin:20px 0 12px">📍 推薦景點（搭電車去）</div>
+      <div class="recommend-grid">
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">🛍️</div><div><div class="rec-name">國際通大道</div></div></div>
+          <span class="rec-station">🚉 縣廳前站 / 牧志站</span>
+          <div class="rec-desc">全長1.6公里沖繩最熱鬧購物街，伴手禮・藥妝・美食一次搞定</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">🐟</div><div><div class="rec-name">第一牧志公設市場</div></div></div>
+          <span class="rec-station">🚉 牧志站 步行5分</span>
+          <div class="rec-desc">2023年重新整建，新鮮漁獲・肉品，可帶食材到2樓請店家料理</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">🏯</div><div><div class="rec-name">首里城公園（免費範圍）</div></div></div>
+          <span class="rec-station">🚉 首里站 步行15分</span>
+          <div class="rec-desc">世界遺產，Day3已去但免費範圍值得再遊，夜間燈光也很美</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">🏺</div><div><div class="rec-name">壺屋通（陶器街）</div></div></div>
+          <span class="rec-station">🚉 牧志站 步行10分</span>
+          <div class="rec-desc">沖繩傳統壺屋燒陶器專賣街，各式風格小店，適合挖寶</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">💊</div><div><div class="rec-name">小祿站 AEON 藥妝</div></div></div>
+          <span class="rec-station">🚉 小祿站 即達</span>
+          <div class="rec-desc">出站即是 AEON 百貨，藥妝・超市・伴手禮一站購足</div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-top"><div class="rec-emoji">🏬</div><div><div class="rec-name">新都心・RYUBO 百貨</div></div></div>
+          <span class="rec-station">🚉 縣廳前站 即達</span>
+          <div class="rec-desc">沖繩第一大百貨，UNIQLO・無印良品・電影院・餐廳，現代感十足</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div id="d5" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="day-num-big">DAY 5</div>
+          <div class="day-title-big">波之上神宮 → 系滿漁市場 → iias 沖繩豐崎 → 那霸機場</div>
+          <div class="day-sub-text">回程日 ｜ 南部輕鬆小圈，採買完畢回台</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~35</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~55</div><div class="stat-pill-lbl">分鐘</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">4</div><div class="stat-pill-lbl">段路程</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price" style="color:var(--ok)">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">系滿漁市場<br>自由選購</div><div class="meal-price">退代金 ¥2,000 / 人</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">機上輕食</div><div class="meal-price meal-self">BR185 回程機上</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">⛩️</div><div><div class="spot-name-text">波之上神宮</div><div class="spot-rating">⭐ 4.4</div></div></div>
+          <div class="spot-meta-text">26.2207°N 127.6711°E<br>琉球第一神社，佇立海邊懸崖，最美拍照角度</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-intro" href="https://bobbyfun.tw/2024-01-07-2698/" target="_blank">🔗 景點介紹</a>
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/波之上神宮" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🦞</div><div><div class="spot-name-text">系滿漁市場</div><div class="spot-rating">⭐ 4.2</div></div></div>
+          <div class="spot-meta-text">26.1166°N 127.6688°E<br>TripAdvisor 2019 全日本第一，新鮮生魚片・熟食・海產</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/系滿漁市場+沖繩" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🛒</div><div><div class="spot-name-text">iias 沖繩豐崎購物中心</div><div class="spot-rating">⭐ 4.1</div></div></div>
+          <div class="spot-meta-text">26.1569°N 127.6590°E<br>Bic Camera・LOFT・UNIQLO・H&M，160間店，頂樓恐龍樂園</div>
+          <div class="spot-btns">
+            <a class="spot-btn btn-map" href="https://www.google.com/maps/search/iias+沖繩+豐崎" target="_blank">🗺 地圖</a>
+          </div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">✈️</div><div><div class="spot-name-text">那霸空港（出發）</div><div class="spot-rating">BR185 19:55</div></div></div>
+          <div class="spot-meta-text">26.2001°N 127.6466°E<br>長榮 BR185，19:55 起飛，20:30 抵台</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/那霸空港" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>公路距離</th><th>行車時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="seg-route-main">🏨 那霸飯店 → ⛩️ 波之上神宮 <a class="map-link" href="https://www.google.com/maps/dir/26.2121,127.6793/26.2207,127.6711" target="_blank">🗺</a></div><div class="seg-route-note">市區內，步行也可到（約20分）</div></td>
+              <td class="seg-center">約 2 km</td><td class="seg-center">約 10 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">⛩️ 波之上神宮 → 🦞 系滿漁市場 <a class="map-link" href="https://www.google.com/maps/dir/26.2207,127.6711/26.1166,127.6688" target="_blank">🗺</a></div><div class="seg-route-note">南下系滿市，約20分</div></td>
+              <td class="seg-center">約 13 km</td><td class="seg-center">約 20 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🦞 系滿 → 🛒 iias 豐崎 <a class="map-link" href="https://www.google.com/maps/dir/26.1166,127.6688/26.1569,127.6590" target="_blank">🗺</a></div><div class="seg-route-note">北上豐崎，約15分</div></td>
+              <td class="seg-center">約 8 km</td><td class="seg-center">約 15 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+            <tr>
+              <td><div class="seg-route-main">🛒 iias → ✈️ 那霸機場 <a class="map-link" href="https://www.google.com/maps/dir/26.1569,127.6590/26.2001,127.6466" target="_blank">🗺</a></div><div class="seg-route-note">北上機場，約10分</div></td>
+              <td class="seg-center">약 7 km</td><td class="seg-center">約 10 分</td><td><span class="badge-ok">✓ 正確</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num">~30 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num">~55 分</div><div class="stat-lbl">行車時間</div></div>
+          <div class="day-stat"><div class="stat-num">4 段</div><div class="stat-lbl">移動路段</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOTEL -->
+    <div id="hotel" class="day-section">
+      <div class="day-header-card hotel-day">
+        <div>
+          <div class="day-num-big" style="color:var(--accent2);font-size:44px">🏨 住宿說明</div>
+          <div class="day-title-big">飯店選項 ｜ 等級說明</div>
+          <div class="day-sub-text">02 歡樂沖繩住宿等級明顯優於 01 蔚藍沖繩</div>
+        </div>
+      </div>
+      <div class="hotel-highlight">
+        ⭐ <strong>本行程住宿升級！</strong>與 01 蔚藍沖繩（商務型3星）相比，02 歡樂沖繩安排的是<strong>那霸希爾頓逸林酒店（DoubleTree by Hilton）★★★★</strong>或美居 MERCURE，等級明顯較高，房間更寬敞，設施更完善。
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div style="background:rgba(255,255,255,.8);border:1px solid rgba(181,213,232,.5);border-radius:14px;padding:22px;backdrop-filter:blur(6px)">
+          <div style="font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:700">📋 行程內含選項</div>
+          <div style="font-size:15px;line-height:2.2;color:#3A4A5A">
+            <strong>• 那霸希爾頓逸林酒店 ★★★★</strong><br>
+            &nbsp;&nbsp;DoubleTree by Hilton Naha<br>
+            &nbsp;&nbsp;Agoda 8.4分，那霸市區<br><br>
+            <strong>• 美居那霸 MERCURE ★★★★</strong><br>
+            &nbsp;&nbsp;Mercure Naha Okinawa<br>
+            &nbsp;&nbsp;雅高集團旗下，品質穩定<br><br>
+            <span style="font-size:13px;color:var(--muted)">※ 旅行社保有最終決定權</span>
+          </div>
+        </div>
+        <div style="background:rgba(255,248,235,.85);border:1px solid rgba(212,132,90,.25);border-radius:14px;padding:22px;backdrop-filter:blur(6px)">
+          <div style="font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--warn);margin-bottom:14px;font-weight:700">⭐ 再升等選項（需補差價）</div>
+          <div style="font-size:15px;line-height:2;color:#4A3010">
+            <strong>那霸凱悅 Hyatt Regency ★★★★★</strong><br>
+            ・距國際通步行3分，Agoda 9分<br>
+            ・室內溫水泳池・健身房<br>
+            ・豐盛早餐 Buffet<br><br>
+            <strong>JR九州飯店 Blossom 那霸 ★★★★</strong><br>
+            ・日本連鎖，品質穩定
+          </div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid rgba(181,213,232,.4);border-radius:12px;padding:16px;font-size:14px;color:var(--muted);line-height:1.8;backdrop-filter:blur(4px)">
+        📌 <strong style="color:var(--text)">路線基準說明：</strong>本報告路線計算以那霸市區希爾頓逸林酒店附近（26.2121°N, 127.6793°E）為飯店基準點。
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summary" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="day-num-big" style="font-size:44px">📋 全程總覽</div>
+          <div class="day-title-big">各天里程與行車時間彙整</div>
+          <div class="day-sub-text">估算方式：直線距離 × 1.3 係數 ÷ 50 km/h（遊覽車均速）</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.8);border:1px solid rgba(181,213,232,.4);border-radius:14px;overflow:hidden;margin-bottom:24px;backdrop-filter:blur(6px)">
+        <table style="width:100%;border-collapse:collapse;font-size:15px">
+          <thead><tr style="background:rgba(181,213,232,.2)">
+            <th style="padding:14px 18px;text-align:left;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">天</th>
+            <th style="padding:14px 18px;text-align:left;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">主要行程</th>
+            <th style="padding:14px 18px;text-align:center;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">里程</th>
+            <th style="padding:14px 18px;text-align:center;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">行車時間</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid rgba(181,213,232,.3)"><td style="padding:16px 18px;font-weight:700;color:var(--deep)">Day 1</td><td style="padding:16px 18px;color:#4A5A6A">機場→那霸飯店</td><td style="padding:16px 18px;text-align:center;font-weight:700">~5 km</td><td style="padding:16px 18px;text-align:center;font-weight:700">~15 分</td></tr>
+            <tr style="border-top:1px solid rgba(181,213,232,.3);background:rgba(212,132,90,.05)"><td style="padding:16px 18px;font-weight:700;color:var(--warn)">Day 2 ⚠️</td><td style="padding:16px 18px;color:#4A5A6A">那霸→海洋博→美國村→國際通</td><td style="padding:16px 18px;text-align:center;font-weight:700;color:var(--warn)">~155 km</td><td style="padding:16px 18px;text-align:center;font-weight:700;color:var(--warn)">~3.2 hr</td></tr>
+            <tr style="border-top:1px solid rgba(181,213,232,.3)"><td style="padding:16px 18px;font-weight:700;color:var(--deep)">Day 3</td><td style="padding:16px 18px;color:#4A5A6A">首里城→玉泉洞→瀨長島</td><td style="padding:16px 18px;text-align:center;font-weight:700">~55 km</td><td style="padding:16px 18px;text-align:center;font-weight:700">~80 分</td></tr>
+            <tr style="border-top:1px solid rgba(181,213,232,.3);background:rgba(42,157,92,.04)"><td style="padding:16px 18px;font-weight:700;color:var(--ok)">Day 4</td><td style="padding:16px 18px;color:#4A5A6A">自由活動（Yui Rail）</td><td style="padding:16px 18px;text-align:center;color:var(--muted)">—</td><td style="padding:16px 18px;text-align:center;color:var(--muted)">—</td></tr>
+            <tr style="border-top:1px solid rgba(181,213,232,.3)"><td style="padding:16px 18px;font-weight:700;color:var(--deep)">Day 5</td><td style="padding:16px 18px;color:#4A5A6A">波之上→系滿→iias→機場</td><td style="padding:16px 18px;text-align:center;font-weight:700">~30 km</td><td style="padding:16px 18px;text-align:center;font-weight:700">~55 分</td></tr>
+            <tr style="border-top:2px solid rgba(74,155,184,.3);background:rgba(181,213,232,.15)"><td style="padding:16px 18px;font-weight:700;color:var(--deep)">合計</td><td style="padding:16px 18px;color:var(--muted);font-size:14px">不含自由日</td><td style="padding:16px 18px;text-align:center;font-weight:900;color:var(--deep);font-size:18px">~245 km</td><td style="padding:16px 18px;text-align:center;font-weight:900;color:var(--deep);font-size:18px">~5.5 hr</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="panel-title">全程統計</div>
+    <div class="kpi-mini"><div class="kpi-mini-val">~245 km</div><div class="kpi-mini-lbl">全程公路總里程</div></div>
+    <div class="kpi-mini"><div class="kpi-mini-val">~5.5 hr</div><div class="kpi-mini-lbl">行駛總時間</div></div>
+    <div class="kpi-mini warn-kpi"><div class="kpi-mini-val">Day 2</div><div class="kpi-mini-lbl">最重行車日（3.2小時）</div></div>
+    <div class="kpi-mini ok-kpi"><div class="kpi-mini-val">Day 4</div><div class="kpi-mini-lbl">自由活動日</div></div>
+    <div class="panel-divider"></div>
+    <div class="panel-title">圖例說明</div>
+    <div class="legend-mini-item"><div class="ldot" style="background:var(--ok)"></div>距離時間合理</div>
+    <div class="legend-mini-item"><div class="ldot" style="background:var(--warn)"></div>需注意・行車較長</div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.8;margin-top:6px;padding:10px;background:rgba(181,213,232,.15);border-radius:8px">
+      直線距離 × 1.3<br>÷ 50 km/h（遊覽車均速）
+    </div>
+    <div class="panel-divider"></div>
+    <div class="panel-title">住宿等級</div>
+    <div class="hotel-alert-mini">
+      ⭐ 本行程住宿為<strong>那霸希爾頓逸林 ★★★★</strong>或美居 MERCURE，明顯優於一般商務型飯店。
+    </div>
+    <div class="upgrade-box">
+      <div class="upgrade-title">⭐ 再升等選項</div>
+      <div class="upgrade-item">
+        那霸凱悅 Hyatt Regency<br>
+        <span style="color:var(--muted);font-size:13px">★★★★★ ｜ Agoda 9分</span>
+      </div>
+    </div>
+    <div class="panel-divider"></div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.8">
+      ✈️ 長榮 BR186/BR185<br>
+      📅 2025年8月1日出發<br>
+      📍 座標：Google Places<br>
+      製作：Claude AI ｜ 2026年5月
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showDay(id, el) {
+  document.querySelectorAll('.day-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

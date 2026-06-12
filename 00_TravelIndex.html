@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>竹建瓦斯員工旅遊 ─ 行程總覽</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1D3A;--deep:#152D52;--bright:#2A5CB8;--gold:#C8A020;
+  --bg:#F0F4FA;--card:#FFFFFF;--border:#D8E2F0;
+  --text:#0B1D3A;--muted:#5A7090;--top-h:64px;--tab-h:52px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Noto Sans TC',sans-serif;color:var(--text);background:var(--bg);overflow:hidden;}
+
+/* ── HEADER ── */
+.top{position:fixed;top:0;left:0;right:0;height:var(--top-h);z-index:100;
+  background:linear-gradient(90deg,#081528 0%,#0B1D3A 35%,#1A3A6A 70%,#C8A020 130%);
+  display:flex;align-items:center;padding:0 22px;gap:14px;box-shadow:0 2px 16px rgba(11,29,58,.35);}
+.top-logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:#E8F2FF;white-space:nowrap;}
+.top-logo span{color:#F5D060;}
+.top-div{width:1px;height:30px;background:rgba(168,200,240,.3);}
+.top-sub{font-size:13px;color:rgba(180,205,240,.85);line-height:1.4;}
+.top-count{margin-left:auto;font-size:13px;color:#C8DCFF;background:rgba(255,255,255,.1);border:1px solid rgba(168,200,240,.25);border-radius:18px;padding:4px 14px;white-space:nowrap;}
+
+/* ── TAB BAR ── */
+.tabs{position:fixed;top:var(--top-h);left:0;right:0;height:var(--tab-h);z-index:99;
+  background:var(--card);border-bottom:2px solid var(--border);
+  display:flex;align-items:stretch;overflow-x:auto;padding:0 10px;box-shadow:0 2px 8px rgba(11,29,58,.06);}
+.tabs::-webkit-scrollbar{height:0;}
+.tab{display:flex;align-items:center;gap:7px;padding:0 16px;font-size:14px;font-weight:600;
+  color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .18s;}
+.tab:hover{color:var(--navy);background:#F5F8FD;}
+.tab.active{color:var(--navy);border-bottom-color:var(--bright);background:#EFF5FF;}
+.tab .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.tab-group{display:flex;align-items:center;font-size:11px;color:#A8B8D0;letter-spacing:1px;padding:0 8px 0 14px;border-left:1px solid var(--border);white-space:nowrap;}
+
+/* ── PAGES ── */
+.page-wrap{position:fixed;top:calc(var(--top-h) + var(--tab-h));left:0;right:0;bottom:0;}
+.page{display:none;width:100%;height:100%;}
+.page.active{display:block;}
+.page iframe{width:100%;height:100%;border:none;background:#fff;}
+
+/* ── HOME（總覽卡片）── */
+#home{overflow-y:auto;padding:26px 28px 60px;}
+.home-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:3px;color:var(--navy);margin-bottom:4px;}
+.home-sub{font-size:14px;color:var(--muted);margin-bottom:22px;}
+.region-label{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin:22px 0 12px;display:flex;align-items:center;gap:10px;}
+.region-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;}
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;
+  transition:transform .18s,box-shadow .18s;box-shadow:0 2px 10px rgba(11,29,58,.06);}
+.tcard:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(11,29,58,.14);}
+.tcard-head{padding:16px 20px;color:#fff;display:flex;align-items:baseline;gap:10px;}
+.tcard-num{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;opacity:.85;line-height:1;}
+.tcard-name{font-size:17px;font-weight:700;line-height:1.3;}
+.tcard-days{margin-left:auto;font-size:13px;background:rgba(255,255,255,.2);border-radius:14px;padding:2px 11px;white-space:nowrap;}
+.tcard-body{padding:14px 20px 16px;}
+.tcard-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.meta-chip{font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:3px 10px;color:var(--muted);font-weight:500;}
+.meta-chip.price{background:#FFF8E8;border-color:#E8D090;color:#8B6A00;font-weight:700;}
+.tcard-hl{font-size:13.5px;color:var(--muted);line-height:1.75;}
+.tcard-foot{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-top:1px solid var(--border);background:#FAFCFF;}
+.tcard-open{font-size:13px;font-weight:700;color:var(--bright);}
+.tcard-new{font-size:12px;color:var(--muted);text-decoration:none;padding:4px 10px;border:1px solid var(--border);border-radius:8px;transition:all .15s;}
+.tcard-new:hover{color:var(--bright);border-color:var(--bright);}
+.loading-tip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:var(--muted);font-size:15px;display:none;}
+.page.loading .loading-tip{display:block;}
+
+@media(max-width:760px){
+  .top-sub,.top-count{display:none;}
+  #home{padding:16px;}
+  .cards{grid-template-columns:1fr;}
+  .tab{padding:0 12px;font-size:13px;}
+  .tab-group{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-logo">🌏 竹建瓦斯<span>員工旅遊</span></div>
+  <div class="top-div"></div>
+  <div class="top-sub">行程儀表板總覽<br>01～09 完整收錄</div>
+  <div class="top-count">📊 9 條行程 ｜ 沖繩 2・日本 2・澳洲 5</div>
+</div>
+
+<div class="tabs" id="tabbar">
+  <div class="tab active" data-page="home" onclick="go('home',this)">🏠 總覽</div>
+  <div class="tab-group">沖繩</div>
+  <div class="tab" data-page="p01" onclick="go('p01',this)"><span class="dot" style="background:#0A3D6E"></span>01 蔚藍沖繩</div>
+  <div class="tab" data-page="p02" onclick="go('p02',this)"><span class="dot" style="background:#5BA8D4"></span>02 歡樂沖繩</div>
+  <div class="tab-group">日本</div>
+  <div class="tab" data-page="p03" onclick="go('p03',this)"><span class="dot" style="background:#C85A10"></span>03 四國經典</div>
+  <div class="tab" data-page="p06" onclick="go('p06',this)"><span class="dot" style="background:#C0392B"></span>06 山陰山陽</div>
+  <div class="tab-group">澳洲</div>
+  <div class="tab" data-page="p04" onclick="go('p04',this)"><span class="dot" style="background:#00205B"></span>04 雪墨8日</div>
+  <div class="tab" data-page="p05" onclick="go('p05',this)"><span class="dot" style="background:#2A5CB8"></span>05 墨爾本7日</div>
+  <div class="tab" data-page="p07" onclick="go('p07',this)"><span class="dot" style="background:#C85A10"></span>07 東澳9日</div>
+  <div class="tab" data-page="p08" onclick="go('p08',this)"><span class="dot" style="background:#C89000"></span>08 花漾黃金雪</div>
+  <div class="tab" data-page="p09" onclick="go('p09',this)"><span class="dot" style="background:#008A8A"></span>09 旅天下金雪</div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- 總覽 -->
+  <div id="home" class="page active">
+    <div class="home-title">TRAVEL DASHBOARD</div>
+    <div class="home-sub">點選卡片或上方分頁，即可開啟各行程的完整距離驗證儀表板（首次開啟需稍候載入）</div>
+
+    <div class="region-label">🏝️ 沖繩</div>
+    <div class="cards">
+      <div class="tcard" onclick="go('p01')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#06243F,#0A3D6E,#1565A0)">
+          <div class="tcard-num">01</div><div class="tcard-name">蔚藍沖繩 5日</div><div class="tcard-days">5天4夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ 華航直飛那霸</span><span class="meta-chip">🎨 白底深海藍</span></div>
+          <div class="tcard-hl">美麗海水族館・古宇利島・Day4 整日自由活動（含 6 景點推薦＋Yui Rail 攻略）・全程距離驗證</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="01_OkinawaBlue5.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p02')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#3A7AAC,#5BA8D4,#F0B8A8)">
+          <div class="tcard-num">02</div><div class="tcard-name">歡樂沖繩 5日（饒姊）</div><div class="tcard-days">5天4夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">🏨 希爾頓逸林全程一館</span><span class="meta-chip">🎨 水彩蜜桃藍</span></div>
+          <div class="tcard-hl">不換飯店輕鬆遊・水彩漸層視覺風格・親子友善路線・全程距離驗證</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="02_OkinawaFun5.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+    </div>
+
+    <div class="region-label">⛩️ 日本</div>
+    <div class="cards">
+      <div class="tcard" onclick="go('p03')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#7A3500,#C85A10,#E8941A)">
+          <div class="tcard-num">03</div><div class="tcard-name">四國經典之旅 5日</div><div class="tcard-days">5天4夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ CI178 直飛高松</span><span class="meta-chip">🎨 楓葉橘暖色</span></div>
+          <div class="tcard-hl">栗林公園・金刀比羅宮・讚岐烏龍麵故鄉・四國精華一次走遍</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="03_Shikoku5.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p06')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#6B0000,#B01515,#C8A020)">
+          <div class="tcard-num">06</div><div class="tcard-name">山陰山陽心慢遊 5日</div><div class="tcard-days">5天4夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ CI178 直飛高松</span><span class="meta-chip">♨️ 兩晚溫泉旅館</span><span class="meta-chip">🎨 鳥居紅白和風</span></div>
+          <div class="tcard-hl">出雲大社・足立美術館（日本第一庭園）・玉造美肌溫泉・鬼太郎街道</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="06_SanInSanYo.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+    </div>
+
+    <div class="region-label">🦘 澳洲</div>
+    <div class="cards">
+      <div class="tcard" onclick="go('p04')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#00205B,#0057A8,#C8102E)">
+          <div class="tcard-num">04</div><div class="tcard-name">酷遊澳洲雪墨 8日</div><div class="tcard-days">8天6夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ 酷航經新加坡</span><span class="meta-chip">🎨 澳洲國旗藍紅</span></div>
+          <div class="tcard-hl">雪梨3晚＋墨爾本2晚・藍山國家公園・菲利普島小企鵝・歌劇院</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="04_AusSydMel8.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p05')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#081528,#152D52,#1A4A7A)">
+          <div class="tcard-num">05</div><div class="tcard-name">藍色公路・墨爾本 7日</div><div class="tcard-days">7天5夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ CI57 直飛</span><span class="meta-chip price">💰 NT$88,900</span><span class="meta-chip">🎨 霧白深藍護眼</span></div>
+          <div class="tcard-hl">大洋路十二門徒・普芬蒸汽火車・小企鵝歸巢・全程墨爾本不換城市</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="05_AusMelbourne7.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p07')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#3A1500,#C85A10,#D4A020)">
+          <div class="tcard-num">07</div><div class="tcard-name">東澳全覽三城 9日</div><div class="tcard-days">9天7夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ 長榮 BR315</span><span class="meta-chip">🐨 贈無尾熊合照</span><span class="meta-chip">🎨 落日橙金大地</span></div>
+          <div class="tcard-hl">雪梨＋墨爾本＋黃金海岸・歌劇院入內導覽・皇家遊艇・天堂鄉農莊</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="07_AusEastCoast9Days.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p08')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#5A3A00,#C89000,#D4504A)">
+          <div class="tcard-num">08</div><div class="tcard-name">澳洲花漾黃金雪 8日</div><div class="tcard-days">8天5夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ CI53/52</span><span class="meta-chip price">💰 NT$84,900</span><span class="meta-chip">🎨 黃金陽光</span></div>
+          <div class="tcard-hl">無尾熊抱抱（贈）・藍光螢火蟲・藍山三纜車・五星賭場自助餐</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="08_AusGoldSydney8Days.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+      <div class="tcard" onclick="go('p09')">
+        <div class="tcard-head" style="background:linear-gradient(120deg,#003A3A,#007A7A,#C8A020)">
+          <div class="tcard-num">09</div><div class="tcard-name">旅天下澳洲金雪 8日</div><div class="tcard-days">8天5夜</div>
+        </div>
+        <div class="tcard-body">
+          <div class="tcard-meta"><span class="meta-chip">✈ CI051/054</span><span class="meta-chip price">💰 NT$94,800~</span><span class="meta-chip">🎨 珊瑚礁清藍綠</span></div>
+          <div class="tcard-hl">Moxy・Indigo 設計感旅宿・塔隆加動物園・悠閒下午茶・G-Link電車日</div>
+        </div>
+        <div class="tcard-foot"><span class="tcard-open">開啟儀表板 →</span><a class="tcard-new" href="09_AusTravelWorldGoldSnow8.html" target="_blank" onclick="event.stopPropagation()">開新視窗 ↗</a></div>
+      </div>
+    </div>
+
+    <div style="margin-top:30px;padding:16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:13px;color:var(--muted);line-height:1.9">
+      📌 <strong style="color:var(--text)">使用說明：</strong>本總覽頁與 9 個行程儀表板需放在<strong>同一資料夾</strong>（GitHub Pages 同目錄）才能正常切換。各儀表板採懶載入設計，首次點擊才載入，不影響開啟速度。如需單獨分享某行程，可用卡片右下「開新視窗」取得獨立連結。
+    </div>
+  </div>
+
+  <!-- 各行程 iframe（懶載入）-->
+  <div id="p01" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="01_OkinawaBlue5.html"></iframe></div>
+  <div id="p02" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="02_OkinawaFun5.html"></iframe></div>
+  <div id="p03" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="03_Shikoku5.html"></iframe></div>
+  <div id="p04" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="04_AusSydMel8.html"></iframe></div>
+  <div id="p05" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="05_AusMelbourne7.html"></iframe></div>
+  <div id="p06" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="06_SanInSanYo.html"></iframe></div>
+  <div id="p07" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="07_AusEastCoast9Days.html"></iframe></div>
+  <div id="p08" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="08_AusGoldSydney8Days.html"></iframe></div>
+  <div id="p09" class="page"><div class="loading-tip">⏳ 載入中…</div><iframe data-src="09_AusTravelWorldGoldSnow8.html"></iframe></div>
+
+</div>
+
+<script>
+function go(pageId, tabEl) {
+  // 切換頁面
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById(pageId);
+  page.classList.add('active');
+
+  // 切換 tab 高亮（卡片點擊時自動找對應 tab）
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const tab = tabEl || document.querySelector('.tab[data-page="' + pageId + '"]');
+  if (tab) tab.classList.add('active');
+
+  // 懶載入 iframe
+  const iframe = page.querySelector('iframe');
+  if (iframe && !iframe.src) {
+    page.classList.add('loading');
+    iframe.src = iframe.getAttribute('data-src');
+    iframe.onload = () => page.classList.remove('loading');
+  }
+  // 回頂端
+  if (pageId === 'home') document.getElementById('home').scrollTop = 0;
+}
+</script>
+</body>
+</html>

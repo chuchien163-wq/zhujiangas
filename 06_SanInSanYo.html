@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>山陰山陽心慢遊5日 ─ 行程儀表板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Serif+TC:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --torii: #C0392B;      /* 鳥居紅 */
+  --torii2: #A93226;     /* 深鳥居紅 */
+  --torii3: #E74C3C;     /* 亮紅 */
+  --gold: #B8860B;       /* 金色 */
+  --gold2: #D4AC0D;      /* 亮金 */
+  --ink: #1A0A0A;        /* 墨黑 */
+  --ink2: #2C0F0F;       /* 深棕黑 */
+  --ok: #1E6B3A;         /* 和風綠 */
+  --warn: #C0392B;       /* 警告用紅 */
+  --bg: #FDF8F5;         /* 和紙白 */
+  --bg2: #F5EDE8;        /* 淡粉白 */
+  --card: #FFFFFF;
+  --card-border: #E8D5CC;
+  --text: #1A0505;
+  --text2: #3A1010;
+  --muted: #8A6060;
+  --left-w: 215px;
+  --right-w: 270px;
+  --top-h: 68px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(192,57,43,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(192,57,43,0.05) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(184,134,11,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,57,43,0.04) 0%, transparent 40%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* ══ TOP HEADER ════════════════════════════ */
+.top-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--top-h);
+  background: linear-gradient(90deg,
+    #6B0000 0%,
+    #8B1010 25%,
+    #B01515 55%,
+    #C0392B 80%,
+    #8B6914 100%);
+  border-bottom: 3px solid rgba(212,172,13,0.6);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 18px;
+  z-index: 100;
+  box-shadow: 0 3px 20px rgba(107,0,0,.35);
+  overflow: hidden;
+}
+/* 和風紋路裝飾 */
+.top-header::before {
+  content: '⛩  ⛩  ⛩';
+  position: absolute;
+  right: 160px; top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.1);
+  font-size: 24px;
+  letter-spacing: 20px;
+  pointer-events: none;
+}
+.top-logo {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 24px;
+  letter-spacing: 4px;
+  color: #FFF5E6;
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0,0,0,.4);
+  position: relative; z-index: 1;
+}
+.top-logo span { color: #FFD700; }
+.top-divider { width: 1px; height: 32px; background: rgba(255,220,180,.35); position: relative; z-index: 1; }
+.top-sub { font-size: 13px; color: rgba(255,235,210,.8); line-height: 1.5; position: relative; z-index: 1; }
+.top-tags { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; }
+.top-tag {
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,220,160,.3);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 13px; color: #FFE8CC; white-space: nowrap;
+}
+
+/* ══ LAYOUT ════════════════════════════════ */
+.layout { display: flex; margin-top: var(--top-h); min-height: calc(100vh - var(--top-h)); }
+
+/* ══ LEFT NAV ══════════════════════════════ */
+.left-nav {
+  width: var(--left-w); flex-shrink: 0;
+  position: sticky; top: var(--top-h);
+  height: calc(100vh - var(--top-h));
+  background: var(--card);
+  border-right: 1px solid var(--card-border);
+  overflow-y: auto; padding: 16px 0 80px;
+  box-shadow: 2px 0 8px rgba(107,0,0,.06);
+}
+.nav-section-label {
+  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); padding: 10px 18px 4px; font-weight: 600;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 18px; cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: all .2s; font-size: 15px;
+  color: var(--text2); text-decoration: none;
+}
+.nav-item:hover { background: #FFF0EC; color: var(--torii); border-left-color: var(--torii3); }
+.nav-item.active { background: #FFF0EC; color: var(--torii2); border-left-color: var(--torii); font-weight: 700; }
+.nav-item.warn-nav:hover, .nav-item.warn-nav.active { color: #8B4500; border-left-color: var(--gold); background: #FFF8EC; }
+.nav-item.onsen-nav:hover, .nav-item.onsen-nav.active { color: var(--ok); border-left-color: #2ECC71; background: #EDFAF3; }
+.nav-dot { width: 9px; height: 9px; border-radius: 50%; background: #D4B0A8; flex-shrink: 0; }
+.nav-item.active .nav-dot { background: var(--torii); }
+.nav-item.warn-nav.active .nav-dot { background: var(--gold); }
+.nav-item.onsen-nav.active .nav-dot { background: var(--ok); }
+.nav-day-num { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; line-height: 1; }
+.nav-day-sub { font-size: 13px; line-height: 1.4; margin-top: 2px; color: var(--muted); }
+.nav-item.active .nav-day-sub { color: var(--torii); opacity: .8; }
+.nav-divider { height: 1px; background: var(--card-border); margin: 10px 18px; }
+
+/* ══ MAIN ══════════════════════════════════ */
+.main-content { flex: 1; overflow-y: auto; padding: 28px 28px 80px; min-width: 0; }
+.day-section { display: none; animation: fadeIn .25s ease; }
+.day-section.active { display: block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; } }
+
+/* Day Header */
+.day-header-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-top: 4px solid var(--torii);
+  border-radius: 16px; padding: 22px 26px; margin-bottom: 20px;
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  box-shadow: 0 2px 12px rgba(107,0,0,.08);
+}
+.day-header-card.onsen-day { border-top-color: #E74C3C; background: linear-gradient(135deg, #FFF8F5, #FFFFFF); }
+.day-header-card.transit-day { border-top-color: var(--gold); background: linear-gradient(135deg, #FFFBF0, #FFFFFF); }
+
+.day-num-big { font-family:'Bebas Neue',sans-serif; font-size:54px; letter-spacing:4px; line-height:1; color:var(--torii); margin-bottom:6px; }
+.transit-day .day-num-big { color: var(--gold); }
+
+.day-title-big { font-size:19px; font-weight:700; color:var(--text); margin-bottom:4px; line-height:1.4; }
+.day-sub-text { font-size:14px; color:var(--muted); }
+
+/* Region Badge */
+.region-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:#FFF0EC; color:var(--torii2);
+  border:1px solid #F5C5BB; border-radius:20px;
+  padding:4px 14px; font-size:13px; font-weight:700; margin-bottom:8px;
+}
+.region-badge.gold { background:#FFF8EC; color:var(--gold); border-color:#E8D090; }
+.region-badge.green { background:#EDFAF3; color:var(--ok); border-color:#A8D8B8; }
+
+.day-header-stats { display:flex; gap:12px; flex-wrap:wrap; }
+.stat-pill {
+  background:#FFF0EC; border:1px solid #F5C5BB;
+  border-radius:12px; padding:12px 18px; text-align:center; min-width:90px;
+}
+.stat-pill-num { font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:1px; color:var(--torii); line-height:1; }
+.stat-pill-lbl { font-size:12px; color:var(--muted); margin-top:3px; }
+
+/* Spots */
+.spots-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; margin-bottom:20px; }
+.spot-card {
+  background:var(--card); border:1px solid var(--card-border);
+  border-radius:14px; padding:18px;
+  box-shadow:0 1px 8px rgba(107,0,0,.06);
+  transition:box-shadow .2s, transform .15s;
+}
+.spot-card:hover { box-shadow:0 5px 18px rgba(192,57,43,.12); transform:translateY(-2px); }
+.spot-card-top { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.spot-emoji { font-size:26px; }
+.spot-name-text { font-size:16px; font-weight:700; color:var(--text); line-height:1.3; }
+.spot-rating { font-size:13px; color:var(--gold); margin-top:2px; }
+.spot-meta-text { font-size:14px; color:var(--muted); margin-bottom:12px; line-height:1.6; }
+.spot-btns { display:flex; gap:8px; flex-wrap:wrap; }
+.spot-btn {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:13px; padding:6px 14px; border-radius:8px;
+  text-decoration:none; font-weight:600; transition:opacity .15s, transform .1s;
+}
+.spot-btn:hover { opacity:.8; transform:translateY(-1px); }
+.btn-intro { background:#FFF0EC; color:var(--torii2); border:1px solid #F5C5BB; }
+.btn-map { background:#EDFAF3; color:var(--ok); border:1px solid #A8D8B8; }
+
+/* Meal */
+.meal-block {
+  display:flex; background:#FFFAF8;
+  border:1px solid #F0D8D0; border-radius:14px;
+  margin-bottom:20px; overflow:hidden;
+  box-shadow:0 1px 6px rgba(107,0,0,.05);
+}
+.meal-item { flex:1; padding:14px 16px; border-right:1px solid #F0D8D0; }
+.meal-item:last-child { border-right:none; }
+.meal-label { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:#8B3030; font-weight:700; margin-bottom:6px; }
+.meal-content { font-size:14px; color:var(--text); line-height:1.6; font-weight:500; }
+.meal-price { font-size:12px; color:var(--muted); margin-top:3px; }
+.meal-ok { color:var(--ok); font-weight:600; }
+.meal-self { font-style:italic; color:var(--muted); }
+
+/* Alert */
+.alert-box {
+  background:#FFF8F0; border:1px solid #E8C890;
+  border-left:4px solid var(--gold);
+  border-radius:12px; padding:16px 20px;
+  font-size:15px; color:#5A3A00; margin-bottom:20px;
+  display:flex; gap:12px; align-items:flex-start; line-height:1.8;
+}
+.info-box {
+  background:#FFF0EC; border:1px solid #F5C5BB;
+  border-left:4px solid var(--torii);
+  border-radius:12px; padding:16px 20px;
+  font-size:15px; color:var(--torii2); margin-bottom:20px; line-height:1.8;
+}
+.alert-icon { font-size:18px; flex-shrink:0; margin-top:2px; }
+
+/* Onsen Special */
+.onsen-box {
+  background:linear-gradient(135deg,#FFF5F5,#FFF8EC);
+  border:1px solid #F0C0A0; border-radius:14px;
+  padding:20px; margin-bottom:20px;
+  text-align:center;
+  box-shadow:0 2px 10px rgba(107,0,0,.07);
+}
+.onsen-emoji { font-size:48px; display:block; margin-bottom:10px; }
+.onsen-title { font-size:20px; font-weight:700; color:var(--torii2); margin-bottom:6px; font-family:'Noto Serif TC',serif; }
+.onsen-sub { font-size:14px; color:var(--muted); line-height:1.9; }
+
+/* Segments */
+.seg-block {
+  background:var(--card); border:1px solid var(--card-border);
+  border-radius:14px; overflow:hidden; margin-bottom:20px;
+  box-shadow:0 1px 8px rgba(107,0,0,.06);
+}
+.seg-block-title {
+  padding:13px 20px; font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--muted); border-bottom:1px solid var(--card-border);
+  background:var(--bg2); font-weight:600;
+}
+.seg-table { width:100%; border-collapse:collapse; font-size:14px; }
+.seg-table th {
+  text-align:left; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--muted); padding:11px 18px; border-bottom:1px solid var(--card-border);
+  font-weight:600; background:var(--bg2);
+}
+.seg-table td { padding:13px 18px; border-bottom:1px solid #F5ECE8; vertical-align:middle; }
+.seg-table tr:last-child td { border-bottom:none; }
+.seg-table tr:hover td { background:#FFF8F5; }
+.seg-route-main { font-weight:600; font-size:15px; color:var(--text); }
+.seg-route-note { font-size:13px; color:var(--muted); margin-top:3px; }
+.seg-center { text-align:center; font-weight:700; font-size:15px; color:var(--text2); }
+.map-link { display:inline-flex; align-items:center; gap:3px; font-size:12px; color:var(--torii); text-decoration:none; opacity:.65; margin-left:6px; }
+.map-link:hover { opacity:1; }
+.badge-ok { display:inline-block; background:#EDFAF3; color:var(--ok); border:1px solid #A8D8B8; border-radius:8px; padding:4px 12px; font-size:13px; font-weight:700; }
+.badge-warn { display:inline-block; background:#FFF8EC; color:#8B5A00; border:1px solid #E8C890; border-radius:8px; padding:4px 12px; font-size:13px; font-weight:700; }
+
+/* Day Stats */
+.day-stats-row { display:flex; border-top:1px solid var(--card-border); background:var(--bg2); }
+.day-stat { flex:1; text-align:center; padding:13px 8px; border-right:1px solid var(--card-border); }
+.day-stat:last-child { border-right:none; }
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:1px; color:var(--torii); line-height:1; }
+.stat-lbl { font-size:13px; color:var(--muted); margin-top:3px; }
+
+/* Transit */
+.transit-center {
+  text-align:center; padding:48px 20px;
+  background:var(--card); border:1px solid #E8D090;
+  border-radius:16px; box-shadow:0 2px 10px rgba(107,0,0,.06);
+}
+.transit-emoji { font-size:52px; display:block; margin-bottom:16px; }
+.transit-title { font-size:22px; font-weight:700; color:var(--gold); margin-bottom:8px; font-family:'Noto Serif TC',serif; }
+.transit-sub { font-size:15px; color:var(--muted); line-height:2; }
+
+/* RIGHT PANEL */
+.right-panel {
+  width:var(--right-w); flex-shrink:0;
+  position:sticky; top:var(--top-h);
+  height:calc(100vh - var(--top-h));
+  background:var(--card);
+  border-left:1px solid var(--card-border);
+  overflow-y:auto; padding:20px 18px 80px;
+  box-shadow:-2px 0 8px rgba(107,0,0,.05);
+}
+.panel-title { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid var(--card-border); }
+.kpi-mini { background:#FFF0EC; border-radius:12px; padding:14px 16px; margin-bottom:10px; border:1px solid #F5C5BB; }
+.kpi-mini-val { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:1px; color:var(--torii); line-height:1; }
+.kpi-mini.gold-kpi { background:#FFF8EC; border-color:#E8D090; }
+.kpi-mini.gold-kpi .kpi-mini-val { color:var(--gold); }
+.kpi-mini.ok-kpi { background:#EDFAF3; border-color:#A8D8B8; }
+.kpi-mini.ok-kpi .kpi-mini-val { color:var(--ok); }
+.kpi-mini-lbl { font-size:13px; color:var(--muted); margin-top:4px; }
+.panel-divider { height:1px; background:var(--card-border); margin:16px 0; }
+.legend-item { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--text2); margin-bottom:10px; }
+.ldot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.hotel-box { background:var(--bg2); border:1px solid var(--card-border); border-radius:10px; padding:14px; font-size:14px; line-height:1.8; margin-bottom:10px; }
+.hotel-name { font-weight:700; color:var(--text); font-size:14px; }
+.hotel-star { color:var(--gold); font-size:12px; }
+.hotel-detail { font-size:13px; color:var(--muted); margin-top:2px; }
+
+@media(max-width:900px) {
+  .left-nav,.right-panel { display:none; }
+  .top-tags { display:none; }
+  .mobile-tabs { display:flex !important; overflow-x:auto; background:var(--card); border-bottom:2px solid var(--card-border); padding:0 8px; position:sticky; top:var(--top-h); z-index:90; }
+  .mobile-tab { padding:13px 14px; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; transition:all .2s; }
+  .mobile-tab.active { color:var(--torii); border-bottom-color:var(--torii); }
+  .main-content { padding:16px; }
+}
+.mobile-tabs { display:none; }
+</style>
+</head>
+<body>
+
+<div class="top-header">
+  <div class="top-logo">⛩ 山陰山陽<span>心慢遊</span> 5日</div>
+  <div class="top-divider"></div>
+  <div class="top-sub">竹建瓦斯員工旅遊<br>行程距離驗證報告</div>
+  <div class="top-tags">
+    <span class="top-tag">✈ 中華航空 CI178 直飛高松</span>
+    <span class="top-tag">♨️ 玉造・大山溫泉</span>
+    <span class="top-tag">5天4夜</span>
+    <span class="top-tag">⛩ 出雲大社・足立美術館</span>
+  </div>
+</div>
+
+<div class="mobile-tabs">
+  <div class="mobile-tab active" onclick="showDay('d1',this)">DAY 1</div>
+  <div class="mobile-tab" onclick="showDay('d2',this)">DAY 2</div>
+  <div class="mobile-tab" onclick="showDay('d3',this)">DAY 3</div>
+  <div class="mobile-tab" onclick="showDay('d4',this)">DAY 4</div>
+  <div class="mobile-tab" onclick="showDay('d5',this)">DAY 5</div>
+  <div class="mobile-tab" onclick="showDay('hotel',this)">🏨</div>
+  <div class="mobile-tab" onclick="showDay('summary',this)">📋</div>
+</div>
+
+<div class="layout">
+  <nav class="left-nav">
+    <div class="nav-section-label">⛩ 山陰山陽 5日</div>
+    <a class="nav-item active" onclick="showDay('d1',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 1</div><div class="nav-day-sub">高松・琴平溫泉</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('d2',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 2</div><div class="nav-day-sub">栗林公園・後樂園</div></div>
+    </a>
+    <a class="nav-item onsen-nav" onclick="showDay('d3',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 3</div><div class="nav-day-sub">鬼太郎街道・玉造溫泉</div></div>
+    </a>
+    <a class="nav-item warn-nav" onclick="showDay('d4',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 4</div><div class="nav-day-sub">⚠️ 出雲大社・足立美術館</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('d5',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num">DAY 5</div><div class="nav-day-sub">倉敷美觀・高松回程</div></div>
+    </a>
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">其他資訊</div>
+    <a class="nav-item" onclick="showDay('hotel',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num" style="font-size:16px;letter-spacing:0">🏨 住宿</div><div class="nav-day-sub">溫泉旅館・城市飯店</div></div>
+    </a>
+    <a class="nav-item" onclick="showDay('summary',this)" href="#">
+      <div class="nav-dot"></div>
+      <div><div class="nav-day-num" style="font-size:16px;letter-spacing:0">📋 總覽</div><div class="nav-day-sub">全程彙整</div></div>
+    </a>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- DAY 1 -->
+    <div id="d1" class="day-section active">
+      <div class="day-header-card transit-day">
+        <div>
+          <div class="region-badge gold">✈ 抵達日</div>
+          <div class="day-num-big">DAY 1</div>
+          <div class="day-title-big">桃園機場 → 高松空港 → 琴平溫泉 / 塩江溫泉</div>
+          <div class="day-sub-text">中華航空 CI178 14:30 起飛・18:05 抵達高松・直飛</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill" style="background:#FFF8EC;border-color:#E8D090"><div class="stat-pill-num" style="color:var(--gold)">~35</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill" style="background:#FFF8EC;border-color:#E8D090"><div class="stat-pill-num" style="color:var(--gold)">~45</div><div class="stat-pill-lbl">分鐘</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">出發前自理</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">機上餐食</div><div class="meal-price meal-self">CI178 機上</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">季節會席套餐<br>或 飯店自助餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+      </div>
+      <div class="transit-center">
+        <span class="transit-emoji">✈️⛩️</span>
+        <div class="transit-title">飛往神話之國・山陰山陽</div>
+        <div class="transit-sub">
+          CI178 桃園(TPE) 14:30 → 高松(TAK) 18:05<br>
+          飛行約 2小時35分・直飛四國高松<br><br>
+          抵達後直赴溫泉旅館・享用季節會席料理<br>
+          ♨️ 琴平溫泉 或 塩江溫泉・山間療癒之夜
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>距離</th><th>時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr><td><div class="seg-route-main">✈️ 高松空港 → ♨️ 琴平/塩江溫泉</div><div class="seg-route-note">往南或往東山區方向，約35~40km</div></td><td class="seg-center">約 35 km</td><td class="seg-center">約 45 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div id="d2" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="region-badge">🌿 香川→岡山</div>
+          <div class="day-num-big">DAY 2</div>
+          <div class="day-title-big">栗林公園 → 鷲羽山展望台 → 舊野崎家住宅 → 岡山後樂園</div>
+          <div class="day-sub-text">庭園・歷史・瀨戶內海展望日</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~120</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~2.0</div><div class="stat-pill-lbl">小時行車</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">4</div><div class="stat-pill-lbl">景點</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">瀨戶內海日式套餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">燒肉吃到飽<br>或 涮涮鍋+軟性飲料無限</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🌲</div><div><div class="spot-name-text">栗林公園</div><div class="spot-rating">⭐ 4.5 ｜ 米其林星級・日本特別名勝</div></div></div>
+          <div class="spot-meta-text">34.3387°N 134.0467°E<br>1625年大名庭園，6湖13假山，春櫻・夏蓮・秋楓・冬雪，四季各異</div>
+          <div class="spot-btns"><a class="spot-btn btn-intro" href="https://ritsuringarden.jp/tw/" target="_blank">🔗 官網</a><a class="spot-btn btn-map" href="https://www.google.com/maps/search/栗林公園+高松" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🌊</div><div><div class="spot-name-text">鷲羽山展望台</div><div class="spot-rating">⭐ 4.3 ｜ 瀨戶內海國立公園</div></div></div>
+          <div class="spot-meta-text">34.4636°N 133.7894°E<br>眺望瀨戶大橋・群島美景，日本首座國立公園內絕景展望台</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/鷲羽山展望台" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🏛️</div><div><div class="spot-name-text">舊野崎家住宅（鹽田王宅邸）</div><div class="spot-rating">⭐ 4.1 ｜ 江戶時代遺跡</div></div></div>
+          <div class="spot-meta-text">34.4957°N 133.8553°E<br>3000坪庭園・六座土庫，鹽田王的豪邸，見識江戶末期的威勢</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/野崎家住宅+岡山" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🏯</div><div><div class="spot-name-text">岡山後樂園</div><div class="spot-rating">⭐ 4.4 ｜ 日本三大名園</div></div></div>
+          <div class="spot-meta-text">34.6685°N 133.9386°E<br>1686年藩主庭園，13萬平方米，春賞櫻・秋楓紅，三大名園之一</div>
+          <div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.okayama-korakuen.jp/" target="_blank">🔗 官網</a><a class="spot-btn btn-map" href="https://www.google.com/maps/search/岡山後樂園" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>距離</th><th>時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr><td><div class="seg-route-main">♨️ 飯店 → 🌲 栗林公園 <a class="map-link" href="https://www.google.com/maps/dir/34.2200,134.0800/34.3387,134.0467" target="_blank">🗺</a></div><div class="seg-route-note">北上高松市區，約30km</div></td><td class="seg-center">約 30 km</td><td class="seg-center">約 35 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+            <tr><td><div class="seg-route-main">🌲 栗林公園 → 🌊 鷲羽山 <a class="map-link" href="https://www.google.com/maps/dir/34.3387,134.0467/34.4636,133.7894" target="_blank">🗺</a></div><div class="seg-route-note">西北方向，瀨戶大橋方向，約40km</div></td><td class="seg-center">約 40 km</td><td class="seg-center">約 50 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+            <tr><td><div class="seg-route-main">🌊 鷲羽山 → 🏛️ 舊野崎家 → 🏯 後樂園</div><div class="seg-route-note">往北岡山方向，約50km</div></td><td class="seg-center">約 50 km</td><td class="seg-center">約 60 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num">~120 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num">~2.0 hr</div><div class="stat-lbl">行車時間</div></div>
+          <div class="day-stat"><div class="stat-num">4</div><div class="stat-lbl">景點</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div id="d3" class="day-section">
+      <div class="day-header-card onsen-day">
+        <div>
+          <div class="region-badge green">🌸 鳥取・島根</div>
+          <div class="day-num-big">DAY 3</div>
+          <div class="day-title-big">鳥取花迴廊 → 由志園（牡丹庭園）→ 鬼太郎街道 → 玉造溫泉</div>
+          <div class="day-sub-text">妖怪之町＋美肌溫泉日 ｜ 最具特色的一天</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~160</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~2.5</div><div class="stat-pill-lbl">小時行車</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">日式套餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">季節會席套餐<br>或 飯店自助餐</div><div class="meal-price meal-ok">✓ 玉造溫泉旅館含餐</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🌸</div><div><div class="spot-name-text">鳥取花迴廊</div><div class="spot-rating">⭐ 4.2 ｜ 日本最大花卉公園</div></div></div>
+          <div class="spot-meta-text">35.3708°N 133.5383°E<br>50公頃，巨型玻璃溫室「花卉巨蛋」，可遠眺名山大山，四季花卉</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/鳥取花迴廊" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🪷</div><div><div class="spot-name-text">由志園（牡丹庭園）</div><div class="spot-rating">⭐ 4.3 ｜ 島根大根島</div></div></div>
+          <div class="spot-meta-text">35.4600°N 133.0880°E<br>250種牡丹，錦鯉悠游，四季有花，畫作般清新典雅的日式庭園</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/由志園+島根" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">👹</div><div><div class="spot-name-text">境港・鬼太郎街道散策</div><div class="spot-rating">⭐ 4.1 ｜ 妖怪之町</div></div></div>
+          <div class="spot-meta-text">35.5400°N 133.2300°E<br>水木茂故鄉，120+妖怪銅像，鬼太郎麵包店・妖怪神社・河童噴泉</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/境港+鬼太郎街道" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">♨️</div><div><div class="spot-name-text">玉造溫泉</div><div class="spot-rating">⭐ 4.4 ｜ 日本環境大臣賞 美肌第一</div></div></div>
+          <div class="spot-meta-text">35.4280°N 133.0070°E<br>山陰三大溫泉，「化妝水浴」美肌溫泉，出雲神話加持，女性最愛</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/玉造溫泉+島根" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="onsen-box">
+        <span class="onsen-emoji">♨️</span>
+        <div class="onsen-title">今晚入住玉造溫泉旅館</div>
+        <div class="onsen-sub">
+          曲水之庭 玉泉 / 松乃湯 / 保性館 或同級<br>
+          2016年榮獲日本環境大臣賞「美肌溫泉第一名」<br>
+          有化妝水浴之稱，是山陰女性旅客必訪聖地
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div id="d4" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="region-badge">⛩ 島根・鳥取</div>
+          <div class="day-num-big">DAY 4</div>
+          <div class="day-title-big">⚠️ 出雲大社 → 松江堀川遊覽船 → 足立美術館 → 鳥取大山溫泉</div>
+          <div class="day-sub-text">今日行車最遠 ｜ 神社・古城・日本最美庭園，精彩滿載</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~165</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~3.0</div><div class="stat-pill-lbl">小時行車</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">3</div><div class="stat-pill-lbl">大景點</div></div>
+        </div>
+      </div>
+      <div class="alert-box">
+        <div class="alert-icon">⚠️</div>
+        <div>今日景點橫跨島根縣西部→松江市→安來市（足立美術館），行車約 <strong>3小時</strong>，為全程最重行車日。足立美術館為蟬聯20年日本最美庭園，建議預留充足參觀時間。</div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">鄉土御膳餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">飯店美味自助餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">⛩️</div><div><div class="spot-name-text">出雲大社</div><div class="spot-rating">⭐ 4.6 ｜ 日本求緣第一神社</div></div></div>
+          <div class="spot-meta-text">35.4016°N 132.6852°E<br>日本最古老神社建築・日本國寶，5噸注連繩，求良緣最靈驗之所</div>
+          <div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.izumooyashiro.or.jp/chinese" target="_blank">🔗 官網</a><a class="spot-btn btn-map" href="https://www.google.com/maps/search/出雲大社" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🚢</div><div><div class="spot-name-text">松江堀川遊覽船＋松江城</div><div class="spot-rating">⭐ 4.4 ｜ 日本百名城</div></div></div>
+          <div class="spot-meta-text">35.4726°N 133.0500°E<br>遊船穿過16座橋，4座矮橋需低頭，遙望千鳥城天守閣，韻味十足</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/松江城+堀川遊覧船" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🎨</div><div><div class="spot-name-text">足立美術館</div><div class="spot-rating">⭐ 4.7 ｜ 米其林三星・蟬聯20年日本第一庭園</div></div></div>
+          <div class="spot-meta-text">35.3956°N 133.2570°E<br>橫山大觀作品，四季庭園如生之掛軸，玻璃牆框出人間極美景致</div>
+          <div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.adachi-museum.or.jp/tw/" target="_blank">🔗 官網</a><a class="spot-btn btn-map" href="https://www.google.com/maps/search/足立美術館" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>距離</th><th>時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr><td><div class="seg-route-main">♨️ 玉造溫泉 → ⛩️ 出雲大社 <a class="map-link" href="https://www.google.com/maps/dir/35.4280,133.0070/35.4016,132.6852" target="_blank">🗺</a></div><div class="seg-route-note">西行山陰道，約35km</div></td><td class="seg-center">約 35 km</td><td class="seg-center">約 40 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+            <tr><td><div class="seg-route-main">⛩️ 出雲大社 → 🚢 松江堀川 <a class="map-link" href="https://www.google.com/maps/dir/35.4016,132.6852/35.4726,133.0500" target="_blank">🗺</a></div><div class="seg-route-note">東行松江市，約40km</div></td><td class="seg-center">約 40 km</td><td class="seg-center">約 45 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+            <tr><td><div class="seg-route-main">🚢 松江 → 🎨 足立美術館 <a class="map-link" href="https://www.google.com/maps/dir/35.4726,133.0500/35.3956,133.2570" target="_blank">🗺</a></div><div class="seg-route-note">東南安來市，約25km</div></td><td class="seg-center">約 25 km</td><td class="seg-center">約 35 分</td><td><span class="badge-ok">✓ 正確</span></td></tr>
+            <tr><td><div class="seg-route-main">🎨 足立美術館 → ♨️ 鳥取大山溫泉 <a class="map-link" href="https://www.google.com/maps/dir/35.3956,133.2570/35.3700,133.5500" target="_blank">🗺</a></div><div class="seg-route-note">東行鳥取大山方向，約65km</div></td><td class="seg-center">約 65 km</td><td class="seg-center">約 75 分</td><td><span class="badge-warn">⚠️ 行車長</span></td></tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num" style="color:#8B5A00">~165 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num" style="color:#8B5A00">~3.0 hr</div><div class="stat-lbl">行車時間</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div id="d5" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="region-badge">🏮 岡山・高松</div>
+          <div class="day-num-big">DAY 5</div>
+          <div class="day-title-big">倉敷美觀地區 → 林源十郎商店 → 免稅店 → AEON → 高松空港</div>
+          <div class="day-sub-text">回程日 ｜ 小京都倉敷採買・CI179 19:05 起飛</div>
+        </div>
+        <div class="day-header-stats">
+          <div class="stat-pill"><div class="stat-pill-num">~180</div><div class="stat-pill-lbl">公里</div></div>
+          <div class="stat-pill"><div class="stat-pill-num">~2.5</div><div class="stat-pill-lbl">小時行車</div></div>
+        </div>
+      </div>
+      <div class="meal-block">
+        <div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店內享用</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">讚岐烏龍麵套餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div>
+        <div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">機上餐食</div><div class="meal-price meal-self">CI179 機上</div></div>
+      </div>
+      <div class="spots-grid">
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🏮</div><div><div class="spot-name-text">倉敷美觀地區</div><div class="spot-rating">⭐ 4.5 ｜ 小京都・江戶時代白壁街道</div></div></div>
+          <div class="spot-meta-text">34.5963°N 133.7727°E<br>白壁運河街道，倉敷川柳樹搖曳，完整保存江戶商家街道，有小京都美稱</div>
+          <div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.kurashiki-tabi.jp/tw/" target="_blank">🔗 官網</a><a class="spot-btn btn-map" href="https://www.google.com/maps/search/倉敷美觀地區" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">🛍️</div><div><div class="spot-name-text">林源十郎商店・AEON</div><div class="spot-rating">倉敷複合商業設施</div></div></div>
+          <div class="spot-meta-text">360年歷史藥材店改建，匯集生活雜貨・工藝職人・時尚服飾，屋頂可眺望美觀地區</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/林源十郎商店+倉敷" target="_blank">🗺 地圖</a></div>
+        </div>
+        <div class="spot-card">
+          <div class="spot-card-top"><div class="spot-emoji">✈️</div><div><div class="spot-name-text">高松空港（回程）</div><div class="spot-rating">CI179 19:05</div></div></div>
+          <div class="spot-meta-text">34.2141°N 134.0155°E<br>CI179 高松 19:05 → 桃園 20:55，飛行約2小時50分</div>
+          <div class="spot-btns"><a class="spot-btn btn-map" href="https://www.google.com/maps/search/高松空港" target="_blank">🗺 地圖</a></div>
+        </div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <table class="seg-table">
+          <thead><tr><th>路段</th><th>距離</th><th>時間</th><th>判定</th></tr></thead>
+          <tbody>
+            <tr><td><div class="seg-route-main">♨️ 鳥取大山 → 🏮 倉敷美觀 <a class="map-link" href="https://www.google.com/maps/dir/35.3700,133.5500/34.5963,133.7727" target="_blank">🗺</a></div><div class="seg-route-note">南下岡山方向，約90km</div></td><td class="seg-center">約 90 km</td><td class="seg-center">約 90 分</td><td><span class="badge-warn">⚠️ 行車長</span></td></tr>
+            <tr><td><div class="seg-route-main">🏮 倉敷 → ✈️ 高松空港 <a class="map-link" href="https://www.google.com/maps/dir/34.5963,133.7727/34.2141,134.0155" target="_blank">🗺</a></div><div class="seg-route-note">東南高松方向，瀨戶大橋過海，約90km</div></td><td class="seg-center">約 90 km</td><td class="seg-center">約 90 分</td><td><span class="badge-warn">⚠️ 行車長</span></td></tr>
+          </tbody>
+        </table>
+        <div class="day-stats-row">
+          <div class="day-stat"><div class="stat-num">~180 km</div><div class="stat-lbl">當日里程</div></div>
+          <div class="day-stat"><div class="stat-num">~2.5 hr</div><div class="stat-lbl">行車時間</div></div>
+        </div>
+      </div>
+      <div class="info-box">
+        ✈ 回程 <strong>CI179 高松(TAK) 19:05 → 桃園(TPE) 20:55</strong>，請合理安排倉敷採買時間，預留充裕時間返回高松空港。
+      </div>
+    </div>
+
+    <!-- HOTEL -->
+    <div id="hotel" class="day-section">
+      <div class="day-header-card transit-day">
+        <div>
+          <div class="day-num-big" style="font-size:42px;color:var(--gold)">🏨 住宿說明</div>
+          <div class="day-title-big">每晚不同・溫泉旅館為亮點</div>
+          <div class="day-sub-text">前兩晚溫泉旅館，後兩晚城市飯店</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;margin-bottom:16px">
+        <table style="width:100%;border-collapse:collapse;font-size:15px">
+          <thead><tr style="background:var(--bg2)">
+            <th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">天</th>
+            <th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">住宿</th>
+            <th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">特色</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid var(--card-border)">
+              <td style="padding:14px 18px;font-weight:700;color:var(--gold)">Day 1</td>
+              <td style="padding:14px 18px;color:var(--text)">大江戶溫泉物語 雷歐瑪之森<br>或 塩江溫泉 櫻花莊 或同級</td>
+              <td style="padding:14px 18px;color:var(--muted);font-size:14px">♨️ 溫泉旅館・含晚餐・山間療癒</td>
+            </tr>
+            <tr style="border-top:1px solid var(--card-border)">
+              <td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 2</td>
+              <td style="padding:14px 18px;color:var(--text)">岡山阿貝斯特(ABEST)<br>或 岡山國際飯店 或同級</td>
+              <td style="padding:14px 18px;color:var(--muted);font-size:14px">🏙️ 岡山市區商務飯店</td>
+            </tr>
+            <tr style="border-top:1px solid var(--card-border);background:#FFF8F5">
+              <td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 3</td>
+              <td style="padding:14px 18px;color:var(--text)"><strong>玉造 曲水之庭 玉泉</strong><br>或 玉造 松乃湯<br>或 玉造 保性館 或同級</td>
+              <td style="padding:14px 18px;color:var(--muted);font-size:14px">♨️ 玉造溫泉旅館・美肌第一・含晚餐</td>
+            </tr>
+            <tr style="border-top:1px solid var(--card-border)">
+              <td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 4</td>
+              <td style="padding:14px 18px;color:var(--text)">鳥取大山 MERCURE 或同級</td>
+              <td style="padding:14px 18px;color:var(--muted);font-size:14px">★★★★ 大山渡假飯店，山景宜人</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 飯店星級說明 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div style="background:var(--bg2);border:1px solid var(--card-border);border-left:4px solid var(--torii);border-radius:12px;padding:16px">
+          <div style="font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--torii);margin-bottom:10px;font-weight:700">♨️ 溫泉旅館說明</div>
+          <div style="font-size:14px;color:var(--text2);line-height:1.9">
+            Day 1・Day 3 入住溫泉旅館<br>
+            ・含晚餐（季節懷石・會席料理）<br>
+            ・浴衣提供，天然溫泉可泡湯<br>
+            ・體驗道地日式旅館文化<br>
+            <span style="font-size:13px;color:var(--muted)">※玉造溫泉為日本環境大臣賞美肌第一</span>
+          </div>
+        </div>
+        <div style="background:#FFF8EC;border:1px solid #E8D090;border-left:4px solid var(--gold);border-radius:12px;padding:16px">
+          <div style="font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px;font-weight:700">⭐ 升等推薦（補差價）</div>
+          <div style="font-size:14px;color:#4A3A00;line-height:1.9">
+            <strong>鳥取大山 Mercure ★★★★</strong><br>
+            ・雅高集團，現有即為四星<br><br>
+            <strong>岡山 ANA Crowne Plaza ★★★★★</strong><br>
+            ・五星品牌，需詢問旅行社<br><br>
+            <strong>玉造溫泉 皆生溫泉 旅館升等</strong><br>
+            ・可指定更高檔旅館，需補差價
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:12px;padding:14px;font-size:14px;color:var(--muted);line-height:1.8">
+        📌 <strong style="color:var(--text)">路線基準：</strong>本報告以各區域主要飯店所在城市為基準點計算，實際因飯店位置差異不超過5km，不影響整體評估。
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summary" class="day-section">
+      <div class="day-header-card">
+        <div>
+          <div class="day-num-big" style="font-size:42px">📋 全程總覽</div>
+          <div class="day-title-big">5天行程彙整</div>
+          <div class="day-sub-text">中華航空直飛高松 ｜ 香川→岡山→鳥取→島根→鳥取大山→倉敷</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;margin-bottom:24px;box-shadow:0 1px 8px rgba(107,0,0,.06)">
+        <table style="width:100%;border-collapse:collapse;font-size:15px">
+          <thead><tr style="background:var(--bg2)">
+            <th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">天</th>
+            <th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">主要行程</th>
+            <th style="padding:13px 18px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">里程</th>
+            <th style="padding:13px 18px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">行車</th>
+          </tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid #F0E0D8;background:#FFFBF5"><td style="padding:14px 18px;font-weight:700;color:var(--gold)">Day 1</td><td style="padding:14px 18px;color:var(--text2)">高松空港→琴平/塩江溫泉</td><td style="padding:14px 18px;text-align:center;font-weight:700">~35 km</td><td style="padding:14px 18px;text-align:center;font-weight:700">~45 分</td></tr>
+            <tr style="border-top:1px solid #F0E0D8"><td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 2</td><td style="padding:14px 18px;color:var(--text2)">栗林公園→鷲羽山→舊野崎家→後樂園</td><td style="padding:14px 18px;text-align:center;font-weight:700">~120 km</td><td style="padding:14px 18px;text-align:center;font-weight:700">~2.0 hr</td></tr>
+            <tr style="border-top:1px solid #F0E0D8"><td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 3</td><td style="padding:14px 18px;color:var(--text2)">鳥取花迴廊→由志園→鬼太郎街道→玉造溫泉</td><td style="padding:14px 18px;text-align:center;font-weight:700">~160 km</td><td style="padding:14px 18px;text-align:center;font-weight:700">~2.5 hr</td></tr>
+            <tr style="border-top:1px solid #F0E0D8;background:#FFF8EC"><td style="padding:14px 18px;font-weight:700;color:#8B5A00">Day 4 ⚠️</td><td style="padding:14px 18px;color:var(--text2)">出雲大社→松江堀川→足立美術館→大山溫泉</td><td style="padding:14px 18px;text-align:center;font-weight:700;color:#8B5A00">~165 km</td><td style="padding:14px 18px;text-align:center;font-weight:700;color:#8B5A00">~3.0 hr</td></tr>
+            <tr style="border-top:1px solid #F0E0D8"><td style="padding:14px 18px;font-weight:700;color:var(--torii)">Day 5</td><td style="padding:14px 18px;color:var(--text2)">倉敷美觀→AEON→高松空港</td><td style="padding:14px 18px;text-align:center;font-weight:700">~180 km</td><td style="padding:14px 18px;text-align:center;font-weight:700">~2.5 hr</td></tr>
+            <tr style="border-top:2px solid #F5C5BB;background:#FFF0EC"><td style="padding:14px 18px;font-weight:700;color:var(--torii)">合計</td><td style="padding:14px 18px;color:var(--muted);font-size:14px">全程5天</td><td style="padding:14px 18px;text-align:center;font-weight:900;color:var(--torii);font-size:18px">~660 km</td><td style="padding:14px 18px;text-align:center;font-weight:900;color:var(--torii);font-size:18px">~10.5 hr</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:#FFF8EC;border:1px solid #E8C890;border-left:4px solid var(--gold);border-radius:12px;padding:18px">
+          <div style="font-weight:700;color:#8B5A00;margin-bottom:8px;font-size:15px">⚠️ Day 4 行車最重</div>
+          <div style="font-size:14px;color:#5A3A00;line-height:1.8">出雲→松江→足立→大山，全天約 <strong>3小時</strong>。但景點密度最高，出雲大社・松江城・足立美術館三大亮點全在同一天！</div>
+        </div>
+        <div style="background:#EDFAF3;border:1px solid #A8D8B8;border-left:4px solid var(--ok);border-radius:12px;padding:18px">
+          <div style="font-weight:700;color:var(--ok);margin-bottom:8px;font-size:15px">✅ 兩晚溫泉旅館含晚餐</div>
+          <div style="font-size:14px;color:#0A3A1A;line-height:1.8">Day 1 琴平/塩江溫泉、Day 3 玉造溫泉，均含晚餐。玉造溫泉榮獲美肌溫泉第一，是本行程最大亮點！</div>
+        </div>
+        <div style="background:#FFF0EC;border:1px solid #F5C5BB;border-left:4px solid var(--torii);border-radius:12px;padding:18px">
+          <div style="font-weight:700;color:var(--torii);margin-bottom:8px;font-size:15px">⛩️ 足立美術館</div>
+          <div style="font-size:14px;color:var(--torii2);line-height:1.8">蟬聯超過20年「日本最美庭園」，米其林三星評鑑，每個季節都有不同絕景，請預留足夠參觀時間。</div>
+        </div>
+        <div style="background:#FFF0EC;border:1px solid #F5C5BB;border-left:4px solid var(--torii3);border-radius:12px;padding:18px">
+          <div style="font-weight:700;color:var(--torii);margin-bottom:8px;font-size:15px">🍜 Day 5 讚岐烏龍麵</div>
+          <div style="font-size:14px;color:var(--torii2);line-height:1.8">回程前在烏龍麵故鄉香川品嚐正宗讚岐烏龍麵，完美收尾！與 03 四國行程同樣的美食體驗。</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <!-- 鳥居裝飾 -->
+    <div style="text-align:center;font-size:28px;letter-spacing:8px;color:rgba(192,57,43,0.2);margin-bottom:12px">⛩⛩⛩</div>
+
+    <div class="panel-title">行程概覽</div>
+    <div class="kpi-mini"><div class="kpi-mini-val">5天</div><div class="kpi-mini-lbl">行程（4晚）</div></div>
+    <div class="kpi-mini gold-kpi"><div class="kpi-mini-val">Day 4</div><div class="kpi-mini-lbl">最重行車日（3小時）</div></div>
+    <div class="kpi-mini ok-kpi"><div class="kpi-mini-val">2晚</div><div class="kpi-mini-lbl">溫泉旅館（含晚餐）</div></div>
+    <div class="kpi-mini"><div class="kpi-mini-val">~660km</div><div class="kpi-mini-lbl">全程總里程</div></div>
+
+    <div class="panel-divider"></div>
+    <div class="panel-title">圖例說明</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--ok)"></div>距離時間合理</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--gold)"></div>需注意・行車較長</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--gold)"></div>過境・出發・回程日</div>
+    <div style="font-size:13px;color:var(--muted);margin-top:8px;padding:10px;background:var(--bg2);border-radius:8px;line-height:1.8">
+      直線距離 × 1.3<br>÷ 50 km/h（遊覽車均速）
+    </div>
+
+    <div class="panel-divider"></div>
+    <div class="panel-title">航班資訊</div>
+    <div style="font-size:14px;color:var(--text2);line-height:2;padding:12px;background:var(--bg2);border-radius:8px">
+      ✈ <strong>去程</strong> CI178<br>
+      TPE 14:30 → TAK 18:05<br>
+      直飛約 2hr 35min<br><br>
+      ✈ <strong>回程</strong> CI179<br>
+      TAK 19:05 → TPE 20:55<br>
+      直飛約 2hr 50min
+    </div>
+
+    <div class="panel-divider"></div>
+    <div class="panel-title">每晚住宿</div>
+    <div class="hotel-box">
+      <div class="hotel-name">Day 1 ♨️ 塩江/琴平溫泉</div>
+      <div class="hotel-detail">大江戶溫泉物語 雷歐瑪之森等</div>
+    </div>
+    <div class="hotel-box">
+      <div class="hotel-name">Day 2 🏙️ 岡山市區</div>
+      <div class="hotel-detail">阿貝斯特 / 岡山國際飯店</div>
+    </div>
+    <div class="hotel-box" style="border-color:#F5C5BB;background:#FFF8F5">
+      <div class="hotel-name">Day 3 ♨️ 玉造溫泉 ⭐</div>
+      <div class="hotel-star">美肌溫泉第一名</div>
+      <div class="hotel-detail">曲水之庭 玉泉 / 松乃湯 / 保性館</div>
+    </div>
+    <div class="hotel-box">
+      <div class="hotel-name">Day 4 🏔️ 鳥取大山 Mercure</div>
+      <div class="hotel-star">★★★★</div>
+      <div class="hotel-detail">雅高集團，山景渡假飯店</div>
+    </div>
+
+    <div class="panel-divider"></div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.8">
+      📍 座標：Google Places<br>
+      距離：Haversine 公式<br>
+      製作：Claude AI ｜ 2026年5月
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showDay(id, el) {
+  document.querySelectorAll('.day-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+</script>
+</body>
+</html>

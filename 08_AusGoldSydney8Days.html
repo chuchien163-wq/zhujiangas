@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>澳洲花漾黃金雪8日 ─ 行程儀表板</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sun1:#8B6000;--sun2:#C89000;--sun3:#E8B020;--sun4:#F5D060;
+  --coral:#D4504A;--coral2:#E87060;
+  --ocean:#1A6A8A;--teal:#1A9A8A;
+  --ok:#1A7A3A;--warn:#C87020;
+  --bg:#FFFDF0;--bg2:#FFF8D8;
+  --card:#FFFFFF;--card-border:#E8D890;
+  --text:#2A1A00;--text2:#4A3000;--muted:#8A7030;
+  --left-w:215px;--right-w:270px;--top-h:68px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;color:var(--text);font-size:16px;line-height:1.7;overflow-x:hidden;background-color:var(--bg);background-image:radial-gradient(ellipse at 0% 0%,rgba(200,144,0,.08) 0%,transparent 50%),radial-gradient(ellipse at 100% 50%,rgba(232,176,32,.07) 0%,transparent 45%),radial-gradient(ellipse at 30% 100%,rgba(212,80,74,.05) 0%,transparent 50%);background-attachment:fixed;min-height:100vh;}
+.top-header{position:fixed;top:0;left:0;right:0;height:var(--top-h);background:linear-gradient(90deg,#5A3A00 0%,#9A6A00 30%,#C89000 60%,#E8B020 85%,#D4504A 100%);border-bottom:3px solid rgba(245,208,96,.6);display:flex;align-items:center;padding:0 24px;gap:18px;z-index:100;box-shadow:0 3px 20px rgba(90,58,0,.3);}
+.top-logo{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:3px;color:#FFF8D8;white-space:nowrap;}
+.top-logo span{color:#FFE840;}
+.top-divider{width:1px;height:32px;background:rgba(255,240,160,.3);}
+.top-sub{font-size:13px;color:rgba(255,240,160,.8);line-height:1.5;}
+.top-tags{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.top-tag{background:rgba(255,255,255,.12);border:1px solid rgba(255,220,80,.25);border-radius:20px;padding:4px 14px;font-size:13px;color:#FFF0A0;white-space:nowrap;}
+.layout{display:flex;margin-top:var(--top-h);min-height:calc(100vh - var(--top-h));}
+.left-nav{width:var(--left-w);flex-shrink:0;position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));background:var(--card);border-right:1px solid var(--card-border);overflow-y:auto;padding:16px 0 80px;box-shadow:2px 0 8px rgba(90,58,0,.06);}
+.nav-section-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:10px 18px 4px;font-weight:600;}
+.nav-item{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;border-left:4px solid transparent;transition:all .2s;font-size:15px;color:var(--text2);text-decoration:none;}
+.nav-item:hover{background:#FFFCE8;color:var(--sun1);border-left-color:var(--sun3);}
+.nav-item.active{background:#FFF8D0;color:var(--sun1);border-left-color:var(--sun2);font-weight:700;}
+.nav-item.warn-nav:hover,.nav-item.warn-nav.active{color:var(--warn);border-left-color:var(--warn);background:#FFF5E8;}
+.nav-item.coral-nav:hover,.nav-item.coral-nav.active{color:var(--coral);border-left-color:var(--coral);background:#FFF0EE;}
+.nav-item.transit-nav:hover,.nav-item.transit-nav.active{color:var(--ocean);border-left-color:var(--ocean);background:#EAF5FF;}
+.nav-dot{width:9px;height:9px;border-radius:50%;background:#D4C060;flex-shrink:0;}
+.nav-item.active .nav-dot{background:var(--sun2);}
+.nav-item.warn-nav.active .nav-dot{background:var(--warn);}
+.nav-item.coral-nav.active .nav-dot{background:var(--coral);}
+.nav-item.transit-nav.active .nav-dot{background:var(--ocean);}
+.nav-day-num{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;line-height:1;}
+.nav-day-sub{font-size:13px;line-height:1.4;margin-top:2px;color:var(--muted);}
+.nav-item.active .nav-day-sub{color:var(--sun2);opacity:.8;}
+.nav-divider{height:1px;background:var(--card-border);margin:10px 18px;}
+.main-content{flex:1;overflow-y:auto;padding:28px 28px 80px;min-width:0;}
+.day-section{display:none;animation:fadeIn .25s ease;}
+.day-section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;}}
+.day-header-card{background:var(--card);border:1px solid var(--card-border);border-top:4px solid var(--sun2);border-radius:16px;padding:22px 26px;margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 2px 12px rgba(90,58,0,.08);}
+.day-header-card.warn-day{border-top-color:var(--warn);}
+.day-header-card.coral-day{border-top-color:var(--coral);}
+.day-header-card.transit-day{border-top-color:var(--ocean);background:linear-gradient(135deg,#EAF5FF,#FFFFFF);}
+.day-num-big{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:4px;line-height:1;color:var(--sun2);margin-bottom:6px;}
+.warn-day .day-num-big{color:var(--warn);}
+.coral-day .day-num-big{color:var(--coral);}
+.transit-day .day-num-big{color:var(--ocean);}
+.day-title-big{font-size:19px;font-weight:700;color:var(--text);margin-bottom:4px;line-height:1.4;}
+.day-sub-text{font-size:14px;color:var(--muted);}
+.city-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);color:var(--sun1);border:1px solid #E8D060;border-radius:20px;padding:4px 14px;font-size:13px;font-weight:700;margin-bottom:8px;}
+.city-badge.coral{background:#FFF0EE;color:var(--coral);border-color:#F0C0B8;}
+.city-badge.ocean{background:#EAF5FF;color:var(--ocean);border-color:#A0D0F0;}
+.day-header-stats{display:flex;gap:12px;flex-wrap:wrap;}
+.stat-pill{background:var(--bg2);border:1px solid #E8D060;border-radius:12px;padding:12px 18px;text-align:center;min-width:90px;}
+.warn-day .stat-pill{background:#FFF5E8;border-color:#E8C080;}
+.coral-day .stat-pill{background:#FFF0EE;border-color:#F0C0B8;}
+.stat-pill-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--sun2);line-height:1;}
+.warn-day .stat-pill-num{color:var(--warn);}
+.coral-day .stat-pill-num{color:var(--coral);}
+.stat-pill-lbl{font-size:12px;color:var(--muted);margin-top:3px;}
+.spots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:20px;}
+.spot-card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:18px;box-shadow:0 1px 8px rgba(90,58,0,.06);transition:box-shadow .2s,transform .15s;}
+.spot-card:hover{box-shadow:0 5px 18px rgba(200,144,0,.14);transform:translateY(-2px);}
+.spot-card-top{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.spot-emoji{font-size:26px;}
+.spot-name-text{font-size:16px;font-weight:700;color:var(--text);line-height:1.3;}
+.spot-rating{font-size:13px;color:var(--sun2);margin-top:2px;}
+.spot-meta-text{font-size:14px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
+.spot-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.spot-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;padding:6px 14px;border-radius:8px;text-decoration:none;font-weight:600;transition:opacity .15s,transform .1s;}
+.spot-btn:hover{opacity:.8;transform:translateY(-1px);}
+.btn-intro{background:var(--bg2);color:var(--sun1);border:1px solid #E8D060;}
+.btn-map{background:#EDFAF3;color:var(--ok);border:1px solid #A8D8B8;}
+.meal-block{display:flex;background:#FFFEF5;border:1px solid #E8E0A0;border-radius:14px;margin-bottom:20px;overflow:hidden;box-shadow:0 1px 6px rgba(90,58,0,.05);}
+.meal-item{flex:1;padding:14px 16px;border-right:1px solid #E8E0A0;}
+.meal-item:last-child{border-right:none;}
+.meal-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#8B7000;font-weight:700;margin-bottom:6px;}
+.meal-content{font-size:14px;color:var(--text);line-height:1.6;font-weight:500;}
+.meal-price{font-size:12px;color:var(--muted);margin-top:3px;}
+.meal-ok{color:var(--ok);font-weight:600;}
+.meal-self{font-style:italic;color:var(--muted);}
+.alert-box{background:#FFF8F0;border:1px solid #E8C880;border-left:4px solid var(--warn);border-radius:12px;padding:16px 20px;font-size:15px;color:#5A3A00;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;line-height:1.8;}
+.alert-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.info-box{background:#EAF5FF;border:1px solid #A0D0F0;border-left:4px solid var(--ocean);border-radius:12px;padding:16px 20px;font-size:15px;color:#0A2A4A;margin-bottom:20px;line-height:1.8;}
+.koala-box{background:linear-gradient(135deg,#FFF8E8,#FFF5F5);border:2px solid #E8C060;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;box-shadow:0 3px 12px rgba(200,144,0,.12);}
+.koala-emoji{font-size:60px;display:block;margin-bottom:12px;}
+.koala-title{font-size:22px;font-weight:700;color:var(--sun1);margin-bottom:8px;}
+.koala-sub{font-size:14px;color:var(--muted);line-height:1.9;}
+.seg-block{background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;margin-bottom:20px;box-shadow:0 1px 8px rgba(90,58,0,.06);}
+.seg-block-title{padding:13px 20px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--card-border);background:var(--bg2);font-weight:600;}
+.seg-table{width:100%;border-collapse:collapse;font-size:14px;}
+.seg-table th{text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:11px 18px;border-bottom:1px solid var(--card-border);font-weight:600;background:var(--bg2);}
+.seg-table td{padding:13px 18px;border-bottom:1px solid #F8F0D0;vertical-align:middle;}
+.seg-table tr:last-child td{border-bottom:none;}
+.seg-table tr:hover td{background:#FFFEF5;}
+.seg-route-main{font-weight:600;font-size:15px;color:var(--text);}
+.seg-route-note{font-size:13px;color:var(--muted);margin-top:3px;}
+.seg-center{text-align:center;font-weight:700;font-size:15px;color:var(--text2);}
+.map-link{display:inline-flex;align-items:center;gap:3px;font-size:12px;color:var(--sun2);text-decoration:none;opacity:.65;margin-left:6px;}
+.map-link:hover{opacity:1;}
+.badge-ok{display:inline-block;background:#EDFAF3;color:var(--ok);border:1px solid #A8D8B8;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;}
+.badge-warn{display:inline-block;background:#FFF8E8;color:var(--warn);border:1px solid #E8C080;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;}
+.day-stats-row{display:flex;border-top:1px solid var(--card-border);background:var(--bg2);}
+.day-stat{flex:1;text-align:center;padding:13px 8px;border-right:1px solid var(--card-border);}
+.day-stat:last-child{border-right:none;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--sun2);line-height:1;}
+.stat-lbl{font-size:13px;color:var(--muted);margin-top:3px;}
+.transit-center{text-align:center;padding:48px 20px;background:var(--card);border:1px solid #E8D060;border-radius:16px;box-shadow:0 2px 10px rgba(90,58,0,.06);}
+.transit-emoji{font-size:52px;display:block;margin-bottom:16px;}
+.transit-title{font-size:22px;font-weight:700;color:var(--sun2);margin-bottom:8px;}
+.transit-sub{font-size:15px;color:var(--muted);line-height:2;}
+.right-panel{width:var(--right-w);flex-shrink:0;position:sticky;top:var(--top-h);height:calc(100vh - var(--top-h));background:var(--card);border-left:1px solid var(--card-border);overflow-y:auto;padding:20px 18px 80px;box-shadow:-2px 0 8px rgba(90,58,0,.05);}
+.panel-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--card-border);}
+.kpi-mini{background:var(--bg2);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:1px solid #E8D060;}
+.kpi-mini-val{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:var(--sun2);line-height:1;}
+.kpi-mini.warn-kpi{background:#FFF5E8;border-color:#E8C080;}
+.kpi-mini.warn-kpi .kpi-mini-val{color:var(--warn);}
+.kpi-mini.ok-kpi{background:#EDFAF3;border-color:#A8D8B8;}
+.kpi-mini.ok-kpi .kpi-mini-val{color:var(--ok);}
+.kpi-mini.coral-kpi{background:#FFF0EE;border-color:#F0C0B8;}
+.kpi-mini.coral-kpi .kpi-mini-val{color:var(--coral);}
+.kpi-mini-lbl{font-size:13px;color:var(--muted);margin-top:4px;}
+.panel-divider{height:1px;background:var(--card-border);margin:16px 0;}
+.legend-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text2);margin-bottom:10px;}
+.ldot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.hotel-box{background:var(--bg2);border:1px solid var(--card-border);border-radius:10px;padding:14px;font-size:14px;line-height:1.8;margin-bottom:8px;}
+.hotel-name{font-weight:700;color:var(--text);font-size:14px;}
+.hotel-star{color:var(--sun2);font-size:12px;}
+.hotel-detail{font-size:13px;color:var(--muted);margin-top:2px;}
+@media(max-width:900px){.left-nav,.right-panel{display:none;}.top-tags{display:none;}.mobile-tabs{display:flex !important;overflow-x:auto;background:var(--card);border-bottom:2px solid var(--card-border);padding:0 8px;position:sticky;top:var(--top-h);z-index:90;}.mobile-tab{padding:13px 14px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;}.mobile-tab.active{color:var(--sun1);border-bottom-color:var(--sun2);}.main-content{padding:16px;}}
+.mobile-tabs{display:none;}
+
+/* ── 原版路段驗證格式 ── */
+.seg-header2{display:grid;grid-template-columns:1fr 100px 90px 90px;gap:8px;padding:8px 16px;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--card-border);background:var(--bg2);}
+.seg2{display:grid;grid-template-columns:1fr 100px 90px 90px;gap:8px;align-items:center;padding:10px 16px;border-left:4px solid transparent;transition:background .15s;}
+.seg2:hover{background:var(--bg2);}
+.seg2.ok2{border-left-color:var(--ok);background:rgba(26,122,58,.04);}
+.seg2.warn2{border-left-color:var(--warn);background:rgba(200,112,32,.05);}
+.seg2.flight2{border-left-color:var(--ocean);background:rgba(26,106,138,.05);}
+.seg2-route{font-size:13px;font-weight:600;color:var(--text);line-height:1.5;}
+.seg2-route span{display:block;color:var(--muted);font-weight:400;font-size:11px;margin-top:2px;}
+.seg2-val{text-align:center;font-size:14px;font-weight:700;color:var(--text2);}
+.seg2-val small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:1px;}
+.seg2-badge{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;}
+.badge2-ok{background:#EDFAF3;color:var(--ok);}
+.badge2-warn{background:#FFF5E8;color:var(--warn);}
+.badge2-flight{background:#EAF5FF;color:var(--ocean);}
+.maps-btn{display:inline-flex;align-items:center;gap:4px;background:var(--sun2);color:#fff;border-radius:5px;padding:2px 8px;font-size:11px;text-decoration:none;font-weight:600;margin-left:8px;vertical-align:middle;}
+.maps-btn:hover{background:var(--sun1);}
+.day-stats2{display:flex;border-top:1px solid var(--card-border);background:var(--bg2);}
+.stat2{flex:1;text-align:center;padding:12px 8px;border-right:1px solid var(--card-border);}
+.stat2:last-child{border-right:none;}
+.stat2-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--sun1);line-height:1;}
+.stat2-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+/* ── 自理餐推薦框 ── */
+.food-rec-box{background:linear-gradient(135deg,#FFFEF0,#FFF8D8);border:1px solid #E8D060;border-left:4px solid var(--sun3);border-radius:12px;padding:16px 18px;margin-bottom:20px;}
+.food-rec-title{font-weight:700;color:var(--sun1);font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.food-rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+.food-rec-item{background:rgba(255,255,255,.85);border:1px solid #F0D890;border-radius:10px;padding:10px 12px;}
+.food-rec-name{font-weight:700;color:var(--text);font-size:14px;}
+.food-rec-type{font-size:12px;color:var(--sun2);margin-top:2px;}
+.food-rec-desc{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5;}
+.food-rec-price{font-size:12px;color:var(--ok);margin-top:4px;font-weight:600;}
+
+</style>
+</head>
+<body>
+<div class="top-header">
+  <div class="top-logo">🌻 花漾<span>黃金雪</span> 8日</div>
+  <div class="top-divider"></div>
+  <div class="top-sub">竹建瓦斯員工旅遊<br>行程距離驗證報告</div>
+  <div class="top-tags">
+    <span class="top-tag">✈ 中華航空 CI53/52</span>
+    <span class="top-tag">🌴 布里斯本→黃金海岸→雪梨</span>
+    <span class="top-tag">8天5夜</span>
+    <span class="top-tag">🐨 無尾熊抱抱・螢火蟲 NT$84,900</span>
+  </div>
+</div>
+<div class="mobile-tabs">
+  <div class="mobile-tab active" onclick="showDay('d1',this)">D1</div>
+  <div class="mobile-tab" onclick="showDay('d2',this)">D2</div>
+  <div class="mobile-tab" onclick="showDay('d3',this)">D3</div>
+  <div class="mobile-tab" onclick="showDay('d4',this)">D4</div>
+  <div class="mobile-tab" onclick="showDay('d5',this)">D5✈</div>
+  <div class="mobile-tab" onclick="showDay('d6',this)">D6</div>
+  <div class="mobile-tab" onclick="showDay('d7',this)">D7</div>
+  <div class="mobile-tab" onclick="showDay('d8',this)">D8</div>
+  <div class="mobile-tab" onclick="showDay('hotel',this)">🏨</div>
+  <div class="mobile-tab" onclick="showDay('summary',this)">📋</div>
+</div>
+<div class="layout">
+  <nav class="left-nav">
+    <div class="nav-section-label">🌴 布里斯本→黃金海岸</div>
+    <a class="nav-item transit-nav" onclick="showDay('d1',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 1</div><div class="nav-day-sub">桃園→布里斯本</div></div></a>
+    <a class="nav-item active" onclick="showDay('d2',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 2</div><div class="nav-day-sub">布里斯本→黃金海岸</div></div></a>
+    <a class="nav-item" onclick="showDay('d3',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 3</div><div class="nav-day-sub">鷹高小鎮・酒莊・螢火蟲</div></div></a>
+    <a class="nav-item coral-nav" onclick="showDay('d4',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 4</div><div class="nav-day-sub">🐨 可倫賓鳥園・無尾熊</div></div></a>
+    <div class="nav-divider"></div>
+    <div class="nav-section-label">🦁 雪梨</div>
+    <a class="nav-item transit-nav" onclick="showDay('d5',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 5</div><div class="nav-day-sub">✈ 黃金海岸→雪梨</div></div></a>
+    <a class="nav-item warn-nav" onclick="showDay('d6',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 6</div><div class="nav-day-sub">⚠️ 藍山・奧林匹克</div></div></a>
+    <a class="nav-item" onclick="showDay('d7',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 7</div><div class="nav-day-sub">岩石區・歌劇院・遊船</div></div></a>
+    <a class="nav-item transit-nav" onclick="showDay('d8',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num">DAY 8</div><div class="nav-day-sub">🏠 回程</div></div></a>
+    <div class="nav-divider"></div>
+    <a class="nav-item" onclick="showDay('hotel',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num" style="font-size:16px;letter-spacing:0">🏨 住宿</div><div class="nav-day-sub">飯店說明・升等推薦</div></div></a>
+    <a class="nav-item" onclick="showDay('summary',this)" href="#"><div class="nav-dot"></div><div><div class="nav-day-num" style="font-size:16px;letter-spacing:0">📋 總覽</div><div class="nav-day-sub">全程彙整</div></div></a>
+  </nav>
+  <div class="main-content">
+
+    <!-- DAY 1 -->
+    <div id="d1" class="day-section">
+      <div class="day-header-card transit-day"><div><div class="city-badge ocean">✈ 出發日</div><div class="day-num-big">DAY 1</div><div class="day-title-big">桃園機場 → 布里斯本（夜宿機上）</div><div class="day-sub-text">中華航空 CI53 23:45 起飛・布里斯本進・雪梨出・雙點不回頭路</div></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">自理</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">自理</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">機上簡餐</div><div class="meal-price meal-self">CI53 機上</div></div></div>
+      <div class="transit-center"><span class="transit-emoji">✈️🌴</span><div class="transit-title">布里斯本進・雪梨出，不走回頭路</div><div class="transit-sub">CI53 桃園(TPE) 23:45 → 布里斯本(BNE) 10:50+1<br>飛行約9小時・雙點進出設計<br><br>✓ 贈可倫賓無尾熊抱抱合照（價值AUD69）<br>✓ 贈5G上網卡・澳洲專用轉換插頭</div></div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div id="d2" class="day-section active">
+      <div class="day-header-card"><div><div class="city-badge">🌴 布里斯本→黃金海岸</div><div class="day-num-big">DAY 2</div><div class="day-title-big">布里斯本都會探索（城市貓・市政廳・南岸）→ 黃金海岸</div><div class="day-sub-text">抵達日 ｜ 體驗城市貓渡輪，感受布里斯本在地生活</div></div><div class="day-header-stats"><div class="stat-pill"><div class="stat-pill-num">~80</div><div class="stat-pill-lbl">公里</div></div></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">機上簡餐</div><div class="meal-price meal-self">CI53 抵達前</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">百年教堂鬆餅店</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">韓式烤肉餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🚢</div><div><div class="spot-name-text">城市貓號 City Cat 渡輪</div><div class="spot-rating">⭐ 4.4 ｜ 在地交通體驗</div></div></div><div class="spot-meta-text">布里斯本河上<br>當地人通勤渡輪，欣賞河岸城市風光，體驗最道地澳式生活</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://translink.com.au/" target="_blank">🔗 官方交通網</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🏛️</div><div><div class="spot-name-text">布里斯本市政廳・喬治王廣場</div><div class="spot-rating">⭐ 4.5 ｜ 義大利文藝復興風格</div></div></div><div class="spot-meta-text">-27.4679°S 153.0235°E<br>1930年落成，92公尺鐘樓，水晶吊燈，大理石階梯，華麗典雅</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.brisbane.qld.gov.au/community-and-safety/community-services/city-hall" target="_blank">🔗 市府介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🌊</div><div><div class="spot-name-text">南岸河濱公園</div><div class="spot-rating">⭐ 4.5 ｜ 1988年世博場地</div></div></div><div class="spot-meta-text">-27.4748°S 153.0196°E<br>布里斯本河南岸，16公頃，市民最愛後花園，海灘泳池</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://southbankcorporation.com.au/" target="_blank">🔗 官網介紹</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 ok2"><div class="seg2-route">✈️ 布里斯本機場(BNE) → 🏛️ 市區觀光（市政廳・南岸）<a class="maps-btn" href="https://www.google.com/maps/dir/-27.3842,153.1175/-27.4705,153.0260" target="_blank">🗺 Maps</a><span>Airport Link 進市區</span></div><div class="seg2-val">約 17 km<small>直線 13.2 km</small></div><div class="seg2-val">約 21 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 warn2"><div class="seg2-route">🏛️ 布里斯本市區 → 🌴 黃金海岸飯店<a class="maps-btn" href="https://www.google.com/maps/dir/-27.4705,153.0260/-28.0023,153.4145" target="_blank">🗺 Maps</a><span>M1 Pacific Motorway 南行</span></div><div class="seg2-val">約 92 km<small>直線 70.4 km</small></div><div class="seg2-val">約 110 分<small>⚠ 較長路段</small></div><div class="seg2-val"><span class="seg2-badge badge2-warn">⚠ 注意</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~109 km</div><div class="stat2-lbl">當日總里程</div></div><div class="stat2"><div class="stat2-val">~131 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">2 段</div><div class="stat2-lbl">移動路段</div></div></div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div id="d3" class="day-section">
+      <div class="day-header-card"><div><div class="city-badge">🌿 黃金海岸山區</div><div class="day-num-big">DAY 3</div><div class="day-title-big">鷹高藝術小鎮 → 西達酒莊品酒 → 螢火蟲生態之旅 → 太平洋購物中心</div><div class="day-sub-text">山區慢遊日 ｜ 藍光螢火蟲是澳洲特有，神秘夢幻</div></div><div class="day-header-stats"><div class="stat-pill"><div class="stat-pill-num">~120</div><div class="stat-pill-lbl">公里</div></div></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店自助早餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">酒莊內西式餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">中式料理七菜一湯</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🎨</div><div><div class="spot-name-text">鷹高藝術小鎮</div><div class="spot-rating">⭐ 4.2 ｜ 海拔580m高原</div></div></div><div class="spot-meta-text">Tamborine Mountain<br>昆士蘭第一座國家公園，特色咖啡廳・手工藝品・黑森林咕咕鐘小屋</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.destinationgoldcoast.com/" target="_blank">🔗 旅遊局介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🍷</div><div><div class="spot-name-text">西達酒莊品酒</div><div class="spot-rating">⭐ 4.3 ｜ 昆士蘭葡萄酒產區</div></div></div><div class="spot-meta-text">坦布麗山丘<br>澳洲2460+酒莊，南昆士蘭山海景緻，品嚐澳洲葡萄酒</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.cedarcreekestate.com.au/" target="_blank">🔗 酒莊官網</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">✨</div><div><div class="spot-name-text">藍光螢火蟲生態之旅</div><div class="spot-rating">⭐ 4.6 ｜ 澳洲紐西蘭特有</div></div></div><div class="spot-meta-text">黃金海岸山區洞穴<br>洞穴內如滿天星斗的藍光蟲，發光捕獵，神秘夢幻，非一般螢火蟲</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.cedarcreekestate.com.au/" target="_blank">🔗 螢火蟲洞官網</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🛍️</div><div><div class="spot-name-text">太平洋購物中心 Pacific Fair</div><div class="spot-rating">⭐ 4.4 ｜ 黃金海岸最大商場</div></div></div><div class="spot-meta-text">-28.0325°S 153.4295°E<br>400+品牌，Coles・Woolworth超市，採買採買採買！</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.pacificfair.com.au/" target="_blank">🔗 官網介紹</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏨 黃金海岸 → 🎨 鷹高藝術小鎮（Tamborine 山）<a class="maps-btn" href="https://www.google.com/maps/dir/-28.0023,153.4145/-27.9286,153.1973" target="_blank">🗺 Maps</a><span>西北上山，海拔580m</span></div><div class="seg2-val">約 30 km<small>直線 22.8 km</small></div><div class="seg2-val">約 36 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🎨 鷹高 → 🍷 西達酒莊＋✨ 螢火蟲洞（同園區）<a class="maps-btn" href="https://www.google.com/maps/dir/-27.9286,153.1973/-27.8590,153.1880" target="_blank">🗺 Maps</a><span>山區內短程，螢火蟲洞位於西達酒莊園區</span></div><div class="seg2-val">約 10 km<small>直線 7.8 km</small></div><div class="seg2-val">約 12 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">✨ 山區 → 🛍️ 太平洋購物中心 → 🏨 飯店<a class="maps-btn" href="https://www.google.com/maps/dir/-27.8590,153.1880/-28.0325,153.4295" target="_blank">🗺 Maps</a><span>下山回黃金海岸市區</span></div><div class="seg2-val">約 39 km<small>直線 30.1 km</small></div><div class="seg2-val">約 47 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~79 km</div><div class="stat2-lbl">當日總里程</div></div><div class="stat2"><div class="stat2-val">~95 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">3 段</div><div class="stat2-lbl">移動路段</div></div></div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div id="d4" class="day-section">
+      <div class="day-header-card coral-day"><div><div class="city-badge coral">🐨 黃金海岸</div><div class="day-num-big">DAY 4</div><div class="day-title-big">🐨 可倫賓野生動物園（贈無尾熊抱抱合照）→ 柏利角國家公園</div><div class="day-sub-text">最萌一天 ｜ 贈送無尾熊抱抱合照（價值AUD69）・五星賭場晚餐</div></div></div>
+      <div class="koala-box">
+        <span class="koala-emoji">🐨</span>
+        <div class="koala-title">贈送！可倫賓野生動物園無尾熊抱抱合照</div>
+        <div class="koala-sub">價值 AUD 69 / 人・全程贈送！<br>根據澳洲法律，只有昆士蘭州與西澳可以擁抱無尾熊<br>未來法規可能收緊，千萬別錯過！<br><br>園區還有袋鼠・袋熊・鱷魚・鶴鴕・彩色鸚鵡餵食・剪羊毛表演</div>
+      </div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店自助早餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">方便遊玩</div><div class="meal-price meal-self">敬請自理（見下方推薦）</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">五星賭場自助餐<br>（Harvest Buffet）</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🦜</div><div><div class="spot-name-text">可倫賓野生動物園</div><div class="spot-rating">⭐ 4.5 ｜ 1947年創立・昆士蘭遺產</div></div></div><div class="spot-meta-text">-28.1067°S 153.4506°E<br>1000+種澳洲動物，虹彩吸蜜鸚鵡餵食・無尾熊抱抱合照贈送</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.currumbin-sanctuary.com.au/" target="_blank">🔗 官網介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🌿</div><div><div class="spot-name-text">柏利角國家公園 Burleigh Heads</div><div class="spot-rating">⭐ 4.4 ｜ 黃金海岸自然淨土</div></div></div><div class="spot-meta-text">-28.0902°S 153.4526°E<br>2000萬年前火山熔岩地形，雨林・海岸步道，著名衝浪勝地旁</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://parks.des.qld.gov.au/parks/burleigh-head" target="_blank">🔗 公園局介紹</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏨 黃金海岸飯店 → 🐨 可倫賓野生動物園<a class="maps-btn" href="https://www.google.com/maps/dir/-28.0023,153.4145/-28.1067,153.4506" target="_blank">🗺 Maps</a><span>Gold Coast Hwy 南行</span></div><div class="seg2-val">約 16 km<small>直線 12.1 km</small></div><div class="seg2-val">約 19 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🐨 可倫賓 → 🌿 柏利角國家公園<a class="maps-btn" href="https://www.google.com/maps/dir/-28.1067,153.4506/-28.0902,153.4526" target="_blank">🗺 Maps</a><span>北行，相鄰景點</span></div><div class="seg2-val">約 3 km<small>直線 2.3 km</small></div><div class="seg2-val">約 4 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🌿 柏利角 → 🎰 五星賭場晚餐（Broadbeach）<a class="maps-btn" href="https://www.google.com/maps/dir/-28.0902,153.4526/-28.0283,153.4316" target="_blank">🗺 Maps</a></div><div class="seg2-val">約 9 km<small>直線 7.0 km</small></div><div class="seg2-val">約 11 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~28 km</div><div class="stat2-lbl">當日總里程</div></div><div class="stat2"><div class="stat2-val">~34 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">最輕鬆</div><div class="stat2-lbl">行程強度</div></div></div>
+      </div>
+      <div class="food-rec-box">
+        <div class="food-rec-title">🍽️ Day 4 午餐自理推薦（可倫賓鳥園附近・黃金海岸）</div>
+        <div class="food-rec-grid">
+          <div class="food-rec-item"><div class="food-rec-name">🦞 Charis Seafoods</div><div class="food-rec-type">炸魚薯條・海鮮</div><div class="food-rec-desc">黃金海岸海洋大道，外酥內嫩澳式炸魚，可搭生蠔鮮魚，最在地的海邊美食</div><div class="food-rec-price">約 AUD 15~25/人</div></div>
+          <div class="food-rec-item"><div class="food-rec-name">🍔 Betty's Burgers</div><div class="food-rec-type">澳洲漢堡連鎖</div><div class="food-rec-desc">澳洲必吃漢堡品牌，手工牛肉餅・新鮮蔬菜，份量扎實，衝浪者天堂有分店</div><div class="food-rec-price">約 AUD 15~20/人</div></div>
+          <div class="food-rec-item"><div class="food-rec-name">🍜 可倫賓園區內餐廳</div><div class="food-rec-type">園區內輕食</div><div class="food-rec-desc">動物園內餐廳，省去外出時間，三明治・薯條・飲料齊全，方便繼續看動物</div><div class="food-rec-price">約 AUD 15~25/人</div></div>
+          <div class="food-rec-item"><div class="food-rec-name">🌮 太平洋購物中心美食街</div><div class="food-rec-type">美食廣場</div><div class="food-rec-desc">Pacific Fair 內百種選擇，日式拉麵・泰式・壽司・披薩，應有盡有</div><div class="food-rec-price">約 AUD 15~30/人</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div id="d5" class="day-section">
+      <div class="day-header-card transit-day"><div><div class="city-badge ocean">✈ 黃金海岸→雪梨</div><div class="day-num-big">DAY 5</div><div class="day-title-big">黃金海岸 ✈ 雪梨 → QVB → 海德公園 → 聖瑪莉教堂 → 皇家植物園</div><div class="day-sub-text">轉城市日 ｜ 搭國內航班，下午遊覽雪梨市區精華</div></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店或餐盒</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">澳式漢堡餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">澳式牛排餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🛍️</div><div><div class="spot-name-text">QVB 維多利亞女王購物中心</div><div class="spot-rating">⭐ 4.7 ｜ 全球最美百貨</div></div></div><div class="spot-meta-text">-33.8731°S 151.2066°E<br>皮爾卡丹讚譽全球最美百貨，拜占庭風格，百年皇家老鐘整點報時</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.qvb.com.au/" target="_blank">🔗 官網介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🌿</div><div><div class="spot-name-text">皇家植物園・麥覺理夫人座椅</div><div class="spot-rating">⭐ 4.6 ｜ 雪梨最佳拍照點</div></div></div><div class="spot-meta-text">-33.8642°S 151.2163°E<br>雪梨三寶最佳同框合照點，歌劇院+港灣大橋完美入鏡</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.botanicgardens.org.au/" target="_blank">🔗 官網介紹</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏨 黃金海岸飯店 → ✈️ 黃金海岸機場(OOL)<a class="maps-btn" href="https://www.google.com/maps/dir/-28.0023,153.4145/-28.1644,153.5048" target="_blank">🗺 Maps</a><span>南行 Gold Coast Hwy</span></div><div class="seg2-val">約 26 km<small>直線 20.1 km</small></div><div class="seg2-val">約 31 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 flight2"><div class="seg2-route">✈️ 黃金海岸(OOL) → 雪梨(SYD)（國內航班）<span>約 1.5 小時 ｜ 旅行社安排</span></div><div class="seg2-val">~680 km<small>空中</small></div><div class="seg2-val">約 85 分</div><div class="seg2-val"><span class="seg2-badge badge2-flight">✈ 航班</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">✈️ 雪梨機場 → 🏛️ 市區（QVB・植物園）<a class="maps-btn" href="https://www.google.com/maps/dir/-33.9399,151.1753/-33.8688,151.2093" target="_blank">🗺 Maps</a></div><div class="seg2-val">約 11 km<small>直線 8.5 km</small></div><div class="seg2-val">約 13 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏛️ 市區 → 🏨 Parramatta 飯店<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8688,151.2093/-33.8150,151.0011" target="_blank">🗺 Maps</a><span>西行 M4 往 Parramatta</span></div><div class="seg2-val">約 26 km<small>直線 20.1 km</small></div><div class="seg2-val">約 31 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~63 km</div><div class="stat2-lbl">當日地面里程</div></div><div class="stat2"><div class="stat2-val">~75 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">✈ 1.5 hr</div><div class="stat2-lbl">國內航班</div></div></div>
+      </div>
+    </div>
+
+    <!-- DAY 6 -->
+    <div id="d6" class="day-section">
+      <div class="day-header-card warn-day"><div><div class="city-badge">🦁 雪梨 Sydney</div><div class="day-num-big">DAY 6</div><div class="day-title-big">⚠️ 藍山國家公園（礦坑纜車・叢林纜車・景觀纜車）→ 奧林匹克公園</div><div class="day-sub-text">世界遺產日 ｜ 三姊妹岩・回音谷・最重行車日</div></div><div class="day-header-stats"><div class="stat-pill"><div class="stat-pill-num">~180</div><div class="stat-pill-lbl">公里</div></div><div class="stat-pill"><div class="stat-pill-num">~3.5</div><div class="stat-pill-lbl">小時行車</div></div></div></div>
+      <div class="alert-box"><div class="alert-icon">⚠️</div><div>雪梨↔藍山來回約 <strong>180km / 3.5小時</strong>。藍山海拔1000m以上，氣溫較低，請備外套。搭乘礦坑纜車時請妥善放置隨身物品。</div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店自助早餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">中式料理七菜一湯</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">中西式自助餐<br>或 西式套餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🏔️</div><div><div class="spot-name-text">藍山國家公園（三纜車體驗）</div><div class="spot-rating">⭐ 4.7 ｜ 世界自然遺產</div></div></div><div class="spot-meta-text">-33.7152°S 150.3115°E<br>礦坑纜車52度傾斜・叢林纜車南半球最大・空中觀景纜車，三種體驗</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.scenicworld.com.au/" target="_blank">🔗 三纜車官網</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🏟️</div><div><div class="spot-name-text">雪梨奧林匹克公園</div><div class="spot-rating">⭐ 4.4 ｜ 2000年奧運</div></div></div><div class="spot-meta-text">-33.8459°S 151.0735°E<br>垃圾掩埋場改建的奧運場地，澳洲環保典範</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.sydneyolympicpark.nsw.gov.au/" target="_blank">🔗 官網介紹</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 warn2"><div class="seg2-route">🏨 Parramatta 飯店 → ⛰️ 藍山國家公園<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8150,151.0011/-33.7153,150.3113" target="_blank">🗺 Maps</a><span>M4 Western Motorway 西行，Katoomba 出口</span></div><div class="seg2-val">約 84 km<small>直線 64.7 km</small></div><div class="seg2-val">約 101 分<small>⚠ 需早出發</small></div><div class="seg2-val"><span class="seg2-badge badge2-warn">⚠ 注意</span></div></div>
+        <div class="seg2 warn2"><div class="seg2-route">⛰️ 藍山 → 🏟️ 奧林匹克公園<a class="maps-btn" href="https://www.google.com/maps/dir/-33.7153,150.3113/-33.8459,151.0735" target="_blank">🗺 Maps</a><span>東行 M4 回程順遊</span></div><div class="seg2-val">約 93 km<small>直線 71.9 km</small></div><div class="seg2-val">約 112 分<small>⚠ 回程長段</small></div><div class="seg2-val"><span class="seg2-badge badge2-warn">⚠ 注意</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏟️ 奧林匹克公園 → 🏨 Parramatta 飯店<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8459,151.0735/-33.8150,151.0011" target="_blank">🗺 Maps</a></div><div class="seg2-val">約 9 km<small>直線 7.0 km</small></div><div class="seg2-val">約 11 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~186 km</div><div class="stat2-lbl">當日總里程（最重）</div></div><div class="stat2"><div class="stat2-val">~224 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">3 段</div><div class="stat2-lbl">移動路段</div></div></div>
+      </div>
+    </div>
+
+    <!-- DAY 7 -->
+    <div id="d7" class="day-section">
+      <div class="day-header-card"><div><div class="city-badge">🦁 雪梨 Sydney</div><div class="day-num-big">DAY 7</div><div class="day-title-big">岩石區 → 魚市場 → 雪梨大學 → 歌劇院（入內導覽）→ 港灣遊船晚餐</div><div class="day-sub-text">雪梨精華收尾日 ｜ CI52 22:10 夜宿機上</div></div><div class="day-header-stats"><div class="stat-pill"><div class="stat-pill-num">~15</div><div class="stat-pill-lbl">公里</div></div></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">飯店自助早餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">澳式炸魚薯條</div><div class="meal-price meal-ok">✓ 含在團費內</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">雪梨港灣遊船西式餐</div><div class="meal-price meal-ok">✓ 含在團費內</div></div></div>
+      <div class="spots-grid">
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🐟</div><div><div class="spot-name-text">雪梨魚市場</div><div class="spot-rating">⭐ 4.1 ｜ 南半球最大魚市</div></div></div><div class="spot-meta-text">-33.8744°S 151.1987°E<br>全球第二大魚市場，生猛龍蝦・壽司・生魚片，海鮮控必來</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.sydneyfishmarket.com.au/" target="_blank">🔗 官網介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🎓</div><div><div class="spot-name-text">雪梨大學</div><div class="spot-rating">⭐ 4.6 ｜ 南半球的牛津</div></div></div><div class="spot-meta-text">-33.8882°S 151.1873°E<br>澳洲第一所大學（1850年），哈利波特魔法學院式建築，哥德式主樓</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.sydney.edu.au/" target="_blank">🔗 官網介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🎭</div><div><div class="spot-name-text">雪梨歌劇院（入內+專人導覽）</div><div class="spot-rating">⭐ 4.7 ｜ 世界文化遺產</div></div></div><div class="spot-meta-text">-33.8568°S 151.2153°E<br>2007年世界遺產，世界最大機械木連桿風琴・專人中文導覽</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.sydneyoperahouse.com/" target="_blank">🔗 官網介紹</a></div></div>
+        <div class="spot-card"><div class="spot-card-top"><div class="spot-emoji">🛥️</div><div><div class="spot-name-text">雪梨港灣遊船晚餐</div><div class="spot-rating">⭐ 4.5 ｜ 最浪漫的告別方式</div></div></div><div class="spot-meta-text">雪梨港出發<br>邊享用西式套餐邊欣賞歌劇院・港灣大橋・夜景，完美收尾</div><div class="spot-btns"><a class="spot-btn btn-intro" href="https://www.captaincook.com.au/" target="_blank">🔗 遊船官網</a></div></div>
+      </div>
+      <div class="seg-block">
+        <div class="seg-block-title">📍 路段距離驗證</div>
+        <div class="seg-header2"><div>路段</div><div>估算距離</div><div>行車時間</div><div>判定</div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🏨 Parramatta → 🐟 魚市場・岩石區<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8150,151.0011/-33.8744,151.1987" target="_blank">🗺 Maps</a><span>東行 M4 進市區</span></div><div class="seg2-val">約 25 km<small>直線 19.3 km</small></div><div class="seg2-val">約 30 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🐟 魚市場 → 🎓 雪梨大學 → 🎭 歌劇院（市區巡遊）<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8744,151.1987/-33.8568,151.2153" target="_blank">🗺 Maps</a><span>市區內各點距離近</span></div><div class="seg2-val">約 8 km<small>市區段</small></div><div class="seg2-val">約 15 分</div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="seg2 ok2"><div class="seg2-route">🛥️ 港灣遊船碼頭 → ✈️ 雪梨機場（CI52）<a class="maps-btn" href="https://www.google.com/maps/dir/-33.8568,151.2153/-33.9399,151.1753" target="_blank">🗺 Maps</a><span>建議 19:30 前出發赴機場</span></div><div class="seg2-val">約 10 km<small>直線 8.0 km</small></div><div class="seg2-val">約 12 分<small>建議19:30出發</small></div><div class="seg2-val"><span class="seg2-badge badge2-ok">✓ 正確</span></div></div>
+        <div class="day-stats2"><div class="stat2"><div class="stat2-val">~43 km</div><div class="stat2-lbl">當日總里程</div></div><div class="stat2"><div class="stat2-val">~57 分</div><div class="stat2-lbl">行車時間</div></div><div class="stat2"><div class="stat2-val">✈ 22:10</div><div class="stat2-lbl">CI52 出發</div></div></div>
+      </div>
+      <div class="info-box">✈ 今晚 <strong>中華航空 CI52 雪梨(SYD) 22:10 → 桃園(TPE) 04:30+1</strong> 夜宿機上，請提早結束遊船前往機場。</div>
+    </div>
+
+    <!-- DAY 8 -->
+    <div id="d8" class="day-section">
+      <div class="day-header-card transit-day"><div><div class="city-badge ocean">🏠 回家</div><div class="day-num-big">DAY 8</div><div class="day-title-big">CI52 抵達桃園・平安返家</div><div class="day-sub-text">中華航空 CI52 抵達桃園 04:30</div></div></div>
+      <div class="transit-center"><span class="transit-emoji">🏠🇹🇼</span><div class="transit-title">平安返家！</div><div class="transit-sub">CI52 雪梨(SYD) 22:10 → 桃園(TPE) 04:30+1<br><br>澳洲時差（冬令3~9月）：雪梨比台灣快 <strong>2小時</strong><br>澳洲時差（夏令10~4月）：雪梨比台灣快 <strong>3小時</strong></div></div>
+      <div class="meal-block"><div class="meal-item"><div class="meal-label">🌅 早餐</div><div class="meal-content">機上簡餐</div><div class="meal-price meal-self">CI52</div></div><div class="meal-item"><div class="meal-label">☀️ 午餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">自理</div></div><div class="meal-item"><div class="meal-label">🌙 晚餐</div><div class="meal-content">溫暖的家</div><div class="meal-price meal-self">自理</div></div></div>
+    </div>
+
+    <!-- HOTEL -->
+    <div id="hotel" class="day-section">
+      <div class="day-header-card warn-day"><div><div class="day-num-big" style="font-size:42px;color:var(--sun2)">🏨 住宿說明</div><div class="day-title-big">黃金海岸3晚 ＋ 雪梨2晚・全程★★★★</div><div class="day-sub-text">布里斯本進・雪梨出，不走回頭路</div></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+        <div style="background:var(--card);border:1px solid var(--card-border);border-top:3px solid var(--sun2);border-radius:14px;padding:18px">
+          <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:700">🌴 黃金海岸 Day 2~4（3晚）</div>
+          <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:10px;padding:12px;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--text);font-size:14px">Mercure Gold Coast Resort</div>
+            <div style="color:var(--sun2);font-size:12px">★★★★</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.7">🏊 泳池・健身房・度假設施齊全<br>🌴 渡假村風格，放鬆舒適<br>📍 距衝浪者天堂約3km</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:10px;padding:12px;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--text);font-size:14px">Mantra On View / Vibe / Voco Gold Coast</div>
+            <div style="color:var(--sun2);font-size:12px">★★★★</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.7">🌊 海灘旁・IHG旗下品牌<br>🛍️ 步行可達太平洋購物中心</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">※ 旅行社保有最終決定權</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--card-border);border-top:3px solid var(--coral);border-radius:14px;padding:18px">
+          <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:700">🦁 雪梨 Day 5~6（2晚）</div>
+          <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:10px;padding:12px;margin-bottom:8px">
+            <div style="font-weight:700;color:var(--text);font-size:14px">Holiday Inn Parramatta</div>
+            <div style="color:var(--sun2);font-size:12px">★★★★</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.7">🍳 早餐提供<br>🚆 鄰近火車站，市區交通方便<br>💡 IHG集團・品質穩定</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:10px;padding:12px">
+            <div style="font-weight:700;color:var(--text);font-size:14px">Mercure Sydney Parramatta</div>
+            <div style="color:var(--sun2);font-size:12px">★★★★</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.7">🏋️ 健身房・餐廳<br>📍 Accor集團旗下，品質可靠</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#FFF8E8;border:1px solid #E8D060;border-top:3px solid var(--sun3);border-radius:14px;padding:18px;margin-bottom:16px">
+        <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--sun1);margin-bottom:14px;font-weight:700">⭐ 升等推薦（需補差價）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:14px;color:#4A3000;line-height:2">
+          <div><strong>黃金海岸升等：</strong><br>Palazzo Versace Gold Coast ★★★★★<br>JW Marriott Gold Coast ★★★★★<br>Sheraton Grand Mirage ★★★★★</div>
+          <div><strong>雪梨升等：</strong><br>Four Seasons Hotel Sydney ★★★★★<br>Sofitel Sydney Darling Harbour ★★★★★<br>Sheraton Grand Sydney Hyde Park ★★★★★</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--card-border);border-radius:12px;padding:14px;font-size:14px;color:var(--muted);line-height:1.9">📌 <strong style="color:var(--text)">澳洲飯店說明：</strong>室內禁煙，觸動偵測器罰AUD$1000~1800。三人房多行軍床。如需升等請洽旅行社補差價。</div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summary" class="day-section">
+      <div class="day-header-card"><div><div class="day-num-big" style="font-size:42px">📋 全程總覽</div><div class="day-title-big">8天行程彙整</div><div class="day-sub-text">中華航空 ｜ 布里斯本進・雪梨出 ｜ NT$84,900</div></div></div>
+      <div style="background:var(--card);border:1px solid var(--card-border);border-radius:14px;overflow:hidden;margin-bottom:24px">
+        <table style="width:100%;border-collapse:collapse;font-size:15px">
+          <thead><tr style="background:var(--bg2)"><th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">天</th><th style="padding:13px 18px;text-align:left;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">主要行程</th><th style="padding:13px 18px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600">城市</th></tr></thead>
+          <tbody>
+            <tr style="border-top:1px solid #F8F0D0;background:#EAF5FF"><td style="padding:13px 18px;font-weight:700;color:var(--ocean)">Day 1</td><td style="padding:13px 18px;color:var(--text2)">桃園→布里斯本（CI53 夜宿機上）</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(26,106,138,.1);color:var(--ocean);padding:3px 10px;border-radius:12px;font-size:13px">✈ 過境</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0"><td style="padding:13px 18px;font-weight:700;color:var(--sun2)">Day 2</td><td style="padding:13px 18px;color:var(--text2)">布里斯本市區→黃金海岸・百年教堂鬆餅</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(200,144,0,.12);color:var(--sun1);padding:3px 10px;border-radius:12px;font-size:13px">🌴 黃金海岸</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0"><td style="padding:13px 18px;font-weight:700;color:var(--sun2)">Day 3</td><td style="padding:13px 18px;color:var(--text2)">鷹高小鎮・酒莊・螢火蟲・太平洋商場</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(200,144,0,.12);color:var(--sun1);padding:3px 10px;border-radius:12px;font-size:13px">🌴 黃金海岸</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0;background:#FFF0EE"><td style="padding:13px 18px;font-weight:700;color:var(--coral)">Day 4 🐨</td><td style="padding:13px 18px;color:var(--text2)">可倫賓鳥園+無尾熊抱抱・柏利角・五星賭場自助餐</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(200,144,0,.12);color:var(--sun1);padding:3px 10px;border-radius:12px;font-size:13px">🌴 黃金海岸</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0;background:#EAF5FF"><td style="padding:13px 18px;font-weight:700;color:var(--ocean)">Day 5 ✈</td><td style="padding:13px 18px;color:var(--text2)">黃金海岸→雪梨・QVB・植物園・牛排餐</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(212,80,74,.1);color:var(--coral);padding:3px 10px;border-radius:12px;font-size:13px">🦁 雪梨</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0;background:#FFF8EC"><td style="padding:13px 18px;font-weight:700;color:var(--warn)">Day 6 ⚠️</td><td style="padding:13px 18px;color:var(--text2)">藍山國家公園（三纜車）・奧林匹克公園</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(212,80,74,.1);color:var(--coral);padding:3px 10px;border-radius:12px;font-size:13px">🦁 雪梨</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0"><td style="padding:13px 18px;font-weight:700;color:var(--sun2)">Day 7</td><td style="padding:13px 18px;color:var(--text2)">岩石區・魚市場・雪梨大學・歌劇院・港灣遊船</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(212,80,74,.1);color:var(--coral);padding:3px 10px;border-radius:12px;font-size:13px">🦁 雪梨</span></td></tr>
+            <tr style="border-top:1px solid #F8F0D0;background:#EAF5FF"><td style="padding:13px 18px;font-weight:700;color:var(--ocean)">Day 8</td><td style="padding:13px 18px;color:var(--text2)">CI52 抵達桃園</td><td style="padding:13px 18px;text-align:center"><span style="background:rgba(26,106,138,.1);color:var(--ocean);padding:3px 10px;border-radius:12px;font-size:13px">🏠 返台</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:#FFF0EE;border:1px solid #F0C0B8;border-left:4px solid var(--coral);border-radius:12px;padding:18px"><div style="font-weight:700;color:var(--coral);margin-bottom:8px;font-size:15px">🐨 無尾熊抱抱（Day 4）贈送！</div><div style="font-size:14px;color:#5A1A18;line-height:1.8">可倫賓鳥園，贈送抱抱合照（AUD69），昆士蘭獨有，未來法規可能收緊，把握機會！</div></div>
+        <div style="background:#FFF8EC;border:1px solid #E8C880;border-left:4px solid var(--warn);border-radius:12px;padding:18px"><div style="font-weight:700;color:var(--warn);margin-bottom:8px;font-size:15px">⚠️ Day 6 藍山行車最重</div><div style="font-size:14px;color:#5A3A00;line-height:1.8">來回約 <strong>180km / 3.5小時</strong>。備外套，礦坑纜車52度傾斜，刺激！</div></div>
+        <div style="background:#FFF5E8;border:1px solid #E8D060;border-left:4px solid var(--sun3);border-radius:12px;padding:18px"><div style="font-weight:700;color:var(--sun1);margin-bottom:8px;font-size:15px">✨ 螢火蟲（Day 3）澳洲特有</div><div style="font-size:14px;color:#5A3000;line-height:1.8">洞穴藍光螢火蟲，澳洲紐西蘭限定，非一般螢火蟲，神秘夢幻不可錯過！</div></div>
+        <div style="background:#EDFAF3;border:1px solid #A8D8B8;border-left:4px solid var(--ok);border-radius:12px;padding:18px"><div style="font-weight:700;color:var(--ok);margin-bottom:8px;font-size:15px">💰 NT$84,900・CP值高</div><div style="font-size:14px;color:#0A3A1A;line-height:1.8">含機票・住宿・餐食・門票・無尾熊合照。需另付ETA AUD$20及小費USD$12×8天。</div></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="right-panel">
+    <div style="text-align:center;font-size:28px;margin-bottom:12px">🌻🐨🌴</div>
+    <div class="panel-title">行程概覽</div>
+    <div class="kpi-mini"><div class="kpi-mini-val">8天</div><div class="kpi-mini-lbl">行程（5晚）</div></div>
+    <div class="kpi-mini coral-kpi"><div class="kpi-mini-val">NT$84,900</div><div class="kpi-mini-lbl">雙人房參考售價</div></div>
+    <div class="kpi-mini warn-kpi"><div class="kpi-mini-val">Day 6</div><div class="kpi-mini-lbl">最重行車日（藍山180km）</div></div>
+    <div class="kpi-mini ok-kpi"><div class="kpi-mini-val">贈送</div><div class="kpi-mini-lbl">無尾熊抱抱合照（AUD69）</div></div>
+    <div class="panel-divider"></div>
+    <div class="panel-title">航班資訊</div>
+    <div style="font-size:14px;color:var(--text2);line-height:2;padding:12px;background:var(--bg2);border-radius:8px">✈ <strong>去程</strong> CI53<br>TPE 23:45 → BNE 10:50+1<br><br>✈ <strong>國內段</strong><br>黃金海岸/布里斯本→雪梨<br>（Day 5，旅行社安排）<br><br>✈ <strong>回程</strong> CI52<br>SYD 22:10 → TPE 04:30+1</div>
+    <div class="panel-divider"></div>
+    <div class="panel-title">圖例說明</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--ok)"></div>距離時間合理</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--warn)"></div>需注意・行車較長</div>
+    <div class="legend-item"><div class="ldot" style="background:var(--ocean)"></div>過境・轉城市日</div>
+    <div class="panel-divider"></div>
+    <div class="panel-title">住宿安排</div>
+    <div class="hotel-box"><div class="hotel-name">黃金海岸 Day 2~4（3晚）</div><div class="hotel-star">★★★★</div><div class="hotel-detail">Mercure GC / Mantra / Vibe / Voco</div></div>
+    <div class="hotel-box"><div class="hotel-name">雪梨 Day 5~6（2晚）</div><div class="hotel-star">★★★★</div><div class="hotel-detail">Holiday Inn / Mercure Parramatta</div></div>
+    <div class="panel-divider"></div>
+    <div style="font-size:13px;color:var(--muted);line-height:1.8">⚠️ 申請 ETA AUD$20<br>💡 小費 USD$12×8天<br>🎁 贈5G上網卡<br>製作：Claude AI ｜ 2026年5月</div>
+  </div>
+</div>
+<script>
+function showDay(id,el){document.querySelectorAll('.day-section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelectorAll('.mobile-tab').forEach(t=>t.classList.remove('active'));if(el)el.classList.add('active');}
+</script>
+</body>
+</html>
