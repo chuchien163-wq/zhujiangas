@@ -14,60 +14,60 @@
   --win:#FFF6E0;--winbd:#E8C860;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans TC',sans-serif;color:var(--text);font-size:16.5px;background:var(--bg);
+body{font-family:'Noto Sans TC',sans-serif;color:var(--text);font-size:18px;background:var(--bg);
   background-image:radial-gradient(ellipse at 0% 0%,rgba(200,90,16,.06),transparent 55%),radial-gradient(ellipse at 100% 40%,rgba(176,21,21,.05),transparent 50%);
   padding:0 0 60px;}
 .top{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#3A1500,#7A2800 30%,#B01515 62%,#C8A020 100%);
   padding:16px 22px;box-shadow:0 3px 16px rgba(58,21,0,.3);}
-.top h1{font-size:24px;color:#FFE8C0;font-weight:900;letter-spacing:1px;}
-.top p{font-size:14px;color:rgba(255,228,192,.85);margin-top:3px;}
+.top h1{font-size:26px;color:#FFE8C0;font-weight:900;letter-spacing:1px;}
+.top p{font-size:15px;color:rgba(255,228,192,.85);margin-top:3px;}
 .wrap{max-width:1340px;margin:0 auto;padding:16px 18px 0;}
-.conrow td{background:#FDF3EF;font-size:13px;color:#7A3A28;text-align:left;line-height:1.55;font-weight:500;vertical-align:top;}
+.conrow td{background:#FDF3EF;font-size:14px;color:#7A3A28;text-align:left;line-height:1.6;font-weight:500;vertical-align:top;}
 .conrow td.rowh{background:#F6E6DE;color:#A03A20;}
 .conrow td.wincell{color:#7A3A28;}
 .legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--line);
-  border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:14.5px;color:var(--text2);}
+  border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:15.5px;color:var(--text2);}
 .legend b{color:var(--text);}
 .lg{display:inline-flex;align-items:center;gap:5px;}
 .dot{width:18px;height:18px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;}
 .dot.ok{background:var(--okbg);color:var(--ok);}.dot.mid{background:var(--midbg);color:var(--mid);}.dot.bad{background:var(--badbg);color:var(--bad);}
-.sec-h{font-size:20px;font-weight:900;margin:18px 0 10px;display:flex;align-items:center;gap:8px;}
-.sec-h .sub{font-size:13.5px;}
+.sec-h{font-size:22px;font-weight:900;margin:20px 0 11px;display:flex;align-items:center;gap:8px;}
+.sec-h .sub{font-size:14.5px;}
 .sec-h.au{color:var(--au2);}.sec-h.jp{color:var(--jp2);}
 .sec-h .sub{font-size:12.5px;font-weight:500;color:var(--muted);}
 .tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 2px 12px rgba(58,21,0,.07);}
-table{border-collapse:separate;border-spacing:0;width:100%;font-size:15px;min-width:760px;}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:16.5px;min-width:800px;}
 th,td{border-bottom:1px solid var(--line2);border-right:1px solid var(--line2);padding:11px 12px;text-align:center;vertical-align:middle;}
 thead th{position:sticky;top:0;z-index:2;background:#FBF4E7;font-weight:800;color:var(--text);border-bottom:2px solid var(--line);}
 .colhead{font-family:'Noto Sans TC';line-height:1.3;}
-.colhead .no{font-family:'Bebas Neue';font-size:23px;letter-spacing:1px;color:var(--au2);display:block;}
+.colhead .no{font-family:'Bebas Neue';font-size:26px;letter-spacing:1px;color:var(--au2);display:block;}
 .jp .colhead .no{color:var(--jp2);}
-.colhead .nm{font-size:13.5px;font-weight:700;}
-.colhead .pr{font-size:12.5px;color:var(--muted);font-weight:500;}
+.colhead .nm{font-size:15px;font-weight:700;}
+.colhead .pr{font-size:13.5px;color:var(--muted);font-weight:500;}
 /* 凍結首欄 */
 th.rowh,td.rowh{position:sticky;left:0;z-index:1;background:#F7EFDF;text-align:left;font-weight:700;color:var(--text2);
-  min-width:128px;max-width:140px;border-right:2px solid var(--line);font-size:13.5px;}
+  min-width:132px;max-width:150px;border-right:2px solid var(--line);font-size:15px;}
 thead th.corner{position:sticky;left:0;z-index:3;background:#F2E7CF;min-width:118px;}
 tbody tr:nth-child(even) td{background:#FFFDF8;}
 tbody tr:nth-child(even) td.rowh{background:#F4EBD9;}
 td.c{line-height:1.35;}
-td.c small{display:block;font-size:12px;color:var(--muted);margin-top:1px;}
+td.c small{display:block;font-size:13px;color:var(--muted);margin-top:1px;}
 .b-ok{background:var(--okbg)!important;color:var(--ok);font-weight:700;}
 .b-mid{background:var(--midbg)!important;color:var(--mid);font-weight:700;}
 .b-bad{background:var(--badbg)!important;color:var(--bad);font-weight:700;}
 /* 冠軍欄高亮 */
 col.wincol{background:var(--win);}
 .wincell{box-shadow:inset 0 0 0 9999px rgba(232,200,96,.16);}
-.cp{font-family:'Bebas Neue';font-size:25px;line-height:1;}
+.cp{font-family:'Bebas Neue';font-size:29px;line-height:1;}
 .cp.au{color:var(--au2);}.cp.jp{color:var(--jp2);}
 .rkrow td{font-weight:900;}
 .medal{font-size:18px;}
 .openrow td{padding:8px 6px;}
-.openbtn{display:inline-block;font-size:13px;font-weight:700;color:#fff;background:var(--au2);border-radius:7px;padding:6px 12px;text-decoration:none;}
+.openbtn{display:inline-block;font-size:14px;font-weight:700;color:#fff;background:var(--au2);border-radius:7px;padding:7px 13px;text-decoration:none;}
 .jp .openbtn{background:var(--jp2);}
 .openbtn:hover{opacity:.85;}
-.champ-note{background:var(--win);border:1px solid var(--winbd);border-radius:10px;padding:14px 18px;margin:14px 0 4px;font-size:15px;color:#5A3A00;line-height:1.85;}
-.note{font-size:14px;color:var(--muted);margin:12px 2px 0;line-height:1.85;}
+.champ-note{background:var(--win);border:1px solid var(--winbd);border-radius:10px;padding:14px 18px;margin:14px 0 4px;font-size:16.5px;color:#5A3A00;line-height:1.9;}
+.note{font-size:15.5px;color:var(--muted);margin:12px 2px 0;line-height:1.9;}
 .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:30px;}
 </style>
 </head>
