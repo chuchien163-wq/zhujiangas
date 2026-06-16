@@ -71,12 +71,32 @@ col.wincol{background:var(--win);}
 .champ-note{background:var(--win);border:1px solid var(--winbd);border-radius:10px;padding:14px 18px;margin:14px 0 4px;font-size:16.5px;color:#5A3A00;line-height:1.9;}
 .note{font-size:15.5px;color:var(--muted);margin:12px 2px 0;line-height:1.9;}
 .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:30px;}
+@media print{
+  @page{size:A4 landscape;margin:8mm;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  body{background:#fff!important;padding:0;}
+  .top{position:static;box-shadow:none;}
+  .top h1{font-size:18px;} .top p{font-size:11px;}
+  .wrap{max-width:none;padding:4px;}
+  .legend{margin-bottom:8px;}
+  .tbl-scroll{overflow:visible!important;max-height:none!important;box-shadow:none;break-inside:auto;}
+  table{min-width:0!important;font-size:10.5px;}
+  thead th,th.rowh,td.rowh,thead th.corner{position:static!important;}
+  th,td{padding:4px 5px;}
+  td.c small,.rowh small{font-size:9.5px;}
+  .colhead .no{font-size:17px;}
+  .cp{font-size:18px;}
+  .sec-h{font-size:15px;margin:8px 0 6px;break-after:avoid;}
+  .sec-h.jp{break-before:page;}
+  .champ-note,.note,.conrow td{break-inside:avoid;}
+}
 </style>
 </head>
 <body>
 <div class="top">
   <h1>📊 行程亮點評比矩陣 ─ CP 對照表</h1>
   <p>竹建瓦斯員工旅遊 ｜ 項目 × 行程 逐格對照 ｜ 澳洲・日本 分開評比 ｜ 以「便宜・划算・品質優」為標準</p>
+  <p style="margin-top:5px;font-size:13.5px;color:#FFE8C0;">🔗 線上完整互動版（含每日行程、地圖路線、住宿明細）：<span style="text-decoration:underline">https://chuchien163-wq.github.io/zhujiangas/00_TravelIndex.html</span></p>
 </div>
 
 <div class="wrap">
