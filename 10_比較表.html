@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>行程亮點評比矩陣 ─ CP 對照表</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --au2:#C85A10;--jp2:#B01515;--gold:#C8A020;
+  --ok:#1A7A3A;--okbg:#E8F7EE;--mid:#B8860B;--midbg:#FCF3DC;--bad:#C0392B;--badbg:#FBEAE7;
+  --bg:#F4EFE6;--card:#FFFFFF;--line:#D9C9AC;--line2:#EADFC9;
+  --text:#2A1A08;--text2:#4A3418;--muted:#8A7048;
+  --win:#FFF6E0;--winbd:#E8C860;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans TC',sans-serif;color:var(--text);font-size:15px;background:var(--bg);
+  background-image:radial-gradient(ellipse at 0% 0%,rgba(200,90,16,.06),transparent 55%),radial-gradient(ellipse at 100% 40%,rgba(176,21,21,.05),transparent 50%);
+  padding:0 0 60px;}
+.top{position:sticky;top:0;z-index:60;background:linear-gradient(90deg,#3A1500,#7A2800 30%,#B01515 62%,#C8A020 100%);
+  padding:16px 22px;box-shadow:0 3px 16px rgba(58,21,0,.3);}
+.top h1{font-size:21px;color:#FFE8C0;font-weight:900;letter-spacing:1px;}
+.top p{font-size:12.5px;color:rgba(255,228,192,.85);margin-top:3px;}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 14px 0;}
+.legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--line);
+  border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:13px;color:var(--text2);}
+.legend b{color:var(--text);}
+.lg{display:inline-flex;align-items:center;gap:5px;}
+.dot{width:18px;height:18px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;}
+.dot.ok{background:var(--okbg);color:var(--ok);}.dot.mid{background:var(--midbg);color:var(--mid);}.dot.bad{background:var(--badbg);color:var(--bad);}
+.sec-h{font-size:18px;font-weight:900;margin:22px 0 10px;display:flex;align-items:center;gap:8px;}
+.sec-h.au{color:var(--au2);}.sec-h.jp{color:var(--jp2);}
+.sec-h .sub{font-size:12.5px;font-weight:500;color:var(--muted);}
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:0 2px 12px rgba(58,21,0,.07);}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13.5px;min-width:720px;}
+th,td{border-bottom:1px solid var(--line2);border-right:1px solid var(--line2);padding:9px 11px;text-align:center;vertical-align:middle;}
+thead th{position:sticky;top:0;z-index:2;background:#FBF4E7;font-weight:800;color:var(--text);border-bottom:2px solid var(--line);}
+.colhead{font-family:'Noto Sans TC';line-height:1.3;}
+.colhead .no{font-family:'Bebas Neue';font-size:20px;letter-spacing:1px;color:var(--au2);display:block;}
+.jp .colhead .no{color:var(--jp2);}
+.colhead .nm{font-size:12px;font-weight:700;}
+.colhead .pr{font-size:11px;color:var(--muted);font-weight:500;}
+/* 凍結首欄 */
+th.rowh,td.rowh{position:sticky;left:0;z-index:1;background:#F7EFDF;text-align:left;font-weight:700;color:var(--text2);
+  min-width:118px;max-width:130px;border-right:2px solid var(--line);font-size:12.5px;}
+thead th.corner{position:sticky;left:0;z-index:3;background:#F2E7CF;min-width:118px;}
+tbody tr:nth-child(even) td{background:#FFFDF8;}
+tbody tr:nth-child(even) td.rowh{background:#F4EBD9;}
+td.c{line-height:1.35;}
+td.c small{display:block;font-size:11px;color:var(--muted);margin-top:1px;}
+.b-ok{background:var(--okbg)!important;color:var(--ok);font-weight:700;}
+.b-mid{background:var(--midbg)!important;color:var(--mid);font-weight:700;}
+.b-bad{background:var(--badbg)!important;color:var(--bad);font-weight:700;}
+/* 冠軍欄高亮 */
+col.wincol{background:var(--win);}
+.wincell{box-shadow:inset 0 0 0 9999px rgba(232,200,96,.16);}
+.cp{font-family:'Bebas Neue';font-size:21px;line-height:1;}
+.cp.au{color:var(--au2);}.cp.jp{color:var(--jp2);}
+.rkrow td{font-weight:900;}
+.medal{font-size:18px;}
+.openrow td{padding:8px 6px;}
+.openbtn{display:inline-block;font-size:11.5px;font-weight:700;color:#fff;background:var(--au2);border-radius:7px;padding:5px 10px;text-decoration:none;}
+.jp .openbtn{background:var(--jp2);}
+.openbtn:hover{opacity:.85;}
+.champ-note{background:var(--win);border:1px solid var(--winbd);border-radius:10px;padding:12px 16px;margin:12px 0 4px;font-size:13.5px;color:#5A3A00;line-height:1.8;}
+.note{font-size:12.5px;color:var(--muted);margin:10px 2px 0;line-height:1.8;}
+.foot{text-align:center;font-size:12px;color:var(--muted);margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>📊 行程亮點評比矩陣 ─ CP 對照表</h1>
+  <p>竹建瓦斯員工旅遊 ｜ 項目 × 行程 逐格對照 ｜ 澳洲・日本 分開評比 ｜ 以「便宜・划算・品質優」為標準</p>
+</div>
+
+<div class="wrap">
+  <div class="legend">
+    <span class="lg"><b>圖例：</b></span>
+    <span class="lg"><span class="dot ok">✓</span>優／含／佳</span>
+    <span class="lg"><span class="dot mid">△</span>普通／部分／注意</span>
+    <span class="lg"><span class="dot bad">✗</span>弱／自費／缺點</span>
+    <span class="lg">🏆 冠軍欄以金色底高亮</span>
+  </div>
+
+  <!-- ===================== 澳洲 ===================== -->
+  <div class="sec-h au">🦘 澳洲組（5 選） <span class="sub">長程必玩型 7–9 天</span></div>
+  <div class="tbl-scroll">
+    <table>
+      <colgroup><col><col class="wincol"><col><col><col><col></colgroup>
+      <thead>
+        <tr>
+          <th class="corner">評比項目</th>
+          <th class="wincell"><div class="colhead"><span class="no">08</span><span class="nm">花漾黃金雪</span><span class="pr">NT$84,900</span></div></th>
+          <th><div class="colhead"><span class="no">05</span><span class="nm">藍色公路墨爾本</span><span class="pr">NT$88,900</span></div></th>
+          <th><div class="colhead"><span class="no">07</span><span class="nm">東澳三城</span><span class="pr">~105,000估</span></div></th>
+          <th><div class="colhead"><span class="no">09</span><span class="nm">旅天下金雪</span><span class="pr">94,800~</span></div></th>
+          <th><div class="colhead"><span class="no">04</span><span class="nm">酷遊雪墨</span><span class="pr">~62,000估</span></div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="rowh">天數 / 夜數<small style="color:var(--muted);font-weight:400">總夜＝飯店＋機上</small></td><td class="c wincell">8天7夜<small>飯店5＋機上2</small></td><td class="c">7天6夜<small>飯店5＋機上1</small></td><td class="c">9天8夜<small>飯店7＋機上1</small></td><td class="c">8天7夜<small>飯店5＋機上2</small></td><td class="c">8天7夜<small>飯店5＋機上2</small></td></tr>
+        <tr><td class="rowh">每日平均團費</td><td class="c b-ok wincell">~10,600</td><td class="c b-mid">~12,700</td><td class="c b-ok">~11,700</td><td class="c b-mid">~12,100</td><td class="c b-ok">~7,750</td></tr>
+        <tr><td class="rowh">航空・直飛</td><td class="c b-ok wincell">✓ 華航直飛<small>雙點進出</small></td><td class="c b-ok">✓ 華航直飛</td><td class="c b-ok">✓ 長榮直飛</td><td class="c b-ok">✓ 華航直飛<small>雙點進出</small></td><td class="c b-bad">✗ 酷航<small>經新加坡轉機</small></td></tr>
+        <tr><td class="rowh">住宿等級</td><td class="c b-ok wincell">4★</td><td class="c b-ok">4★</td><td class="c b-ok">4★</td><td class="c b-ok">4★ 設計旅宿</td><td class="c b-mid">4★ 郊區</td></tr>
+        <tr><td class="rowh">連泊・換飯店</td><td class="c b-ok wincell">✓ 連泊3晚<small>僅換1次</small></td><td class="c b-ok">✓ 全程不換城市</td><td class="c b-bad">✗ 4城換3-4次</td><td class="c b-mid">△ 換3次</td><td class="c b-mid">△ 換2次<small>郊區</small></td></tr>
+        <tr><td class="rowh">餐食含團費</td><td class="c b-ok wincell">✓ 幾乎全含</td><td class="c b-ok">✓ 多含</td><td class="c b-bad">✗ 自費餐多<small>AUD35~80</small></td><td class="c b-mid">△ 部分自理</td><td class="c b-bad">✗ 機上不含餐</td></tr>
+        <tr><td class="rowh">自費 / 隱藏成本</td><td class="c b-ok wincell">✓ 極低</td><td class="c b-ok">✓ 低</td><td class="c b-mid">△ 自費餐</td><td class="c b-mid">△ 餐自理</td><td class="c b-bad">✗ 加餐+ETA+轉機</td></tr>
+        <tr><td class="rowh">拉車負擔</td><td class="c b-mid wincell">△ D6藍山186km</td><td class="c b-mid">△ 大洋路195×2</td><td class="c b-bad">✗ D6 256km</td><td class="c b-ok">✓ D6電車日</td><td class="c b-mid">△ 國內段</td></tr>
+        <tr><td class="rowh">招牌亮點</td><td class="c wincell">無尾熊抱抱<small>賭場buffet・三纜車・螢火蟲</small></td><td class="c">十二門徒<small>普芬火車・小企鵝</small></td><td class="c">歌劇院導覽<small>皇家遊艇・無尾熊</small></td><td class="c">設計旅宿<small>塔隆加動物園・下午茶</small></td><td class="c">藍山<small>菲利普島企鵝・歌劇院</small></td></tr>
+        <tr><td class="rowh">紅眼 / 轉機</td><td class="c b-ok wincell">✓ 無</td><td class="c b-ok">✓ 無</td><td class="c b-ok">✓ 無</td><td class="c b-ok">✓ 無</td><td class="c b-bad">✗ 轉機+紅眼</td></tr>
+        <tr><td class="rowh">CP 指數</td><td class="c wincell"><span class="cp au">84</span></td><td class="c"><span class="cp au">77</span></td><td class="c"><span class="cp au">65</span></td><td class="c"><span class="cp au">65</span></td><td class="c"><span class="cp au">56</span></td></tr>
+        <tr class="rkrow"><td class="rowh">綜合排名</td><td class="c b-ok wincell"><span class="medal">🥇</span> 1</td><td class="c b-ok"><span class="medal">🥈</span> 2</td><td class="c b-mid"><span class="medal">🥉</span> 3 並列</td><td class="c b-mid"><span class="medal">🥉</span> 3 並列</td><td class="c b-bad">5 淘汰候選</td></tr>
+        <tr class="openrow"><td class="rowh">開啟行程</td>
+          <td class="wincell"><a class="openbtn" href="08_AusGoldSydney8Days.html" target="_blank">開 08 ↗</a></td>
+          <td><a class="openbtn" href="05_AusMelbourne7.html" target="_blank">開 05 ↗</a></td>
+          <td><a class="openbtn" href="07_AusEastCoast9Days.html" target="_blank">開 07 ↗</a></td>
+          <td><a class="openbtn" href="09_AusTravelWorldGoldSnow8.html" target="_blank">開 09 ↗</a></td>
+          <td><a class="openbtn" href="04_AusSydMel8.html" target="_blank">開 04 ↗</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="champ-note">🏆 <b>澳洲冠軍 = 08 花漾黃金雪</b>：唯一「同級最便宜 × 內含最豐富」。雙點不回頭、連泊3晚、餐幾乎全含、贈無尾熊＋賭場buffet＋三纜車。每一元換到的內容最多。</div>
+
+  <!-- ===================== 日本 ===================== -->
+  <div class="sec-h jp">⛩️ 日本組（4 選） <span class="sub">近程輕鬆型 5 天</span></div>
+  <div class="tbl-scroll jp">
+    <table>
+      <colgroup><col><col class="wincol"><col><col><col></colgroup>
+      <thead>
+        <tr>
+          <th class="corner">評比項目</th>
+          <th class="wincell"><div class="colhead"><span class="no">02</span><span class="nm">歡樂沖繩</span><span class="pr">~38,000估</span></div></th>
+          <th><div class="colhead"><span class="no">03</span><span class="nm">四國經典</span><span class="pr">~44,000估</span></div></th>
+          <th><div class="colhead"><span class="no">01</span><span class="nm">蔚藍沖繩</span><span class="pr">~34,000估</span></div></th>
+          <th><div class="colhead"><span class="no">06</span><span class="nm">山陰山陽</span><span class="pr">~48,000估</span></div></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="rowh">天數 / 夜數<small style="color:var(--muted);font-weight:400">直飛・全程飯店夜</small></td><td class="c wincell">5天4夜</td><td class="c">5天4夜</td><td class="c">5天4夜</td><td class="c">5天4夜</td></tr>
+        <tr><td class="rowh">每日平均團費</td><td class="c b-ok wincell">~7,600</td><td class="c b-mid">~8,800</td><td class="c b-ok">~6,800</td><td class="c b-bad">~9,600</td></tr>
+        <tr><td class="rowh">航空・直飛</td><td class="c b-ok wincell">✓ 華航直飛</td><td class="c b-ok">✓ 直飛高松</td><td class="c b-ok">✓ 華航直飛</td><td class="c b-ok">✓ 直飛高松</td></tr>
+        <tr><td class="rowh">住宿等級</td><td class="c b-ok wincell">4★ 希爾頓</td><td class="c b-ok">溫泉×2+城市</td><td class="c b-mid">3★ 商務</td><td class="c b-ok">溫泉×2+城市</td></tr>
+        <tr><td class="rowh">連泊・換飯店</td><td class="c b-ok wincell">✓ 全程一館<small>0 換飯店</small></td><td class="c b-mid">△ 換3次</td><td class="c b-ok">✓ 那霸連泊</td><td class="c b-bad">✗ 每晚換<small>4 次</small></td></tr>
+        <tr><td class="rowh">餐食含團費</td><td class="c b-ok wincell">✓ 含早餐</td><td class="c b-ok">✓ 溫泉含晚餐</td><td class="c b-ok">✓ 多含</td><td class="c b-ok">✓ 溫泉含晚餐</td></tr>
+        <tr><td class="rowh">行程密度</td><td class="c b-ok wincell">✓ 適中省心</td><td class="c b-ok">✓ 經典豐富</td><td class="c b-mid">△ 整日自由<small>內容最鬆</small></td><td class="c b-ok">✓ 景點最頂</td></tr>
+        <tr><td class="rowh">拉車負擔</td><td class="c b-ok wincell">✓ 輕鬆</td><td class="c b-mid">△ 部分山路</td><td class="c b-ok">✓ 輕鬆<small>Day2 較長</small></td><td class="c b-bad">✗ 160/165km×2</td></tr>
+        <tr><td class="rowh">招牌亮點</td><td class="c wincell">美麗海水族館<small>美國村・親子友善</small></td><td class="c">道後溫泉<small>栗林公園・金刀比羅宮</small></td><td class="c">美麗海・古宇利<small>整日自由・彈性高</small></td><td class="c">出雲大社<small>足立美術館・玉造美肌湯</small></td></tr>
+        <tr><td class="rowh">CP 指數</td><td class="c wincell"><span class="cp jp">80</span></td><td class="c"><span class="cp jp">74</span></td><td class="c"><span class="cp jp">74</span></td><td class="c"><span class="cp jp">66</span></td></tr>
+        <tr class="rkrow"><td class="rowh">綜合排名</td><td class="c b-ok wincell"><span class="medal">🥇</span> 1</td><td class="c b-ok"><span class="medal">🥈</span> 2 並列</td><td class="c b-mid"><span class="medal">🥈</span> 2 並列</td><td class="c b-bad">4</td></tr>
+        <tr class="openrow"><td class="rowh">開啟行程</td>
+          <td class="wincell"><a class="openbtn" href="02_OkinawaFun5.html" target="_blank">開 02 ↗</a></td>
+          <td><a class="openbtn" href="03_Shikoku5.html" target="_blank">開 03 ↗</a></td>
+          <td><a class="openbtn" href="01_OkinawaBlue5.html" target="_blank">開 01 ↗</a></td>
+          <td><a class="openbtn" href="06_SanInSanYo.html" target="_blank">開 06 ↗</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="champ-note">🏆 <b>日本冠軍 = 02 歡樂沖繩</b>：4★ 希爾頓全程一館、零換飯店、親子友善、價格實惠。短程「省心＋舒適＋便宜」全包。想要道地溫泉體驗則選 03 四國。</div>
+
+  <!-- ===================== CP 計算明細 ===================== -->
+  <div class="sec-h" style="color:var(--gold)">🧮 CP 指數怎麼算（透明公式・可複算）</div>
+  <div class="champ-note" style="background:#FFFFFF;border-color:var(--line);color:var(--text2)">
+    <b>公式：</b>CP =（價格×0.25 ＋ 餐食×0.15 ＋ 內容×0.18 ＋ 住宿×0.12 ＋ 連泊×0.12 ＋ 交通×0.12 ＋ 自由×0.06）× 10<br>
+    每構面打 0–10 分。權重對應你的標準：<b>便宜</b>＝價格 25%、<b>划算</b>＝餐食/隱藏成本 15%、<b>品質優</b>＝內容 18%＋住宿 12%＋交通 12%、<b>省心</b>＝連泊 12%、<b>彈性</b>＝自由 6%。
+  </div>
+  <div class="tbl-scroll">
+    <table>
+      <thead><tr>
+        <th class="corner">行程</th>
+        <th>價格<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.25</span></th>
+        <th>餐食<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.15</span></th>
+        <th>內容<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.18</span></th>
+        <th>住宿<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.12</span></th>
+        <th>連泊<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.12</span></th>
+        <th>交通<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.12</span></th>
+        <th>自由<br><span style="font-weight:500;color:var(--muted);font-size:11px">×.06</span></th>
+        <th>CP</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="rowh">🦘 08 黃金雪</td><td>9</td><td>10</td><td>8</td><td>7</td><td>9</td><td>7</td><td>8</td><td class="b-ok"><b>84</b> 🥇</td></tr>
+        <tr><td class="rowh">🦘 05 墨爾本</td><td>7</td><td>9</td><td>7</td><td>7</td><td>10</td><td>7</td><td>7</td><td class="b-mid"><b>77</b> 🥈</td></tr>
+        <tr><td class="rowh">🦘 07 東澳三城</td><td>6</td><td>5</td><td>10</td><td>7</td><td>4</td><td>6</td><td>7</td><td class="b-mid"><b>65</b> 🥉</td></tr>
+        <tr><td class="rowh">🦘 09 旅天下</td><td>5</td><td>6</td><td>7</td><td>8</td><td>6</td><td>8</td><td>7</td><td class="b-mid"><b>65</b> 🥉</td></tr>
+        <tr><td class="rowh">🦘 04 酷遊雪墨</td><td>8</td><td>2</td><td>7</td><td>5</td><td>6</td><td>3</td><td>6</td><td class="b-bad"><b>56</b></td></tr>
+        <tr><td class="rowh">⛩️ 02 歡樂沖繩</td><td>8</td><td>7</td><td>7</td><td>8</td><td>10</td><td>9</td><td>8</td><td class="b-ok"><b>80</b> 🥇</td></tr>
+        <tr><td class="rowh">⛩️ 03 四國</td><td>7</td><td>9</td><td>8</td><td>8</td><td>6</td><td>7</td><td>6</td><td class="b-mid"><b>74</b> 🥈</td></tr>
+        <tr><td class="rowh">⛩️ 01 蔚藍沖繩</td><td>9</td><td>7</td><td>5</td><td>5</td><td>9</td><td>8</td><td>9</td><td class="b-mid"><b>74</b> 🥈</td></tr>
+        <tr><td class="rowh">⛩️ 06 山陰山陽</td><td>6</td><td>9</td><td>9</td><td>8</td><td>3</td><td>4</td><td>5</td><td class="b-mid"><b>66</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="champ-note" style="background:#FBF4E7;border-color:var(--line)">
+    📊 <b>並列說明：</b>用公式後 <b>07 與 09 同為 65 分</b>（07 內容最豐富，但自費餐多＋換飯店扣回；09 設計旅宿＋電車日舒適但較貴）、<b>03 與 01 同為 74 分</b>（03 溫泉含餐 vs 01 便宜＋彈性）。冠軍 08、02 穩定不變。想改權重（如更重「便宜」把價格拉到 30–35%）我可即時重算。
+  </div>
+
+  <div class="note">
+    📌 <b>價格說明：</b>05／08／09 為檔案標示售價；01／02／03／04／06／07 為市場估價（標「估」）。提供實際團費可即時重算。<br>
+    📌 <b>每日平均團費</b>＝團費 ÷ 天數，僅供成本參考；CP 指數另綜合住宿、餐食、換飯店、拉車、自費風險、內容密度。
+  </div>
+  <div class="foot">行程亮點評比矩陣 ｜ 製作：Claude</div>
+</div>
+</body>
+</html>
