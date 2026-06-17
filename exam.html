@@ -28,12 +28,12 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
 
 /* 分類按鈕 */
 .cat-bar{display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap;}
-.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #e0e0d8;background:transparent;color:#555;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cat-btn{padding:9px 22px;border-radius:20px;border:1.5px solid #e0e0d8;background:transparent;color:#555;font-size:20px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s;}
 .cat-btn.active{background:#FFD60A;color:#000;border-color:#FFD60A;}
 .cat-btn:hover:not(.active){border-color:#FFD60A;color:#FFD60A;}
 
 /* 日程表 */
-.section-title{font-size:22px;font-weight:700;color:#2c2c2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+.section-title{font-size:20px;font-weight:700;color:#2c2c2e;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
 .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:#FFD60A;border-radius:2px;}
 
 .schedule-table{width:100%;max-width:1200px;border-collapse:collapse;margin:0 0 1.5rem 0;}
@@ -219,6 +219,12 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         <div class="cd-num" id="cdNum3">-</div>
         <div class="cd-unit">天</div>
       </div>
+      <div class="cd-card reveal" id="cd-mail" style="animation-delay:.21s">
+        <div class="cd-label">📬 成績單寄送</div>
+        <div class="cd-date">115/08/04（二）</div>
+        <div class="cd-num" id="cdNum4">-</div>
+        <div class="cd-unit">天</div>
+      </div>
     </div>
 
     <div class="cat-bar reveal" style="animation-delay:.2s">
@@ -287,11 +293,56 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       <div class="notice-box" style="margin-top:1rem;">
         <div class="notice-title">📅 我們的考試梯次（第二梯次）</div>
         <div class="notice-item">准考證寄送：115/06/16（二）</div>
-        <div class="notice-item">網站公告試場位置：115/07/02（四）</div>
+        <div class="notice-item">網站公告試場位置:115/07/02（四）</div>
         <div class="notice-item">學科測試日期：115/07/05（日）⭐</div>
         <div class="notice-item">學科試題疑義提出：115/07/06–07/12</div>
         <div class="notice-item">學科成績公告：115/07/31（五）</div>
         <div class="notice-item">學科成績單寄送：115/08/04（二）</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;border-left:4px solid #e0a020;background:#fff8ec;">
+        <div class="notice-title">⏰ 測試日期及時間</div>
+        <div class="notice-item"><strong>學科測試：115/07/05（日）下午 1:50 入場，14:00–15:40 測試</strong></div>
+        <div class="notice-item">術科測試：測試單位於測試前 14 天掛號通知</div>
+        <div class="notice-item">學科成績網路公告：115/07/31（五）</div>
+        <div class="notice-item">學科成績單寄出：115/08/04（二）</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;">
+        <div class="notice-title">🪪 身分證明文件</div>
+        <div class="notice-item">入場必備：本人「准考證」＋ 附有照片足資證明身分之國民身分證、護照、全民健康保險卡、駕駛執照、技術士證、符合申請檢定資格之居留證或入出境許可證 擇一</div>
+        <div class="notice-item">⚠️ 准考證上不得書寫任何文字及符號</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;">
+        <div class="notice-title">✏️ 文具規定</div>
+        <div class="notice-item">須自備 <strong>黑色 2B 鉛筆</strong> 與橡皮擦（NO.2 鉛筆並非 2B 鉛筆，切勿使用）</div>
+        <div class="notice-item">請選用軟性品質較佳之橡皮擦；若擦拭不乾淨導致無法讀卡，應檢人自行負責，不得提出異議</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;">
+        <div class="notice-title">🧮 計算器</div>
+        <div class="notice-item">學科測試使用之計算器機型不拘</div>
+        <div class="notice-item">惟各該職類級別術科試題另有規定者，從其規定</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;border-left:4px solid #d63031;background:#fdecea;">
+        <div class="notice-title">⚠️ 違規警告（扣分嚴重）</div>
+        <div class="notice-item"><strong>學科測試中隨身攜帶行動電話、穿戴式裝置或其他具資訊傳輸、感應、拍攝、記錄功能之器材及設備，或置於抽屜、桌椅或座位旁（關機者亦同），依規定扣學科測試成績 20 分</strong></div>
+        <div class="notice-item">穿戴式裝置例舉請至「技檢中心網頁 / 技能檢定報檢流程與費用 / 提醒小心違規」</div>
+        <div class="notice-item">其餘相關試場規則請參閱准考證背面</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;">
+        <div class="notice-title">🕐 考場開放查看時間</div>
+        <div class="notice-item">測試當日上午 8:30 起，開放考區供應檢人查看試場位置（不得進入試場）</div>
+        <div class="notice-item">如考區僅辦理下午場次測試，開放考區時間為中午 12:30 起</div>
+      </div>
+
+      <div class="notice-box" style="margin-top:1rem;background:#fff9e6;border-left:4px solid #FFD60A;">
+        <div class="notice-title">🔗 報檢人資料查詢</div>
+        <div class="notice-item">115 年度全國技術士技能檢定報檢人資料（含團體報名、個別報名）</div>
+        <div class="notice-item" style="margin-top:8px;"><a href="https://skill.tcte.edu.tw/reprint/index_prove.php" target="_blank" style="display:inline-block;background:#FFD60A;color:#000;padding:10px 20px;border-radius:8px;font-weight:700;text-decoration:none;">🔍 前往查詢系統 →</a></div>
       </div>
     </div>
   </div>
@@ -323,6 +374,7 @@ const cdItems=[
   {id:'cd-permit',numId:'cdNum1',y:115,m:6,d:16},
   {id:'cd-exam',numId:'cdNum2',y:115,m:7,d:5},
   {id:'cd-result',numId:'cdNum3',y:115,m:7,d:31},
+  {id:'cd-mail',numId:'cdNum4',y:115,m:8,d:4},
 ];
 // 數字跳動
 function animateNum(el,target,dur){
