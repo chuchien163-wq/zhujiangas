@@ -164,6 +164,16 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .step-t{font-size:13px;color:var(--gray-600);line-height:1.6}
 .step-t strong{color:var(--gray-800)}
 .cal-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.sched-note{margin-bottom:14px;border:1px solid var(--blue-m);border-radius:var(--rs);background:var(--blue-l);overflow:hidden}
+.sched-note summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--blue-d);font-size:15px;list-style:none;user-select:none}
+.sched-note summary::-webkit-details-marker{display:none}
+.sched-note summary:hover{background:#dceafa}
+.sched-note-body{padding:4px 16px 14px;background:#fff}
+.sched-note-body p{margin:10px 0;font-size:14px;line-height:1.7;color:var(--gray-800)}
+.sched-note-body p.hl{background:#fff8e6;border-left:4px solid #f0c040;padding:10px 12px;border-radius:6px}
+.sched-note-body p.hl2{background:var(--blue-l);border-left:4px solid var(--blue-m);padding:10px 12px;border-radius:6px}
+.sched-note-body p.hl2 .sign{display:block;text-align:right;color:var(--blue-d);font-weight:700;margin-top:6px}
+.sched-note-body p.note-foot{font-size:13px;color:#888;margin-top:12px}
 .leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gray-600)}
 .leg-dot{width:10px;height:10px;border-radius:2px}
 @media(max-width:380px){.p-grid{grid-template-columns:repeat(2,1fr)}.mgr-stats{grid-template-columns:repeat(2,1fr)}}
@@ -174,7 +184,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div class="hd-row">
     <div>
       <h1>竹建瓦斯 乙級導管配管自主練習</h1>
-      <p>13:30–17:30 ｜ 2026/5/15–6/22 ｜ 每場2人+空白位</p>
+      <p>13:30–17:30 ｜ 2026/6/24–7/31 ｜ 每場2人+空白位</p>
     </div>
     <div class="hd-btns">
       <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
@@ -209,6 +219,17 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
       <div class="leg"><div class="leg-dot" style="background:#fffbf0;border:1px solid #f0c070"></div>提醒事項</div>
       <div class="leg"><div class="leg-dot" style="background:var(--gray-50);border:1px solid var(--border)"></div>假日</div>
     </div>
+    <details class="sched-note">
+      <summary>📋 排班說明（點我展開）</summary>
+      <div class="sched-note-body">
+        <p><b>排班對象：</b>乙級導管配管受訓學員共 9 位（林孟賢、陳人豪、張鈞豪、劉建彣、黃禹竣、王璽凱、林琮炫、蔡凱程、陳東彥）。</p>
+        <p><b>排班原則：</b>每場固定排 2 人、平日輪流，盡量讓每個人練習次數平均（本批每人約 5～6 次）。</p>
+        <p class="hl2">📌 排班時有查漏、健檢勤務的日子我都避開了，不會卡到大家的工作，可以安心來練。如果臨時有異動、需要自行調開，再跟我說一聲喔～<br><span class="sign">—— 管理部 沛豫</span></p>
+        <p class="hl"><b>👉 沒排到你的名字，也歡迎來！</b>每場都保留「＋ 空白位」，<b>任何人都能自由加入練習</b>，現場簽到即可，不限被排到的兩位。</p>
+        <p><b>不排日：</b>週末、學科考前（7/3）、能源署查核日（7/16）不安排練習。</p>
+        <p class="note-foot">時段 13:30–17:30｜如需調整或想多練，歡迎來找我。</p>
+      </div>
+    </details>
     <div id="calContainer"></div>
   </div>
   <div id="tab-p" style="display:none;padding-top:14px">
@@ -294,7 +315,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <button class="back-btn" onclick="go('list')">← 返回</button>
   <div class="mgr-header">
     <h2>管理者總覽</h2>
-    <p>竹建瓦斯 乙級導管配管自主練習 2026/5/15–6/22</p>
+    <p>竹建瓦斯 乙級導管配管自主練習 2026/6/24–7/31</p>
   </div>
   <div class="mgr-stats" id="mgrStats"></div>
   <div class="mgr-add-box">
@@ -366,11 +387,41 @@ const SCHED = [
   {seq:24, date:'06/17', wd:'三', m1:'陳人豪', m2:'張鈞豪'},
   {seq:25, date:'06/18', wd:'四', m1:'劉建彣', m2:'黃禹竣'},
   {seq:26, date:'06/22', wd:'一', m1:'王璽凱', m2:'林琮炫'},
+  // === 第二批 6/24–7/31 ===
+  {seq:27, date:'06/24', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:28, date:'06/25', wd:'四', m1:'陳人豪', m2:'張鈞豪'},
+  {seq:29, date:'06/26', wd:'五', m1:'劉建彣', m2:'王璽凱'},
+  {seq:30, date:'06/29', wd:'一', m1:'林琮炫', m2:'蔡凱程'},
+  {seq:31, date:'06/30', wd:'二', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:32, date:'07/01', wd:'三', m1:'陳東彥', m2:'陳人豪'},
+  {seq:33, date:'07/02', wd:'四', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:34, date:'07/06', wd:'一', m1:'王璽凱', m2:'林琮炫'},
+  {seq:35, date:'07/07', wd:'二', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:36, date:'07/08', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:37, date:'07/09', wd:'四', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:38, date:'07/10', wd:'五', m1:'陳人豪', m2:'王璽凱'},
+  {seq:39, date:'07/13', wd:'一', m1:'林琮炫', m2:'王璽凱'},
+  {seq:40, date:'07/14', wd:'二', m1:'陳東彥', m2:'張鈞豪'},
+  {seq:41, date:'07/15', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:42, date:'07/17', wd:'五', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:43, date:'07/20', wd:'一', m1:'劉建彣', m2:'陳人豪'},
+  {seq:44, date:'07/21', wd:'二', m1:'王璽凱', m2:'林琮炫'},
+  {seq:45, date:'07/22', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:46, date:'07/23', wd:'四', m1:'蔡凱程', m2:'劉建彣'},
+  {seq:47, date:'07/24', wd:'五', m1:'張鈞豪', m2:'陳東彥'},
+  {seq:48, date:'07/27', wd:'一', m1:'陳人豪', m2:'王璽凱'},
+  {seq:49, date:'07/28', wd:'二', m1:'林琮炫', m2:'劉建彣'},
+  {seq:50, date:'07/29', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
+  {seq:51, date:'07/30', wd:'四', m1:'蔡凱程', m2:'張鈞豪'},
+  {seq:52, date:'07/31', wd:'五', m1:'陳東彥', m2:'陳人豪'},
 ];
 
 const REMINDER = {date:'06/23', wd:'二', text:'第四次內訓\n乙級技術士訓練\n舊倉庫'};
 const REMINDER2 = {date:'07/05', wd:'日', text:'乙級技術士\n考試日期'};
 const REMINDER3 = {date:'06/19', wd:'五', text:'端午節\n國定假日'};
+
+const REMINDER4 = {date:'07/03', wd:'五', text:'學科考前\n當日不排'};
+const REMINDER5 = {date:'07/16', wd:'四', text:'能源署查核\n當日不排'};
 
 const MEMBERS = [
   {name:'林孟賢',no:1},{name:'陳人豪',no:2},{name:'張鈞豪',no:3},
@@ -470,7 +521,6 @@ function renderCal(){
   SCHED_DATA.forEach(d=>schedMap[d.date]=d);
 
   const months=[
-    {year:2026,month:5,label:'2026年5月（5/15起）',firstDow:4, startDate:15},
     {year:2026,month:6,label:'2026年6月',firstDow:0, startDate:1},
     {year:2026,month:7,label:'2026年7月（7/5考試）',firstDow:2, startDate:1},
   ];
@@ -493,9 +543,9 @@ function renderCal(){
       const dow=(firstDow + (day - m.startDate)) % 7;
       const isWeekend=(dow===5||dow===6);
       const sched=schedMap[mmdd];
-      const isReminder=(mmdd===REMINDER.date||mmdd===REMINDER2.date||mmdd===REMINDER3.date);
-      const reminderData=mmdd===REMINDER.date?REMINDER:mmdd===REMINDER2.date?REMINDER2:REMINDER3;
-      const inRange=(m.month===5&&day>=15)||(m.month===6&&day<=23)||(m.month===7&&day<=5);
+      const isReminder=(mmdd===REMINDER.date||mmdd===REMINDER2.date||mmdd===REMINDER3.date||mmdd===REMINDER4.date||mmdd===REMINDER5.date);
+      const reminderData=mmdd===REMINDER.date?REMINDER:mmdd===REMINDER2.date?REMINDER2:mmdd===REMINDER3.date?REMINDER3:mmdd===REMINDER4.date?REMINDER4:REMINDER5;
+      const inRange=(m.month===6)||(m.month===7);
 
       if(!inRange){
         html+=`<div class="cal-cell empty"></div>`;
