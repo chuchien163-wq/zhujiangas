@@ -216,7 +216,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <div class="stats-row reveal" style="animation-delay:.08s">
       <div class="stat g">
         <div class="stat-label">已看影片</div>
-        <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 15</span></div>
+        <div class="stat-num" id="statVideo">0<span style="font-size:18px;color:#aaa;font-weight:400;"> / 19</span></div>
         <div class="stat-sub" id="statVideoSub">完成率 0%</div>
       </div>
       <div class="stat o">
@@ -232,7 +232,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       <div class="stat p">
         <div class="stat-label">課程進度</div>
         <div class="stat-num" id="statPct">0<span style="font-size:18px;color:#aaa;font-weight:400;"> %</span></div>
-        <div class="stat-sub" id="statRemain">剩 13 部影片</div>
+        <div class="stat-sub" id="statRemain">剩 19 部影片</div>
       </div>
     </div>
 
@@ -264,7 +264,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
               </svg>
               <div class="donut-center"><div class="donut-pct" id="donutPctV" style="color:#2a9d5c">0%</div><div class="donut-cap">影片完成率</div></div>
             </div>
-            <div class="donut-sub" id="donutSubV">0 / 15 部</div>
+            <div class="donut-sub" id="donutSubV">0 / 19 部</div>
           </div>
           <div class="donut-item">
             <div class="donut-wrap">
@@ -279,7 +279,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
         </div>
         <div style="margin-top:14px;border-top:1px solid #e8e8e0;padding-top:12px;">
           <div class="bul-title">📢 公告</div>
-          <div class="bul-item">📺 第三次上課（115/05/13）上課影片已上傳，快去複習！<br/>
+          <div class="bul-item">📺 第四次上課（115/06/23）上課影片已上傳，快去複習！<br/>
 📚 學科資料已開放，記得多練習線上測驗！<br/>
 📅 考試資訊頁面已上線，重要日期一目瞭然！<br/>
 <br/>
@@ -308,7 +308,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
     <div class="feat-box reveal" style="animation-delay:.24s">
       <div class="feat-box-title">🚀 學習功能</div>
       <div class="feat-grid" id="featGrid">
-        <div class="feat" onclick="location.href='videos.html'"><div class="feat-icon">🎬</div><div class="feat-name">訓練影片</div><div class="feat-sub">15 部課程</div></div>
+        <div class="feat" onclick="location.href='videos.html'"><div class="feat-icon">🎬</div><div class="feat-name">訓練影片</div><div class="feat-sub">19 部課程</div></div>
         <div class="feat" onclick="location.href='games.html'"><div class="feat-icon">🎮</div><div class="feat-name">遊戲挑戰</div><div class="feat-sub">2 款遊戲</div></div>
         <div class="feat" onclick="location.href='notes.html'"><div class="feat-icon">📝</div><div class="feat-name">上課筆記</div><div class="feat-sub">老師重點</div></div>
         <div class="feat" onclick="location.href='photos.html'"><div class="feat-icon">📸</div><div class="feat-name">實作照片</div><div class="feat-sub">課程記錄</div></div>
@@ -324,7 +324,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","Noto Sans TC",sans-seri
       <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 03 / 17</div><div class="sched-label">第一次上課</div><div class="sched-tag t-done">已結束</div></div>
       <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 04 / 24</div><div class="sched-label">第二次上課</div><div class="sched-tag t-done">已結束</div></div>
       <div class="sched-row"><div class="sched-dot dot-now"></div><div class="sched-date">115 / 05 / 13</div><div class="sched-label">第三次上課</div><div class="sched-tag t-now">已完成</div></div>
-      <div class="sched-row"><div class="sched-dot dot-next"></div><div class="sched-date">115 / 06 / 23</div><div class="sched-label">第四次上課</div><div class="sched-tag t-next">即將到來</div></div>
+      <div class="sched-row"><div class="sched-dot dot-done"></div><div class="sched-date">115 / 06 / 23</div><div class="sched-label">第四次上課</div><div class="sched-tag t-done">已結束</div></div>
     </div>
   </div>
 </div>
@@ -380,7 +380,7 @@ function drawDonut(id,pctVal){
 }
 
 // 進度
-const TOTAL_VIDEOS=15, GAME_GOAL=10;
+const TOTAL_VIDEOS=19, GAME_GOAL=10;
 const sub=(t)=>'<span style="font-size:14px;color:#aaa;font-weight:400;">'+t+'</span>';
 const watched=JSON.parse(localStorage.getItem('watched_'+user.name)||'[]').length;
 const pct=Math.round(watched/TOTAL_VIDEOS*100);
