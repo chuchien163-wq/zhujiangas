@@ -104,6 +104,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
       <option value="待報告">待報告</option><option value="逾期">逾期</option>
       <option value="已報告">已報告</option><option value="免報告">免報告</option>
     </select>
+    <button class="btn btn-ghost btn-sm" id="btnImport">📋 一鍵匯入行事曆</button>
     <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
     <button class="btn btn-ghost btn-sm" id="btnExport" style="margin-left:auto">匯出 CSV</button>
   </div>
@@ -179,6 +180,23 @@ const STAFF=[
 {no:"079",name:"陳東彥",dept:"工務部",sub:"配氣課",title:"雇員"}];
 const DEPTS=["總經理室","業務部","管理部","工務部","財務部","資訊室"];
 const DEPT_HEAD={"總經理室":"童政宏","業務部":"李志倉","管理部":"陳儒彥","工務部":"陳炳宏","財務部":"蕭惠萍","資訊室":"黃晨晞"};
+
+/* ===== 內建：行事曆待匯入行程（依規則整理）===== */
+const CAL_IMPORT=[
+ {date:"2026-05-14",name:"115年度公用天然氣事業查核說明會",type:"說明會",people:[],dept:"工務部"},
+ {date:"2026-05-21",name:"內訓-輸氣設備原理說明及拆解維護",type:"教育訓練",people:[],dept:"工務部"},
+ {date:"2026-05-26",name:"民營能源領域資安管理法法遵說明會",type:"說明會",people:["晨晞"],dept:"資訊室"},
+ {date:"2026-05-27",name:"115年贊助會員產品說明會",type:"說明會",people:["璽凱","東彥"],dept:"工務部"},
+ {date:"2026-06-01",name:"公共設施管線資料品質提升說明會",type:"說明會",people:["人豪","鈞豪"],dept:"工務部"},
+ {date:"2026-06-04",name:"外訓-管網完整性防護與陰極防蝕實務",type:"教育訓練",people:["建彣","德泓"],dept:"工務部"},
+ {date:"2026-06-08",name:"大地昌技術參訪",type:"參訪",people:["興翰","東彥"],dept:"管理部"},
+ {date:"2026-06-11",name:"民營能源領域資安防護教育訓練",type:"教育訓練",people:["晨晞"],dept:"資訊室"},
+ {date:"2026-06-23",name:"115年第1次公用天然氣事業主管聯繫會議",type:"會議",people:["總經理","朝鑫","興翰"],dept:"總經理室"},
+ {date:"2026-06-24",name:"內訓-輸氣設備實際調壓及操作",type:"教育訓練",people:[],dept:"工務部"},
+ {date:"2026-06-26",name:"115年度苗栗縣管線挖掘圖資更新教育訓練",type:"教育訓練",people:["鈞豪","璽凱"],dept:"工務部"},
+ {date:"2026-06-29",name:"油氣管線圖資管理系統維護及查核會議",type:"會議",people:["人豪","東彥"],dept:"工務部"},
+ {date:"2026-06-30",name:"TWI基層幹部管理能力發展培訓班",type:"教育訓練",people:["淑貞","晨晞","郁夫","興翰"],dept:"業務部"},
+];
 
 /* ===== 狀態 ===== */
 const URLKEY="zhujian_meeting_gasurl";
@@ -365,6 +383,20 @@ function closeModal(id){document.getElementById(id).classList.remove("show");}
 /* ===== 綁定 ===== */
 document.getElementById("btnNew").onclick=()=>{if(!GAS){alert("請先連線後端");return;}openEdit(null);};
 document.getElementById("btnReload").onclick=apiList;
+document.getElementById("btnImport").onclick=async()=>{
+  if(!GAS){alert("請先連線後端");return;}
+  // 依現有資料的「名稱+會議日期」過濾掉已存在的，避免重複匯入
+  const exist=new Set(DATA.map(r=>r.name+"|"+r.date));
+  const todo=CAL_IMPORT.filter(r=>!exist.has(r.name+"|"+r.date));
+  if(!todo.length){alert("行事曆行程都已經匯入過了，沒有新的可加。");return;}
+  const today=new Date().toISOString().slice(0,10);
+  const rows=todo.map(r=>({recv:today,no:"",name:r.name,type:r.type,org:"",
+    date:r.date,dept:r.dept,people:r.people,note:"行事曆匯入"}));
+  if(!confirm(`將匯入 ${rows.length} 筆行事曆行程到系統，確定？`))return;
+  toast("匯入中…");
+  await apiPost({action:"addBatch",rows});
+  toast(`已匯入 ${rows.length} 筆`);apiList();
+};
 document.getElementById("search").oninput=render;
 document.getElementById("fDept").onchange=render;
 document.getElementById("fStatus").onchange=render;
