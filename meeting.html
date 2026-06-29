@@ -304,7 +304,8 @@ function render(){
     }
     if(isMgr){
       act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
-      act+=`<button class="btn btn-ghost btn-sm" onclick="openEdit('${r.id}')">改參加人員</button>`;
+      const future = !r.date || r.date >= new Date().toISOString().slice(0,10);
+      if(future) act+=`<button class="btn btn-ghost btn-sm" onclick="openEdit('${r.id}')">改參加人員</button>`;
       if(r.occ&&r.occ!=="免報告"&&!r.reported) act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
     }
     return `<tr>
