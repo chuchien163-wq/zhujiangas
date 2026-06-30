@@ -42,6 +42,7 @@ tbody td{padding:11px 12px;border-bottom:1px solid #eef1f4;vertical-align:top;fo
 tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
 .tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
 .tag-wait{background:var(--gray-soft);color:#5b6675}.tag-archived{background:var(--accent-soft);color:#9c5715}
+.tag-pending{background:#ede4f6;color:#6b3fa0}
 .tag-assigned{background:var(--brand-soft);color:#1c5448}.tag-done{background:var(--ok-soft);color:var(--ok)}
 .tag-overdue{background:var(--warn-soft);color:var(--warn)}.tag-none{background:var(--gray-soft);color:#8a93a0}
 .occ{font-size:11px;color:var(--ink2);display:inline-block;margin-top:3px}
@@ -149,11 +150,24 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
   <div class="desc" id="assignSub"></div>
   <div class="field"><label>報告場合 <span class="req">*</span></label>
     <select id="a_occ"><option value="免報告">免報告（存查結案）</option><option value="職員會議">職員會議</option><option value="主管會議">主管會議</option></select></div>
+  <div id="a_detail">
   <div class="field"><label>指派報告人</label><div class="checklist" id="a_people"></div></div>
   <div class="field"><label>預計報告日</label><input type="date" id="a_date"></div>
+  </div>
   <div class="modal-foot">
     <button class="btn btn-ghost" onclick="closeModal('maskAssign')">取消</button>
     <button class="btn btn-primary" id="btnAssignSave">確定指派</button>
+  </div>
+</div></div>
+
+<!-- 總經理改期核准 -->
+<div class="mask" id="maskApprove"><div class="modal">
+  <h2>核准報告（可改期）</h2>
+  <div class="desc" id="apvSub"></div>
+  <div class="field"><label>核定報告日期</label><input type="date" id="apv_date"></div>
+  <div class="modal-foot">
+    <button class="btn btn-ghost" onclick="closeModal('maskApprove')">取消</button>
+    <button class="btn btn-primary" id="btnApproveSave">確定核准</button>
   </div>
 </div></div>
 
@@ -226,20 +240,20 @@ async function apiPost(payload){
 }
 
 /* ===== 狀態判定 ===== */
-function isArchived(r){return r.people.length>0||r.occ;}  // 已補名單或已指派 = 視為歸檔
 function statusOf(r){
-  if(!r._archived && !r.people.length && !r.occ) return "待歸檔";
+  if(!r.people.length && !r.occ) return "待歸檔";
   if(!r.occ) return "待指派";
   if(r.occ==="免報告") return "免報告";
   if(r.reported) return "已報告";
+  if(!r.approved) return "待核准";
   if(r.reportDate && r.reportDate<new Date().toISOString().slice(0,10)) return "逾期";
-  return "待報告";
+  return "已核准";
 }
-const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待報告":"tag-assigned","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
+const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待核准":"tag-pending","已核准":"tag-assigned","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
 const ROLE_HINT={
  admin:"📥 管理部視角：你負責「收文建檔」、公文歸檔後「補登參加人員」，可編輯／刪除／拆分／匯入。",
  manager:"👔 部門主管視角：可看全部門進度，對事件指派報告、標記已報告、補改參加人員（不能刪除）。",
- boss:"👁 總經理視角：唯讀總覽，一眼掌握各部門待報告、逾期、已完成。"
+ boss:"👁 總經理視角：檢視全部門進度；對主管已指派「待核准」的報告，可「同意」或「改期」核准。"
 };
 
 /* ===== UI 初始化 ===== */
@@ -267,8 +281,8 @@ function render(){
   const all=DATA;
   const cnt=s=>all.filter(r=>statusOf(r)===s).length;
   const stats=[
-    {l:"總事件數",n:all.length,c:"brand"},{l:"待歸檔",n:cnt("待歸檔"),c:"accent"},
-    {l:"待指派",n:cnt("待指派"),c:"accent"},{l:"待報告",n:cnt("待報告"),c:"brand"},
+    {l:"總事件數",n:all.length,c:"brand"},{l:"待指派",n:cnt("待指派"),c:"accent"},
+    {l:"待核准",n:cnt("待核准"),c:"accent"},{l:"已核准待報告",n:cnt("已核准"),c:"brand"},
     {l:"逾期未報",n:cnt("逾期"),c:"warn"},{l:"已完成",n:cnt("已報告"),c:"ok"}];
   document.getElementById("stats").innerHTML=stats.map(s=>`<div class="stat ${s.c}"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join("");
 
@@ -287,7 +301,8 @@ function render(){
 
   const isAdmin=ROLE==="admin"&&adminUnlocked;
   const isMgr=ROLE==="manager";
-  const showAct=isAdmin||isMgr;
+  const isBoss=ROLE==="boss";
+  const showAct=isAdmin||isMgr||isBoss;
   area.innerHTML=`<table><thead><tr>
     <th>狀態</th><th>會議／訓練名稱</th><th class="hide-sm">承辦部門</th><th>參加人員</th>
     <th>報告場合</th><th class="hide-sm">預計報告日</th>${showAct?"<th>操作</th>":""}
@@ -306,13 +321,20 @@ function render(){
       act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
       const future = !r.date || r.date >= new Date().toISOString().slice(0,10);
       if(future) act+=`<button class="btn btn-ghost btn-sm" onclick="openEdit('${r.id}')">改參加人員</button>`;
-      if(r.occ&&r.occ!=="免報告"&&!r.reported) act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
+      if(r.occ&&r.occ!=="免報告"&&r.approved&&!r.reported) act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
     }
+    if(isBoss){
+      if(st==="待核准"){
+        act+=`<button class="btn btn-primary btn-sm" onclick="approveDirect('${r.id}')">✔ 同意</button>`;
+        act+=`<button class="btn btn-ghost btn-sm" onclick="openApprove('${r.id}')">改期核准</button>`;
+      }
+    }
+    const occApproved = r.approved&&r.occ&&r.occ!=="免報告"?`<div class="occ" style="color:#2e7d52">✔ 總經理已核准</div>`:"";
     return `<tr>
       <td><span class="tag ${STATUS_TAG[st]}">${st}</span></td>
       <td><b>${r.name}</b><div class="occ">${r.type}｜${r.org||"—"}<br>會議日：${r.date||"—"}　文號：${r.no||"—"}</div></td>
       <td class="hide-sm">${r.dept}<div class="occ">主管：${DEPT_HEAD[r.dept]||"—"}</div></td>
-      <td>${people}</td><td>${occ}</td>
+      <td>${people}</td><td>${occ}${occApproved}</td>
       <td class="hide-sm">${r.reportDate||'<span class="muted">—</span>'}</td>
       ${showAct?`<td><div class="actions">${act||'<span class="muted">—</span>'}</div></td>`:""}
     </tr>`;
@@ -357,6 +379,10 @@ async function delRow(id){
   if(!confirm(`確定刪除「${r.name}」這筆紀錄？此動作無法復原。`))return;
   await apiPost({action:"delete",id});toast("已刪除");apiList();
 }
+function toggleAssignDetail(){
+  const occ=document.getElementById("a_occ").value;
+  document.getElementById("a_detail").style.display=(occ==="免報告")?"none":"";
+}
 function openAssign(id){
   assignId=id;const r=DATA.find(x=>x.id===id);
   document.getElementById("assignSub").textContent=`${r.name}（承辦：${r.dept}　主管：${DEPT_HEAD[r.dept]}）`;
@@ -366,17 +392,38 @@ function openAssign(id){
   const pool=r.people.length?r.people:STAFF.map(s=>s.name);
   box.innerHTML=`<div class="dept-h">${r.people.length?"參加人員":"全體名冊"}</div>`+
     pool.map(n=>`<label><input type="checkbox" value="${n}" ${r.reporters.includes(n)?"checked":""}> ${n}</label>`).join("");
+  toggleAssignDetail();
   openModal("maskAssign");
 }
+document.getElementById("a_occ").onchange=toggleAssignDetail;
 document.getElementById("btnAssignSave").onclick=async()=>{
   const occ=document.getElementById("a_occ").value;
   const reporters=[...document.querySelectorAll("#a_people input:checked")].map(i=>i.value);
   const reportDate=document.getElementById("a_date").value;
+  closeModal("maskAssign");toast("儲存中…");
   await apiPost({action:"assign",id:assignId,occ,
-    reporters:occ==="免報告"?[]:reporters,reportDate:occ==="免報告"?"":reportDate});
-  closeModal("maskAssign");toast("已指派");apiList();
+    reporters:occ==="免報告"?[]:reporters,reportDate:occ==="免報告"?"":reportDate,
+    approved:occ==="免報告"?true:false});
+  toast("已送出，等候總經理核准");apiList();
 };
 async function markReported(id){await apiPost({action:"reported",id});toast("已標記報告完成");apiList();}
+
+/* ===== 總經理核准 ===== */
+async function approveDirect(id){
+  await apiPost({action:"approve",id});toast("已同意核准");apiList();
+}
+function openApprove(id){
+  assignId=id;const r=DATA.find(x=>x.id===id);
+  document.getElementById("apvSub").textContent=`${r.name}（主管排定：${r.reportDate||"未填"}）`;
+  document.getElementById("apv_date").value=r.reportDate||"";
+  openModal("maskApprove");
+}
+document.getElementById("btnApproveSave").onclick=async()=>{
+  const newDate=document.getElementById("apv_date").value;
+  closeModal("maskApprove");toast("核准中…");
+  await apiPost({action:"approve",id:assignId,reportDate:newDate});
+  toast("已核准");apiList();
+};
 
 /* ===== CSV ===== */
 document.getElementById("btnExport").onclick=()=>{
