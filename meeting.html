@@ -294,7 +294,14 @@ function render(){
     if(fstat&&statusOf(r)!==fstat)return false;
     if(q&&!(`${r.name} ${r.no} ${r.org}`).includes(q))return false;
     return true;
-  }).sort((a,b)=>(b.recv||"").localeCompare(a.recv||""));
+  }).sort((a,b)=>{
+    // 依會議日期排序：最近的在上，沒填日期的排最後
+    const da=(a.date||"").trim(), db=(b.date||"").trim();
+    if(!da && !db) return 0;
+    if(!da) return 1;
+    if(!db) return -1;
+    return db.localeCompare(da);
+  });
 
   const area=document.getElementById("tableArea");
   if(!rows.length){area.innerHTML=`<div class="empty"><div class="big">目前沒有符合條件的紀錄</div><div>按「收文建檔」新增第一筆。</div></div>`;return;}
