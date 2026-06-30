@@ -47,6 +47,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
 .tag-overdue{background:var(--warn-soft);color:var(--warn)}.tag-none{background:var(--gray-soft);color:#8a93a0}
 .occ{font-size:13.5px;color:var(--ink2);display:inline-block;margin-top:3px}
 tbody td b{font-size:16.5px}
+td[data-label="預計報告日"]{white-space:nowrap}
 .muted{color:#9aa3af}
 .namebox{display:flex;flex-wrap:wrap;gap:4px}
 .chip{background:var(--brand-soft);color:#1c5448;padding:4px 10px;border-radius:6px;font-size:14px}
@@ -95,6 +96,9 @@ tbody tr{animation:fadeIn .3s ease both}
   tbody td[data-label="會議"]{flex-direction:column;gap:4px}
   tbody td[data-label="會議"]::before{margin-bottom:2px}
   tbody td[data-label="會議"] b{font-size:16px}
+  tbody td[data-label="報告場合"]{flex-direction:column;align-items:flex-start;gap:2px}
+  tbody td[data-label="報告場合"]::before{margin-bottom:2px}
+  tbody td[data-label="報告場合"] .occ{margin-top:0}
   .hide-sm{display:flex !important}
   .namebox{justify-content:flex-end}
   .actions{justify-content:flex-end;flex-wrap:wrap}
