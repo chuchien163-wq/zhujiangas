@@ -11,7 +11,7 @@
   --warn:#b5453d;--warn-soft:#fbe9e8;--ok:#2e7d52;--ok-soft:#e6f4ec;--gray-soft:#eef1f4;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+body{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.65}
 .topbar{background:var(--brand);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .topbar h1{font-size:18px;font-weight:700;letter-spacing:.5px}
 .topbar .sub{font-size:12px;opacity:.85}
@@ -32,23 +32,23 @@ body{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;background:va
 .btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:#155345}
 .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:#c3cad3}
 .btn-danger{background:#fff;color:var(--warn);border:1px solid #f0cfcc}.btn-danger:hover{background:var(--warn-soft)}
-.btn-sm{padding:6px 12px;font-size:13px;border-radius:7px}
+.btn-sm{padding:7px 13px;font-size:14px;border-radius:7px}
 input,select,textarea{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);background:#fff}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand)}
 .search{max-width:240px}.filter{max-width:150px}
 table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-thead th{background:#f0f2f5;text-align:left;padding:11px 12px;font-size:12px;color:var(--ink2);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--line)}
-tbody td{padding:11px 12px;border-bottom:1px solid #eef1f4;vertical-align:top;font-size:13px}
+thead th{background:#f0f2f5;text-align:left;padding:13px 14px;font-size:14px;color:var(--ink2);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--line)}
+tbody td{padding:13px 14px;border-bottom:1px solid #eef1f4;vertical-align:top;font-size:14.5px}
 tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
-.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap}
+.tag{display:inline-block;padding:4px 11px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap}
 .tag-wait{background:var(--gray-soft);color:#5b6675}.tag-archived{background:var(--accent-soft);color:#9c5715}
 .tag-pending{background:#ede4f6;color:#6b3fa0}
 .tag-assigned{background:var(--brand-soft);color:#1c5448}.tag-done{background:var(--ok-soft);color:var(--ok)}
 .tag-overdue{background:var(--warn-soft);color:var(--warn)}.tag-none{background:var(--gray-soft);color:#8a93a0}
-.occ{font-size:11px;color:var(--ink2);display:inline-block;margin-top:3px}
+.occ{font-size:12.5px;color:var(--ink2);display:inline-block;margin-top:3px}
 .muted{color:#9aa3af}
 .namebox{display:flex;flex-wrap:wrap;gap:4px}
-.chip{background:var(--brand-soft);color:#1c5448;padding:2px 8px;border-radius:6px;font-size:12px}
+.chip{background:var(--brand-soft);color:#1c5448;padding:3px 9px;border-radius:6px;font-size:13px}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .mask{position:fixed;inset:0;background:rgba(20,28,38,.45);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50}
 .mask.show{display:flex}
@@ -68,8 +68,39 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
 .footer{text-align:center;color:#9aa3af;font-size:12px;padding:24px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1f2a37;color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;z-index:99;opacity:0;transition:.25s;pointer-events:none}
 .toast.show{opacity:1}
-.loading{text-align:center;padding:40px;color:var(--ink2)}
-@media(max-width:760px){.hide-sm{display:none}.wrap{padding:14px}.grid2{grid-template-columns:1fr}}
+.loading{text-align:center;padding:50px 20px;color:var(--ink2);font-size:15px}
+.spinner{width:42px;height:42px;margin:0 auto 16px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading .hint{font-size:14px;color:#9aa3af;margin-top:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+tbody tr{animation:fadeIn .3s ease both}
+@media(max-width:760px){
+  .wrap{padding:12px}
+  .grid2{grid-template-columns:1fr}
+  .topbar h1{font-size:17px}
+  .role-switch{width:100%;margin-left:0}
+  .role-switch button{flex:1;font-size:13px;padding:8px 6px}
+  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:12px 10px}
+  .stat .n{font-size:22px}
+  .stat .l{font-size:11px}
+  /* 表格 → 卡片 */
+  table,thead,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  table{border:none;background:transparent}
+  tbody tr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;padding:6px 4px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  tbody td{border:none;padding:9px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:15px}
+  tbody td::before{content:attr(data-label);font-weight:700;color:var(--ink2);font-size:13px;flex-shrink:0;min-width:72px}
+  tbody td[data-label="會議"]{flex-direction:column;gap:4px}
+  tbody td[data-label="會議"]::before{margin-bottom:2px}
+  tbody td[data-label="會議"] b{font-size:16px}
+  .hide-sm{display:flex !important}
+  .namebox{justify-content:flex-end}
+  .actions{justify-content:flex-end;flex-wrap:wrap}
+  .btn-sm{padding:9px 15px;font-size:15px}
+  .toolbar{gap:8px}
+  .search,.filter{max-width:none;flex:1 1 100%}
+}
 </style>
 </head>
 <body>
@@ -227,7 +258,7 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
 /* ===== 後端通訊 ===== */
 async function apiList(){
   if(!GAS){document.getElementById("tableArea").innerHTML='<div class="loading">請先在上方貼入後端網址並連線…</div>';return;}
-  document.getElementById("tableArea").innerHTML='<div class="loading">載入中…</div>';
+  document.getElementById("tableArea").innerHTML='<div class="loading"><div class="spinner"></div>資料更新中，再等一下下…<div class="hint">系統正在跟雲端同步，請稍候</div></div>';
   try{
     const r=await fetch(GAS+"?action=list");
     const j=await r.json();
@@ -295,12 +326,12 @@ function render(){
     if(q&&!(`${r.name} ${r.no} ${r.org}`).includes(q))return false;
     return true;
   }).sort((a,b)=>{
-    // 依會議日期排序：最近的在上，沒填日期的排最後
+    // 依會議日期排序：早的在上（5月→6月→7月），沒填日期的排最後
     const da=(a.date||"").trim(), db=(b.date||"").trim();
     if(!da && !db) return 0;
     if(!da) return 1;
     if(!db) return -1;
-    return db.localeCompare(da);
+    return da.localeCompare(db);
   });
 
   const area=document.getElementById("tableArea");
@@ -338,12 +369,12 @@ function render(){
     }
     const occApproved = r.approved&&r.occ&&r.occ!=="免報告"?`<div class="occ" style="color:#2e7d52">✔ 總經理已核准</div>`:"";
     return `<tr>
-      <td><span class="tag ${STATUS_TAG[st]}">${st}</span></td>
-      <td><b>${r.name}</b><div class="occ">${r.type}｜${r.org||"—"}<br>會議日：${r.date||"—"}　文號：${r.no||"—"}</div></td>
-      <td class="hide-sm">${r.dept}<div class="occ">主管：${DEPT_HEAD[r.dept]||"—"}</div></td>
-      <td>${people}</td><td>${occ}${occApproved}</td>
-      <td class="hide-sm">${r.reportDate||'<span class="muted">—</span>'}</td>
-      ${showAct?`<td><div class="actions">${act||'<span class="muted">—</span>'}</div></td>`:""}
+      <td data-label="狀態"><span class="tag ${STATUS_TAG[st]}">${st}</span></td>
+      <td data-label="會議"><b>${r.name}</b><div class="occ">${r.type}｜${r.org||"—"}<br>會議日：${r.date||"—"}　文號：${r.no||"—"}</div></td>
+      <td data-label="承辦部門" class="hide-sm">${r.dept}<div class="occ">主管：${DEPT_HEAD[r.dept]||"—"}</div></td>
+      <td data-label="參加人員">${people}</td><td data-label="報告場合">${occ}${occApproved}</td>
+      <td data-label="預計報告日" class="hide-sm">${r.reportDate||'<span class="muted">—</span>'}</td>
+      ${showAct?`<td data-label="操作"><div class="actions">${act||'<span class="muted">—</span>'}</div></td>`:""}
     </tr>`;
   }).join("")}</tbody></table>`;
 }
