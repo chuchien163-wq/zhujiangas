@@ -168,7 +168,7 @@
 
 <script>
 const GAS='https://script.google.com/macros/s/AKfycbyYFS_MtTAsnbrtqZQ8PgSqhhzliWTOzEi0zixf0AvhqJJmnm_CiD7UbIoTt6eeZC0Y/exec';
-const VENDOR_BASE='https://chuchien163-wq.github.io/bid/bid_vendor.html'; // 廠商頁網址(上傳GitHub後的位置)
+const VENDOR_BASE='https://chuchien163-wq.github.io/zhujiangas/bid_vendor.html'; // 廠商頁網址(根目錄)
 let PW='', CASE={id:'',name:'',eng:''}, ITEMS=[], SET={}, autoTimer=null;
 
 const fmt=n=>(n<0?"-":"")+Math.abs(Math.round(n||0)).toLocaleString();
@@ -190,6 +190,11 @@ function jsonp(params){
     s.onerror=()=>{cleanup();reject(new Error('連線失敗'));};
     document.body.appendChild(s);
   });
+}
+// 大資料量用 POST(避開網址長度限制),GAS 用 text/plain 免預檢
+function postGas(obj){
+  return fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(obj)})
+    .then(r=>r.json());
 }
 
 function doLogin(){
@@ -237,7 +242,7 @@ async function parseAndCreate(rows,fname){
   const days=Math.max(1,Number(document.getElementById('daysInp').value)||3);
   toast('上傳中，請稍候…');
   try{
-    const res=await jsonp({action:'createCase',pw:PW,caseId,eng,name,days,items:JSON.stringify(items)});
+    const res=await postGas({action:'createCase',pw:PW,caseId,eng,name,days,items:JSON.stringify(items)});
     if(!res.ok){toast(res.msg||'建立失敗');return;}
     CASE={id:caseId,name,eng};ITEMS=items;
     document.getElementById('url-A').textContent=VENDOR_BASE+'?case='+caseId+'&v=A&k='+res.tokenA;

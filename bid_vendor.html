@@ -79,6 +79,10 @@ function jsonp(params){
     s.onerror=()=>{cleanup();reject(new Error('連線失敗'));};document.body.appendChild(s);
   });
 }
+function postGas(obj){
+  return fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(obj)})
+    .then(r=>r.json());
+}
 
 async function init(){
   if(!CASE_ID||!V||!K){document.getElementById('app').innerHTML=errPage('連結不完整','此連結缺少必要參數，請洽竹建瓦斯管理部索取正確連結。');return;}
@@ -136,7 +140,7 @@ async function save(){
   const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='儲存中…';
   const qty={};ITEMS.forEach(it=>{qty[it.seq]=it.qty;});
   try{
-    const res=await jsonp({action:'saveVendor',caseId:CASE_ID,v:V,k:K,qty:JSON.stringify(qty)});
+    const res=await postGas({action:'saveVendor',caseId:CASE_ID,v:V,k:K,qty:JSON.stringify(qty)});
     if(res.expired){document.getElementById('app').innerHTML=closedPage(INFO);return;}
     if(!res.ok){toast(res.msg||'儲存失敗');btn.disabled=false;btn.textContent='儲存報價';return;}
     const f=document.getElementById('flash');f.classList.add('show');setTimeout(()=>f.classList.remove('show'),2600);
