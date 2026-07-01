@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>廠商報價填寫 · 竹建瓦斯</title>
+<style>
+  :root{--ink:#1a2b3c;--steel:#2f5496;--steel-dk:#233f73;--paper:#f7f8fa;--line:#d9dee6;--lock:#e7e6e6;
+    --input:#fff3cf;--input-bd:#e8c96a;--muted:#6b7a8d;--down:#1e7a46;--warn:#b8860b;--warn-bg:#fdf3d6;
+    --dead:#8a3a3a;--dead-bg:#f2e3e3;--chip-a:#2f7d4f;--chip-b:#c56a1e}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:900px;margin:0 auto;padding:16px 16px 60px}
+  .banner{background:linear-gradient(120deg,var(--steel-dk),var(--steel));color:#fff;border-radius:12px;padding:18px 22px;margin-bottom:18px}
+  .banner .case{font-size:19px;font-weight:800}.banner .who{font-size:13px;opacity:.88;margin-top:3px}
+  .banner .cd{font-size:12px;margin-top:9px;background:rgba(255,255,255,.15);display:inline-block;padding:3px 12px;border-radius:20px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 1px 3px rgba(26,43,60,.04)}
+  .card h2{font-size:16px;margin-bottom:4px;color:var(--steel-dk)}
+  .hint{font-size:12.5px;color:var(--muted);margin:2px 0 12px}
+  .masknote{font-size:11.5px;color:var(--warn);background:var(--warn-bg);border:1px solid #eadaa0;border-radius:8px;padding:7px 11px;margin-bottom:12px;display:inline-block}
+  .tbl-scroll{overflow-x:auto;margin:0 -4px}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+  th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th{background:var(--steel);color:#fff;font-weight:600;text-align:center;font-size:12px}
+  td.name,th.name{text-align:left;white-space:normal;min-width:160px}td.mid,th.mid{text-align:center}
+  td.code{text-align:left;font-family:ui-monospace,monospace;font-size:11.5px;color:var(--muted)}
+  tbody tr:hover{background:#f2f6fc}
+  .grouprow td{background:#eaf0f9;font-weight:700;color:var(--steel-dk);text-align:left;font-size:12.5px}
+  .price-mask{background:var(--lock);text-align:center;cursor:pointer;user-select:none}
+  .price-mask .dots{letter-spacing:2px;color:#9aa7b5;font-weight:700}
+  .price-mask .val{display:none;font-variant-numeric:tabular-nums;font-weight:700;color:var(--steel-dk)}
+  .price-mask.show .dots{display:none}.price-mask.show .val{display:inline}
+  .price-mask.show{background:#fff7dd;outline:2px solid var(--input-bd);outline-offset:-2px}
+  @media(hover:hover){.price-mask:hover .dots{display:none}.price-mask:hover .val{display:inline}.price-mask:hover{background:#fff7dd;outline:2px solid var(--input-bd);outline-offset:-2px}}
+  .qty-input{width:64px;text-align:center;font-size:14px;padding:6px;border:1.5px solid var(--input-bd);border-radius:7px;background:var(--input);font-family:inherit;font-weight:600;color:var(--ink)}
+  .qty-input:focus{outline:2px solid var(--steel);background:#fff}
+  td.money{font-variant-numeric:tabular-nums}
+  tfoot td{border-top:2px solid var(--steel);font-weight:800;background:#eef3fb;font-size:14px}
+  .btn{font-family:inherit;font-size:14px;font-weight:600;padding:11px 24px;border-radius:9px;border:1px solid var(--steel);background:var(--steel);color:#fff;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--steel-dk)}.btn:disabled{opacity:.5;cursor:not-allowed}
+  .save-flash{display:inline-block;margin-left:12px;font-size:13px;color:var(--down);opacity:0;transition:.3s;font-weight:600}.save-flash.show{opacity:1}
+  .closed-page{text-align:center;padding:60px 24px}
+  .closed-page .ic{width:72px;height:72px;border-radius:50%;background:var(--dead-bg);color:var(--dead);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 20px}
+  .closed-page h2{font-size:20px;color:var(--dead);margin-bottom:10px}
+  .closed-page p{color:var(--muted);font-size:14px;max-width:440px;margin:0 auto 6px}
+  .closed-page .contact{margin-top:20px;font-size:13px;color:var(--ink)}
+  .loading{text-align:center;padding:80px 20px;color:var(--muted)}
+  .spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--steel);border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--steel-dk);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;opacity:0;transition:.3s;z-index:99;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="loading"><div class="spinner"></div>載入中，請稍候…</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const GAS='https://script.google.com/macros/s/AKfycbyYFS_MtTAsnbrtqZQ8PgSqhhzliWTOzEi0zixf0AvhqJJmnm_CiD7UbIoTt6eeZC0Y/exec';
+const qp=new URLSearchParams(location.search);
+const CASE_ID=qp.get('case'), V=(qp.get('v')||'').toUpperCase(), K=qp.get('k');
+let ITEMS=[], INFO={};
+
+const fmt=n=>(n<0?"-":"")+Math.abs(Math.round(n||0)).toLocaleString();
+const fmtDL=s=>{const d=new Date(s);return d.getFullYear()+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function remainLabel(dl){const ms=new Date(dl)-new Date();if(ms<=0)return'已截止';const h=ms/3600000,dd=Math.floor(h/24),hh=Math.floor(h%24),mm=Math.floor((ms%3600000)/60000);return dd>0?`剩 ${dd}天${hh}時`:hh>0?`剩 ${hh}時${mm}分`:`剩 ${mm}分`;}
+
+function jsonp(params){
+  return new Promise((resolve,reject)=>{
+    const cb='cb_'+Math.random().toString(36).slice(2);
+    const timer=setTimeout(()=>{cleanup();reject(new Error('連線逾時'));},20000);
+    function cleanup(){delete window[cb];if(s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+    window[cb]=data=>{cleanup();resolve(data);};
+    const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
+    const s=document.createElement('script');s.src=GAS+'?'+qs+'&callback='+cb;
+    s.onerror=()=>{cleanup();reject(new Error('連線失敗'));};document.body.appendChild(s);
+  });
+}
+
+async function init(){
+  if(!CASE_ID||!V||!K){document.getElementById('app').innerHTML=errPage('連結不完整','此連結缺少必要參數，請洽竹建瓦斯管理部索取正確連結。');return;}
+  try{
+    const res=await jsonp({action:'getCase',caseId:CASE_ID,v:V,k:K});
+    if(!res.ok){document.getElementById('app').innerHTML=errPage('無法載入',res.msg||'查無此案件');return;}
+    INFO=res;
+    if(res.expired){document.getElementById('app').innerHTML=closedPage(res);return;}
+    ITEMS=res.items;renderForm(res);
+  }catch(err){document.getElementById('app').innerHTML=errPage('連線失敗',err.message+'，請稍後再試或洽管理部。');}
+}
+
+function closedPage(res){return `<div class="card"><div class="closed-page">
+  <div class="ic">🔒</div><h2>本報價連結已截止</h2>
+  <p>${res.name||''} · ${V}廠報價已於 <b>${res.deadline?fmtDL(res.deadline):''}</b> 截止。</p>
+  <p>連結已關閉，無法再檢視或填寫報價內容。</p>
+  <div class="contact">如需補件或延長，請洽 <b>竹建瓦斯 管理部</b>　電話 037-XXXXXX</div></div></div>`;}
+function errPage(t,m){return `<div class="card"><div class="closed-page">
+  <div class="ic">⚠️</div><h2>${t}</h2><p>${m}</p></div></div>`;}
+
+function renderForm(res){
+  let rows='',lastG='';
+  ITEMS.forEach((it,idx)=>{
+    if(it.group!==lastG){rows+=`<tr class="grouprow"><td colspan="6">${it.group}</td></tr>`;lastG=it.group;}
+    rows+=`<tr>
+      <td class="code">${it.code}</td><td class="name">${it.name}</td>
+      <td class="price-mask money" onclick="tapPrice(this)"><span class="dots">●●●●</span><span class="val">${fmt(it.price)}</span></td>
+      <td class="mid"><input class="qty-input" type="number" min="0" value="${it.qty}" data-idx="${idx}" oninput="onQty(${idx},this.value)"></td>
+      <td class="mid">${it.unit}</td>
+      <td class="money" id="sub-${idx}">${fmt(it.price*it.qty)}</td></tr>`;
+  });
+  const sum=ITEMS.reduce((a,it)=>a+it.price*it.qty,0);
+  document.getElementById('app').innerHTML=`
+    <div class="banner"><div class="case">${res.name||''}</div>
+      <div class="who">${V==='A'?'🅰️':'🅱️'} 廠商：${V}廠　·　工程編號 ${res.eng||''}　·　單價為固定基準不可修改</div>
+      <div class="cd">⏳ 填寫期限至 ${fmtDL(res.deadline)}（${remainLabel(res.deadline)}）</div></div>
+    <div class="card"><h2>填寫報價數量</h2>
+      <p class="hint">只需填黃色「數量」欄。小計與總計自動計算，改完按「儲存報價」回傳。</p>
+      <div class="masknote">🔒 單價預設隱藏為 ●●●●，滑鼠移過（手機點一下）該格即顯示，一次只顯示一格。</div>
+      <div class="tbl-scroll"><table>
+        <thead><tr><th class="name" style="min-width:110px">料號</th><th class="name">品名</th><th>單價</th><th class="mid">數量</th><th class="mid">單位</th><th>小計</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td colspan="5" class="name">總計</td><td class="money" id="sumTotal">${fmt(sum)}</td></tr></tfoot>
+      </table></div>
+      <div style="margin-top:18px"><button class="btn" id="saveBtn" onclick="save()">儲存報價</button>
+        <span class="save-flash" id="flash">✓ 已回傳給竹建瓦斯管理部</span></div>
+    </div>`;
+}
+function tapPrice(td){const on=td.classList.contains('show');document.querySelectorAll('.price-mask.show').forEach(x=>x.classList.remove('show'));if(!on)td.classList.add('show');}
+function onQty(idx,val){ITEMS[idx].qty=val===''?0:Number(val);
+  document.getElementById('sub-'+idx).textContent=fmt(ITEMS[idx].price*ITEMS[idx].qty);
+  document.getElementById('sumTotal').textContent=fmt(ITEMS.reduce((a,it)=>a+it.price*it.qty,0));}
+
+async function save(){
+  const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='儲存中…';
+  const qty={};ITEMS.forEach(it=>{qty[it.seq]=it.qty;});
+  try{
+    const res=await jsonp({action:'saveVendor',caseId:CASE_ID,v:V,k:K,qty:JSON.stringify(qty)});
+    if(res.expired){document.getElementById('app').innerHTML=closedPage(INFO);return;}
+    if(!res.ok){toast(res.msg||'儲存失敗');btn.disabled=false;btn.textContent='儲存報價';return;}
+    const f=document.getElementById('flash');f.classList.add('show');setTimeout(()=>f.classList.remove('show'),2600);
+    btn.disabled=false;btn.textContent='儲存報價';
+  }catch(err){toast('連線錯誤：'+err.message);btn.disabled=false;btn.textContent='儲存報價';}
+}
+init();
+</script>
+</body>
+</html>

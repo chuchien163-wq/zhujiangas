@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>案件報價比價系統 · 管理端</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{--ink:#1a2b3c;--steel:#2f5496;--steel-dk:#233f73;--paper:#f7f8fa;--line:#d9dee6;--lock:#e7e6e6;
+    --input:#fff3cf;--input-bd:#e8c96a;--up:#c0392b;--up-bg:#fbe4e1;--down:#1e7a46;--down-bg:#dff2e6;
+    --muted:#6b7a8d;--chip-a:#2f7d4f;--chip-b:#c56a1e;--live:#1e7a46;--live-bg:#dff2e6;
+    --warn:#b8860b;--warn-bg:#fdf3d6;--dead:#8a3a3a;--dead-bg:#f2e3e3}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 16px 60px}
+  .topbar{background:linear-gradient(120deg,var(--steel-dk),var(--steel));color:#fff;padding:18px 0;margin-bottom:24px;box-shadow:0 2px 12px rgba(35,63,115,.25)}
+  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .brand h1{font-size:20px;font-weight:800;letter-spacing:.5px}.brand .sub{font-size:12px;opacity:.8}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(26,43,60,.04)}
+  .card h2{font-size:16px;margin-bottom:4px;color:var(--steel-dk);display:flex;align-items:center;gap:8px}
+  .card h2 .n{background:var(--steel);color:#fff;font-size:12px;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
+  .hint{font-size:12.5px;color:var(--muted);margin:2px 0 16px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  input[type=text],input[type=number],input[type=password]{font-family:inherit;font-size:14px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  input:focus{outline:2px solid var(--steel);outline-offset:-1px;border-color:var(--steel)}
+  .btn{font-family:inherit;font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;border:1px solid var(--steel);background:var(--steel);color:#fff;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--steel-dk)}.btn.ghost{background:#fff;color:var(--steel)}.btn.ghost:hover{background:var(--paper)}
+  .btn.sm{padding:5px 11px;font-size:12px}.btn.danger{border-color:var(--dead);background:#fff;color:var(--dead)}.btn.danger:hover{background:var(--dead-bg)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .drop{border:2px dashed var(--input-bd);border-radius:12px;padding:26px;text-align:center;background:var(--warn-bg);cursor:pointer;transition:.15s}
+  .drop:hover{background:#fdeec4}.drop .big{font-size:15px;font-weight:700;color:var(--steel-dk);margin-bottom:4px}.drop .sm{font-size:12px;color:var(--muted)}.drop input{display:none}
+  .caseinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:14px}
+  .caseinfo .kv{background:var(--paper);border:1px solid var(--line);border-radius:9px;padding:10px 13px}
+  .caseinfo .k{font-size:11px;color:var(--muted)}.caseinfo .v{font-size:14px;font-weight:700;margin-top:2px}
+  .linkcard{border:1px solid var(--line);border-radius:11px;padding:14px;margin-top:12px;background:var(--paper)}
+  .linkcard-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .chip{font-size:11px;font-weight:700;color:#fff;padding:3px 9px;border-radius:6px}.chip.a{background:var(--chip-a)}.chip.b{background:var(--chip-b)}
+  .status{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+  .status.live{background:var(--live-bg);color:var(--live)}.status.warn{background:var(--warn-bg);color:var(--warn)}.status.dead{background:var(--dead-bg);color:var(--dead)}
+  .dot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}.status.live .dot{animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .deadline-info{font-size:12px;color:var(--muted);margin-left:auto}.deadline-info b{color:var(--ink)}
+  .linkrow{display:flex;align-items:center;gap:8px;background:#fff;border:1px dashed var(--line);border-radius:9px;padding:8px 10px;font-size:13px}
+  .linkrow code{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--steel-dk);font-family:ui-monospace,monospace}
+  .linkrow.disabled code{color:var(--muted);text-decoration:line-through}
+  .link-actions{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+  .daysetter{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:4px}.daysetter input{width:58px;text-align:center;padding:6px}
+  .tbl-scroll{overflow-x:auto;margin:0 -4px}
+  table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
+  th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th{background:var(--steel);color:#fff;font-weight:600;text-align:center;font-size:12px}
+  td.name,th.name{text-align:left;white-space:normal;min-width:170px}td.mid,th.mid{text-align:center}
+  tbody tr:hover{background:#f2f6fc}
+  .grouprow td{background:#eaf0f9;font-weight:700;color:var(--steel-dk);text-align:left;font-size:12.5px}
+  .price-cell{background:var(--lock);color:var(--muted);font-variant-numeric:tabular-nums}
+  td.money{font-variant-numeric:tabular-nums}.diff-up{color:var(--up);font-weight:700}.diff-down{color:var(--down);font-weight:700}
+  tr.changed td{background:var(--up-bg)!important}.tag-changed{font-size:11px;color:var(--up);font-weight:700}
+  tfoot td{border-top:2px solid var(--steel);font-weight:800;background:#eef3fb;font-size:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .stat .k{font-size:12px;color:var(--muted);margin-bottom:4px}.stat .v{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat.win{background:var(--down-bg);border-color:#bfe3cc}.stat.win .v{color:var(--down)}
+  .log{max-height:280px;overflow-y:auto;border:1px solid var(--line);border-radius:10px}
+  .log-item{display:flex;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:baseline}.log-item:last-child{border-bottom:0}
+  .log-time{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;min-width:104px}
+  .log-vendor{font-weight:700;font-size:12px;padding:1px 7px;border-radius:5px;color:#fff}.log-vendor.a{background:var(--chip-a)}.log-vendor.b{background:var(--chip-b)}
+  .log-txt{flex:1}.log-n{color:var(--muted);font-size:11px;white-space:nowrap}
+  .empty{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+  .gate{max-width:360px;margin:80px auto;text-align:center}
+  .gate .card{padding:32px}.gate h2{justify-content:center;margin-bottom:16px;font-size:18px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--steel-dk);color:#fff;padding:10px 20px;border-radius:22px;font-size:13px;opacity:0;transition:.3s;z-index:99;pointer-events:none}
+  .toast.show{opacity:1}
+  .refresh-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px;color:var(--muted)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
+  .legend span{display:inline-flex;align-items:center;gap:5px}.sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+  @media(max-width:560px){.brand h1{font-size:17px}.card{padding:16px}.deadline-info{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap"><div class="brand">
+  <h1>案件報價比價系統</h1><span class="sub">竹建瓦斯 · 管理端</span>
+</div></div></div>
+
+<div class="wrap">
+  <!-- 密碼閘 -->
+  <div id="gate" class="gate"><div class="card">
+    <h2>🔐 管理端登入</h2>
+    <div class="row" style="flex-direction:column;gap:12px">
+      <input type="password" id="pwInp" placeholder="請輸入管理密碼" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" style="width:100%" onclick="doLogin()">進入</button>
+    </div>
+  </div></div>
+
+  <!-- 主體 -->
+  <div id="main" style="display:none">
+    <div class="card">
+      <h2><span class="n">1</span>上傳最終報價單（系統匯出檔）</h2>
+      <p class="hint">選取工務討論定案後的最終報價單（.xlsx），自動讀取案件資訊與所有品項、單價、數量，並建立案件到後端。支援嘉園這類「工程估價」格式。</p>
+      <div class="daysetter" style="margin-bottom:12px">開放天數 <input type="number" id="daysInp" value="3" min="1" max="30"> 天</div>
+      <label class="drop" id="drop">
+        <div class="big">📤 點此選擇 Excel 檔，或拖曳到這裡</div>
+        <div class="sm">讀取「工程估價」分頁 · 成本別／編號／名稱／單價／數量／單位</div>
+        <input type="file" id="fileInp" accept=".xlsx,.xls">
+      </label>
+      <div id="caseBox"></div>
+    </div>
+
+    <div class="card" id="linkCard" style="display:none">
+      <h2><span class="n">2</span>廠商連結 · 回報期限</h2>
+      <p class="hint">每條連結獨立期限，到期廠商點連結只看到截止頁。可隨時延長或提前關閉。</p>
+      <div class="linkcard" id="lc-A">
+        <div class="linkcard-top"><span class="chip a">A廠</span>
+          <span class="status live" id="st-A"><span class="dot"></span>開放中</span>
+          <span class="deadline-info" id="dl-A"></span></div>
+        <div class="linkrow" id="lr-A"><code id="url-A"></code><button class="btn sm" onclick="copyLink(this)">複製</button></div>
+        <div class="link-actions">
+          <button class="btn ghost sm" onclick="extend('A',1)">＋1天</button>
+          <button class="btn ghost sm" onclick="extend('A',3)">＋3天</button>
+          <button class="btn danger sm" onclick="closeNow('A')">立即關閉</button>
+          <button class="btn ghost sm" onclick="reopen('A')">重開3天</button></div>
+      </div>
+      <div class="linkcard" id="lc-B">
+        <div class="linkcard-top"><span class="chip b">B廠</span>
+          <span class="status live" id="st-B"><span class="dot"></span>開放中</span>
+          <span class="deadline-info" id="dl-B"></span></div>
+        <div class="linkrow" id="lr-B"><code id="url-B"></code><button class="btn sm" onclick="copyLink(this)">複製</button></div>
+        <div class="link-actions">
+          <button class="btn ghost sm" onclick="extend('B',1)">＋1天</button>
+          <button class="btn ghost sm" onclick="extend('B',3)">＋3天</button>
+          <button class="btn danger sm" onclick="closeNow('B')">立即關閉</button>
+          <button class="btn ghost sm" onclick="reopen('B')">重開3天</button></div>
+      </div>
+    </div>
+
+    <div class="card" id="cmpCard" style="display:none">
+      <h2><span class="n">3</span>兩家比較總覽</h2>
+      <div class="refresh-bar">
+        <button class="btn ghost sm" onclick="loadCompare()">🔄 重新整理</button>
+        <span id="lastSync"></span>
+        <label style="margin-left:auto"><input type="checkbox" id="autoRef" checked> 每30秒自動更新</label>
+      </div>
+      <div class="stats" id="adminStats"></div>
+      <div class="tbl-scroll"><table id="cmpTable"><thead><tr>
+        <th class="name">品名</th><th>單價</th><th>原始量</th>
+        <th>A廠量</th><th>A金額差</th><th>B廠量</th><th>B金額差</th>
+        <th>A小計</th><th>B小計</th><th class="mid">狀態</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><td class="name">總計</td><td colspan="6"></td>
+          <td class="money" id="ftA"></td><td class="money" id="ftB"></td><td></td></tr></tfoot>
+      </table></div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--lock)"></i>單價（鎖定）</span>
+        <span><i class="sw" style="background:var(--up-bg)"></i>該廠改過</span>
+        <span><i class="sw" style="background:var(--down)"></i>較低價</span></div>
+    </div>
+
+    <div class="card" id="logCard" style="display:none">
+      <h2><span class="n">4</span>修改歷程</h2>
+      <div class="log" id="logBox"></div>
+    </div>
+
+    <div class="card" id="hintCard">
+      <div class="empty">👆 先上傳一份最終報價單，比價表與廠商連結就會出現。<br>可用「嘉園_股_公司-71戶」那份測試。</div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const GAS='https://script.google.com/macros/s/AKfycbyYFS_MtTAsnbrtqZQ8PgSqhhzliWTOzEi0zixf0AvhqJJmnm_CiD7UbIoTt6eeZC0Y/exec';
+const VENDOR_BASE='https://chuchien163-wq.github.io/bid/bid_vendor.html'; // 廠商頁網址(上傳GitHub後的位置)
+let PW='', CASE={id:'',name:'',eng:''}, ITEMS=[], SET={}, autoTimer=null;
+
+const fmt=n=>(n<0?"-":"")+Math.abs(Math.round(n||0)).toLocaleString();
+const diffFmt=n=>!n?"–":(n>0?"+":"−")+Math.abs(Math.round(n)).toLocaleString();
+const fmtDL=s=>{const d=new Date(s);return d.getFullYear()+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+String(d.getDate()).padStart(2,"0")+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");};
+const addDays=(base,n)=>new Date((base?new Date(base):new Date()).getTime()+n*86400000).toISOString();
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// JSONP 呼叫 GAS
+function jsonp(params){
+  return new Promise((resolve,reject)=>{
+    const cb='cb_'+Math.random().toString(36).slice(2);
+    const timer=setTimeout(()=>{cleanup();reject(new Error('連線逾時'));},20000);
+    function cleanup(){delete window[cb];if(s.parentNode)s.parentNode.removeChild(s);clearTimeout(timer);}
+    window[cb]=data=>{cleanup();resolve(data);};
+    const qs=Object.keys(params).map(k=>encodeURIComponent(k)+'='+encodeURIComponent(params[k])).join('&');
+    const s=document.createElement('script');
+    s.src=GAS+'?'+qs+'&callback='+cb;
+    s.onerror=()=>{cleanup();reject(new Error('連線失敗'));};
+    document.body.appendChild(s);
+  });
+}
+
+function doLogin(){
+  const pw=document.getElementById('pwInp').value.trim();
+  if(!pw){toast('請輸入密碼');return;}
+  PW=pw;
+  document.getElementById('gate').style.display='none';
+  document.getElementById('main').style.display='';
+}
+
+// 上傳讀取 Excel
+const drop=document.getElementById('drop'),fileInp=document.getElementById('fileInp');
+fileInp.addEventListener('change',e=>{if(e.target.files[0])readExcel(e.target.files[0]);});
+['dragover','dragenter'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.background='#fce9b8';}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.background='';}));
+drop.addEventListener('drop',e=>{e.preventDefault();if(e.dataTransfer.files[0])readExcel(e.dataTransfer.files[0]);});
+
+function readExcel(file){
+  const rd=new FileReader();
+  rd.onload=async ev=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+      const sn=wb.SheetNames.find(s=>s.includes('估價'))||wb.SheetNames[0];
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,defval:null});
+      await parseAndCreate(rows,file.name);
+    }catch(err){toast('讀取失敗：'+err.message);}
+  };
+  rd.readAsArrayBuffer(file);
+}
+async function parseAndCreate(rows,fname){
+  let name='',eng='';const items=[];let seq=0;
+  rows.forEach(r=>{
+    const c1=(r[0]||'').toString();
+    if(c1.includes('施工名稱'))name=c1.replace(/施工名稱[：:]/,'').trim();
+    if(c1.includes('工程編號'))eng=c1.replace(/工程編號[：:]/,'').trim();
+    const code=(r[1]||'').toString().trim();
+    if(/^\d{4}-\d{3}-\d{3}/.test(code)){
+      seq++;
+      items.push({seq,group:(r[0]||'').toString().trim()||'其他',code,name:(r[2]||'').toString().trim(),price:Number(r[4])||0,orig:Number(r[5])||0,unit:(r[7]||'').toString().trim()});
+    }
+  });
+  if(!items.length){toast('找不到品項，請確認是工程估價格式');return;}
+  if(!name)name=fname.replace(/\.x(lsx|ls)$/i,'');
+  const caseId=(eng||'case'+Date.now()).replace(/[^A-Za-z0-9]/g,'');
+  const days=Math.max(1,Number(document.getElementById('daysInp').value)||3);
+  toast('上傳中，請稍候…');
+  try{
+    const res=await jsonp({action:'createCase',pw:PW,caseId,eng,name,days,items:JSON.stringify(items)});
+    if(!res.ok){toast(res.msg||'建立失敗');return;}
+    CASE={id:caseId,name,eng};ITEMS=items;
+    document.getElementById('url-A').textContent=VENDOR_BASE+'?case='+caseId+'&v=A&k='+res.tokenA;
+    document.getElementById('url-B').textContent=VENDOR_BASE+'?case='+caseId+'&v=B&k='+res.tokenB;
+    showCase(days);
+    ['linkCard','cmpCard','logCard'].forEach(id=>document.getElementById(id).style.display='');
+    document.getElementById('hintCard').style.display='none';
+    toast('案件已建立，共 '+items.length+' 項');
+    loadCompare();
+    startAuto();
+  }catch(err){toast('連線錯誤：'+err.message);}
+}
+function showCase(days){
+  const total=ITEMS.reduce((a,i)=>a+i.price*i.orig,0);
+  const groups=[...new Set(ITEMS.map(i=>i.group))];
+  document.getElementById('caseBox').innerHTML=`<div class="caseinfo">
+    <div class="kv"><div class="k">施工名稱</div><div class="v">${CASE.name||'—'}</div></div>
+    <div class="kv"><div class="k">工程編號</div><div class="v">${CASE.eng||'—'}</div></div>
+    <div class="kv"><div class="k">品項數</div><div class="v">${ITEMS.length} 項（${groups.join('、')}）</div></div>
+    <div class="kv"><div class="k">基準總價</div><div class="v">${fmt(total)}</div></div></div>`;
+}
+
+// 讀比較
+async function loadCompare(){
+  if(!CASE.id)return;
+  try{
+    const res=await jsonp({action:'getCompare',pw:PW,caseId:CASE.id});
+    if(!res.ok){toast(res.msg||'讀取失敗');return;}
+    ITEMS=res.items;SET={dlA:res.dlA,dlB:res.dlB,closedA:res.closedA,closedB:res.closedB};
+    renderLinks();renderCompare();renderLogs(res.logs||[]);
+    document.getElementById('lastSync').textContent='最後更新 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  }catch(err){toast('連線錯誤：'+err.message);}
+}
+function remain(v){
+  const closed=v==='A'?SET.closedA:SET.closedB, dl=v==='A'?SET.dlA:SET.dlB;
+  if(closed===true||closed==='TRUE')return{cls:'dead',label:'已關閉'};
+  if(!dl)return{cls:'live',label:'—'};
+  const ms=new Date(dl)-new Date();
+  if(ms<=0)return{cls:'dead',label:'已截止'};
+  const h=ms/3600000,dd=Math.floor(h/24),hh=Math.floor(h%24),mm=Math.floor((ms%3600000)/60000);
+  return{cls:h<=12?'warn':'live',label:dd>0?`剩 ${dd}天${hh}時`:hh>0?`剩 ${hh}時${mm}分`:`剩 ${mm}分`};
+}
+function renderLinks(){
+  ['A','B'].forEach(v=>{
+    const r=remain(v),st=document.getElementById('st-'+v);
+    st.className='status '+r.cls;st.innerHTML=`<span class="dot"></span>${r.cls==='dead'?r.label:'開放中 · '+r.label}`;
+    const dl=v==='A'?SET.dlA:SET.dlB;
+    document.getElementById('dl-'+v).innerHTML=dl?(r.cls==='dead'?`截止 <b>${fmtDL(dl)}</b>`:`期限至 <b>${fmtDL(dl)}</b>`):'';
+    document.getElementById('lr-'+v).classList.toggle('disabled',r.cls==='dead');
+  });
+}
+function renderCompare(){
+  const tb=document.querySelector('#cmpTable tbody');tb.innerHTML='';
+  let totA=0,totB=0,lastG='';
+  ITEMS.forEach(it=>{
+    if(it.group!==lastG){const gr=document.createElement('tr');gr.className='grouprow';gr.innerHTML=`<td colspan="10">${it.group}</td>`;tb.appendChild(gr);lastG=it.group;}
+    const qa=it.qtyA,qb=it.qtyB,da=qa-it.orig,db=qb-it.orig,subA=it.price*qa,subB=it.price*qb;totA+=subA;totB+=subB;
+    const chA=da!==0,chB=db!==0,lower=subA<subB?'a':subB<subA?'b':'';
+    const tr=document.createElement('tr');if(chA||chB)tr.className='changed';
+    tr.innerHTML=`<td class="name">${it.name}</td><td class="price-cell money">${fmt(it.price)}</td><td class="mid">${it.orig}</td>
+      <td class="mid ${chA?'diff-up':''}">${qa}</td><td class="money ${da>0?'diff-up':da<0?'diff-down':''}">${diffFmt(da*it.price)}</td>
+      <td class="mid ${chB?'diff-up':''}">${qb}</td><td class="money ${db>0?'diff-up':db<0?'diff-down':''}">${diffFmt(db*it.price)}</td>
+      <td class="money" style="${lower==='a'?'background:var(--down-bg);color:var(--down);font-weight:700':''}">${fmt(subA)}</td>
+      <td class="money" style="${lower==='b'?'background:var(--down-bg);color:var(--down);font-weight:700':''}">${fmt(subB)}</td>
+      <td class="mid">${chA||chB?`<span class="tag-changed">${chA?'A':''}${chA&&chB?'/':''}${chB?'B':''}改</span>`:''}</td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('ftA').textContent=fmt(totA);document.getElementById('ftB').textContent=fmt(totB);
+  document.getElementById('ftA').style.cssText=totA<totB?'background:var(--down-bg);color:var(--down)':'';
+  document.getElementById('ftB').style.cssText=totB<totA?'background:var(--down-bg);color:var(--down)':'';
+  const winner=totA<totB?'A廠':totB<totA?'B廠':'—',gap=Math.abs(totA-totB);
+  document.getElementById('adminStats').innerHTML=`<div class="stat"><div class="k">A廠總價</div><div class="v">${fmt(totA)}</div></div>
+    <div class="stat"><div class="k">B廠總價</div><div class="v">${fmt(totB)}</div></div>
+    <div class="stat"><div class="k">兩家差額</div><div class="v">${fmt(gap)}</div></div>
+    <div class="stat win"><div class="k">較低廠商</div><div class="v">${winner}</div></div>`;
+}
+function renderLogs(logs){
+  const lb=document.getElementById('logBox');lb.innerHTML='';
+  if(!logs.length){lb.innerHTML='<div class="log-item"><span class="log-txt" style="color:var(--muted)">尚無紀錄</span></div>';return;}
+  logs.forEach(l=>{const d=document.createElement('div');d.className='log-item';
+    d.innerHTML=`<span class="log-time">${l.t}</span><span class="log-vendor ${String(l.v).toLowerCase()}">${l.v}廠</span>
+      <span class="log-txt">${l.txt}</span><span class="log-n">${l.n&&l.n!=='—'?'第 '+l.n+' 次':''}</span>`;lb.appendChild(d);});
+}
+
+// 期限操作
+async function setDL(params){
+  try{const res=await jsonp(Object.assign({action:'setDeadline',pw:PW,caseId:CASE.id},params));
+    if(res.ok){toast('已更新');loadCompare();}else toast(res.msg||'失敗');
+  }catch(err){toast('連線錯誤：'+err.message);}
+}
+function extend(v,n){const base=v==='A'?SET.dlA:SET.dlB;const nd=addDays((base&&new Date(base)>new Date())?base:null,n);
+  setDL(v==='A'?{dlA:nd,closedA:'false',v,note:`延長 ${n} 天`}:{dlB:nd,closedB:'false',v,note:`延長 ${n} 天`});}
+function closeNow(v){setDL(v==='A'?{closedA:'true',v,note:'提前關閉連結'}:{closedB:'true',v,note:'提前關閉連結'});}
+function reopen(v){const nd=addDays(null,3);setDL(v==='A'?{dlA:nd,closedA:'false',v,note:'重新開放 3 天'}:{dlB:nd,closedB:'false',v,note:'重新開放 3 天'});}
+
+function copyLink(btn){const code=btn.parentElement.querySelector('code').textContent;
+  navigator.clipboard?.writeText(code);const o=btn.textContent;btn.textContent='✓已複製';setTimeout(()=>btn.textContent=o,1500);}
+
+function startAuto(){if(autoTimer)clearInterval(autoTimer);
+  autoTimer=setInterval(()=>{if(document.getElementById('autoRef').checked)loadCompare();},30000);}
+</script>
+</body>
+</html>
