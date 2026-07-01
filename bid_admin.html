@@ -75,6 +75,8 @@
   .legend span{display:inline-flex;align-items:center;gap:5px}.sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
   .concl{margin-top:20px;border:1px solid #bfe3cc;border-radius:12px;overflow:hidden}
   .concl-head{background:linear-gradient(120deg,#1e7a46,#2f9d5c);color:#fff;padding:16px 20px}
+  .caseitem{border:1px solid var(--line);border-radius:9px;padding:11px 14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;transition:.12s;background:#fff}
+  .caseitem:hover{background:var(--paper);border-color:var(--steel);box-shadow:0 1px 4px rgba(47,84,150,.12)}
   .concl-head .win{font-size:19px;font-weight:800}
   .concl-head .sub{font-size:13px;opacity:.92;margin-top:3px}
   .concl-body{padding:18px 20px;background:#f4fbf6}
@@ -117,6 +119,13 @@
         <input type="file" id="fileInp" accept=".xlsx,.xls">
       </label>
       <div id="caseBox"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">◆</span>載入現有案件</h2>
+      <p class="hint">已建立的案件會列在這裡，點一下即可載入查看比價，<b>不需要重新上傳</b>。</p>
+      <div style="display:flex;gap:10px;margin-bottom:10px"><button class="btn ghost sm" onclick="loadCaseList()">🔄 重新整理清單</button></div>
+      <div id="caseListBox"></div>
     </div>
 
     <div class="card" id="linkCard" style="display:none">
@@ -219,6 +228,38 @@ function doLogin(){
   PW=pw;
   document.getElementById('gate').style.display='none';
   document.getElementById('main').style.display='';
+  loadCaseList();
+}
+
+// 載入現有案件清單(不用重傳)
+async function loadCaseList(){
+  const box=document.getElementById('caseListBox');
+  box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">讀取現有案件中…</div>';
+  try{
+    const res=await postGas({action:'listCases',pw:PW});
+    if(!res.ok){box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">'+(res.msg||'讀取失敗')+'</div>';return;}
+    if(!res.cases.length){box.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px">目前沒有已建立的案件，請上傳報價單建立第一個。</div>';return;}
+    let html='<div style="font-size:13px;color:var(--muted);margin-bottom:8px">點選案件即可載入（不需重新上傳）：</div>';
+    res.cases.forEach(c=>{
+      const aTag=c.filledA?'<span style="color:var(--down)">A已填</span>':'<span style="color:var(--muted)">A未填</span>';
+      const bTag=c.filledB?'<span style="color:var(--down)">B已填</span>':'<span style="color:var(--muted)">B未填</span>';
+      html+=`<div class="caseitem" onclick='loadExisting(${JSON.stringify(c).replace(/'/g,"&#39;")})'>
+        <div><b>${c.name||c.caseId}</b> <span style="color:var(--muted);font-size:12px">${c.eng||''}</span></div>
+        <div style="font-size:12px">${aTag}　${bTag}</div></div>`;
+    });
+    box.innerHTML=html;
+  }catch(err){box.innerHTML='<div style="color:var(--up);font-size:13px;padding:8px">讀取錯誤：'+err.message+'</div>';}
+}
+function loadExisting(c){
+  CASE={id:c.caseId,name:c.name,eng:c.eng};
+  document.getElementById('url-A').textContent=VENDOR_BASE+'?case='+c.caseId+'&v=A&k='+c.tokenA;
+  document.getElementById('url-B').textContent=VENDOR_BASE+'?case='+c.caseId+'&v=B&k='+c.tokenB;
+  ['linkCard','cmpCard','logCard'].forEach(id=>document.getElementById(id).style.display='');
+  document.getElementById('hintCard').style.display='none';
+  document.getElementById('caseBox').innerHTML='<div class="caseinfo"><div class="kv"><div class="k">目前載入案件</div><div class="v">'+(c.name||c.caseId)+'</div></div><div class="kv"><div class="k">工程編號</div><div class="v">'+(c.eng||'—')+'</div></div></div>';
+  toast('已載入案件：'+(c.name||c.caseId));
+  loadCompare();
+  startAuto();
 }
 
 // 上傳讀取 Excel
@@ -256,9 +297,13 @@ async function parseAndCreate(rows,fname){
   if(!name)name=fname.replace(/\.x(lsx|ls)$/i,'');
   const caseId=(eng||'case'+Date.now()).replace(/[^A-Za-z0-9]/g,'');
   const days=Math.max(1,Number(document.getElementById('daysInp').value)||3);
-  toast('上傳中，請稍候…');
+  const drop=document.getElementById('drop');
+  const _orig=drop.innerHTML;
+  drop.innerHTML='<div class="big">⏳ 處理中，正在建立案件與寫入雲端…</div><div class="sm">'+items.length+' 個品項上傳中，約需數秒，請勿關閉視窗</div>';
+  drop.style.pointerEvents='none';
   try{
     const res=await postGas({action:'createCase',pw:PW,caseId,eng,name,days,items:JSON.stringify(items)});
+    drop.innerHTML=_orig;drop.style.pointerEvents='';
     if(!res.ok){toast(res.msg||'建立失敗');return;}
     CASE={id:caseId,name,eng};ITEMS=items;
     document.getElementById('url-A').textContent=VENDOR_BASE+'?case='+caseId+'&v=A&k='+res.tokenA;
@@ -269,7 +314,7 @@ async function parseAndCreate(rows,fname){
     toast('案件已建立，共 '+items.length+' 項');
     loadCompare();
     startAuto();
-  }catch(err){toast('連線錯誤：'+err.message);}
+  }catch(err){drop.innerHTML=_orig;drop.style.pointerEvents='';toast('連線錯誤：'+err.message);}
 }
 function showCase(days){
   const total=ITEMS.reduce((a,i)=>a+i.price*i.orig,0);
