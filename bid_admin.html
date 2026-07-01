@@ -73,6 +73,20 @@
   .refresh-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:12px;color:var(--muted)}
   .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
   .legend span{display:inline-flex;align-items:center;gap:5px}.sw{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+  .concl{margin-top:20px;border:1px solid #bfe3cc;border-radius:12px;overflow:hidden}
+  .concl-head{background:linear-gradient(120deg,#1e7a46,#2f9d5c);color:#fff;padding:16px 20px}
+  .concl-head .win{font-size:19px;font-weight:800}
+  .concl-head .sub{font-size:13px;opacity:.92;margin-top:3px}
+  .concl-body{padding:18px 20px;background:#f4fbf6}
+  .concl-body h4{font-size:14px;color:#1e7a46;margin-bottom:10px}
+  .concl-reason{list-style:none}
+  .concl-reason li{font-size:13.5px;padding:6px 0 6px 22px;position:relative;border-bottom:1px dashed #cfe6d8}
+  .concl-reason li:last-child{border-bottom:0}
+  .concl-reason li::before{content:"▸";position:absolute;left:4px;color:#1e7a46;font-weight:700}
+  .concl-reason b{color:var(--up)}
+  .concl-warn{margin-top:14px;background:var(--warn-bg);border:1px solid #eadaa0;border-radius:9px;padding:12px 15px;font-size:12.5px;color:#7a5c12}
+  .concl-warn b{color:var(--warn)}
+  .concl-tie{padding:18px 20px;text-align:center;color:var(--muted);font-size:14px}
   @media(max-width:560px){.brand h1{font-size:17px}.card{padding:16px}.deadline-info{margin-left:0}}
 </style>
 </head>
@@ -152,6 +166,8 @@
         <span><i class="sw" style="background:var(--lock)"></i>單價（鎖定）</span>
         <span><i class="sw" style="background:var(--up-bg)"></i>該廠改過</span>
         <span><i class="sw" style="background:var(--down)"></i>較低價</span></div>
+      <div id="conclusion"></div>
+      <div style="margin-top:16px"><button class="btn" onclick="exportCompare()">📥 匯出比較表（Excel）</button></div>
     </div>
 
     <div class="card" id="logCard" style="display:none">
@@ -318,6 +334,81 @@ function renderCompare(){
     <div class="stat"><div class="k">B廠總價</div><div class="v">${fmt(totB)}</div></div>
     <div class="stat"><div class="k">兩家差額</div><div class="v">${fmt(gap)}</div></div>
     <div class="stat win"><div class="k">較低廠商</div><div class="v">${winner}</div></div>`;
+  renderConclusion(totA,totB);
+}
+
+// 自動產生結論：誰便宜、省多少、原因是哪幾項
+function renderConclusion(totA,totB){
+  const box=document.getElementById('conclusion');
+  if(totA===totB){box.innerHTML='<div class="concl"><div class="concl-tie">兩家總價相同，暫無價差。</div></div>';return;}
+  const winV=totA<totB?'A廠':'B廠', loseV=totA<totB?'B廠':'A廠';
+  const low=Math.min(totA,totB), high=Math.max(totA,totB), gap=high-low;
+  const pct=low>0?((gap/low)*100).toFixed(1):'0';
+  // 逐項找差異(依較高方多花的金額排序)
+  const diffs=[];
+  ITEMS.forEach(it=>{
+    const qw=winV==='A廠'?it.qtyA:it.qtyB, ql=loseV==='A廠'?it.qtyA:it.qtyB;
+    if(qw!==ql){ diffs.push({name:it.name,unit:it.unit,qw,ql,price:it.price,extra:(ql-qw)*it.price}); }
+  });
+  diffs.sort((a,b)=>Math.abs(b.extra)-Math.abs(a.extra));
+  let reasons='';
+  diffs.slice(0,8).forEach(d=>{
+    const dir=d.ql>d.qw?'多':'少', amt=Math.abs(d.extra);
+    reasons+=`<li>${d.name}：${loseV} ${d.ql}${d.unit} vs ${winV} ${d.qw}${d.unit}，${loseV}${dir} ${Math.abs(d.ql-d.qw)}${d.unit} → <b>${d.extra>0?'多花':'少花'} ${fmt(amt)} 元</b></li>`;
+  });
+  if(!diffs.length) reasons='<li>兩家品項數量完全相同，價差為 0。</li>';
+  box.innerHTML=`<div class="concl">
+    <div class="concl-head">
+      <div class="win">✅ 結論：${winV}報價較低，可節省 ${fmt(gap)} 元</div>
+      <div class="sub">${loseV}總價 ${fmt(high)}　vs　${winV}總價 ${fmt(low)}　｜　${loseV}貴約 ${pct}%　→　建議承攬商：${winV}</div>
+    </div>
+    <div class="concl-body">
+      <h4>為什麼 ${winV} 較低？（差異來自數量，單價兩家相同）</h4>
+      <ul class="concl-reason">${reasons}</ul>
+      <div class="concl-warn">⚠ 提醒：數量少不一定真的便宜，也可能是估得比較緊。建議發包前請 ${winV} 書面確認——所報數量是否含完工保證、不足是否由廠商自行吸收不再追加。這一條比表面價差更能守住預算。</div>
+    </div>
+  </div>`;
+}
+
+// 匯出比較表為 Excel(含結論)
+function exportCompare(){
+  if(!ITEMS.length){toast('尚無資料可匯出');return;}
+  let totA=0,totB=0; ITEMS.forEach(it=>{totA+=it.price*it.qtyA;totB+=it.price*it.qtyB;});
+  const winV=totA<totB?'A廠':totB<totA?'B廠':'—', low=Math.min(totA,totB),high=Math.max(totA,totB),gap=high-low;
+  const pct=low>0?((gap/low)*100).toFixed(1):'0';
+  const aoa=[];
+  aoa.push(['承攬商施工費用比價表']);
+  aoa.push(['施工名稱：'+(CASE.name||'')+'　工程編號：'+(CASE.eng||'')]);
+  aoa.push(['比對：A廠 vs B廠　單價相同，價差來自數量']);
+  aoa.push([]);
+  aoa.push(['物料編號','項目','單價','A廠 數量','A廠 金額','B廠 數量','B廠 金額','差額(高-低)']);
+  let lastG='';
+  ITEMS.forEach(it=>{
+    if(it.group!==lastG){aoa.push([it.group]);lastG=it.group;}
+    const sa=it.price*it.qtyA, sb=it.price*it.qtyB;
+    aoa.push([it.code,it.name,it.price,it.qtyA+' '+it.unit,sa,it.qtyB+' '+it.unit,sb,Math.abs(sa-sb)]);
+  });
+  aoa.push([]);
+  aoa.push(['A廠總合計','','','',totA,'','','']);
+  aoa.push(['B廠總合計','','','','','',totB,'']);
+  aoa.push(['兩家差額','','','','','','',gap]);
+  aoa.push([]);
+  aoa.push(['結論：'+winV+'報價較低，可節省 '+fmt(gap)+' 元（貴約 '+pct+'%）。建議承攬商：'+winV+'。']);
+  // 差異明細
+  const diffs=[];
+  ITEMS.forEach(it=>{ if(it.qtyA!==it.qtyB) diffs.push(it); });
+  if(diffs.length){
+    aoa.push([]);aoa.push(['差異項目明細']);
+    diffs.forEach(it=>{const sa=it.price*it.qtyA,sb=it.price*it.qtyB;
+      aoa.push([it.name,'A廠 '+it.qtyA+it.unit+' / B廠 '+it.qtyB+it.unit,'差額 '+fmt(Math.abs(sa-sb))+' 元']);});
+  }
+  aoa.push([]);
+  aoa.push(['備註：數量少不一定真便宜，建議發包前請'+winV+'書面確認數量是否含完工保證、不足是否自行吸收不再追加。']);
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:16},{wch:22},{wch:9},{wch:12},{wch:12},{wch:12},{wch:12},{wch:12}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,'承攬商比價表');
+  XLSX.writeFile(wb,'承攬商比價表_'+(CASE.name||CASE.id||'案件')+'.xlsx');
 }
 function renderLogs(logs){
   const lb=document.getElementById('logBox');lb.innerHTML='';
