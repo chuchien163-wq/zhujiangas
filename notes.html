@@ -249,12 +249,12 @@ const DEFAULT_NOTES=[{
     "createdAt": "2026/06/23", "updatedAt": "2026/06/23"
   }];
 let notes=[];
-try{const s=localStorage.getItem('classNotes_v6');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
-if(!localStorage.getItem('classNotes_v6'))localStorage.setItem('classNotes_v6',JSON.stringify(DEFAULT_NOTES));
+try{const s=localStorage.getItem('classNotes_v7');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
+if(!localStorage.getItem('classNotes_v7'))localStorage.setItem('classNotes_v7',JSON.stringify(DEFAULT_NOTES));
 
 let editIdx=-1,newPhotos=[];
 
-function saveNotes(){localStorage.setItem('classNotes_v6',JSON.stringify(notes));}
+function saveNotes(){localStorage.setItem('classNotes_v7',JSON.stringify(notes));}
 
 let curNote=0;
 
