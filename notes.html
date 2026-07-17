@@ -212,6 +212,13 @@ document.getElementById('sbRole').textContent=isAdmin?'管理者':'學員';
 if(isAdmin)document.getElementById('addBtn').style.display='block';
 
 const DEFAULT_NOTES=[{
+    "id": "8", "title": "鍍鋅站練習流程與時間標準", "tab": "練習流程",
+    "date": "115/06/23",
+    "content": "🔧 練習前重點\n\n1️⃣ 先整備自己的練習桿件，車牙機操作時請會操作機台的學員陪同！\n2️⃣ 第一次練習可以用手鎖組裝，先熟悉配件桿件順序！\n3️⃣ 用工具組裝\n　a. 注意鎖緊不鎖死\n　b. 用手鎖緊後，工具鎖半圈到一圈！\n4️⃣ 車牙，配件試圈數，2.5～3圈！\n5️⃣ 工具組裝，上板前先手模擬落樣後上板\n\n🔨 桿件組裝與車牙\n\n• 一寸車完，繼續車一寸半底座三支：27、33、39\n• 將一寸管組裝，求得一寸半最長的長度\n• 車一寸半最長的桿件，組裝完成\n• 換牙盤，將 3/4 寸桿件車完\n• 最後組 3/4 寸桿件\n• 調整尺寸到定位\n• 測漏\n\n⏱ 及格時間\n\n• 落樣：15 分鐘\n• 所有桿件車牙：60 分鐘\n• 工具組裝：60 分鐘\n• 馬蹄脂：30 分鐘\n\n📋 練習方式\n\n1️⃣ 組裝前落樣模擬\n2️⃣ 工具組裝達標（60 分鐘內）\n3️⃣ 組裝前加入車牙\n　• 一寸：6 口\n　• 一寸半：8 口\n　• 3/4 寸：16 口\n　※ 如無對應管徑練習管，以車 30 口牙為主！\n　然後再組裝（依管徑車牙順序）\n4️⃣ 1～3 步驟達 120 分鐘內，再試加入馬蹄脂！",
+    "photos": [],
+    "createdAt": "2026/06/23", "updatedAt": "2026/06/23"
+  },
+  {
     "id": "5",
     "title": "鍍鋅站組裝重點", "tab": "鍍鋅站組裝",
     "date": "115/06/23",
@@ -266,12 +273,12 @@ const DEFAULT_NOTES=[{
     "createdAt": "2026/06/23", "updatedAt": "2026/06/23"
   }];
 let notes=[];
-try{const s=localStorage.getItem('classNotes_v7');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
-if(!localStorage.getItem('classNotes_v7'))localStorage.setItem('classNotes_v7',JSON.stringify(DEFAULT_NOTES));
+try{const s=localStorage.getItem('classNotes_v8');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
+if(!localStorage.getItem('classNotes_v8'))localStorage.setItem('classNotes_v8',JSON.stringify(DEFAULT_NOTES));
 
 let editIdx=-1,newPhotos=[];
 
-function saveNotes(){localStorage.setItem('classNotes_v7',JSON.stringify(notes));}
+function saveNotes(){localStorage.setItem('classNotes_v8',JSON.stringify(notes));}
 
 let curNote=0;
 
