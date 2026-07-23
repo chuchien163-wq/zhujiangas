@@ -4,115 +4,206 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>竹建瓦斯｜會議暨教育訓練追蹤系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#1f2a37;--ink2:#5b6675;--line:#e3e7ec;--bg:#f5f6f8;--card:#fff;
-  --brand:#1c6b5b;--brand-soft:#e6f1ee;--accent:#c9742a;--accent-soft:#fdf0e3;
-  --warn:#b5453d;--warn-soft:#fbe9e8;--ok:#2e7d52;--ok-soft:#e6f4ec;--gray-soft:#eef1f4;
+  --ink:#182430;--ink2:#5f6d7c;--faint:#93a0ae;--line:#e3e8ee;--bg:#eef1f5;--card:#ffffff;
+  --flame:#155fbf;--flame-deep:#0c3a74;--flame-soft:#e9f1fb;--flame-line:#c9dcf3;
+  --cyan:#1fa3bd;
+  --amber:#a86e0e;--amber-soft:#faf1dc;
+  --violet:#6b3fa0;--violet-soft:#efe8f8;
+  --red:#b8423a;--red-soft:#faecea;
+  --green:#25764c;--green-soft:#e5f3ea;
+  --gray-soft:#edf0f4;
+  --radius:12px;
+  --shadow:0 1px 2px rgba(16,30,45,.05),0 4px 14px rgba(16,30,45,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65}
-.topbar{background:var(--brand);color:#fff;padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.topbar h1{font-size:18px;font-weight:700;letter-spacing:.5px}
-.topbar .sub{font-size:12px;opacity:.85}
-.role-switch{margin-left:auto;display:flex;gap:6px;background:rgba(255,255,255,.15);padding:4px;border-radius:10px}
-.role-switch button{border:none;background:transparent;color:#fff;padding:6px 14px;border-radius:7px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:600}
-.role-switch button.active{background:#fff;color:var(--brand)}
-.wrap{max-width:none;margin:0 auto;padding:20px 28px}
-.role-hint{background:var(--brand-soft);border:1px solid #cfe3dd;color:#1c5448;padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:18px}
-.cfgbar{background:#fff8ec;border:1px solid #f0dcb8;color:#8a5a16;padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65}
+
+/* ── 頂欄 ── */
+.topbar{background:linear-gradient(180deg,#14293e,#0e1f31);color:#fff;padding:16px 26px 15px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--flame-deep),var(--flame) 40%,var(--cyan) 75%,rgba(31,163,189,0))}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .flame{flex-shrink:0;filter:drop-shadow(0 0 10px rgba(90,168,255,.45))}
+.topbar h1{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:20px;font-weight:900;letter-spacing:1.5px}
+.topbar .sub{font-size:12px;opacity:.68;letter-spacing:.14em;margin-top:1px}
+.role-switch{margin-left:auto;display:flex;gap:4px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:4px;border-radius:10px}
+.role-switch button{border:none;background:transparent;color:rgba(255,255,255,.82);padding:7px 15px;border-radius:7px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;letter-spacing:.03em;transition:background .15s,color .15s}
+.role-switch button:hover{color:#fff}
+.role-switch button.active{background:#fff;color:var(--flame-deep)}
+.role-switch button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+/* ── 版面：左側欄 + 主內容 ── */
+.layout{display:flex;gap:20px;align-items:flex-start;padding:20px 26px;max-width:1680px;margin:0 auto}
+.sidebar{width:214px;flex-shrink:0;position:sticky;top:16px;display:flex;flex-direction:column;gap:14px}
+.side-group{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px}
+.side-title{font-size:11.5px;font-weight:900;letter-spacing:.2em;color:var(--faint);padding:4px 12px 8px}
+#sideNav{display:flex;flex-direction:column;gap:2px}
+.side-item{display:flex;align-items:center;gap:9px;width:100%;border:none;background:transparent;padding:9px 12px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink2);text-align:left;transition:background .15s,color .15s}
+.side-item:hover{background:#eef2f7;color:var(--ink)}
+.side-item.active{background:var(--flame-soft);color:var(--flame-deep);font-weight:800}
+.side-item:focus-visible{outline:2px solid var(--flame);outline-offset:1px}
+.si-dot{width:8px;height:8px;border-radius:50%;background:var(--c,#5f6d7c);flex-shrink:0}
+.side-item[data-st="待歸檔"]{--c:#8a95a1}
+.side-item[data-st="待指派"]{--c:var(--amber)}
+.side-item[data-st="待核准"]{--c:var(--violet)}
+.side-item[data-st="已核准"]{--c:var(--flame)}
+.side-item[data-st="逾期"]{--c:var(--red)}
+.side-item[data-st="已報告"]{--c:var(--green)}
+.side-item[data-st="免報告"]{--c:#a6afb9}
+.si-n{margin-left:auto;font-size:12px;font-weight:800;background:#e9edf2;color:#5f6d7c;padding:1px 8px;border-radius:10px;font-variant-numeric:tabular-nums}
+.side-item.active .si-n{background:#fff;color:var(--flame-deep)}
+.si-n.warn{background:var(--red-soft);color:var(--red)}
+
+/* 側欄：簽辦流程（直式管線） */
+.flow{display:flex;flex-direction:column;padding:2px 6px 4px}
+.fl-node{position:relative;padding:7px 0 7px 24px;font-size:13px;font-weight:700;color:var(--ink2)}
+.fl-node::before{content:"";position:absolute;left:7px;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--c,var(--faint));box-shadow:0 0 0 3px color-mix(in srgb,var(--c,var(--faint)) 16%,transparent)}
+.fl-node:not(:last-child)::after{content:"";position:absolute;left:7px;top:calc(50% + 8px);transform:translateX(-50%);width:2px;height:calc(100% - 14px);background:#cfd7e0}
+.fl-node[data-c="wait"]{--c:#8a95a1}
+.fl-node[data-c="archived"]{--c:var(--amber)}
+.fl-node[data-c="pending"]{--c:var(--violet)}
+.fl-node[data-c="assigned"]{--c:var(--flame)}
+.fl-node[data-c="done"]{--c:var(--green)}
+.main{flex:1;min-width:0}
+
+.role-hint{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--flame);color:var(--ink2);padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;box-shadow:var(--shadow)}
+.cfgbar{background:var(--amber-soft);border:1px solid #ecd9ad;color:#7d5510;padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .cfgbar input{flex:1;min-width:240px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
-.stat .n{font-size:28px;font-weight:800;line-height:1}
-.stat .l{font-size:12px;color:var(--ink2);margin-top:6px}
-.stat.warn .n{color:var(--warn)}.stat.ok .n{color:var(--ok)}.stat.brand .n{color:var(--brand)}.stat.accent .n{color:var(--accent)}
+
+/* ── 工具列 ── */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.btn{border:none;border-radius:9px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
-.btn-primary{background:var(--brand);color:#fff}.btn-primary:hover{background:#155345}
-.btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn-ghost:hover{border-color:#c3cad3}
-.btn-danger{background:#fff;color:var(--warn);border:1px solid #f0cfcc}.btn-danger:hover{background:var(--warn-soft)}
-.btn-sm{padding:7px 13px;font-size:14px;border-radius:7px}
-input,select,textarea{font-family:inherit;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);background:#fff}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand)}
-.search{max-width:240px}.filter{max-width:150px}
-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
-thead th{background:#f0f2f5;text-align:left;padding:14px 16px;font-size:15px;color:var(--ink2);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--line)}
-tbody td{padding:14px 16px;border-bottom:1px solid #eef1f4;vertical-align:top;font-size:16px}
-tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:#fafbfc}
-.tag{display:inline-block;padding:4px 11px;border-radius:20px;font-size:13px;font-weight:600;white-space:nowrap}
-.tag-wait{background:var(--gray-soft);color:#5b6675}.tag-archived{background:var(--accent-soft);color:#9c5715}
-.tag-pending{background:#ede4f6;color:#6b3fa0}
-.tag-assigned{background:var(--brand-soft);color:#1c5448}.tag-done{background:var(--ok-soft);color:var(--ok)}
-.tag-overdue{background:var(--warn-soft);color:var(--warn)}.tag-none{background:var(--gray-soft);color:#8a93a0}
-.occ{font-size:13.5px;color:var(--ink2);display:inline-block;margin-top:3px}
-tbody td b{font-size:16.5px}
-td[data-label="預計報告日"]{white-space:nowrap}
+.btn{border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .15s,border-color .15s,color .15s,transform .05s}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px}
+.btn-primary{background:var(--flame);color:#fff}.btn-primary:hover{background:var(--flame-deep)}
+.btn-ghost{background:#fff;color:var(--ink);border:1px solid #d3dae2}.btn-ghost:hover{border-color:var(--flame);color:var(--flame-deep)}
+.btn-danger{background:#fff;color:var(--red);border:1px solid #eccfcc}.btn-danger:hover{background:var(--red-soft)}
+.btn-sm{padding:7px 13px;font-size:13.5px;border-radius:7px}
+input,select,textarea{font-family:inherit;font-size:14px;border:1px solid #d3dae2;border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);box-shadow:0 0 0 3px rgba(21,95,191,.12)}
+.search{max-width:260px}.filter{max-width:150px}
+
+/* ── 收合式列表 ── */
+.list{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc,var(--line));border-radius:10px;box-shadow:var(--shadow);overflow:hidden;animation:fadeIn .25s ease both}
+.item[data-st="待歸檔"]{--acc:#b6bfc9}
+.item[data-st="待指派"]{--acc:var(--amber)}
+.item[data-st="待核准"]{--acc:var(--violet)}
+.item[data-st="已核准"]{--acc:var(--flame)}
+.item[data-st="已報告"]{--acc:var(--green)}
+.item[data-st="逾期"]{--acc:var(--red)}
+.item[data-st="免報告"]{--acc:#d4dae1}
+.item-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;flex-wrap:wrap}
+.item-head:hover{background:#f8fafc}
+.it-title{font-size:15.5px;font-weight:700;flex:1;min-width:220px;line-height:1.5;letter-spacing:.01em}
+.it-dept{font-size:12.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.it-date{font-size:13px;font-weight:700;color:var(--flame-deep);white-space:nowrap;font-variant-numeric:tabular-nums}
+.it-rd{font-size:12.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.item[data-st="逾期"] .it-rd{color:var(--red)}
+.chev{flex-shrink:0;width:16px;height:16px;color:var(--faint);transition:transform .2s}
+.item.open .chev{transform:rotate(180deg)}
+.item-body{display:none;border-top:1px dashed var(--line);padding:13px 18px 14px 20px;background:#fbfcfe}
+.item.open .item-body{display:block}
+.ib-meta{font-size:12.5px;color:var(--ink2);margin-bottom:10px}
+.ib-row{display:flex;gap:10px;font-size:13.5px;align-items:flex-start;line-height:1.6;margin-bottom:8px}
+.ib-row:last-child{margin-bottom:0}
+.ib-row .k{flex-shrink:0;font-size:11px;font-weight:900;color:var(--faint);letter-spacing:.14em;background:#eef2f6;border-radius:5px;padding:2.5px 7px;margin-top:2px}
+.ib-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
+.apv{color:var(--green);font-size:12px;font-weight:800;margin-left:6px;white-space:nowrap}
+.rdate{margin-top:4px;font-size:13px;font-weight:700;color:var(--flame-deep);font-variant-numeric:tabular-nums}
+
+/* ── 狀態籤 ── */
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.tag-wait{background:var(--gray-soft);color:#63707e}
+.tag-archived{background:var(--amber-soft);color:var(--amber)}
+.tag-pending{background:var(--violet-soft);color:var(--violet)}
+.tag-assigned{background:var(--flame-soft);color:var(--flame-deep)}
+.tag-done{background:var(--green-soft);color:var(--green)}
+.tag-overdue{background:var(--red-soft);color:var(--red)}
+.tag-none{background:var(--gray-soft);color:#8a95a1}
+
+.occ{font-size:13px;color:var(--ink2);display:inline-block;margin-top:3px}
+.occ-blk{display:block;margin-top:3px;line-height:1.5}
+.occ-title{font-size:14.5px;font-weight:800;color:var(--ink)}
+.mdate{display:inline-block;font-size:13px;font-weight:700;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:2.5px 9px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mdate.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
 .muted{color:#9aa3af}
 .namebox{display:flex;flex-wrap:wrap;gap:4px}
-.chip{background:var(--brand-soft);color:#1c5448;padding:4px 10px;border-radius:6px;font-size:14px}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.mask{position:fixed;inset:0;background:rgba(20,28,38,.45);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50}
+.chip{background:#f1f4f8;color:#3a4756;border:1px solid #e2e8ef;padding:2.5px 9px;border-radius:6px;font-size:13px;font-weight:500}
+
+/* ── Modal ── */
+.mask{position:fixed;inset:0;background:rgba(12,24,38,.5);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50}
 .mask.show{display:flex}
-.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal h2{font-size:18px;margin-bottom:4px}.modal .desc{font-size:12px;color:var(--ink2);margin-bottom:18px}
-.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
-.field .req{color:var(--warn)}
+.modal{background:#fff;border-radius:16px;border-top:4px solid var(--flame);width:100%;max-width:560px;padding:26px;box-shadow:0 24px 70px rgba(10,22,36,.3)}
+.modal h2{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:19px;font-weight:900;margin-bottom:4px;letter-spacing:.04em}
+.modal .desc{font-size:12.5px;color:var(--ink2);margin-bottom:18px}
+.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#2c3a48}
+.field .req{color:var(--red)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.checklist{border:1px solid var(--line);border-radius:8px;padding:10px;max-height:200px;overflow:auto;background:#fafbfc}
-.checklist .dept-h{font-size:12px;font-weight:700;color:var(--brand);margin:8px 0 4px;padding-bottom:3px;border-bottom:1px solid var(--line)}
+.checklist{border:1px solid #d9e0e8;border-radius:8px;padding:10px;max-height:200px;overflow:auto;background:#f9fafc}
+.checklist .dept-h{font-size:12px;font-weight:900;color:var(--flame-deep);letter-spacing:.1em;margin:9px 0 4px;padding-bottom:3px;border-bottom:1px solid var(--line)}
 .checklist .dept-h:first-child{margin-top:0}
 .checklist label{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:6px;cursor:pointer;font-weight:400;font-size:13px}
-.checklist label:hover{background:#fff}.checklist input{width:auto}
-.empty{text-align:center;padding:50px 20px;color:#9aa3af}.empty .big{font-size:15px;margin-bottom:6px;color:var(--ink2)}
-.legend{font-size:12px;color:var(--ink2);margin-top:14px;display:flex;gap:14px;flex-wrap:wrap}
-.footer{text-align:center;color:#9aa3af;font-size:12px;padding:24px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1f2a37;color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;z-index:99;opacity:0;transition:.25s;pointer-events:none}
+.checklist label:hover{background:#fff}.checklist input{width:auto;accent-color:var(--flame)}
+
+.empty{text-align:center;padding:56px 20px;color:#9aa3af;background:var(--card);border:1px dashed #ccd4dd;border-radius:var(--radius)}
+.empty .big{font-size:15px;margin-bottom:6px;color:var(--ink2);font-weight:700}
+.footer{text-align:center;color:#a2abb6;font-size:12px;padding:26px;letter-spacing:.06em}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#12212f;color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;z-index:99;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 24px rgba(10,22,36,.3)}
 .toast.show{opacity:1}
-.loading{text-align:center;padding:50px 20px;color:var(--ink2);font-size:15px}
-.spinner{width:42px;height:42px;margin:0 auto 16px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+.loading{text-align:center;padding:56px 20px;color:var(--ink2);font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.spinner{width:42px;height:42px;margin:0 auto 16px;border:4px solid var(--flame-soft);border-top-color:var(--flame);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading .hint{font-size:14px;color:#9aa3af;margin-top:6px}
+.loading .hint{font-size:13.5px;color:#9aa3af;margin-top:6px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-tbody tr{animation:fadeIn .3s ease both}
-@media(max-width:760px){
-  .wrap{padding:12px}
-  .grid2{grid-template-columns:1fr}
-  .topbar h1{font-size:17px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── 手機／窄螢幕 ── */
+@media(max-width:900px){
+  .topbar{padding:14px 16px 13px}
+  .topbar h1{font-size:17px;letter-spacing:.8px}
   .role-switch{width:100%;margin-left:0}
   .role-switch button{flex:1;font-size:13px;padding:8px 6px}
-  .stats{grid-template-columns:repeat(3,1fr);gap:8px}
-  .stat{padding:12px 10px}
-  .stat .n{font-size:22px}
-  .stat .l{font-size:11px}
-  /* 表格 → 卡片 */
-  table,thead,tbody,tr,td{display:block;width:100%}
-  thead{display:none}
-  table{border:none;background:transparent}
-  tbody tr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:14px;padding:6px 4px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
-  tbody td{border:none;padding:9px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:15px}
-  tbody td::before{content:attr(data-label);font-weight:700;color:var(--ink2);font-size:13px;flex-shrink:0;min-width:72px}
-  tbody td[data-label="會議"]{flex-direction:column;gap:4px}
-  tbody td[data-label="會議"]::before{margin-bottom:2px}
-  tbody td[data-label="會議"] b{font-size:16px}
-  tbody td[data-label="報告場合"]{flex-direction:column;align-items:flex-start;gap:2px}
-  tbody td[data-label="報告場合"]::before{margin-bottom:2px}
-  tbody td[data-label="報告場合"] .occ{margin-top:0}
-  .hide-sm{display:flex !important}
-  .namebox{justify-content:flex-end}
-  .actions{justify-content:flex-end;flex-wrap:wrap}
-  .btn-sm{padding:9px 15px;font-size:15px}
+  .layout{flex-direction:column;padding:12px;gap:12px}
+  .sidebar{width:100%;position:static}
+  .side-flow{display:none}
+  .side-group{padding:8px}
+  .side-title{display:none}
+  #sideNav{flex-direction:row;overflow-x:auto;gap:6px;padding:2px;-webkit-overflow-scrolling:touch}
+  #sideNav::-webkit-scrollbar{display:none}
+  .side-item{width:auto;flex-shrink:0;padding:8px 12px;font-size:13.5px;white-space:nowrap}
+  .si-n{margin-left:6px}
+  .cards{grid-template-columns:1fr;gap:12px}
+  .grid2{grid-template-columns:1fr}
   .toolbar{gap:8px}
   .search,.filter{max-width:none;flex:1 1 100%}
+  .btn-sm{padding:9px 15px;font-size:15px}
+  .item-head{gap:8px;padding:11px 13px}
+  .it-title{min-width:100%;order:-1}
+  .item-body{padding:12px 14px}
+  .ib-actions{justify-content:flex-end}
 }
 </style>
 </head>
 <body>
 <div class="topbar">
-  <div>
-    <h1>會議暨教育訓練追蹤系統</h1>
-    <div class="sub">竹建瓦斯股份有限公司 ｜ 管理部</div>
+  <div class="brand">
+    <svg class="flame" viewBox="0 0 24 24" width="30" height="30" aria-hidden="true">
+      <defs><linearGradient id="fg" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#1fa3bd"/><stop offset="1" stop-color="#63a9ff"/>
+      </linearGradient></defs>
+      <path fill="url(#fg)" d="M12 2c1.2 4.2-4.2 6.3-4.2 11.1a6.2 6.2 0 0 0 12.4 0c0-3-1.9-5-3.1-6.2.1 2-.9 3.2-2 3.4.6-2.2-.4-6.2-3.1-8.3z"/>
+    </svg>
+    <div>
+      <h1>會議暨教育訓練追蹤系統</h1>
+      <div class="sub">竹建瓦斯股份有限公司 ・ 管理部</div>
+    </div>
   </div>
   <div class="role-switch" id="roleSwitch">
     <button data-role="admin" class="active">管理部（建檔）</button>
@@ -121,7 +212,24 @@ tbody tr{animation:fadeIn .3s ease both}
   </div>
 </div>
 
-<div class="wrap">
+<div class="layout">
+<aside class="sidebar">
+  <div class="side-group">
+    <div class="side-title">狀態分類</div>
+    <nav id="sideNav"></nav>
+  </div>
+  <div class="side-group side-flow">
+    <div class="side-title">簽辦流程</div>
+    <div class="flow">
+      <span class="fl-node" data-c="wait">待歸檔</span>
+      <span class="fl-node" data-c="archived">待指派</span>
+      <span class="fl-node" data-c="pending">待核准</span>
+      <span class="fl-node" data-c="assigned">已核准</span>
+      <span class="fl-node" data-c="done">已報告</span>
+    </div>
+  </div>
+</aside>
+<main class="main">
   <div class="cfgbar" id="cfgbar">
     <span>⚙️ 後端網址 (GAS URL)：</span>
     <input id="gasUrl" placeholder="貼上你部署後的 https://script.google.com/macros/s/.../exec">
@@ -129,30 +237,19 @@ tbody tr{animation:fadeIn .3s ease both}
   </div>
 
   <div class="role-hint" id="roleHint"></div>
-  <div class="stats" id="stats"></div>
 
   <div class="toolbar">
     <button class="btn btn-primary" id="btnNew">＋ 收文建檔</button>
     <input class="search" id="search" placeholder="搜尋會議名稱 / 文號 / 主辦單位…">
     <select class="filter" id="fDept"><option value="">全部部門</option></select>
-    <select class="filter" id="fStatus">
-      <option value="">全部狀態</option>
-      <option value="待歸檔">待歸檔</option><option value="待指派">待指派</option>
-      <option value="待報告">待報告</option><option value="逾期">逾期</option>
-      <option value="已報告">已報告</option><option value="免報告">免報告</option>
-    </select>
     <button class="btn btn-ghost btn-sm" id="btnImport">📋 一鍵匯入行事曆</button>
+    <button class="btn btn-ghost btn-sm" id="btnToggleAll" onclick="toggleAll()">展開全部</button>
     <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
     <button class="btn btn-ghost btn-sm" id="btnExport" style="margin-left:auto">匯出 CSV</button>
   </div>
 
   <div id="tableArea"><div class="loading">請先在上方貼入後端網址並連線…</div></div>
-
-  <div class="legend">
-    流程：<span class="tag tag-wait">待歸檔</span> → <span class="tag tag-archived">待指派</span> →
-    <span class="tag tag-assigned">待報告</span> → <span class="tag tag-done">已報告</span>
-    ｜ <span class="tag tag-overdue">逾期</span> ｜ <span class="tag tag-none">免報告</span>
-  </div>
+</main>
 </div>
 
 <!-- 建檔/編輯 -->
@@ -204,6 +301,20 @@ tbody tr{animation:fadeIn .3s ease both}
   <div class="modal-foot">
     <button class="btn btn-ghost" onclick="closeModal('maskApprove')">取消</button>
     <button class="btn btn-primary" id="btnApproveSave">確定核准</button>
+  </div>
+</div></div>
+
+<!-- 匯入行事曆勾選 -->
+<div class="mask" id="maskImport"><div class="modal" style="max-width:660px">
+  <h2>匯入行事曆行程</h2>
+  <div class="desc">勾選要納入系統追蹤的行程，按「匯入選取」才會寫入；已匯入過的會標示綠勾，不會重複。</div>
+  <div class="checklist" id="impList" style="max-height:340px"></div>
+  <div class="modal-foot" style="justify-content:space-between">
+    <button class="btn btn-ghost btn-sm" id="btnImpAll" onclick="impToggleAll()">全不選</button>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-ghost" onclick="closeModal('maskImport')">取消</button>
+      <button class="btn btn-primary" id="btnImpSave">匯入選取（0）</button>
+    </div>
   </div>
 </div></div>
 
@@ -263,12 +374,19 @@ function toast(m){const t=document.getElementById("toast");t.textContent=m;t.cla
 /* ===== 後端通訊 ===== */
 async function apiList(){
   if(!GAS){document.getElementById("tableArea").innerHTML='<div class="loading">請先在上方貼入後端網址並連線…</div>';return;}
-  document.getElementById("tableArea").innerHTML='<div class="loading"><div class="spinner"></div>資料更新中，再等一下下…<div class="hint">系統正在跟雲端同步，請稍候</div></div>';
+  document.getElementById("tableArea").innerHTML='<div class="loading"><div class="spinner"></div>資料更新中，再等一下下…<div class="hint">系統正在跟雲端同步，最多等 20 秒</div></div>';
   try{
-    const r=await fetch(GAS+"?action=list");
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),20000);
+    const r=await fetch(GAS+"?action=list",{signal:ctrl.signal});
+    clearTimeout(timer);
     const j=await r.json();
     DATA=j.rows||[];render();
-  }catch(e){document.getElementById("tableArea").innerHTML='<div class="empty"><div class="big">連線失敗</div><div>請確認後端網址正確、且部署存取權為「任何人」。</div></div>';}
+  }catch(e){
+    const timeout=e&&e.name==="AbortError";
+    const msg=timeout?"連線逾時（後端 20 秒沒回應）":"連線失敗";
+    document.getElementById("tableArea").innerHTML=`<div class="empty"><div class="big">${msg}</div><div>常見原因：後端 Google Apps Script 剛喚醒較慢、部署權限不是「任何人」、或網址失效。<br>請按下方重新整理再試一次；若一直失敗，直接用瀏覽器開啟後端網址測試是否有回應。</div><div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="apiList()">🔄 重新整理</button></div></div>`;
+  }
 }
 async function apiPost(payload){
   const r=await fetch(GAS,{method:"POST",body:JSON.stringify(payload)});
@@ -288,8 +406,8 @@ function statusOf(r){
 const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待核准":"tag-pending","已核准":"tag-assigned","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
 const ROLE_HINT={
  admin:"📥 管理部視角：你負責「收文建檔」、公文歸檔後「補登參加人員」，可編輯／刪除／拆分／匯入。",
- manager:"👔 部門主管視角：可看全部門進度，對事件指派報告、標記已報告、補改參加人員（不能刪除）。",
- boss:"👁 總經理視角：檢視全部門進度；對主管已指派「待核准」的報告，可「同意」或「改期」核准。"
+ manager:"👔 部門主管視角：對事件指派報告人與報告場合、標記已報告。參加人員如需異動，請洽管理部修改。",
+ boss:"👁 總經理視角：對「待核准」的報告可「同意」、「改期」或改為「免報告」；已核准的報告也可隨時改免報告結案。"
 };
 
 /* ===== UI 初始化 ===== */
@@ -312,47 +430,76 @@ function peopleChecklist(cid,checked){
 function getChecked(cid){return [...document.querySelectorAll(`#${cid} input:checked`)].map(i=>i.value);}
 
 /* ===== 渲染 ===== */
+let FSTAT="";
+let AUTOX=false; // 進入角色待辦分類時，本次渲染自動展開
+const OPEN=new Set();
+function shouldAutoX(){return (ROLE==="boss"&&FSTAT==="待核准")||(ROLE==="manager"&&FSTAT==="待指派");}
+const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["已報告","已報告"],["免報告","免報告"]];
+function setStat(v){FSTAT=v;AUTOX=shouldAutoX();render();}
+function toggleItem(id,el){
+  const it=el.closest(".item");it.classList.toggle("open");
+  if(it.classList.contains("open"))OPEN.add(id);else OPEN.delete(id);
+}
+function toggleAll(){
+  const items=[...document.querySelectorAll(".item")];
+  const anyClosed=items.some(x=>!x.classList.contains("open"));
+  items.forEach(x=>{
+    x.classList.toggle("open",anyClosed);
+    const id=x.dataset.id;
+    if(anyClosed)OPEN.add(id);else OPEN.delete(id);
+  });
+  document.getElementById("btnToggleAll").textContent=anyClosed?"收合全部":"展開全部";
+}
+function buildSideNav(counts){
+  const nav=document.getElementById("sideNav");
+  nav.innerHTML=SIDE_ITEMS.map(it=>{
+    const v=it[0],label=it[1];
+    const n=v===""?counts.all:(counts[v]||0);
+    const warn=(v==="逾期"&&n>0)?" warn":"";
+    return `<button class="side-item${FSTAT===v?" active":""}" data-st="${v}" onclick="setStat('${v}')"><span class="si-dot"></span>${label}<span class="si-n${warn}">${n}</span></button>`;
+  }).join("");
+}
 function render(){
   document.getElementById("roleHint").innerHTML=ROLE_HINT[ROLE];
   const all=DATA;
   const cnt=s=>all.filter(r=>statusOf(r)===s).length;
-  const stats=[
-    {l:"總事件數",n:all.length,c:"brand"},{l:"待指派",n:cnt("待指派"),c:"accent"},
-    {l:"待核准",n:cnt("待核准"),c:"accent"},{l:"已核准待報告",n:cnt("已核准"),c:"brand"},
-    {l:"逾期未報",n:cnt("逾期"),c:"warn"},{l:"已完成",n:cnt("已報告"),c:"ok"}];
-  document.getElementById("stats").innerHTML=stats.map(s=>`<div class="stat ${s.c}"><div class="n">${s.n}</div><div class="l">${s.l}</div></div>`).join("");
+  buildSideNav({all:all.length,"待歸檔":cnt("待歸檔"),"待指派":cnt("待指派"),"待核准":cnt("待核准"),"已核准":cnt("已核准"),"逾期":cnt("逾期"),"已報告":cnt("已報告"),"免報告":cnt("免報告")});
 
   const q=document.getElementById("search").value.trim();
   const fdept=document.getElementById("fDept").value;
-  const fstat=document.getElementById("fStatus").value;
   let rows=all.filter(r=>{
     if(fdept&&r.dept!==fdept)return false;
-    if(fstat&&statusOf(r)!==fstat)return false;
+    if(FSTAT&&statusOf(r)!==FSTAT)return false;
     if(q&&!(`${r.name} ${r.no} ${r.org}`).includes(q))return false;
     return true;
   }).sort((a,b)=>{
-    // 依會議日期排序：早的在上（5月→6月→7月），沒填日期的排最後
-    const da=(a.date||"").trim(), db=(b.date||"").trim();
-    if(!da && !db) return 0;
-    if(!da) return 1;
-    if(!db) return -1;
-    return da.localeCompare(db);
+    // 顯示排序(依流程)：待指派 → 待核准 → 逾期 → 已核准 → 待歸檔 → 已報告 → 免報告
+    const ORDER={"待指派":1,"待核准":2,"逾期":3,"已核准":4,"待歸檔":5,"已報告":6,"免報告":7};
+    const cmpDate=(x,y)=>{const dx=(x||"").trim(),dy=(y||"").trim();if(!dx&&!dy)return 0;if(!dx)return 1;if(!dy)return -1;return dx.localeCompare(dy);};
+    const sa=statusOf(a),sb=statusOf(b);
+    const pa=ORDER[sa]||99,pb=ORDER[sb]||99;
+    if(pa!==pb)return pa-pb;
+    if(sa==="待指派")return cmpDate(a.date,b.date);
+    if(sa==="已核准"||sa==="逾期")return cmpDate(a.reportDate,b.reportDate);
+    return cmpDate(a.date,b.date);
   });
 
   const area=document.getElementById("tableArea");
-  if(!rows.length){area.innerHTML=`<div class="empty"><div class="big">目前沒有符合條件的紀錄</div><div>按「收文建檔」新增第一筆。</div></div>`;return;}
+  if(!rows.length){
+    let big="目前沒有符合條件的紀錄",sub="左側換個分類看看，或按「收文建檔」新增。";
+    if(FSTAT==="待核准"&&ROLE==="boss"){big="✅ 沒有等您核准的報告";sub="全部處理完了。左側可切換檢視其他狀態。";}
+    else if(FSTAT==="待指派"&&ROLE==="manager"){big="✅ 沒有待指派的事件";sub="都指派完了。左側「已核准待報告」可查看待報告進度。";}
+    else if(FSTAT){big=`「${FSTAT}」目前沒有項目`;sub="左側可切換其他分類。";}
+    area.innerHTML=`<div class="empty"><div class="big">${big}</div><div>${sub}</div></div>`;return;
+  }
 
+  if(AUTOX){rows.forEach(r=>OPEN.add(String(r.id)));AUTOX=false;}
   const isAdmin=ROLE==="admin"&&adminUnlocked;
   const isMgr=ROLE==="manager";
   const isBoss=ROLE==="boss";
-  const showAct=isAdmin||isMgr||isBoss;
-  area.innerHTML=`<table><thead><tr>
-    <th>狀態</th><th>會議／訓練名稱</th><th class="hide-sm">承辦部門</th><th>參加人員</th>
-    <th>報告場合</th><th class="hide-sm">預計報告日</th>${showAct?"<th>操作</th>":""}
-  </tr></thead><tbody>${rows.map(r=>{
+  area.innerHTML=`<div class="list">${rows.map(r=>{
     const st=statusOf(r);
-    const people=r.people.length?`<div class="namebox">${r.people.map(n=>`<span class="chip">${n}</span>`).join("")}</div>`:`<span class="muted">—</span>`;
-    const occ=r.occ?`<span>${r.occ}</span>${r.reporters.length?`<div class="occ">報告人：${r.reporters.join("、")}</div>`:""}`:`<span class="muted">未指派</span>`;
+    const people=r.people.length?`<div class="namebox">${r.people.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:`<span class="muted">—</span>`;
     let act="";
     if(isAdmin){
       act+=`<button class="btn btn-ghost btn-sm" onclick="openEdit('${r.id}')">編輯</button>`;
@@ -361,29 +508,48 @@ function render(){
       act+=`<button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">刪除</button>`;
     }
     if(isMgr){
-      act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
-      const future = !r.date || r.date >= new Date().toISOString().slice(0,10);
-      if(future) act+=`<button class="btn btn-ghost btn-sm" onclick="openEdit('${r.id}')">改參加人員</button>`;
-      if(r.occ&&r.occ!=="免報告"&&r.approved&&!r.reported) act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
+      if(st==="待指派"||st==="待核准") act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
+      if(st==="已核准"||st==="逾期") act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
+      if(st==="已報告") act+=`<button class="btn btn-ghost btn-sm" onclick="unreport('${r.id}')">↩ 退回未報告</button>`;
     }
     if(isBoss){
       if(st==="待核准"){
-        act+=`<button class="btn btn-primary btn-sm" onclick="approveDirect('${r.id}')">✔ 同意</button>`;
+        act+=`<button class="btn btn-primary btn-sm" onclick="approveDirect('${r.id}')">核准</button>`;
         act+=`<button class="btn btn-ghost btn-sm" onclick="openApprove('${r.id}')">改期核准</button>`;
+        act+=`<button class="btn btn-ghost btn-sm" onclick="bossNoReport('${r.id}')">改免報告</button>`;
+      }
+      if(st==="已核准"||st==="逾期"){
+        act+=`<button class="btn btn-ghost btn-sm" onclick="bossNoReport('${r.id}')">免報告結案</button>`;
       }
     }
-    const occApproved = r.approved&&r.occ&&r.occ!=="免報告"?`<div class="occ" style="color:#2e7d52">✔ 總經理已核准</div>`:"";
-    return `<tr>
-      <td data-label="狀態"><span class="tag ${STATUS_TAG[st]}">${st}</span></td>
-      <td data-label="會議"><b>${r.name}</b><div class="occ">${r.type}｜${r.org||"—"}<br>會議日：${r.date||"—"}　文號：${r.no||"—"}</div></td>
-      <td data-label="承辦部門" class="hide-sm">${r.dept}<div class="occ">主管：${DEPT_HEAD[r.dept]||"—"}</div></td>
-      <td data-label="參加人員">${people}</td><td data-label="報告場合">${occ}${occApproved}</td>
-      <td data-label="預計報告日" class="hide-sm">${r.reportDate||'<span class="muted">—</span>'}</td>
-      ${showAct?`<td data-label="操作"><div class="actions">${act||'<span class="muted">—</span>'}</div></td>`:""}
-    </tr>`;
-  }).join("")}</tbody></table>`;
+    const meta=[r.type,r.org?`主辦｜${r.org}`:"",r.no||"",`收文 ${r.recv||"—"}`].filter(Boolean).join("　");
+    const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}</div></div>`:"";
+    const rd=(st==="已核准"||st==="逾期"||st==="待核准")&&r.reportDate?`<span class="it-rd">報 ${r.reportDate.slice(5).replace("-","/")}</span>`:"";
+    const open=OPEN.has(String(r.id))?" open":"";
+    return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
+      <div class="item-head" onclick="toggleItem('${r.id}',this)">
+        <span class="tag ${STATUS_TAG[st]}">${st}</span>
+        <span class="it-title">${r.name}</span>
+        <span class="it-dept">${r.dept}</span>
+        ${rd}
+        <span class="it-date">${r.date?r.date.replace(/-/g,"/"):"日期未定"}</span>
+        <svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="item-body">
+        <div class="ib-meta">${meta}</div>
+        <div class="ib-row"><span class="k">承辦</span><div>${r.dept} <span class="muted">主管 ${DEPT_HEAD[r.dept]||"—"}</span>${r.note?`<span class="muted">　備註｜${r.note}</span>`:""}</div></div>
+        <div class="ib-row"><span class="k">參加</span><div>${people}</div></div>
+        ${rep}
+        ${act?`<div class="ib-actions">${act}</div>`:""}
+      </div>
+    </div>`;
+  }).join("")}</div>`;
+  const btn=document.getElementById("btnToggleAll");
+  if(btn){const allOpen=rows.length&&rows.every(r=>OPEN.has(String(r.id)));btn.textContent=allOpen?"收合全部":"展開全部";}
 }
 function deptOf(name){const s=STAFF.find(x=>x.name===name||x.name.slice(-2)===name||x.name.slice(1)===name);return s?s.dept:"";}
+function fmtDate(s){if(!s)return "未定";const d=new Date(s+"T00:00:00");if(isNaN(d))return s;const w="日一二三四五六"[d.getDay()];return `${s.replace(/-/g,"/")}（${w}）`;}
+function fullName(n){if(!n)return n;const s=STAFF.find(x=>x.name===n||x.name.slice(-2)===n||x.name.slice(1)===n);return s?s.name:n;}
 
 /* ===== 操作 ===== */
 function openEdit(id){
@@ -450,8 +616,22 @@ document.getElementById("btnAssignSave").onclick=async()=>{
   toast("已送出，等候總經理核准");apiList();
 };
 async function markReported(id){await apiPost({action:"reported",id});toast("已標記報告完成");apiList();}
+async function unreport(id){
+  const r=DATA.find(x=>x.id===id);
+  if(!confirm(`確定把「${r.name}」退回「待報告」？會取消已報告標記，狀態回到「已核准待報告」。`))return;
+  toast("退回中…");
+  await apiPost({action:"update",id,recv:r.recv,no:r.no,name:r.name,org:r.org,date:r.date,dept:r.dept,type:r.type,people:r.people,note:r.note,occ:r.occ,reporters:r.reporters,reportDate:r.reportDate,reported:""});
+  toast("已退回待報告");apiList();
+}
 
 /* ===== 總經理核准 ===== */
+async function bossNoReport(id){
+  const r=DATA.find(x=>x.id===id);
+  if(!confirm(`確定將「${r.name}」改為「免報告」？\n將取消原指派的報告（含行事曆事件），直接存查結案。`))return;
+  toast("處理中…");
+  await apiPost({action:"assign",id,occ:"免報告",reporters:[],reportDate:"",approved:true});
+  toast("已改為免報告，存查結案");apiList();
+}
 async function approveDirect(id){
   await apiPost({action:"approve",id});toast("已同意核准");apiList();
 }
@@ -473,7 +653,7 @@ document.getElementById("btnExport").onclick=()=>{
   const head=["狀態","收文日期","文號","名稱","類別","主辦單位","會議日期","承辦部門","部門主管","參加人員","報告場合","報告人","預計報告日","備註"];
   const lines=DATA.map(r=>[statusOf(r),r.recv,r.no,r.name,r.type,r.org,r.date,r.dept,DEPT_HEAD[r.dept]||"",r.people.join("、"),r.occ||"",r.reporters.join("、"),r.reportDate||"",r.note||""]
     .map(v=>`"${(v||"").toString().replace(/"/g,'""')}"`).join(","));
-  const csv="\uFEFF"+[head.join(","),...lines].join("\n");
+  const csv="﻿"+[head.join(","),...lines].join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
   a.download="會議追蹤_"+new Date().toISOString().slice(0,10)+".csv";a.click();
 };
@@ -501,23 +681,51 @@ function closeModal(id){document.getElementById(id).classList.remove("show");}
 /* ===== 綁定 ===== */
 document.getElementById("btnNew").onclick=()=>{if(!GAS){alert("請先連線後端");return;}openEdit(null);};
 document.getElementById("btnReload").onclick=apiList;
-document.getElementById("btnImport").onclick=async()=>{
+document.getElementById("btnImport").onclick=()=>{
   if(!GAS){alert("請先連線後端");return;}
-  // 依現有資料的「名稱+會議日期」過濾掉已存在的，避免重複匯入
+  openImport();
+};
+function openImport(){
   const exist=new Set(DATA.map(r=>r.name+"|"+r.date));
-  const todo=CAL_IMPORT.filter(r=>!exist.has(r.name+"|"+r.date));
-  if(!todo.length){alert("行事曆行程都已經匯入過了，沒有新的可加。");return;}
+  const box=document.getElementById("impList");
+  const todo=CAL_IMPORT.map((r,i)=>({r,i})).filter(x=>!exist.has(x.r.name+"|"+x.r.date));
+  const doneN=CAL_IMPORT.length-todo.length;
+  if(!todo.length){
+    box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--ink2)">行事曆行程全部匯入完畢（共 ${doneN} 筆）✅</div>`;
+  }else{
+    box.innerHTML=todo.map(x=>{
+      const r=x.r,md=r.date.slice(5).replace("-","/");
+      const ppl=r.people.length?`　參加：${r.people.join("、")}`:"";
+      return `<label><input type="checkbox" class="impCk" value="${x.i}" checked onchange="impCount()"> <span>${md}｜【${r.type}】${r.name}（${r.dept}${ppl}）</span></label>`;
+    }).join("")+(doneN?`<div style="padding:8px 6px 2px;font-size:12px;color:var(--faint)">另有 ${doneN} 筆先前已匯入，不再顯示。</div>`:"");
+  }
+  impCount();
+  openModal("maskImport");
+}
+function impCount(){
+  const n=document.querySelectorAll(".impCk:checked").length;
+  const total=document.querySelectorAll(".impCk").length;
+  document.getElementById("btnImpSave").textContent=`匯入選取（${n}）`;
+  document.getElementById("btnImpAll").textContent=(n===total&&total>0)?"全不選":"全選";
+}
+function impToggleAll(){
+  const cks=[...document.querySelectorAll(".impCk")];
+  const allOn=cks.length&&cks.every(c=>c.checked);
+  cks.forEach(c=>c.checked=!allOn);
+  impCount();
+}
+document.getElementById("btnImpSave").onclick=async()=>{
+  const idx=[...document.querySelectorAll(".impCk:checked")].map(i=>+i.value);
+  if(!idx.length){alert("請至少勾選一筆要匯入的行程");return;}
   const today=new Date().toISOString().slice(0,10);
-  const rows=todo.map(r=>({recv:today,no:"",name:r.name,type:r.type,org:"",
+  const rows=idx.map(i=>CAL_IMPORT[i]).map(r=>({recv:today,no:"",name:r.name,type:r.type,org:"",
     date:r.date,dept:r.dept,people:r.people,note:"行事曆匯入"}));
-  if(!confirm(`將匯入 ${rows.length} 筆行事曆行程到系統，確定？`))return;
-  toast("匯入中…");
+  closeModal("maskImport");toast("匯入中…");
   await apiPost({action:"addBatch",rows});
   toast(`已匯入 ${rows.length} 筆`);apiList();
 };
 document.getElementById("search").oninput=render;
 document.getElementById("fDept").onchange=render;
-document.getElementById("fStatus").onchange=render;
 document.getElementById("btnSaveUrl").onclick=()=>{
   GAS=document.getElementById("gasUrl").value.trim();
   localStorage.setItem(URLKEY,GAS);toast("已儲存後端網址");apiList();
@@ -537,6 +745,9 @@ document.querySelectorAll("#roleSwitch button").forEach(b=>{
     }
     document.querySelectorAll("#roleSwitch button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");ROLE=role;
+    // 角色收件匣：切角色時自動跳到該角色的待辦分類（仍可從左側切換）
+    FSTAT=role==="boss"?"待核准":role==="manager"?"待指派":"";
+    AUTOX=shouldAutoX();
     applyRoleUI();render();
   };
 });
@@ -546,7 +757,7 @@ initSelects();
 document.getElementById("cfgbar").style.display="none";
 document.querySelectorAll("#roleSwitch button").forEach(x=>x.classList.remove("active"));
 document.querySelector('#roleSwitch button[data-role="boss"]').classList.add("active");
-ROLE="boss";applyRoleUI();
+ROLE="boss";FSTAT="待核准";AUTOX=true;applyRoleUI();
 if(GAS){apiList();}
 </script>
 </body>
