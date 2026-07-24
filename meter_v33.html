@@ -596,7 +596,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <table>
               <thead><tr>
                 <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
-                <th>預計掛表日 <span style="font-size:20px;font-weight:400;color:var(--muted);">（實際領錶日→安裝到建案日）</span></th>
+                <th>預計掛表日</th>
                 <th>距今</th><th>編輯</th>
               </tr></thead>
               <tbody id="biz-body"><tr><td colspan="8" class="no-data">載入中…</td></tr></tbody>
@@ -653,7 +653,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
             <table>
               <thead><tr>
                 <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
-                <th>預計掛表日 <span style="font-size:20px;font-weight:400;color:var(--muted);">（預計安裝到建案日）</span></th>
+                <th>預計掛表日</th>
                 <th>距今</th><th>編輯</th>
                 <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:20px;font-weight:400;color:var(--muted);">點擊切換</span></th>
               </tr></thead>
@@ -915,9 +915,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         <div class="fg"><label>子機</label>
           <select id="qa-sub"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
         </div>
-        <div class="fg"><label>廠商</label>
-          <select id="qa-vendor"><option value="N">N（台北貿易）</option><option value="M">M（力泰瓦斯）</option></select>
-        </div>
+        <input type="hidden" id="qa-vendor" value="">
         <div class="fg"><label>數量（只）</label><input type="number" id="qa-qty" min="1" placeholder="0"></div>
         <div class="fg ffull">
           <label>預計掛表日 <span class="hint">預計安裝到建案的日期</span></label>
@@ -1522,10 +1520,11 @@ function mergeByCase(rows) {
     // N型+M型合併：只依建案+種類分組，不分廠商
     const k = r.name+'|'+r.light+r.sub;
     if (!map[k]) map[k] = {
-      name:r.name, key:r.light+r.sub, vendor:r.vendor||'N',
+      name:r.name, key:r.light+r.sub, vendor:r.vendor||'',
       cls:tagCls(r), est:0, actual:0, returned:0,
       hangDate:r.hangDate||'', rowId:r.rowId, payment:r.payment||'', dept:r.dept
     };
+    if (!map[k].vendor && r.vendor) map[k].vendor = r.vendor;
     if (r.type==='actual')       map[k].actual   += Number(r.qty);
     else if (r.type==='return')  map[k].returned += Number(r.qty);
     else {
@@ -1568,7 +1567,7 @@ function renderBiz() {
     return `<tr class="${urg}">
       <td style="font-weight:500;">${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
-      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+      <td>${vendorHtml(r.vendor)}</td>
       <td>${r.est}只</td>
       <td>${r.netActual}只</td>
       <td><button class="sc-link click-scale" style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};" onclick="openPendingModal('${r.rowId}')">${r.pending>0?r.pending+'只▸':'✅完成▸'}</button></td>
@@ -1577,7 +1576,7 @@ function renderBiz() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="biz" data-hasest="${['倉管','管理員'].includes(currentRole)||allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&x.type==='estimate')}"></td>
+      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="biz" data-hasest="${['倉管','管理員'].includes(currentRole)||(r.pending>0&&allRecords.some(x=>x.name===r.name&&(x.light+x.sub)===r.key&&x.type==='estimate'))}"></td>
     </tr>`;
   }).join('');
   // 補入編輯+刪除按鈕
@@ -1624,7 +1623,7 @@ function renderEng() {
     return `<tr class="${urg}">
       <td style="font-weight:500;">${r.name}</td>
       <td><span class="tag ${r.cls}">${r.key}</span></td>
-      <td><span class="${(r.vendor||'N')==='N'?'ven-n':'ven-m'}">${r.vendor||'N'}型</span></td>
+      <td>${vendorHtml(r.vendor)}</td>
       <td>${r.est}只</td>
       <td>${r.netActual}只</td>
       <td><button class="sc-link click-scale" style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};" onclick="openPendingModal('${r.rowId}')">${r.pending>0?r.pending+'只▸':'✅完成▸'}</button></td>
@@ -1633,7 +1632,7 @@ function renderEng() {
         <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
-      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="eng" data-hasest="${['倉管','管理員'].includes(currentRole)||allRecords.some(x=>x.name===r.name&&x.light===r.light&&x.sub===r.sub&&x.type==='estimate')}"></td>
+      <td class="edit-cell" data-rowid="${r.rowId}" data-dept="eng" data-hasest="${['倉管','管理員'].includes(currentRole)||(r.pending>0&&allRecords.some(x=>x.name===r.name&&(x.light+x.sub)===r.key&&x.type==='estimate'))}"></td>
       ${payHtml}
     </tr>`;
   }).join('');
@@ -2779,6 +2778,10 @@ function switchPanel(name, el) {
 
 // ── 工具 ──
 function tagCls(r){ return 't'+r.light.charAt(0)+((r.sub||'').includes('無')?'x':'v'); }
+function vendorHtml(v){
+  if (!v) return '<span style="background:#f0ebe1;color:#9a8f7a;font-size:19px;padding:2px 8px;border-radius:20px;border:1px solid #ded5c4;display:inline-block;">待定</span>';
+  return '<span class="'+(v==='N'?'ven-n':'ven-m')+'">'+v+'型</span>';
+}
 function tagCls2(light,sub){ return 't'+light.charAt(0)+(sub.includes('無')?'x':'v'); }
 function tagLbl(r){ return r.light+r.sub; }
 function showOk(){ const ok=document.getElementById('okMsg'); if(ok){ ok.style.display='block'; setTimeout(()=>{ok.style.display='none';},3000); } }
