@@ -243,6 +243,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
     <input class="search" id="search" placeholder="搜尋會議名稱 / 文號 / 主辦單位…">
     <select class="filter" id="fDept"><option value="">全部部門</option></select>
     <button class="btn btn-ghost btn-sm" id="btnImport">📋 一鍵匯入行事曆</button>
+    <button class="btn btn-ghost btn-sm" id="btnLog" onclick="openLog()">📜 今日動態</button>
     <button class="btn btn-ghost btn-sm" id="btnToggleAll" onclick="toggleAll()">展開全部</button>
     <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
     <button class="btn btn-ghost btn-sm" id="btnExport" style="margin-left:auto">匯出 CSV</button>
@@ -302,6 +303,14 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
     <button class="btn btn-ghost" onclick="closeModal('maskApprove')">取消</button>
     <button class="btn btn-primary" id="btnApproveSave">確定核准</button>
   </div>
+</div></div>
+
+<!-- 操作紀錄 -->
+<div class="mask" id="maskLog"><div class="modal" style="max-width:680px">
+  <h2>操作紀錄</h2>
+  <div class="desc">系統自動記錄：建檔、指派、核准、免報告、刪除、Email 提醒寄送。最新在前。</div>
+  <div class="checklist" id="logList" style="max-height:400px;background:#fff"></div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('maskLog')">關閉</button></div>
 </div></div>
 
 <!-- 匯入行事曆勾選 -->
@@ -388,7 +397,9 @@ async function apiList(){
     document.getElementById("tableArea").innerHTML=`<div class="empty"><div class="big">${msg}</div><div>常見原因：後端 Google Apps Script 剛喚醒較慢、部署權限不是「任何人」、或網址失效。<br>請按下方重新整理再試一次；若一直失敗，直接用瀏覽器開啟後端網址測試是否有回應。</div><div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="apiList()">🔄 重新整理</button></div></div>`;
   }
 }
+const ROLE_LABEL={admin:"管理部",manager:"部門主管",boss:"總經理"};
 async function apiPost(payload){
+  payload.by=ROLE_LABEL[ROLE]||"";
   const r=await fetch(GAS,{method:"POST",body:JSON.stringify(payload)});
   return await r.json();
 }
@@ -685,6 +696,38 @@ document.getElementById("btnImport").onclick=()=>{
   if(!GAS){alert("請先連線後端");return;}
   openImport();
 };
+async function openLog(){
+  const box=document.getElementById("logList");
+  box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--ink2)">讀取中…</div>`;
+  openModal("maskLog");
+  try{
+    const r=await fetch(GAS+"?action=logs");
+    const j=await r.json();
+    const logs=j.logs||[];
+    if(!logs.length){box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--ink2)">還沒有任何紀錄（部署 v8 後的操作才會記錄）</div>`;return;}
+    const today=new Date().toLocaleDateString("zh-TW",{timeZone:"Asia/Taipei"});
+    let lastDate="",out="";
+    logs.forEach(L=>{
+      // L.t 格式如 2026/7/23 上午11:49:09
+      const parts=String(L.t).split(" ");
+      const d=parts[0]||"",tm=(parts[1]||"").replace(/^(上午|下午)/,m=>m+" ");
+      if(d!==lastDate){
+        lastDate=d;
+        const isToday=(d===today);
+        out+=`<div class="dept-h" style="${isToday?"color:var(--flame);":""}">${isToday?"📍 今日 "+d:d}</div>`;
+      }
+      out+=`<div style="display:flex;gap:8px;align-items:baseline;padding:4px 6px;font-size:13px;border-radius:6px">
+        <span style="color:var(--faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:78px">${parts.slice(1).join(" ")}</span>
+        <span class="chip" style="flex-shrink:0">${L.role||"系統"}</span>
+        <b style="flex-shrink:0">${L.act}</b>
+        <span style="color:var(--ink2)">${L.detail||""}</span>
+      </div>`;
+    });
+    box.innerHTML=out;
+  }catch(e){
+    box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--red)">讀取失敗，請確認後端已更新至 v8 並重新整理。</div>`;
+  }
+}
 function openImport(){
   const exist=new Set(DATA.map(r=>r.name+"|"+r.date));
   const box=document.getElementById("impList");
@@ -734,6 +777,7 @@ function applyRoleUI(){
   const adminTools=ROLE==="admin"&&adminUnlocked;
   document.getElementById("btnNew").style.display=adminTools?"":"none";
   document.getElementById("btnImport").style.display=adminTools?"":"none";
+  document.getElementById("btnLog").style.display=adminTools?"":"none";
 }
 document.querySelectorAll("#roleSwitch button").forEach(b=>{
   b.onclick=()=>{
