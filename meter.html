@@ -1573,7 +1573,7 @@ function renderBiz() {
       <td><button class="sc-link click-scale" style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};" onclick="openPendingModal('${r.rowId}')">${r.pending>0?r.pending+'只▸':'✅完成▸'}</button></td>
       <td>
         ${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}
-        <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
+        ${(r.pending>0||['倉管','管理員'].includes(currentRole))?`<button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>`:''}
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
       <td class="edit-cell" data-rowid="${r.rowId}" data-dept="biz" data-hasest="${['倉管','管理員'].includes(currentRole)||(r.pending>0&&allRecords.some(x=>x.name===r.name&&(x.light+x.sub)===r.key&&x.type==='estimate'))}"></td>
@@ -1629,7 +1629,7 @@ function renderEng() {
       <td><button class="sc-link click-scale" style="font-weight:700;color:${r.pending>0?'var(--red)':'var(--cyan)'};" onclick="openPendingModal('${r.rowId}')">${r.pending>0?r.pending+'只▸':'✅完成▸'}</button></td>
       <td>
         ${r.hangDate||'<span style="color:var(--muted);">未設定</span>'}
-        <button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>
+        ${(r.pending>0||['倉管','管理員'].includes(currentRole))?`<button onclick="quickUpdateHangDate('${r.rowId}','${r.hangDate}')" style="background:none;border:none;cursor:pointer;color:var(--gold);font-size:14px;padding:0 4px;opacity:.7;transition:opacity .15s;" title="修改掛表日">✏️</button>`:''}
       </td>
       <td>${r.pending===0?'<span style="color:var(--muted);">—</span>':urgencyBadge(r.days)}</td>
       <td class="edit-cell" data-rowid="${r.rowId}" data-dept="eng" data-hasest="${['倉管','管理員'].includes(currentRole)||(r.pending>0&&allRecords.some(x=>x.name===r.name&&(x.light+x.sub)===r.key&&x.type==='estimate'))}"></td>
