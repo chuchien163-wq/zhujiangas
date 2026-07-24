@@ -169,6 +169,15 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 .ov-rows.scrollable::-webkit-scrollbar-thumb{background:#d8cfbe;border-radius:4px;}
 .ov-rows.scrollable::-webkit-scrollbar-track{background:transparent;}
 .ov-count{font-size:15px;color:var(--muted);padding:8px 18px 0;}
+/* ── v3.3 建案狀態切換卡片 ── */
+.st-tabs{display:flex;gap:10px;margin-bottom:10px;}
+.st-tab{flex:0 0 auto;min-width:150px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #e6ddcc;border-radius:10px;padding:12px 16px;font-size:18px;color:var(--text);cursor:pointer;font-family:inherit;transition:all .12s;}
+.st-tab:hover{background:#fdfbf7;border-color:#d8cfbe;}
+.st-tab.active{background:var(--gold-bg);border-color:var(--gold);color:var(--gold);font-weight:500;}
+.st-tab-badge{font-size:15px;background:#f0ebe1;color:var(--muted);border-radius:12px;padding:1px 10px;min-width:26px;text-align:center;}
+.st-tab.active .st-tab-badge{background:#fff;color:var(--gold);}
+.st-tab.done.active{background:#eaf6f0;border-color:#1a7a50;color:#1a7a50;}
+.st-tab.done.active .st-tab-badge{background:#fff;color:#1a7a50;}
 /* ── v3.3 總覽左選單版面 ── */
 .ov-layout{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:start;}
 .ov-menu{display:flex;flex-direction:column;gap:6px;}
@@ -586,6 +595,14 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         </div>
         <button class="card-action ripple-host click-scale" onclick="showBizQuickAdd()" style="flex-shrink:0;margin-left:10px;" id="btn-biz-add">＋ 新增建案</button>
       </div>
+      <div class="st-tabs">
+        <button class="st-tab active" id="biz-st-todo" onclick="switchCaseStatus('biz','todo')">
+          <span>🔴 未完成</span><span class="st-tab-badge" id="biz-cnt-todo">0</span>
+        </button>
+        <button class="st-tab done" id="biz-st-done" onclick="switchCaseStatus('biz','done')">
+          <span>✅ 已完成</span><span class="st-tab-badge" id="biz-cnt-done">0</span>
+        </button>
+      </div>
       <div class="dash-grid">
         <div class="twrap">
           <div class="card-hdr" style="border-bottom:1px solid var(--border);">
@@ -643,6 +660,14 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
         </div>
         <button class="card-action ripple-host click-scale" onclick="showEngQuickAdd()" style="flex-shrink:0;margin-left:10px;" id="btn-eng-add">＋ 新增建案</button>
       </div>
+      <div class="st-tabs">
+        <button class="st-tab active" id="eng-st-todo" onclick="switchCaseStatus('eng','todo')">
+          <span>🔴 未完成</span><span class="st-tab-badge" id="eng-cnt-todo">0</span>
+        </button>
+        <button class="st-tab done" id="eng-st-done" onclick="switchCaseStatus('eng','done')">
+          <span>✅ 已完成</span><span class="st-tab-badge" id="eng-cnt-done">0</span>
+        </button>
+      </div>
       <div class="dash-grid">
         <div class="twrap">
           <div class="card-hdr" style="border-bottom:1px solid var(--border);">
@@ -655,7 +680,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <th>社區／建案</th><th>種類</th><th>廠商</th><th>預估量</th><th>已領出</th><th>尚欠</th>
                 <th>預計掛表日</th>
                 <th>距今</th><th>編輯</th>
-                <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:20px;font-weight:400;color:var(--muted);">點擊切換</span></th>
+                <th id="pay-col-hdr" style="display:none;">繳費<br><span style="font-size:16px;font-weight:400;color:var(--muted);">O已繳／X未繳・點擊切換</span></th>
               </tr></thead>
               <tbody id="eng-body"><tr><td colspan="9" class="no-data">載入中…</td></tr></tbody>
             </table>
@@ -1103,7 +1128,7 @@ function startApp() {
   const isAdmin    = ['倉管','管理員'].includes(currentRole);
 
   if (canManage)  document.getElementById('tab-manage').style.display='';
-  if (canPay)     document.getElementById('pay-col-hdr').style.display='';
+  if (canPay)     document.getElementById('pay-col-hdr').style.display='table-cell';
   if (canSeePay) {
     document.getElementById('ovmenu-unpaid').style.display='';
     document.getElementById('ovmenu-paid').style.display='';
@@ -1547,6 +1572,17 @@ function mergeByCase(rows) {
   });
 }
 
+// ── 建案狀態切換（未完成／已完成）──
+let caseStatus = { biz:'todo', eng:'todo' };
+function switchCaseStatus(dept, status) {
+  caseStatus[dept] = status;
+  ['todo','done'].forEach(s=>{
+    const b=document.getElementById(dept+'-st-'+s);
+    if (b) b.classList.toggle('active', s===status);
+  });
+  if (dept==='biz') renderBiz(); else renderEng();
+}
+
 // ── Biz ──
 function renderBiz() {
   let rows = allRecords.filter(r=>r.dept==='業務部');
@@ -1558,7 +1594,12 @@ function renderBiz() {
   if (fLight)  rows = rows.filter(r=>r.light===fLight);
   if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
   if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
-  const merged = mergeByCase(rows);
+  const mergedAll = mergeByCase(rows);
+  const todoCnt = mergedAll.filter(r=>r.pending>0).length;
+  const doneCnt = mergedAll.filter(r=>r.pending===0).length;
+  const bt=document.getElementById('biz-cnt-todo'); if(bt) bt.textContent=todoCnt;
+  const bd=document.getElementById('biz-cnt-done'); if(bd) bd.textContent=doneCnt;
+  const merged = mergedAll.filter(r=> caseStatus.biz==='done' ? r.pending===0 : r.pending>0);
   document.getElementById('biz-count').textContent = `共 ${merged.length} 筆`;
   const body = document.getElementById('biz-body');
   if (!merged.length) { body.innerHTML='<tr><td colspan="8" class="no-data">尚無記錄</td></tr>'; }
@@ -1610,7 +1651,12 @@ function renderEng() {
   if (fVendor) rows = rows.filter(r=>(r.vendor||'N')===fVendor);
   if (fPay)    rows = rows.filter(r=>r.payment===fPay);
   if (fSearch) rows = rows.filter(r=>r.name.includes(fSearch));
-  const merged  = mergeByCase(rows);
+  const mergedAll = mergeByCase(rows);
+  const todoCnt = mergedAll.filter(r=>r.pending>0).length;
+  const doneCnt = mergedAll.filter(r=>r.pending===0).length;
+  const et=document.getElementById('eng-cnt-todo'); if(et) et.textContent=todoCnt;
+  const ed=document.getElementById('eng-cnt-done'); if(ed) ed.textContent=doneCnt;
+  const merged  = mergedAll.filter(r=> caseStatus.eng==='done' ? r.pending===0 : r.pending>0);
   const canPay  = ['工務部','倉管','管理員'].includes(currentRole);
   document.getElementById('eng-count').textContent = `共 ${merged.length} 筆`;
   const body = document.getElementById('eng-body');
