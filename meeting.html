@@ -101,7 +101,8 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .item-head:hover{background:#f8fafc}
 .it-title{font-size:15.5px;font-weight:700;flex:1;min-width:220px;line-height:1.5;letter-spacing:.01em}
 .it-dept{font-size:12.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
-.it-date{font-size:13px;font-weight:700;color:var(--flame-deep);white-space:nowrap;font-variant-numeric:tabular-nums}
+.it-date{font-size:13px;font-weight:800;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:3px 10px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
+.it-date.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
 .it-rd{font-size:12.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .item[data-st="逾期"] .it-rd{color:var(--red)}
 .chev{flex-shrink:0;width:16px;height:16px;color:var(--faint);transition:transform .2s}
@@ -556,10 +557,10 @@ function render(){
     return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
       <div class="item-head" onclick="toggleItem('${r.id}',this)">
         <span class="tag ${STATUS_TAG[st]}">${st}</span>
+        <span class="it-date${r.date?"":" none"}">📅 ${r.date?fmtDate(r.date):"日期未定"}</span>
         <span class="it-title">${r.name}</span>
         <span class="it-dept">${r.dept}</span>
         ${rd}
-        <span class="it-date">${r.date?r.date.replace(/-/g,"/"):"日期未定"}</span>
         <svg class="chev" viewBox="0 0 16 16" fill="none"><path d="M3 6l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="item-body">
