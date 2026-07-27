@@ -728,19 +728,28 @@ async function openLog(){
     const j=await r.json();
     const logs=j.logs||[];
     if(!logs.length){box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--ink2)">還沒有任何紀錄（部署 v8 後的操作才會記錄）</div>`;return;}
-    const today=new Date().toLocaleDateString("zh-TW",{timeZone:"Asia/Taipei"});
+    const norm=s=>String(s).split("/").map(x=>+x).join("/");   // 去前導零以便比對
+    const today=norm(new Date().toLocaleDateString("zh-TW",{timeZone:"Asia/Taipei"}));
     let lastDate="",out="";
     logs.forEach(L=>{
-      // L.t 格式如 2026/7/23 上午11:49:09
-      const parts=String(L.t).split(" ");
-      const d=parts[0]||"",tm=(parts[1]||"").replace(/^(上午|下午)/,m=>m+" ");
-      if(d!==lastDate){
-        lastDate=d;
-        const isToday=(d===today);
-        out+=`<div class="dept-h" style="${isToday?"color:var(--flame);":""}">${isToday?"📍 今日 "+d:d}</div>`;
+      const raw=String(L.t);
+      let d,tm;
+      if(/^\d{4}\/\d{1,2}\/\d{1,2} /.test(raw)){         // 新格式 2026/07/24 08:57:18
+        const parts=raw.split(" ");d=parts[0];tm=parts[1]||"";
+      }else{                                               // 舊格式（英文長字串等）
+        d="earlier";tm=raw;
+      }
+      const gkey=d==="earlier"?"earlier":norm(d);
+      if(gkey!==lastDate){
+        lastDate=gkey;
+        if(d==="earlier"){out+=`<div class="dept-h">較早（舊格式）</div>`;}
+        else{
+          const isToday=(gkey===today);
+          out+=`<div class="dept-h" style="${isToday?"color:var(--flame);":""}">${isToday?"📍 今日 "+d:d}</div>`;
+        }
       }
       out+=`<div style="display:flex;gap:8px;align-items:baseline;padding:4px 6px;font-size:13px;border-radius:6px">
-        <span style="color:var(--faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:78px">${parts.slice(1).join(" ")}</span>
+        <span style="color:var(--faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${tm}</span>
         <span class="chip" style="flex-shrink:0">${L.role||"系統"}</span>
         <b style="flex-shrink:0">${L.act}</b>
         <span style="color:var(--ink2)">${L.detail||""}</span>
