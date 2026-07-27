@@ -638,6 +638,11 @@ document.getElementById("btnAssignSave").onclick=async()=>{
   const occ=document.getElementById("a_occ").value;
   const reporters=[...document.querySelectorAll("#a_people input:checked")].map(i=>i.value);
   const reportDate=document.getElementById("a_date").value;
+  if(!occ){alert("請選擇報告場合");return;}
+  if(occ!=="免報告"){
+    if(!reporters.length){alert("請至少勾選一位報告人");return;}
+    if(!reportDate){alert("請選擇預計報告日——沒有日期的報告無法排入行事曆，也無法判斷逾期。");return;}
+  }
   closeModal("maskAssign");toast("儲存中…");
   await apiPost({action:"assign",id:assignId,occ,
     reporters:occ==="免報告"?[]:reporters,reportDate:occ==="免報告"?"":reportDate,
