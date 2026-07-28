@@ -56,6 +56,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--gray-50);color:var(-
 .cal-person.wait{background:var(--blue-l);color:var(--blue)}
 .cal-person.blank{background:var(--amber-l);color:var(--amber);border:1px dashed #f0c070}
 .cal-reminder-tag{font-size:9px;background:var(--amber-l);color:var(--amber);border-radius:3px;padding:2px 4px;line-height:1.4}
+.cal-duty{font-size:8px;background:#fdf0e0;color:#b5731a;border:1px solid #f0c070;border-radius:3px;padding:0 3px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
 .prog-box{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .prog-lbl{font-size:12px;color:var(--gray-600);white-space:nowrap}
 .prog-bar{flex:1;height:7px;background:var(--gray-100);border-radius:4px;overflow:hidden}
@@ -184,7 +185,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div class="hd-row">
     <div>
       <h1>竹建瓦斯 乙級導管配管自主練習</h1>
-      <p>13:30–17:30 ｜ 2026/6/24–7/31 ｜ 每場2人+空白位</p>
+      <p>13:30–17:30 ｜ 顯示 7/27–8/31 ｜ 第三批 8/3–8/31 ｜ 每場2人+空白位</p>
     </div>
     <div class="hd-btns">
       <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
@@ -222,11 +223,12 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <details class="sched-note">
       <summary>📋 排班說明（點我展開）</summary>
       <div class="sched-note-body">
-        <p><b>排班對象：</b>乙級導管配管受訓學員共 9 位（林孟賢、陳人豪、張鈞豪、劉建彣、黃禹竣、王璽凱、林琮炫、蔡凱程、陳東彥）。</p>
-        <p><b>排班原則：</b>每場固定排 2 人、平日輪流，盡量讓每個人練習次數平均（本批每人約 5～6 次）。</p>
+        <p><b>排班對象：</b>乙級導管配管受訓學員共 8 位（林孟賢、陳人豪、張鈞豪、劉建彣、黃禹竣、王璽凱、蔡凱程、陳東彥）。</p>
+        <p><b>排班原則：</b>每場固定排 2 人、平日輪流，盡量讓每個人練習次數平均（第三批共 21 場，每人 5～6 次）。</p>
+        <p class="hl"><b>📅 第三批（8/3～8/31）已避開的勤務：</b><br>・8/4～8/10：劉建彣特休<br>・8/5：陳人豪勤務<br>・8/11～8/14 第一梯抄表：林孟賢、王璽凱、陳東彥<br>・8/17～8/20 第二梯抄表：陳人豪、劉建彣、黃禹竣、蔡凱程</p>
         <p class="hl2">📌 排班時有查漏、健檢勤務的日子我都避開了，不會卡到大家的工作，可以安心來練。如果臨時有異動、需要自行調開，再跟我說一聲喔～<br><span class="sign">—— 管理部 沛豫</span></p>
         <p class="hl"><b>👉 沒排到你的名字，也歡迎來！</b>每場都保留「＋ 空白位」，<b>任何人都能自由加入練習</b>，現場簽到即可，不限被排到的兩位。</p>
-        <p><b>不排日：</b>週末、學科考前（7/3）、能源署查核日（7/16）不安排練習。</p>
+        <p><b>不排日：</b>週末、學科考前（7/3）、能源署查核日（7/16）不安排練習；八月無國定假日。</p>
         <p class="note-foot">時段 13:30–17:30｜如需調整或想多練，歡迎來找我。</p>
       </div>
     </details>
@@ -414,6 +416,28 @@ const SCHED = [
   {seq:50, date:'07/29', wd:'三', m1:'黃禹竣', m2:'林孟賢'},
   {seq:51, date:'07/30', wd:'四', m1:'蔡凱程', m2:'張鈞豪'},
   {seq:52, date:'07/31', wd:'五', m1:'陳東彥', m2:'陳人豪'},
+  // === 第三批 8/3–8/31（已避開特休、抄表勤務）===
+  {seq:53, date:'08/03', wd:'一', m1:'劉建彣', m2:'王璽凱'},
+  {seq:54, date:'08/04', wd:'二', m1:'張鈞豪', m2:'蔡凱程'},
+  {seq:55, date:'08/05', wd:'三', m1:'林孟賢', m2:'黃禹竣'},
+  {seq:56, date:'08/06', wd:'四', m1:'陳人豪', m2:'陳東彥'},
+  {seq:57, date:'08/07', wd:'五', m1:'張鈞豪', m2:'王璽凱'},
+  {seq:58, date:'08/10', wd:'一', m1:'黃禹竣', m2:'蔡凱程'},
+  {seq:59, date:'08/11', wd:'二', m1:'陳人豪', m2:'劉建彣'},
+  {seq:60, date:'08/12', wd:'三', m1:'張鈞豪', m2:'黃禹竣'},
+  {seq:61, date:'08/13', wd:'四', m1:'劉建彣', m2:'蔡凱程'},
+  {seq:62, date:'08/14', wd:'五', m1:'陳人豪', m2:'黃禹竣'},
+  {seq:63, date:'08/17', wd:'一', m1:'林孟賢', m2:'張鈞豪'},
+  {seq:64, date:'08/18', wd:'二', m1:'王璽凱', m2:'陳東彥'},
+  {seq:65, date:'08/19', wd:'三', m1:'林孟賢', m2:'王璽凱'},
+  {seq:66, date:'08/20', wd:'四', m1:'張鈞豪', m2:'陳東彥'},
+  {seq:67, date:'08/21', wd:'五', m1:'陳人豪', m2:'蔡凱程'},
+  {seq:68, date:'08/24', wd:'一', m1:'劉建彣', m2:'陳東彥'},
+  {seq:69, date:'08/25', wd:'二', m1:'黃禹竣', m2:'王璽凱'},
+  {seq:70, date:'08/26', wd:'三', m1:'林孟賢', m2:'陳人豪'},
+  {seq:71, date:'08/27', wd:'四', m1:'林孟賢', m2:'劉建彣'},
+  {seq:72, date:'08/28', wd:'五', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:73, date:'08/31', wd:'一', m1:'陳人豪', m2:'王璽凱'},
 ];
 
 const REMINDER = {date:'06/23', wd:'二', text:'第四次內訓\n乙級技術士訓練\n舊倉庫'};
@@ -423,10 +447,24 @@ const REMINDER3 = {date:'06/19', wd:'五', text:'端午節\n國定假日'};
 const REMINDER4 = {date:'07/03', wd:'五', text:'學科考前\n當日不排'};
 const REMINDER5 = {date:'07/16', wd:'四', text:'能源署查核\n當日不排'};
 
+// 抄表勤務標記（不影響簽到，僅在月曆格子顯示小標籤）
+const DUTY = {
+  '08/11':'抄表①','08/12':'抄表①','08/13':'抄表①','08/14':'抄表①',
+  '08/17':'抄表②','08/18':'抄表②','08/19':'抄表②','08/20':'抄表②'
+};
+
+// 月曆顯示區間（7/27 之前的排班已結束，僅保留 7/27–8/31；舊資料仍在 SCHED 內未刪除）
+const VIEW_MONTHS = [7,8];
+const VIEW_FROM = '07/27';
+const VIEW_TO   = '08/31';
+function inView(mmdd){ var s=String(mmdd); return s>=VIEW_FROM && s<=VIEW_TO; }
+function schedOf(name){ return SCHED_DATA.filter(d=>inView(d.date)&&(d.m1===name||d.m2===name)); }
+function doneOf(name){ return Object.keys(sigRec).filter(k=>{var p=k.split('_');return p[1]===name&&inView(p[0]);}).length; }
+
 const MEMBERS = [
   {name:'林孟賢',no:1},{name:'陳人豪',no:2},{name:'張鈞豪',no:3},
   {name:'劉建彣',no:4},{name:'黃禹竣',no:5},{name:'王璽凱',no:6},
-  {name:'林琮炫',no:7},{name:'蔡凱程',no:8},{name:'陳東彥',no:9},
+  {name:'蔡凱程',no:7},{name:'陳東彥',no:8},
 ];
 
 const MATS = [
@@ -511,7 +549,7 @@ function renderCal(){
 
   // 進度（只算排班人員）
   let done=0, total=0;
-  SCHED_DATA.forEach(d=>{
+  SCHED_DATA.filter(d=>inView(d.date)).forEach(d=>{
     [d.m1,d.m2].forEach(m=>{ total++; if(sigRec[d.date+'_'+m]) done++; });
   });
   document.getElementById('pFill').style.width=Math.round(done/total*100)+'%';
@@ -521,8 +559,8 @@ function renderCal(){
   SCHED_DATA.forEach(d=>schedMap[d.date]=d);
 
   const months=[
-    {year:2026,month:6,label:'2026年6月',firstDow:0, startDate:1},
-    {year:2026,month:7,label:'2026年7月（7/5考試）',firstDow:2, startDate:1},
+    {year:2026,month:7,label:'2026年7月（7/27起）',firstDow:0, startDate:27},
+    {year:2026,month:8,label:'2026年8月（第三批）',firstDow:5, startDate:1},
   ];
 
   months.forEach(m=>{
@@ -545,7 +583,8 @@ function renderCal(){
       const sched=schedMap[mmdd];
       const isReminder=(mmdd===REMINDER.date||mmdd===REMINDER2.date||mmdd===REMINDER3.date||mmdd===REMINDER4.date||mmdd===REMINDER5.date);
       const reminderData=mmdd===REMINDER.date?REMINDER:mmdd===REMINDER2.date?REMINDER2:mmdd===REMINDER3.date?REMINDER3:mmdd===REMINDER4.date?REMINDER4:REMINDER5;
-      const inRange=(m.month===6)||(m.month===7);
+      const inRange=VIEW_MONTHS.indexOf(m.month)>-1;
+      const duty=DUTY[mmdd]||'';
 
       if(!inRange){
         html+=`<div class="cal-cell empty"></div>`;
@@ -561,7 +600,7 @@ function renderCal(){
       }
 
       if(isWeekend||!sched){
-        html+=`<div class="cal-cell ${isWeekend?'holiday':''}"><div class="cal-daynum" style="color:${isWeekend?'var(--red)':'var(--gray-400)'}">${day}</div></div>`;
+        html+=`<div class="cal-cell ${isWeekend?'holiday':''}"><div class="cal-daynum" style="color:${isWeekend?'var(--red)':'var(--gray-400)'}">${day}</div>${(duty&&!isWeekend)?`<div class="cal-duty">${duty}</div>`:''}</div>`;
         continue;
       }
 
@@ -577,6 +616,7 @@ function renderCal(){
       const allDone=r1&&r2;
       html+=`<div class="cal-cell has-sched${allDone?' all-done':''}" onclick="openSign(SCHED_DATA.find(s=>s.date==='${mmdd}'))">
         <div class="cal-daynum">${day}</div>
+        ${duty?`<div class="cal-duty">${duty}</div>`:''}
         <div class="cal-person ${r1?'done':'wait'}">${r1?'✓ ':''} ${sched.m1}</div>
         <div class="cal-person ${r2?'done':'wait'}">${r2?'✓ ':''} ${sched.m2}</div>
         ${(()=>{
@@ -603,8 +643,8 @@ function renderGrid(){
   const el=document.getElementById('pGrid');el.innerHTML='';
   MEMBERS.forEach(m=>{
     const recs=getAllPersonRecs(m.name);
-    const schedTotal=SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
-    const schedDone=Object.keys(sigRec).filter(k=>k.split('_')[1]===m.name).length;
+    const schedTotal=schedOf(m.name).length;
+    const schedDone=doneOf(m.name);
     const pct=schedTotal?Math.round(schedDone/schedTotal*100):0;
     const c=document.createElement('div');c.className='p-card';
     c.innerHTML=`<div class="p-av">${m.name[0]}</div><div class="p-name">${m.name}</div><div class="p-cnt">${recs.length} 筆記錄</div><div class="p-bar"><div class="p-fill" style="width:${Math.min(pct,100)}%"></div></div>`;
@@ -621,8 +661,8 @@ function getAllPersonRecs(name){
 
 function openPerson(name,isAdmin){
   const recs=getAllPersonRecs(name);
-  const schedTotal=SCHED_DATA.filter(d=>d.m1===name||d.m2===name).length;
-  const schedDone=Object.keys(sigRec).filter(k=>k.split('_')[1]===name).length;
+  const schedTotal=schedOf(name).length;
+  const schedDone=doneOf(name);
   const freeCount=freeRec.filter(r=>r.name===name).length;
   const avId=isAdmin?'mgrPersonAv':'personAv';
   const nameId=isAdmin?'mgrPersonName':'personName';
@@ -899,7 +939,7 @@ function renderMgrWithData(rows){
   const ml=document.createElement('p');ml.style.cssText='font-size:11px;font-weight:700;color:var(--gray-400);margin:0 0 8px';ml.textContent='👥 學員個別狀況';el.appendChild(ml);
   MEMBERS.forEach(m=>{
     const personRows=rows.filter(r=>r.signer===m.name);
-    const schedTotal=SCHED_DATA.filter(d=>d.m1===m.name||d.m2===m.name).length;
+    const schedTotal=schedOf(m.name).length;
     const schedDone=personRows.filter(r=>r.type==='排班簽到'||r.type==='管理員補登').length;
     const pct=schedTotal?Math.round(schedDone/schedTotal*100):0;
     const row=document.createElement('div');row.className='person-row';
