@@ -178,9 +178,53 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
 .leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gray-600)}
 .leg-dot{width:10px;height:10px;border-radius:2px}
 @media(max-width:380px){.p-grid{grid-template-columns:repeat(2,1fr)}.mgr-stats{grid-template-columns:repeat(2,1fr)}}
+
+/* === 送出中遮罩 === */
+.send-ov{position:fixed;inset:0;background:rgba(255,255,255,.94);display:none;align-items:center;justify-content:center;flex-direction:column;z-index:9999}
+.send-ov.on{display:flex}
+.send-ring{width:56px;height:56px;border:4px solid var(--blue-l);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.send-ov.pu .send-ring{border-color:var(--purple-l);border-top-color:var(--purple)}
+.send-txt{margin-top:16px;font-size:16px;font-weight:700;color:var(--blue)}
+.send-ov.pu .send-txt{color:var(--purple)}
+.send-sub{margin-top:5px;font-size:12px;color:var(--gray-400)}
+.send-dots::after{content:'';animation:dots 1.2s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+/* === 成功打勾動畫 === */
+.check-wrap{position:relative;width:104px;height:104px;margin:0 auto 16px}
+.check-svg{width:104px;height:104px;display:block}
+.ck-c{fill:none;stroke:var(--green);stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151}
+.ck-p{fill:none;stroke:var(--green);stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44}
+.check-wrap.pu .ck-c,.check-wrap.pu .ck-p{stroke:var(--purple)}
+.check-wrap.go{animation:pop .45s cubic-bezier(.2,.8,.3,1.2) both}
+.check-wrap.go .ck-c{animation:ckc .55s ease-out forwards}
+.check-wrap.go .ck-p{animation:ckp .38s .45s ease-out forwards}
+@keyframes ckc{to{stroke-dashoffset:0}}
+@keyframes ckp{to{stroke-dashoffset:0}}
+@keyframes pop{0%{transform:scale(.55);opacity:0}65%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+.succ .ico{position:absolute;right:2px;bottom:2px;font-size:26px;line-height:1;margin:0;background:#fff;border-radius:50%;padding:2px}
+.succ.go h2{animation:up .4s .55s both}
+.succ.go .succ-d{animation:up .4s .68s both}
+.succ.go .btn-p{animation:up .4s .82s both}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.cfti{position:fixed;top:-12px;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:9998;animation:fall 1.5s ease-in forwards}
+@keyframes fall{to{transform:translateY(88vh) rotate(600deg);opacity:0}}
+.btn-p:disabled{opacity:.55;cursor:not-allowed}
+@media (prefers-reduced-motion:reduce){
+  .send-ring{animation:none}
+  .check-wrap.go,.succ.go h2,.succ.go .succ-d,.succ.go .btn-p{animation:none}
+  .check-wrap.go .ck-c,.check-wrap.go .ck-p{animation:none;stroke-dashoffset:0}
+  .cfti{display:none}
+}
 </style>
 </head>
 <body>
+<div class="send-ov" id="sendOv">
+  <div class="send-ring"></div>
+  <div class="send-txt" id="sendTxt">簽到送出中</div>
+  <div class="send-sub">請稍候，不用重複按送出</div>
+</div>
 <div class="hd">
   <div class="hd-row">
     <div>
@@ -271,7 +315,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <canvas id="sigCanvas"></canvas>
     <div class="sig-bar"><span class="sig-hint">請用手指或滑鼠在此簽名</span><button class="sig-clr" onclick="clrSig('sigCanvas')">清除重簽</button></div>
   </div>
-  <button class="btn-p" onclick="doSubmit()">✔ 確認簽到送出</button>
+  <button class="btn-p" id="btnSign" onclick="doSubmit()">✔ 確認簽到送出</button>
   <div id="syncNote" style="display:none" class="alert"></div>
 </div>
 
@@ -298,14 +342,20 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
     <canvas id="freeSigCanvas"></canvas>
     <div class="sig-bar"><span class="sig-hint">請用手指或滑鼠在此簽名</span><button class="sig-clr" onclick="clrSig('freeSigCanvas')">清除重簽</button></div>
   </div>
-  <button class="btn-p purple" onclick="doFreeSubmit()">✔ 送出自由練習記錄</button>
+  <button class="btn-p purple" id="btnFree" onclick="doFreeSubmit()">✔ 送出自由練習記錄</button>
   <div id="freeSyncNote" style="display:none" class="alert"></div>
 </div>
 
 <!-- 成功頁 -->
 <div id="scr-success" class="scr">
-  <div class="succ">
-    <div class="ico" id="succIco">✅</div>
+  <div class="succ" id="succBox">
+    <div class="check-wrap" id="succCheck">
+      <svg class="check-svg" viewBox="0 0 52 52" aria-hidden="true">
+        <circle class="ck-c" cx="26" cy="26" r="24"></circle>
+        <path class="ck-p" d="M15 27.5 L22.5 35 L37.5 19"></path>
+      </svg>
+      <div class="ico" id="succIco">✅</div>
+    </div>
     <h2 id="succName"></h2>
     <div class="succ-d" id="succDetail"></div>
     <button class="btn-p" style="max-width:240px;margin:20px auto 0;display:block" onclick="go('list')">返回</button>
@@ -806,10 +856,15 @@ function doSubmit(){
   const matsStr=getMatsStr(matVals);
   const sig=document.getElementById('sigCanvas').toDataURL('image/jpeg',0.5);
   const key=cur.date+'_'+who;
+  if(sigRec[key] && !confirm(who+' 在 '+cur.date+' 已經簽到過了。\n按「確定」會覆蓋原本的記錄，按「取消」保留原記錄。')){return;}
   sigRec[key]={t1,t2,mats:matsStr,note,sig,type:'排班',ts:new Date().toLocaleString('zh-TW')};
   save();
   pushSheet({date:'2026/'+cur.date,wd:cur.wd,label:'第'+cur.seq+'場',signer:who,t1,t2,mats:matsStr,note,type:'排班簽到',sig},'syncNote');
-  showSucc('✅',who+' — 排班簽到完成！',`📅 2026/${cur.date}（${cur.wd}）第${cur.seq}場\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
+  sendingOn('簽到送出中',false);
+  setTimeout(()=>{
+    sendingOff();
+    showSucc('✅',who+' — 排班簽到完成！',`📅 2026/${cur.date}（${cur.wd}）第${cur.seq}場\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
+  },900);
 }
 
 function initFreeForm(){
@@ -837,7 +892,11 @@ function doFreeSubmit(){
   save();
   const mmdd=date.slice(5,7)+'/'+date.slice(8,10);
   pushSheet({date:'2026/'+mmdd,wd:'-',label:'自由練習',signer:who,t1,t2,mats:matsStr,note,type:'自由練習',sig},'freeSyncNote');
-  showSucc('🟣',who+' — 自由練習記錄完成！',`📅 2026/${mmdd} 自由練習\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
+  sendingOn('記錄送出中',true);
+  setTimeout(()=>{
+    sendingOff();
+    showSucc('🟣',who+' — 自由練習記錄完成！',`📅 2026/${mmdd} 自由練習\n⏰ ${t1} – ${t2}\n📦 ${matsStr}`+(note?`\n📝 ${note}`:''));
+  },900);
 }
 
 function initMgrForm(){
@@ -1004,11 +1063,50 @@ function pushSheet(payload,noteId){
     .catch(()=>{const el=document.getElementById(noteId);if(el){el.className='alert a-warn';el.textContent='⚠️ 同步失敗，資料已存本機';el.style.display='block';}});
 }
 
+function reduceMotion(){
+  try{return window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}
+}
+
+// 送出中遮罩：擋住重複點擊，讓學員知道系統正在處理
+function sendingOn(txt,purple){
+  const ov=document.getElementById('sendOv');
+  document.getElementById('sendTxt').textContent=txt||'送出中';
+  ov.classList.toggle('pu',!!purple);
+  ov.classList.add('on');
+}
+function sendingOff(){document.getElementById('sendOv').classList.remove('on');}
+
+// 灑彩帶
+function confetti(purple){
+  if(reduceMotion())return;
+  const colors=purple?['#5b3ea8','#8a6fd8','#c9a84c','#1a7a4a','#1a5fa8']:['#1a7a4a','#4cc38a','#c9a84c','#1a5fa8','#f0c070'];
+  for(let i=0;i<18;i++){
+    const d=document.createElement('div');
+    d.className='cfti';
+    d.style.left=(5+Math.random()*90)+'vw';
+    d.style.background=colors[i%colors.length];
+    d.style.animationDelay=(Math.random()*0.35)+'s';
+    d.style.animationDuration=(1.2+Math.random()*0.7)+'s';
+    if(i%3===0)d.style.borderRadius='50%';
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),2400);
+  }
+}
+
 function showSucc(ico,name,detail){
+  const isPurple=(ico==='\uD83D\uDFE3');
   document.getElementById('succIco').textContent=ico;
   document.getElementById('succName').textContent=name;
   document.getElementById('succDetail').textContent=detail;
+  const wrap=document.getElementById('succCheck');
+  const box=document.getElementById('succBox');
+  wrap.classList.remove('go');box.classList.remove('go');
+  wrap.classList.toggle('pu',isPurple);
   go('success');
+  void wrap.offsetWidth;           // 強制重繪，動畫每次都重播
+  wrap.classList.add('go');box.classList.add('go');
+  confetti(isPurple);
+  try{if(navigator.vibrate)navigator.vibrate([25,40,25]);}catch(e){}
 }
 
 function saveCfg(){
