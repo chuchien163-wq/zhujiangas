@@ -21,17 +21,17 @@
   --shadow:0 1px 2px rgba(16,30,45,.05),0 4px 14px rgba(16,30,45,.05);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.65}
+body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.65}
 
 /* ── 頂欄 ── */
 .topbar{background:linear-gradient(180deg,#14293e,#0e1f31);color:#fff;padding:16px 26px 15px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative}
 .topbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--flame-deep),var(--flame) 40%,var(--cyan) 75%,rgba(31,163,189,0))}
 .brand{display:flex;align-items:center;gap:12px}
 .brand .flame{flex-shrink:0;filter:drop-shadow(0 0 10px rgba(90,168,255,.45))}
-.topbar h1{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:20px;font-weight:900;letter-spacing:1.5px}
-.topbar .sub{font-size:12px;opacity:.68;letter-spacing:.14em;margin-top:1px}
+.topbar h1{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:22px;font-weight:900;letter-spacing:1.5px}
+.topbar .sub{font-size:14px;opacity:.68;letter-spacing:.14em;margin-top:1px}
 .role-switch{margin-left:auto;display:flex;gap:4px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);padding:4px;border-radius:10px}
-.role-switch button{border:none;background:transparent;color:rgba(255,255,255,.82);padding:7px 15px;border-radius:7px;cursor:pointer;font-size:13px;font-family:inherit;font-weight:700;letter-spacing:.03em;transition:background .15s,color .15s}
+.role-switch button{border:none;background:transparent;color:rgba(255,255,255,.82);padding:7px 15px;border-radius:7px;cursor:pointer;font-size:15px;font-family:inherit;font-weight:700;letter-spacing:.03em;transition:background .15s,color .15s}
 .role-switch button:hover{color:#fff}
 .role-switch button.active{background:#fff;color:var(--flame-deep)}
 .role-switch button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
@@ -40,9 +40,9 @@ body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-seri
 .layout{display:flex;gap:20px;align-items:flex-start;padding:20px 26px;max-width:1680px;margin:0 auto}
 .sidebar{width:214px;flex-shrink:0;position:sticky;top:16px;display:flex;flex-direction:column;gap:14px}
 .side-group{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px}
-.side-title{font-size:11.5px;font-weight:900;letter-spacing:.2em;color:var(--faint);padding:4px 12px 8px}
+.side-title{font-size:13.5px;font-weight:900;letter-spacing:.2em;color:var(--faint);padding:4px 12px 8px}
 #sideNav{display:flex;flex-direction:column;gap:2px}
-.side-item{display:flex;align-items:center;gap:9px;width:100%;border:none;background:transparent;padding:9px 12px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink2);text-align:left;transition:background .15s,color .15s}
+.side-item{display:flex;align-items:center;gap:9px;width:100%;border:none;background:transparent;padding:9px 12px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:16px;font-weight:600;color:var(--ink2);text-align:left;transition:background .15s,color .15s}
 .side-item:hover{background:#eef2f7;color:var(--ink)}
 .side-item.active{background:var(--flame-soft);color:var(--flame-deep);font-weight:800}
 .side-item:focus-visible{outline:2px solid var(--flame);outline-offset:1px}
@@ -54,13 +54,13 @@ body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-seri
 .side-item[data-st="逾期"]{--c:var(--red)}
 .side-item[data-st="已報告"]{--c:var(--green)}
 .side-item[data-st="免報告"]{--c:#a6afb9}
-.si-n{margin-left:auto;font-size:12px;font-weight:800;background:#e9edf2;color:#5f6d7c;padding:1px 8px;border-radius:10px;font-variant-numeric:tabular-nums}
+.si-n{margin-left:auto;font-size:14px;font-weight:800;background:#e9edf2;color:#5f6d7c;padding:1px 8px;border-radius:10px;font-variant-numeric:tabular-nums}
 .side-item.active .si-n{background:#fff;color:var(--flame-deep)}
 .si-n.warn{background:var(--red-soft);color:var(--red)}
 
 /* 側欄：簽辦流程（直式管線） */
 .flow{display:flex;flex-direction:column;padding:2px 6px 4px}
-.fl-node{position:relative;padding:7px 0 7px 24px;font-size:13px;font-weight:700;color:var(--ink2)}
+.fl-node{position:relative;padding:7px 0 7px 24px;font-size:15px;font-weight:700;color:var(--ink2)}
 .fl-node::before{content:"";position:absolute;left:7px;top:50%;transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:var(--c,var(--faint));box-shadow:0 0 0 3px color-mix(in srgb,var(--c,var(--faint)) 16%,transparent)}
 .fl-node:not(:last-child)::after{content:"";position:absolute;left:7px;top:calc(50% + 8px);transform:translateX(-50%);width:2px;height:calc(100% - 14px);background:#cfd7e0}
 .fl-node[data-c="wait"]{--c:#8a95a1}
@@ -70,20 +70,20 @@ body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-seri
 .fl-node[data-c="done"]{--c:var(--green)}
 .main{flex:1;min-width:0}
 
-.role-hint{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--flame);color:var(--ink2);padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;box-shadow:var(--shadow)}
-.cfgbar{background:var(--amber-soft);border:1px solid #ecd9ad;color:#7d5510;padding:10px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.role-hint{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--flame);color:var(--ink2);padding:10px 16px;border-radius:10px;font-size:15px;margin-bottom:14px;box-shadow:var(--shadow)}
+.cfgbar{background:var(--amber-soft);border:1px solid #ecd9ad;color:#7d5510;padding:10px 16px;border-radius:10px;font-size:15px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .cfgbar input{flex:1;min-width:240px}
 
 /* ── 工具列 ── */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.btn{border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .15s,border-color .15s,color .15s,transform .05s}
+.btn{border:none;border-radius:8px;padding:10px 18px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:background .15s,border-color .15s,color .15s,transform .05s}
 .btn:active{transform:translateY(1px)}
 .btn:focus-visible{outline:2px solid var(--flame);outline-offset:2px}
 .btn-primary{background:var(--flame);color:#fff}.btn-primary:hover{background:var(--flame-deep)}
 .btn-ghost{background:#fff;color:var(--ink);border:1px solid #d3dae2}.btn-ghost:hover{border-color:var(--flame);color:var(--flame-deep)}
 .btn-danger{background:#fff;color:var(--red);border:1px solid #eccfcc}.btn-danger:hover{background:var(--red-soft)}
-.btn-sm{padding:7px 13px;font-size:13.5px;border-radius:7px}
-input,select,textarea{font-family:inherit;font-size:14px;border:1px solid #d3dae2;border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);background:#fff}
+.btn-sm{padding:7px 13px;font-size:15.5px;border-radius:7px}
+input,select,textarea{font-family:inherit;font-size:16px;border:1px solid #d3dae2;border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);background:#fff}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);box-shadow:0 0 0 3px rgba(21,95,191,.12)}
 .search{max-width:260px}.filter{max-width:150px}
 
@@ -99,26 +99,26 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .item[data-st="免報告"]{--acc:#d4dae1}
 .item-head{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;flex-wrap:wrap}
 .item-head:hover{background:#f8fafc}
-.it-title{font-size:15.5px;font-weight:700;flex:1;min-width:220px;line-height:1.5;letter-spacing:.01em}
-.it-dept{font-size:12.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
-.it-date{font-size:13px;font-weight:800;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:3px 10px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
+.it-title{font-size:17.5px;font-weight:700;flex:1;min-width:220px;line-height:1.5;letter-spacing:.01em}
+.it-dept{font-size:14.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.it-date{font-size:15px;font-weight:800;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:3px 10px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
 .it-date.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
-.it-rd{font-size:12.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.it-rd{font-size:14.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .item[data-st="逾期"] .it-rd{color:var(--red)}
 .chev{flex-shrink:0;width:16px;height:16px;color:var(--faint);transition:transform .2s}
 .item.open .chev{transform:rotate(180deg)}
 .item-body{display:none;border-top:1px dashed var(--line);padding:13px 18px 14px 20px;background:#fbfcfe}
 .item.open .item-body{display:block}
-.ib-meta{font-size:12.5px;color:var(--ink2);margin-bottom:10px}
-.ib-row{display:flex;gap:10px;font-size:13.5px;align-items:flex-start;line-height:1.6;margin-bottom:8px}
+.ib-meta{font-size:14.5px;color:var(--ink2);margin-bottom:10px}
+.ib-row{display:flex;gap:10px;font-size:15.5px;align-items:flex-start;line-height:1.6;margin-bottom:8px}
 .ib-row:last-child{margin-bottom:0}
-.ib-row .k{flex-shrink:0;font-size:11px;font-weight:900;color:var(--faint);letter-spacing:.14em;background:#eef2f6;border-radius:5px;padding:2.5px 7px;margin-top:2px}
+.ib-row .k{flex-shrink:0;font-size:13px;font-weight:900;color:var(--faint);letter-spacing:.14em;background:#eef2f6;border-radius:5px;padding:2.5px 7px;margin-top:2px}
 .ib-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
-.apv{color:var(--green);font-size:12px;font-weight:800;margin-left:6px;white-space:nowrap}
-.rdate{margin-top:4px;font-size:13px;font-weight:700;color:var(--flame-deep);font-variant-numeric:tabular-nums}
+.apv{color:var(--green);font-size:14px;font-weight:800;margin-left:6px;white-space:nowrap}
+.rdate{margin-top:4px;font-size:15px;font-weight:700;color:var(--flame-deep);font-variant-numeric:tabular-nums}
 
 /* ── 狀態籤 ── */
-.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:14.5px;font-weight:700;white-space:nowrap}
 .tag::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
 .tag-wait{background:var(--gray-soft);color:#63707e}
 .tag-archived{background:var(--amber-soft);color:var(--amber)}
@@ -128,53 +128,53 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .tag-overdue{background:var(--red-soft);color:var(--red)}
 .tag-none{background:var(--gray-soft);color:#8a95a1}
 
-.occ{font-size:13px;color:var(--ink2);display:inline-block;margin-top:3px}
+.occ{font-size:15px;color:var(--ink2);display:inline-block;margin-top:3px}
 .occ-blk{display:block;margin-top:3px;line-height:1.5}
-.occ-title{font-size:14.5px;font-weight:800;color:var(--ink)}
-.mdate{display:inline-block;font-size:13px;font-weight:700;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:2.5px 9px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.occ-title{font-size:16.5px;font-weight:800;color:var(--ink)}
+.mdate{display:inline-block;font-size:15px;font-weight:700;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:2.5px 9px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .mdate.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
 .muted{color:#9aa3af}
 .namebox{display:flex;flex-wrap:wrap;gap:4px}
-.chip{background:#f1f4f8;color:#3a4756;border:1px solid #e2e8ef;padding:2.5px 9px;border-radius:6px;font-size:13px;font-weight:500}
+.chip{background:#f1f4f8;color:#3a4756;border:1px solid #e2e8ef;padding:2.5px 9px;border-radius:6px;font-size:15px;font-weight:500}
 
 /* ── Modal ── */
 .mask{position:fixed;inset:0;background:rgba(12,24,38,.5);backdrop-filter:blur(2px);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;z-index:50}
 .mask.show{display:flex}
 .modal{background:#fff;border-radius:16px;border-top:4px solid var(--flame);width:100%;max-width:560px;padding:26px;box-shadow:0 24px 70px rgba(10,22,36,.3)}
-.modal h2{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:19px;font-weight:900;margin-bottom:4px;letter-spacing:.04em}
-.modal .desc{font-size:12.5px;color:var(--ink2);margin-bottom:18px}
-.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:#2c3a48}
+.modal h2{font-family:"Noto Serif TC","Noto Sans TC",serif;font-size:21px;font-weight:900;margin-bottom:4px;letter-spacing:.04em}
+.modal .desc{font-size:14.5px;color:var(--ink2);margin-bottom:18px}
+.field{margin-bottom:14px}.field label{display:block;font-size:15px;font-weight:700;margin-bottom:5px;color:#2c3a48}
 .field .req{color:var(--red)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
 .checklist{border:1px solid #d9e0e8;border-radius:8px;padding:10px;max-height:200px;overflow:auto;background:#f9fafc}
-.checklist .dept-h{font-size:12px;font-weight:900;color:var(--flame-deep);letter-spacing:.1em;margin:9px 0 4px;padding-bottom:3px;border-bottom:1px solid var(--line)}
+.checklist .dept-h{font-size:14px;font-weight:900;color:var(--flame-deep);letter-spacing:.1em;margin:9px 0 4px;padding-bottom:3px;border-bottom:1px solid var(--line)}
 .checklist .dept-h:first-child{margin-top:0}
-.checklist label{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:6px;cursor:pointer;font-weight:400;font-size:13px}
+.checklist label{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:6px;cursor:pointer;font-weight:400;font-size:15px}
 .checklist label:hover{background:#fff}.checklist input{width:auto;accent-color:var(--flame)}
 
 .empty{text-align:center;padding:56px 20px;color:#9aa3af;background:var(--card);border:1px dashed #ccd4dd;border-radius:var(--radius)}
-.empty .big{font-size:15px;margin-bottom:6px;color:var(--ink2);font-weight:700}
-.footer{text-align:center;color:#a2abb6;font-size:12px;padding:26px;letter-spacing:.06em}
-.busy-pill{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-60px);background:#12212f;color:#fff;padding:9px 18px 9px 14px;border-radius:99px;font-size:13.5px;font-weight:700;z-index:120;display:flex;align-items:center;gap:9px;box-shadow:0 8px 24px rgba(10,22,36,.35);transition:transform .25s;pointer-events:none}
+.empty .big{font-size:17px;margin-bottom:6px;color:var(--ink2);font-weight:700}
+.footer{text-align:center;color:#a2abb6;font-size:14px;padding:26px;letter-spacing:.06em}
+.busy-pill{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-60px);background:#12212f;color:#fff;padding:9px 18px 9px 14px;border-radius:99px;font-size:15.5px;font-weight:700;z-index:120;display:flex;align-items:center;gap:9px;box-shadow:0 8px 24px rgba(10,22,36,.35);transition:transform .25s;pointer-events:none}
 .busy-pill.show{transform:translateX(-50%) translateY(0)}
 .busy-pill::before{content:"";width:14px;height:14px;border:2.5px solid rgba(255,255,255,.25);border-top-color:#6db3ff;border-radius:50%;animation:spin .7s linear infinite}
 body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-events:none;opacity:.55}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#12212f;color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;z-index:99;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 24px rgba(10,22,36,.3)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#12212f;color:#fff;padding:11px 20px;border-radius:10px;font-size:16px;z-index:99;opacity:0;transition:.25s;pointer-events:none;box-shadow:0 8px 24px rgba(10,22,36,.3)}
 .toast.show{opacity:1}
-.loading{text-align:center;padding:56px 20px;color:var(--ink2);font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.loading{text-align:center;padding:56px 20px;color:var(--ink2);font-size:17px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
 .spinner{width:42px;height:42px;margin:0 auto 16px;border:4px solid var(--flame-soft);border-top-color:var(--flame);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading .hint{font-size:13.5px;color:#9aa3af;margin-top:6px}
+.loading .hint{font-size:15.5px;color:#9aa3af;margin-top:6px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* ── 手機／窄螢幕 ── */
 @media(max-width:900px){
   .topbar{padding:14px 16px 13px}
-  .topbar h1{font-size:17px;letter-spacing:.8px}
+  .topbar h1{font-size:19px;letter-spacing:.8px}
   .role-switch{width:100%;margin-left:0}
-  .role-switch button{flex:1;font-size:13px;padding:8px 6px}
+  .role-switch button{flex:1;font-size:15px;padding:8px 6px}
   .layout{flex-direction:column;padding:12px;gap:12px}
   .sidebar{width:100%;position:static}
   .side-flow{display:none}
@@ -182,13 +182,13 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
   .side-title{display:none}
   #sideNav{flex-direction:row;overflow-x:auto;gap:6px;padding:2px;-webkit-overflow-scrolling:touch}
   #sideNav::-webkit-scrollbar{display:none}
-  .side-item{width:auto;flex-shrink:0;padding:8px 12px;font-size:13.5px;white-space:nowrap}
+  .side-item{width:auto;flex-shrink:0;padding:8px 12px;font-size:15.5px;white-space:nowrap}
   .si-n{margin-left:6px}
   .cards{grid-template-columns:1fr;gap:12px}
   .grid2{grid-template-columns:1fr}
   .toolbar{gap:8px}
   .search,.filter{max-width:none;flex:1 1 100%}
-  .btn-sm{padding:9px 15px;font-size:15px}
+  .btn-sm{padding:9px 15px;font-size:17px}
   .item-head{gap:8px;padding:11px 13px}
   .it-title{min-width:100%;order:-1}
   .item-body{padding:12px 14px}
@@ -249,6 +249,7 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
     <select class="filter" id="fDept"><option value="">全部部門</option></select>
     <button class="btn btn-ghost btn-sm" id="btnImport">📋 一鍵匯入行事曆</button>
     <button class="btn btn-ghost btn-sm" id="btnLog" onclick="openLog()">📜 今日動態</button>
+    <button class="btn btn-ghost btn-sm" id="btnStats" onclick="openStats()">📊 報告評分與統計</button>
     <button class="btn btn-ghost btn-sm" id="btnToggleAll" onclick="toggleAll()">展開全部</button>
     <a class="btn btn-ghost btn-sm" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">📅 開啟行事曆</a>
     <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
@@ -309,6 +310,28 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
     <button class="btn btn-ghost" onclick="closeModal('maskApprove')">取消</button>
     <button class="btn btn-primary" id="btnApproveSave">確定核准</button>
   </div>
+</div></div>
+
+<!-- 報告完成評等 -->
+<div class="mask" id="maskReport"><div class="modal" style="max-width:460px">
+  <h2 id="rp_title">報告完成</h2>
+  <div class="desc" id="rp_desc">標記已報告，並可留下表現等第（加分用，可不評）。</div>
+  <div class="field"><label>表現等第</label>
+    <select id="rp_grade"><option value="">不評等（僅記錄完成）</option><option value="優">優</option><option value="良">良</option><option value="佳">佳</option></select>
+  </div>
+  <div class="field"><label>評語（選填）</label><input id="rp_comment" placeholder="例：內容完整、台風穩健"></div>
+  <div class="modal-foot">
+    <button class="btn btn-ghost" onclick="closeModal('maskReport')">取消</button>
+    <button class="btn btn-primary" id="btnReportSave">完成</button>
+  </div>
+</div></div>
+
+<!-- 報告統計 -->
+<div class="mask" id="maskStats"><div class="modal" style="max-width:780px">
+  <h2>報告評分與統計</h2>
+  <div class="desc">每人已完成報告次數與等第分佈（考核加分參考）。點選姓名可展開明細；總經理與管理部可直接評分。</div>
+  <div class="checklist" id="statsList" style="max-height:460px;background:#fff"></div>
+  <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('maskStats')">關閉</button></div>
 </div></div>
 
 <!-- 操作紀錄 -->
@@ -535,6 +558,7 @@ function render(){
       const crossDept=[...new Set(r.people.map(deptOf).filter(Boolean))];
       if(crossDept.length>1) act+=`<button class="btn btn-ghost btn-sm" onclick="splitDept('${r.id}')">📑 拆分部門</button>`;
       act+=`<button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">刪除</button>`;
+      if(st==="已報告") act+=`<button class="btn btn-ghost btn-sm" onclick="openRegrade('${r.id}')">調整等第</button>`;
     }
     if(isMgr){
       if(st==="待指派"||st==="待核准") act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
@@ -550,9 +574,12 @@ function render(){
       if(st==="已核准"||st==="逾期"){
         act+=`<button class="btn btn-ghost btn-sm" onclick="bossNoReport('${r.id}')">免報告結案</button>`;
       }
+      if(st==="已報告"){
+        act+=`<button class="btn btn-ghost btn-sm" onclick="openRegrade('${r.id}')">調整等第</button>`;
+      }
     }
     const meta=[r.type,r.org?`主辦｜${r.org}`:"",r.no||"",`收文 ${r.recv||"—"}`].filter(Boolean).join("　");
-    const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}</div></div>`:"";
+    const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}${r.reported&&r.grade?`<div style="margin-top:5px;font-size:15px"><span class="tag tag-assigned" style="padding:2px 9px">等第：${r.grade}</span>${r.gcomment?`<span class="muted" style="margin-left:7px">${r.gcomment}</span>`:""}</div>`:""}</div></div>`:"";
     const rd=(st==="已核准"||st==="逾期"||st==="待核准")&&r.reportDate?`<span class="it-rd">報 ${r.reportDate.slice(5).replace("-","/")}</span>`:"";
     const open=OPEN.has(String(r.id))?" open":"";
     return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
@@ -649,7 +676,106 @@ document.getElementById("btnAssignSave").onclick=async()=>{
     approved:occ==="免報告"?true:false});
   toast("已送出，等候總經理核准");apiList();
 };
-async function markReported(id){await apiPost({action:"reported",id});toast("已標記報告完成");apiList();}
+let REPORT_ID=null,REPORT_MODE="mark";
+function markReported(id){
+  REPORT_ID=id;REPORT_MODE="mark";
+  document.getElementById("rp_title").textContent="報告完成";
+  document.getElementById("rp_desc").textContent="標記已報告，並可留下表現等第（加分用，可不評）。";
+  document.getElementById("rp_grade").value="";
+  document.getElementById("rp_comment").value="";
+  openModal("maskReport");
+}
+function openRegrade(id){
+  const r=DATA.find(x=>x.id===id);
+  REPORT_ID=id;REPORT_MODE="re";
+  document.getElementById("rp_title").textContent="調整等第";
+  document.getElementById("rp_desc").textContent=`「${r.name}」目前等第：${r.grade||"未評"}。調整後將覆蓋原評等。`;
+  document.getElementById("rp_grade").value=r.grade||"";
+  document.getElementById("rp_comment").value=r.gcomment||"";
+  openModal("maskReport");
+}
+document.getElementById("btnReportSave").onclick=async()=>{
+  const grade=document.getElementById("rp_grade").value;
+  const comment=document.getElementById("rp_comment").value.trim();
+  const regrade=REPORT_MODE==="re";
+  closeModal("maskReport");
+  await apiPost({action:"reported",id:REPORT_ID,grade,comment,regrade});
+  toast(regrade?(grade?`等第已調整為「${grade}」`:"已改為不評等"):(grade?`已標記完成（等第：${grade}）`:"已標記報告完成"));apiList();
+};
+function openStats(){STATS_KEY="";STATS_MODE="sum";renderStats("");openModal("maskStats");}
+let STATS_KEY="",STATS_FD="",STATS_MODE="sum";
+function canGradeStats(){return ROLE==="boss"||(ROLE==="admin"&&adminUnlocked);}
+function ungradedItems(fd){
+  return DATA.filter(r=>r.reported&&r.occ&&r.occ!=="免報告"&&!r.grade&&(!fd||(r.reporters||[]).some(n=>(deptOf(n)||"—")===fd)));
+}
+function renderStats(fd){
+  STATS_FD=fd;STATS_KEY="";STATS_MODE="sum";
+  const map={};
+  DATA.filter(r=>r.reported&&r.occ&&r.occ!=="免報告").forEach(r=>{
+    (r.reporters||[]).forEach(n=>{
+      const dept=deptOf(n)||"—";
+      if(fd&&dept!==fd)return;
+      const k=fullName(n);
+      map[k]=map[k]||{dept,n:0,"優":0,"良":0,"佳":0,"未":0};
+      map[k].n++;
+      const g=r.grade||"";
+      if(g==="優"||g==="良"||g==="佳")map[k][g]++;else map[k]["未"]++;
+    });
+  });
+  const rows=Object.entries(map).sort((a,b)=>b[1].n-a[1].n);
+  const box=document.getElementById("statsList");
+  const sel=`<div style="display:flex;gap:10px;align-items:center;padding:2px 4px 10px;flex-wrap:wrap"><select style="width:170px;padding:8px 10px;font-size:16.5px" onchange="renderStats(this.value)"><option value="">全部部門</option>${DEPTS.map(d=>`<option${d===fd?" selected":""}>${d}</option>`).join("")}</select></div>`;
+  const ug=ungradedItems(fd);
+  const banner=(canGradeStats()&&ug.length)
+    ?`<div style="display:flex;align-items:center;gap:12px;background:var(--amber-soft);border:1px solid #ecd9ad;border-radius:10px;padding:11px 16px;margin:0 4px 12px"><span style="font-size:17px;font-weight:800;color:#7d5510">📌 尚有 ${ug.length} 場報告未評分</span><button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="statsUngraded()">立即評分</button></div>`
+    :((!canGradeStats()&&ug.length)?`<div style="padding:4px 8px 10px;font-size:15px;color:var(--ink2)">尚有 ${ug.length} 場未評分（由總經理／管理部評定）</div>`:"");
+  if(!rows.length){box.innerHTML=sel+banner+`<div style="text-align:center;padding:24px;color:var(--ink2)">${fd?`「${fd}」還沒有完成的報告紀錄`:"還沒有完成的報告紀錄"}</div>`;return;}
+  box.innerHTML=sel+banner+`<div style="display:flex;font-weight:900;font-size:15.5px;color:var(--ink2);letter-spacing:.08em;padding:8px 10px;border-bottom:2px solid var(--line)"><span style="flex:1">姓名</span><span style="width:96px">部門</span><span style="width:60px;text-align:center">次數</span><span style="width:52px;text-align:center">優</span><span style="width:52px;text-align:center">良</span><span style="width:52px;text-align:center">佳</span><span style="width:60px;text-align:center">未評</span><span style="width:70px"></span></div>`+
+  rows.map(([k,v])=>`<div onclick="statsPerson('${k}')" style="display:flex;align-items:center;padding:11px 10px;font-size:18px;border-bottom:1px solid #f0f3f6;cursor:pointer" onmouseover="this.style.background='#f6f9fc'" onmouseout="this.style.background=''"><span style="flex:1;font-weight:800">${k}</span><span style="width:96px;font-size:16px;color:var(--ink2)">${v.dept}</span><span style="width:60px;text-align:center;font-weight:900;font-size:20px;font-variant-numeric:tabular-nums">${v.n}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--flame-deep)">${v["優"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--green)">${v["良"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--amber)">${v["佳"]||"·"}</span><span style="width:60px;text-align:center">${v["未"]?`<span style="background:var(--red-soft);color:var(--red);font-weight:800;font-size:16px;padding:2px 10px;border-radius:10px">${v["未"]}</span>`:`<span style="color:var(--faint)">·</span>`}</span><span style="width:70px;text-align:right;color:var(--flame);font-size:15.5px;font-weight:700">明細 ›</span></div>`).join("");
+}
+function gradeRow_(r,can,showWho){
+  const who=showWho?`<span style="flex-shrink:0;background:#f1f4f8;border:1px solid #e2e8ef;border-radius:6px;padding:2px 9px;font-size:15.5px;font-weight:700">${(r.reporters||[]).map(fullName).join("、")}</span>`:"";
+  const gsel=can
+    ?`<select onchange="quickGrade('${r.id}',this.value)" onclick="event.stopPropagation()" style="width:118px;padding:7px 9px;font-size:16.5px"><option value=""${!r.grade?" selected":""}>未評等</option><option${r.grade==="優"?" selected":""}>優</option><option${r.grade==="良"?" selected":""}>良</option><option${r.grade==="佳"?" selected":""}>佳</option></select>`
+    :(r.grade?`<span class="tag tag-assigned" style="padding:3px 12px;font-size:16px">${r.grade}</span>`:`<span class="muted">未評</span>`);
+  return `<div style="display:flex;align-items:center;gap:12px;padding:11px 10px;font-size:17px;border-bottom:1px solid #f0f3f6">
+    <span style="width:92px;flex-shrink:0;font-variant-numeric:tabular-nums;color:var(--flame-deep);font-weight:700">${r.reportDate?r.reportDate.replace(/-/g,"/"):"—"}</span>
+    ${who}
+    <span style="flex:1;min-width:0">${r.name}<span class="muted" style="font-size:15px">　${r.occ}${r.gcomment?`　💬 ${r.gcomment}`:""}</span></span>
+    ${gsel}
+  </div>`;
+}
+function statsUngraded(){
+  STATS_MODE="ug";STATS_KEY="";
+  const items=ungradedItems(STATS_FD).sort((a,b)=>String(a.reportDate||"").localeCompare(String(b.reportDate||"")));
+  const can=canGradeStats();
+  const box=document.getElementById("statsList");
+  if(!items.length){renderStats(STATS_FD);return;}
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:2px 4px 12px">
+    <button class="btn btn-ghost btn-sm" onclick="renderStats(STATS_FD)">← 返回統計</button>
+    <b style="font-size:19px">待評分報告</b><span style="color:var(--ink2);font-size:16px">共 ${items.length} 場——選好等第即自動儲存</span></div>`+
+  items.map(r=>gradeRow_(r,can,true)).join("");
+}
+function statsPerson(k){
+  STATS_MODE="person";STATS_KEY=k;
+  const items=DATA.filter(r=>r.reported&&r.occ&&r.occ!=="免報告"&&(r.reporters||[]).some(n=>fullName(n)===k))
+    .sort((a,b)=>String(b.reportDate||"").localeCompare(String(a.reportDate||"")));
+  const can=canGradeStats();
+  const box=document.getElementById("statsList");
+  box.innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:2px 4px 12px">
+    <button class="btn btn-ghost btn-sm" onclick="renderStats(STATS_FD)">← 返回統計</button>
+    <b style="font-size:19px">${k}</b><span style="color:var(--ink2);font-size:16px">共 ${items.length} 場報告${can?"——選好等第即自動儲存":"（唯讀，評分由總經理／管理部評定）"}</span></div>`+
+  items.map(r=>gradeRow_(r,can,false)).join("");
+}
+async function quickGrade(id,g){
+  const r=DATA.find(x=>x.id===id);
+  await apiPost({action:"reported",id,grade:g,comment:r.gcomment||"",regrade:true});
+  toast(g?`已評「${g}」`:"已改為未評等");
+  await apiList();
+  if(STATS_MODE==="ug")statsUngraded();
+  else if(STATS_KEY)statsPerson(STATS_KEY);
+  else renderStats(STATS_FD);
+}
 async function unreport(id){
   const r=DATA.find(x=>x.id===id);
   if(!confirm(`確定把「${r.name}」退回「待報告」？會取消已報告標記，狀態回到「已核准待報告」。`))return;
@@ -748,7 +874,7 @@ async function openLog(){
           out+=`<div class="dept-h" style="${isToday?"color:var(--flame);":""}">${isToday?"📍 今日 "+d:d}</div>`;
         }
       }
-      out+=`<div style="display:flex;gap:8px;align-items:baseline;padding:4px 6px;font-size:13px;border-radius:6px">
+      out+=`<div style="display:flex;gap:8px;align-items:baseline;padding:4px 6px;font-size:15px;border-radius:6px">
         <span style="color:var(--faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${tm}</span>
         <span class="chip" style="flex-shrink:0">${L.role||"系統"}</span>
         <b style="flex-shrink:0">${L.act}</b>
@@ -777,8 +903,8 @@ async function openImport(){
     box.innerHTML=todo.map(x=>{
       const r=x.r,md=r.date.slice(5).replace("-","/");
       const opts=`<option value="">選部門</option>`+DEPTS.map(d=>`<option>${d}</option>`).join("");
-      return `<label style="align-items:center;gap:8px"><input type="checkbox" class="impCk" value="${x.i}" checked onchange="impCount()"> <span style="flex:1;min-width:0">${md}｜<span class="chip" style="padding:1px 7px;font-size:12px">${r.cal}</span> ${r.name}</span><select class="impDept" data-i="${x.i}" style="width:96px;flex-shrink:0;padding:4px 6px;font-size:12.5px">${opts}</select></label>`;
-    }).join("")+(doneN?`<div style="padding:8px 6px 2px;font-size:12px;color:var(--faint)">另有 ${doneN} 筆已在系統中，不再顯示。</div>`:"");
+      return `<label style="align-items:center;gap:8px"><input type="checkbox" class="impCk" value="${x.i}" checked onchange="impCount()"> <span style="flex:1;min-width:0">${md}｜<span class="chip" style="padding:1px 7px;font-size:14px">${r.cal}</span> ${r.name}</span><select class="impDept" data-i="${x.i}" style="width:96px;flex-shrink:0;padding:4px 6px;font-size:14.5px">${opts}</select></label>`;
+    }).join("")+(doneN?`<div style="padding:8px 6px 2px;font-size:14px;color:var(--faint)">另有 ${doneN} 筆已在系統中，不再顯示。</div>`:"");
     impCount();
   }catch(e){
     box.innerHTML=`<div style="text-align:center;padding:24px;color:var(--red)">行事曆讀取失敗，請確認後端已更新至 v9。</div>`;impCount();
@@ -823,6 +949,7 @@ function applyRoleUI(){
   document.getElementById("btnNew").style.display=adminTools?"":"none";
   document.getElementById("btnImport").style.display=adminTools?"":"none";
   document.getElementById("btnLog").style.display=adminTools?"":"none";
+  // 報告統計：三種角色皆可檢視（主管看部門考評、總經理看全公司）
 }
 document.querySelectorAll("#roleSwitch button").forEach(b=>{
   b.onclick=()=>{
