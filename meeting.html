@@ -52,6 +52,9 @@ body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-seri
 .side-item[data-st="待核准"]{--c:var(--violet)}
 .side-item[data-st="已核准"]{--c:var(--flame)}
 .side-item[data-st="逾期"]{--c:var(--red)}
+.side-item[data-st="@todo"]{--c:var(--flame)}
+.side-item[data-st="@todo"]{font-weight:800}
+.side-item[data-st="待評分"]{--c:#1fa3bd}
 .side-item[data-st="已報告"]{--c:var(--green)}
 .side-item[data-st="免報告"]{--c:#a6afb9}
 .si-n{margin-left:auto;font-size:14px;font-weight:800;background:#e9edf2;color:#5f6d7c;padding:1px 8px;border-radius:10px;font-variant-numeric:tabular-nums}
@@ -94,6 +97,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .item[data-st="待指派"]{--acc:var(--amber)}
 .item[data-st="待核准"]{--acc:var(--violet)}
 .item[data-st="已核准"]{--acc:var(--flame)}
+.item[data-st="待評分"]{--acc:#1fa3bd}
 .item[data-st="已報告"]{--acc:var(--green)}
 .item[data-st="逾期"]{--acc:var(--red)}
 .item[data-st="免報告"]{--acc:#d4dae1}
@@ -103,6 +107,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .it-dept{font-size:14.5px;font-weight:600;color:var(--ink2);white-space:nowrap}
 .it-date{font-size:15px;font-weight:800;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:3px 10px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums;flex-shrink:0}
 .it-date.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
+.it-date.rep{color:var(--green);background:var(--green-soft);border-color:#cfe8da}
 .it-rd{font-size:14.5px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .item[data-st="逾期"] .it-rd{color:var(--red)}
 .chev{flex-shrink:0;width:16px;height:16px;color:var(--faint);transition:transform .2s}
@@ -124,6 +129,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .tag-archived{background:var(--amber-soft);color:var(--amber)}
 .tag-pending{background:var(--violet-soft);color:var(--violet)}
 .tag-assigned{background:var(--flame-soft);color:var(--flame-deep)}
+.tag-grade{background:#e2f4f7;color:#0d7a8e}
 .tag-done{background:var(--green-soft);color:var(--green)}
 .tag-overdue{background:var(--red-soft);color:var(--red)}
 .tag-none{background:var(--gray-soft);color:#8a95a1}
@@ -450,16 +456,16 @@ function statusOf(r){
   if(!r.people.length && !r.occ) return "待歸檔";
   if(!r.occ) return "待指派";
   if(r.occ==="免報告") return "免報告";
-  if(r.reported) return "已報告";
+  if(r.reported) return r.grade?"已報告":"待評分";
   if(!r.approved) return "待核准";
   if(r.reportDate && r.reportDate<new Date().toISOString().slice(0,10)) return "逾期";
   return "已核准";
 }
-const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待核准":"tag-pending","已核准":"tag-assigned","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
+const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待核准":"tag-pending","已核准":"tag-assigned","待評分":"tag-grade","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
 const ROLE_HINT={
  admin:"📥 管理部視角：你負責「收文建檔」、公文歸檔後「補登參加人員」，可編輯／刪除／拆分／匯入。",
  manager:"👔 部門主管視角：對事件指派報告人與報告場合、標記已報告。參加人員如需異動，請洽管理部修改。",
- boss:"👁 總經理視角：對「待核准」的報告可「同意」、「改期」或改為「免報告」；已核准的報告也可隨時改免報告結案。"
+ boss:"👁 總經理視角：「待核准」可核准／改期／免報告；「待評分」為已完成的報告，請點「評分」給予等第。"
 };
 
 /* ===== UI 初始化 ===== */
@@ -485,8 +491,8 @@ function getChecked(cid){return [...document.querySelectorAll(`#${cid} input:che
 let FSTAT="";
 let AUTOX=false; // 進入角色待辦分類時，本次渲染自動展開
 const OPEN=new Set();
-function shouldAutoX(){return (ROLE==="boss"&&FSTAT==="待核准")||(ROLE==="manager"&&FSTAT==="待指派");}
-const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["已報告","已報告"],["免報告","免報告"]];
+function shouldAutoX(){return (ROLE==="boss"&&(FSTAT==="待核准"||FSTAT==="@todo"))||(ROLE==="manager"&&FSTAT==="待指派");}
+const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["待評分","待評分"],["已報告","已報告"],["免報告","免報告"]];
 function setStat(v){FSTAT=v;AUTOX=shouldAutoX();render();}
 function toggleItem(id,el){
   const it=el.closest(".item");it.classList.toggle("open");
@@ -504,10 +510,11 @@ function toggleAll(){
 }
 function buildSideNav(counts){
   const nav=document.getElementById("sideNav");
-  nav.innerHTML=SIDE_ITEMS.map(it=>{
+  const items=ROLE==="boss"?[["@todo","我的待辦"],...SIDE_ITEMS]:SIDE_ITEMS;
+  nav.innerHTML=items.map(it=>{
     const v=it[0],label=it[1];
-    const n=v===""?counts.all:(counts[v]||0);
-    const warn=(v==="逾期"&&n>0)?" warn":"";
+    const n=v===""?counts.all:(v==="@todo"?(counts["待核准"]||0)+(counts["待評分"]||0):(counts[v]||0));
+    const warn=((v==="逾期"||v==="@todo")&&n>0)?" warn":"";
     return `<button class="side-item${FSTAT===v?" active":""}" data-st="${v}" onclick="setStat('${v}')"><span class="si-dot"></span>${label}<span class="si-n${warn}">${n}</span></button>`;
   }).join("");
 }
@@ -515,33 +522,35 @@ function render(){
   document.getElementById("roleHint").innerHTML=ROLE_HINT[ROLE];
   const all=DATA;
   const cnt=s=>all.filter(r=>statusOf(r)===s).length;
-  buildSideNav({all:all.length,"待歸檔":cnt("待歸檔"),"待指派":cnt("待指派"),"待核准":cnt("待核准"),"已核准":cnt("已核准"),"逾期":cnt("逾期"),"已報告":cnt("已報告"),"免報告":cnt("免報告")});
+  buildSideNav({all:all.length,"待歸檔":cnt("待歸檔"),"待指派":cnt("待指派"),"待核准":cnt("待核准"),"已核准":cnt("已核准"),"逾期":cnt("逾期"),"待評分":cnt("待評分"),"已報告":cnt("已報告"),"免報告":cnt("免報告")});
 
   const q=document.getElementById("search").value.trim();
   const fdept=document.getElementById("fDept").value;
   let rows=all.filter(r=>{
     if(fdept&&r.dept!==fdept)return false;
-    if(FSTAT&&statusOf(r)!==FSTAT)return false;
+    if(FSTAT==="@todo"){const s=statusOf(r);if(s!=="待核准"&&s!=="待評分")return false;}
+    else if(FSTAT&&statusOf(r)!==FSTAT)return false;
     if(q&&!(`${r.name} ${r.no} ${r.org}`).includes(q))return false;
     return true;
   }).sort((a,b)=>{
     // 顯示排序(依流程)：待指派 → 待核准 → 逾期 → 已核准 → 待歸檔 → 已報告 → 免報告
-    const ORDER={"待指派":1,"待核准":2,"逾期":3,"已核准":4,"待歸檔":5,"已報告":6,"免報告":7};
+    const ORDER={"待指派":1,"待核准":2,"逾期":3,"已核准":4,"待歸檔":5,"待評分":6,"已報告":7,"免報告":8};
     const cmpDate=(x,y)=>{const dx=(x||"").trim(),dy=(y||"").trim();if(!dx&&!dy)return 0;if(!dx)return 1;if(!dy)return -1;return dx.localeCompare(dy);};
     const sa=statusOf(a),sb=statusOf(b);
     const pa=ORDER[sa]||99,pb=ORDER[sb]||99;
     if(pa!==pb)return pa-pb;
     if(sa==="待指派")return cmpDate(a.date,b.date);
-    if(sa==="已核准"||sa==="逾期")return cmpDate(a.reportDate,b.reportDate);
+    if(sa==="已核准"||sa==="逾期"||sa==="待評分")return cmpDate(a.reportDate,b.reportDate);
     return cmpDate(a.date,b.date);
   });
 
   const area=document.getElementById("tableArea");
   if(!rows.length){
     let big="目前沒有符合條件的紀錄",sub="左側換個分類看看，或按「收文建檔」新增。";
-    if(FSTAT==="待核准"&&ROLE==="boss"){big="✅ 沒有等您核准的報告";sub="全部處理完了。左側可切換檢視其他狀態。";}
+    if(FSTAT==="@todo"&&ROLE==="boss"){big="✅ 沒有待您處理的項目";sub="核准與評分都完成了。左側可切換檢視其他狀態。";}
+    else if(FSTAT==="待核准"&&ROLE==="boss"){big="✅ 沒有等您核准的報告";sub="全部處理完了。左側可切換檢視其他狀態。";}
     else if(FSTAT==="待指派"&&ROLE==="manager"){big="✅ 沒有待指派的事件";sub="都指派完了。左側「已核准待報告」可查看待報告進度。";}
-    else if(FSTAT){big=`「${FSTAT}」目前沒有項目`;sub="左側可切換其他分類。";}
+    else if(FSTAT&&FSTAT!=="@todo"){big=`「${FSTAT}」目前沒有項目`;sub="左側可切換其他分類。";}
     area.innerHTML=`<div class="empty"><div class="big">${big}</div><div>${sub}</div></div>`;return;
   }
 
@@ -558,12 +567,13 @@ function render(){
       const crossDept=[...new Set(r.people.map(deptOf).filter(Boolean))];
       if(crossDept.length>1) act+=`<button class="btn btn-ghost btn-sm" onclick="splitDept('${r.id}')">📑 拆分部門</button>`;
       act+=`<button class="btn btn-danger btn-sm" onclick="delRow('${r.id}')">刪除</button>`;
+      if(st==="待評分") act+=`<button class="btn btn-primary btn-sm" onclick="openRegrade('${r.id}')">評分</button>`;
       if(st==="已報告") act+=`<button class="btn btn-ghost btn-sm" onclick="openRegrade('${r.id}')">調整等第</button>`;
     }
     if(isMgr){
       if(st==="待指派"||st==="待核准") act+=`<button class="btn btn-primary btn-sm" onclick="openAssign('${r.id}')">指派</button>`;
       if(st==="已核准"||st==="逾期") act+=`<button class="btn btn-ghost btn-sm" onclick="markReported('${r.id}')">標記已報告</button>`;
-      if(st==="已報告") act+=`<button class="btn btn-ghost btn-sm" onclick="unreport('${r.id}')">↩ 退回未報告</button>`;
+      if(st==="待評分"||st==="已報告") act+=`<button class="btn btn-ghost btn-sm" onclick="unreport('${r.id}')">↩ 退回未報告</button>`;
     }
     if(isBoss){
       if(st==="待核准"){
@@ -574,18 +584,23 @@ function render(){
       if(st==="已核准"||st==="逾期"){
         act+=`<button class="btn btn-ghost btn-sm" onclick="bossNoReport('${r.id}')">免報告結案</button>`;
       }
+      if(st==="待評分"){
+        act+=`<button class="btn btn-primary btn-sm" onclick="openRegrade('${r.id}')">評分</button>`;
+      }
       if(st==="已報告"){
         act+=`<button class="btn btn-ghost btn-sm" onclick="openRegrade('${r.id}')">調整等第</button>`;
       }
     }
-    const meta=[r.type,r.org?`主辦｜${r.org}`:"",r.no||"",`收文 ${r.recv||"—"}`].filter(Boolean).join("　");
+    const meta=[r.type,r.org?`主辦｜${r.org}`:"",r.no||"",`收文 ${r.recv||"—"}`,((st==="已報告"||st==="待評分")&&r.date)?`會議日 ${fmtDate(r.date)}`:""].filter(Boolean).join("　");
     const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}${r.reported&&r.grade?`<div style="margin-top:5px;font-size:15px"><span class="tag tag-assigned" style="padding:2px 9px">等第：${r.grade}</span>${r.gcomment?`<span class="muted" style="margin-left:7px">${r.gcomment}</span>`:""}</div>`:""}</div></div>`:"";
     const rd=(st==="已核准"||st==="逾期"||st==="待核准")&&r.reportDate?`<span class="it-rd">報 ${r.reportDate.slice(5).replace("-","/")}</span>`:"";
     const open=OPEN.has(String(r.id))?" open":"";
     return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
       <div class="item-head" onclick="toggleItem('${r.id}',this)">
         <span class="tag ${STATUS_TAG[st]}">${st}</span>
-        <span class="it-date${r.date?"":" none"}">📅 ${r.date?fmtDate(r.date):"日期未定"}</span>
+        ${(st==="已報告"||st==="待評分")&&r.reportDate
+          ?`<span class="it-date rep">📅 報告 ${fmtDate(r.reportDate)}</span>`
+          :`<span class="it-date${r.date?"":" none"}">📅 ${r.date?fmtDate(r.date):"日期未定"}</span>`}
         <span class="it-title">${r.name}</span>
         <span class="it-dept">${r.dept}</span>
         ${rd}
@@ -688,8 +703,8 @@ function markReported(id){
 function openRegrade(id){
   const r=DATA.find(x=>x.id===id);
   REPORT_ID=id;REPORT_MODE="re";
-  document.getElementById("rp_title").textContent="調整等第";
-  document.getElementById("rp_desc").textContent=`「${r.name}」目前等第：${r.grade||"未評"}。調整後將覆蓋原評等。`;
+  document.getElementById("rp_title").textContent=r.grade?"調整等第":"報告評分";
+  document.getElementById("rp_desc").textContent=r.grade?`「${r.name}」目前等第：${r.grade}。調整後將覆蓋原評等。`:`為「${r.name}」的報告表現給予等第（加分用）。`;
   document.getElementById("rp_grade").value=r.grade||"";
   document.getElementById("rp_comment").value=r.gcomment||"";
   openModal("maskReport");
@@ -962,7 +977,7 @@ document.querySelectorAll("#roleSwitch button").forEach(b=>{
     document.querySelectorAll("#roleSwitch button").forEach(x=>x.classList.remove("active"));
     b.classList.add("active");ROLE=role;
     // 角色收件匣：切角色時自動跳到該角色的待辦分類（仍可從左側切換）
-    FSTAT=role==="boss"?"待核准":role==="manager"?"待指派":"";
+    FSTAT=role==="boss"?"@todo":role==="manager"?"待指派":"";
     AUTOX=shouldAutoX();
     applyRoleUI();render();
   };
@@ -973,7 +988,7 @@ initSelects();
 document.getElementById("cfgbar").style.display="none";
 document.querySelectorAll("#roleSwitch button").forEach(x=>x.classList.remove("active"));
 document.querySelector('#roleSwitch button[data-role="boss"]').classList.add("active");
-ROLE="boss";FSTAT="待核准";AUTOX=true;applyRoleUI();
+ROLE="boss";FSTAT="@todo";AUTOX=true;applyRoleUI();
 if(GAS){apiList();}
 </script>
 </body>
