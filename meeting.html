@@ -70,6 +70,7 @@ body{font-family:"Noto Sans TC","Microsoft JhengHei","微軟正黑體",sans-seri
 .fl-node[data-c="archived"]{--c:var(--amber)}
 .fl-node[data-c="pending"]{--c:var(--violet)}
 .fl-node[data-c="assigned"]{--c:var(--flame)}
+.fl-node[data-c="grade"]{--c:#1fa3bd}
 .fl-node[data-c="done"]{--c:var(--green)}
 .main{flex:1;min-width:0}
 
@@ -236,7 +237,8 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
       <span class="fl-node" data-c="archived">待指派</span>
       <span class="fl-node" data-c="pending">待核准</span>
       <span class="fl-node" data-c="assigned">已核准</span>
-      <span class="fl-node" data-c="done">已報告</span>
+      <span class="fl-node" data-c="grade">待評分</span>
+      <span class="fl-node" data-c="done">已評分</span>
     </div>
   </div>
 </aside>
@@ -285,6 +287,11 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
   </div>
   <div class="field"><label>參加人員 <span class="muted">（歸檔後再勾選，現在可留空）</span></label><div class="checklist" id="f_people"></div></div>
   <div class="field"><label>備註</label><textarea id="f_note" rows="2"></textarea></div>
+  <div class="grid2" id="f_repwrap" style="display:none">
+    <div class="field"><label>報告場合 <span class="muted">（未指派請留空）</span></label>
+      <select id="f_occ"><option value="">未指派</option><option>職員會議</option><option>主管會議</option><option value="免報告">免報告</option></select></div>
+    <div class="field"><label>預計報告日</label><input type="date" id="f_repdate"></div>
+  </div>
   <div class="modal-foot">
     <button class="btn btn-ghost" onclick="closeModal('maskEdit')">取消</button>
     <button class="btn btn-primary" id="btnSave">儲存</button>
@@ -461,6 +468,8 @@ function statusOf(r){
   if(r.reportDate && r.reportDate<new Date().toISOString().slice(0,10)) return "逾期";
   return "已核准";
 }
+const ST_LABEL={"已報告":"已評分"};
+function stLabel(s){return ST_LABEL[s]||s;}
 const STATUS_TAG={"待歸檔":"tag-wait","待指派":"tag-archived","待核准":"tag-pending","已核准":"tag-assigned","待評分":"tag-grade","已報告":"tag-done","逾期":"tag-overdue","免報告":"tag-none"};
 const ROLE_HINT={
  admin:"📥 管理部視角：你負責「收文建檔」、公文歸檔後「補登參加人員」，可編輯／刪除／拆分／匯入。",
@@ -492,7 +501,7 @@ let FSTAT="";
 let AUTOX=false; // 進入角色待辦分類時，本次渲染自動展開
 const OPEN=new Set();
 function shouldAutoX(){return (ROLE==="boss"&&(FSTAT==="待核准"||FSTAT==="@todo"))||(ROLE==="manager"&&FSTAT==="待指派");}
-const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["待評分","待評分"],["已報告","已報告"],["免報告","免報告"]];
+const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["待評分","待評分"],["已報告","已評分"],["免報告","免報告"]];
 function setStat(v){FSTAT=v;AUTOX=shouldAutoX();render();}
 function toggleItem(id,el){
   const it=el.closest(".item");it.classList.toggle("open");
@@ -550,7 +559,7 @@ function render(){
     if(FSTAT==="@todo"&&ROLE==="boss"){big="✅ 沒有待您處理的項目";sub="核准與評分都完成了。左側可切換檢視其他狀態。";}
     else if(FSTAT==="待核准"&&ROLE==="boss"){big="✅ 沒有等您核准的報告";sub="全部處理完了。左側可切換檢視其他狀態。";}
     else if(FSTAT==="待指派"&&ROLE==="manager"){big="✅ 沒有待指派的事件";sub="都指派完了。左側「已核准待報告」可查看待報告進度。";}
-    else if(FSTAT&&FSTAT!=="@todo"){big=`「${FSTAT}」目前沒有項目`;sub="左側可切換其他分類。";}
+    else if(FSTAT&&FSTAT!=="@todo"){big=`「${stLabel(FSTAT)}」目前沒有項目`;sub="左側可切換其他分類。";}
     area.innerHTML=`<div class="empty"><div class="big">${big}</div><div>${sub}</div></div>`;return;
   }
 
@@ -597,7 +606,7 @@ function render(){
     const open=OPEN.has(String(r.id))?" open":"";
     return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
       <div class="item-head" onclick="toggleItem('${r.id}',this)">
-        <span class="tag ${STATUS_TAG[st]}">${st}</span>
+        <span class="tag ${STATUS_TAG[st]}">${stLabel(st)}</span>
         ${(st==="已報告"||st==="待評分")&&r.reportDate
           ?`<span class="it-date rep">📅 報告 ${fmtDate(r.reportDate)}</span>`
           :`<span class="it-date${r.date?"":" none"}">📅 ${r.date?fmtDate(r.date):"日期未定"}</span>`}
@@ -634,6 +643,9 @@ function openEdit(id){
   document.getElementById("f_dept").value=r?r.dept:DEPTS[0];
   document.getElementById("f_type").value=r?r.type:"會議";
   document.getElementById("f_note").value=r?r.note:"";
+  document.getElementById("f_repwrap").style.display=r?"":"none";
+  document.getElementById("f_occ").value=r?(r.occ||""):"";
+  document.getElementById("f_repdate").value=r?(r.reportDate||""):"";
   peopleChecklist("f_people",r?r.people:[]);
   openModal("maskEdit");
 }
@@ -647,7 +659,11 @@ document.getElementById("btnSave").onclick=async()=>{
     people:getChecked("f_people"),note:document.getElementById("f_note").value.trim()};
   if(editId){
     const r=DATA.find(x=>x.id===editId);
-    obj.id=editId;obj.occ=r.occ;obj.reporters=r.reporters;obj.reportDate=r.reportDate;obj.reported=r.reported;
+    obj.id=editId;
+    obj.occ=document.getElementById("f_occ").value;
+    obj.reportDate=document.getElementById("f_repdate").value;
+    obj.reporters=r.reporters;obj.reported=r.reported;
+    if(obj.occ&&obj.occ!=="免報告"&&!obj.reportDate&&r.approved){alert("此事件已核准，請填預計報告日（或將場合改為免報告）。");return;}
     await apiPost(Object.assign({action:"update"},obj));
   }else{
     await apiPost(Object.assign({action:"add"},obj));
