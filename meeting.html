@@ -115,10 +115,10 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .item.open .chev{transform:rotate(180deg)}
 .item-body{display:none;border-top:1px dashed var(--line);padding:13px 18px 14px 20px;background:#fbfcfe}
 .item.open .item-body{display:block}
-.ib-meta{font-size:14.5px;color:var(--ink2);margin-bottom:10px}
+.ib-meta{font-size:14.5px;color:#172033;font-weight:700;margin-bottom:10px}
 .ib-row{display:flex;gap:10px;font-size:15.5px;align-items:flex-start;line-height:1.6;margin-bottom:8px}
 .ib-row:last-child{margin-bottom:0}
-.ib-row .k{flex-shrink:0;font-size:13px;font-weight:900;color:var(--faint);letter-spacing:.14em;background:#eef2f6;border-radius:5px;padding:2.5px 7px;margin-top:2px}
+.ib-row .k{flex-shrink:0;font-size:13px;font-weight:900;color:#24364a;letter-spacing:.14em;background:#e8eef6;border-radius:5px;padding:2.5px 7px;margin-top:2px}
 .ib-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
 .apv{color:var(--green);font-size:14px;font-weight:800;margin-left:6px;white-space:nowrap}
 .rdate{margin-top:4px;font-size:15px;font-weight:700;color:var(--flame-deep);font-variant-numeric:tabular-nums}
@@ -140,7 +140,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--flame);b
 .occ-title{font-size:16.5px;font-weight:800;color:var(--ink)}
 .mdate{display:inline-block;font-size:15px;font-weight:700;color:var(--flame-deep);background:var(--flame-soft);border:1px solid var(--flame-line);padding:2.5px 9px;border-radius:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .mdate.none{color:#9aa3af;background:var(--gray-soft);border-color:var(--line)}
-.muted{color:#9aa3af}
+.muted{color:#334155;font-weight:600}
 .namebox{display:flex;flex-wrap:wrap;gap:4px}
 .chip{background:#f1f4f8;color:#3a4756;border:1px solid #e2e8ef;padding:2.5px 9px;border-radius:6px;font-size:15px;font-weight:500}
 
@@ -201,6 +201,20 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
   .item-body{padding:12px 14px}
   .ib-actions{justify-content:flex-end}
 }
+/* ===== v2 Enterprise dashboard layer ===== */
+:root{--brand:#2563eb;--brand-dark:#173b8f;--navy:#0f172a;--surface:#f6f8fc;--muted:#64748b;--success:#059669;--danger:#dc2626;--warning:#d97706}
+body{background:var(--surface);font-size:16px;color:#172033}
+.topbar{min-height:66px;padding:12px 28px;background:rgba(15,23,42,.96);box-shadow:0 8px 24px rgba(15,23,42,.12);position:sticky;top:0;z-index:30}
+.topbar h1{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:18px;letter-spacing:.02em}.topbar .sub{font-size:12px;letter-spacing:.08em}
+.role-switch{padding:3px;border-radius:10px}.role-switch button{font-size:14px;padding:7px 13px}.role-switch button.active{color:var(--brand-dark)}
+.layout{max-width:1540px;padding:20px 28px;gap:22px}.sidebar{width:205px;gap:12px}.side-group{border:0;box-shadow:0 1px 2px rgba(15,23,42,.04);border-radius:14px;padding:8px}.side-title{font-size:11px;padding:7px 11px;color:#94a3b8}.side-item{font-size:14px;padding:8px 11px}.side-item.active{background:#eaf1ff;color:var(--brand-dark)}.side-flow{display:none}
+.main{min-width:0}.role-hint{display:none}
+.dashboard{margin-bottom:18px;color:#172033}.dashboard-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:2px 0 14px}.dashboard-eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--brand);text-transform:uppercase}.dashboard-title{font-size:25px;line-height:1.25;letter-spacing:-.03em;margin-top:2px}.dashboard-note{color:#334155;font-size:13px;text-align:right;font-weight:600}.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.kpi{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:16px;box-shadow:0 5px 16px rgba(15,23,42,.035);cursor:pointer;text-align:left;font-family:inherit;transition:transform .16s,box-shadow .16s,border-color .16s}.kpi:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(15,23,42,.08);border-color:#cddaf5}.kpi-label{display:flex;justify-content:space-between;align-items:center;color:#334155;font-size:13px;font-weight:800}.kpi-icon{width:27px;height:27px;display:grid;place-items:center;background:#eef4ff;border-radius:8px;font-size:14px}.kpi-value{font-size:29px;line-height:1;font-weight:900;letter-spacing:-.06em;margin-top:13px;color:var(--navy)}.kpi-sub{font-size:12px;color:#475569;margin-top:7px;font-weight:600}.kpi.danger .kpi-icon{background:#fff0f0}.kpi.danger .kpi-value{color:var(--danger)}.kpi.success .kpi-icon{background:#e9faf3}.kpi.success .kpi-value{color:var(--success)}
+.dashboard-bottom{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.8fr);gap:14px;margin-top:14px;align-items:start}.dash-panel{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:17px 18px;height:fit-content}.dash-panel h3{font-size:18px;line-height:1.35;margin:0 0 12px;color:#0f172a}.dash-list{display:grid;gap:2px}.dash-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #e9eef5;font-size:14px;cursor:pointer}.dash-row:last-child{border:0}.dash-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex:0 0 auto}.dash-row-title{font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;color:#172033}.dash-row-meta{font-size:13px;color:#334155;white-space:nowrap;font-weight:700}.dept-row{display:grid;grid-template-columns:62px 1fr 22px;align-items:center;gap:8px;font-size:13px;padding:6px 0;color:#334155;font-weight:700}.dept-bar{height:7px;background:#eef2f7;border-radius:99px;overflow:hidden}.dept-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brand),#60a5fa)}.empty-mini{color:#334155;font-size:14px;padding:9px 0;font-weight:600}
+.panel-action{float:right;border:0;background:transparent;color:var(--brand);font:700 13px inherit;cursor:pointer;padding:0}.performance-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #e9eef5}.performance-row:last-child{border-bottom:0}.performance-name{font-size:14px;font-weight:900;color:#172033}.performance-meta{font-size:12px;color:#334155;margin-top:2px;font-weight:600}.performance-count{font-size:18px;font-weight:900;color:var(--brand-dark);font-variant-numeric:tabular-nums}.performance-count small{font-size:12px;color:#334155;font-weight:700}.panel-divider{border:0;border-top:1px solid #edf1f5;margin:11px 0 8px}.panel-subtitle{font-size:13px;color:#334155;font-weight:900;margin-bottom:4px}
+.toolbar{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:10px;margin-bottom:14px;gap:8px;box-shadow:0 2px 7px rgba(15,23,42,.025)}.btn{font-size:14px;border-radius:9px;padding:9px 13px}.btn-primary{background:var(--brand)}.btn-primary:hover{background:var(--brand-dark)}.search{max-width:300px;border-color:#e0e6ef;background:#f8fafc}.filter{max-width:140px;border-color:#e0e6ef;background:#f8fafc}.more-tools{margin-left:auto;position:relative}.more-tools summary{list-style:none;cursor:pointer;border:1px solid #dbe3ee;border-radius:9px;padding:8px 11px;font-size:13px;font-weight:700;color:#475569}.more-tools summary::-webkit-details-marker{display:none}.more-tools[open] summary{border-color:#93b4ef;color:var(--brand-dark)}.more-tools-menu{position:absolute;right:0;top:42px;z-index:20;background:#fff;border:1px solid #e2e8f0;box-shadow:0 16px 34px rgba(15,23,42,.15);border-radius:12px;padding:7px;min-width:185px;display:grid;gap:3px}.more-tools-menu .btn{width:100%;text-align:left;border:0;background:transparent}.more-tools-menu .btn:hover{background:#f1f5f9}.more-tools-menu a{justify-content:flex-start}
+.item{border-left-width:3px;border-radius:12px;box-shadow:none}.item:hover{border-color:#cad7ec;box-shadow:0 8px 20px rgba(15,23,42,.05)}.item-head{padding:13px 16px;gap:10px}.it-title{font-size:15px}.it-dept{font-size:12px}.tag{font-size:12px}.item-body{background:#fbfcfe}.mask{justify-content:flex-end;padding:0;background:rgba(15,23,42,.28);backdrop-filter:blur(3px)}.modal{border:0;border-radius:18px 0 0 18px;max-width:600px;min-height:100%;padding:28px;box-shadow:-20px 0 55px rgba(15,23,42,.18);animation:drawerIn .22s ease both}.modal h2{font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif}.footer{font-size:12px;padding:22px}@keyframes drawerIn{from{transform:translateX(32px);opacity:.6}to{transform:translateX(0);opacity:1}}
+@media(max-width:900px){.topbar{padding:11px 14px}.layout{padding:14px;gap:12px}.dashboard-title{font-size:21px}.dashboard-head{align-items:flex-start}.dashboard-note{display:none}.kpi-grid{grid-template-columns:repeat(2,1fr)}.dashboard-bottom{grid-template-columns:1fr}.toolbar{padding:8px}.more-tools{margin-left:0}.more-tools-menu{left:0;right:auto}.modal{max-width:100%;border-radius:16px 16px 0 0;min-height:auto;margin-top:auto}.mask{align-items:flex-end}.item-head{padding:11px 13px}}
 </style>
 </head>
 <body>
@@ -251,17 +265,21 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
 
   <div class="role-hint" id="roleHint"></div>
 
+  <section class="dashboard" id="dashboard" aria-label="角色摘要"></section>
+
   <div class="toolbar">
     <button class="btn btn-primary" id="btnNew">＋ 收文建檔</button>
     <input class="search" id="search" placeholder="搜尋會議名稱 / 文號 / 主辦單位…">
     <select class="filter" id="fDept"><option value="">全部部門</option></select>
-    <button class="btn btn-ghost btn-sm" id="btnImport">📋 一鍵匯入行事曆</button>
-    <button class="btn btn-ghost btn-sm" id="btnLog" onclick="openLog()">📜 今日動態</button>
-    <button class="btn btn-ghost btn-sm" id="btnStats" onclick="openStats()">📊 報告評分與統計</button>
-    <button class="btn btn-ghost btn-sm" id="btnToggleAll" onclick="toggleAll()">展開全部</button>
-    <a class="btn btn-ghost btn-sm" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">📅 開啟行事曆</a>
-    <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
-    <button class="btn btn-ghost btn-sm" id="btnExport" style="margin-left:auto">匯出 CSV</button>
+    <button class="btn btn-ghost btn-sm" id="btnImport">📋 匯入行事曆</button>
+    <details class="more-tools"><summary>更多工具</summary><div class="more-tools-menu">
+      <button class="btn btn-ghost btn-sm" id="btnLog" onclick="openLog()">📜 今日動態</button>
+      <button class="btn btn-ghost btn-sm" id="btnStats" onclick="openStats()">📊 報告評分與統計</button>
+      <button class="btn btn-ghost btn-sm" id="btnToggleAll" onclick="toggleAll()">展開全部</button>
+      <a class="btn btn-ghost btn-sm" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">📅 開啟行事曆</a>
+      <button class="btn btn-ghost btn-sm" id="btnReload">🔄 重新整理</button>
+      <button class="btn btn-ghost btn-sm" id="btnExport">匯出 CSV</button>
+    </div></details>
   </div>
 
   <div id="tableArea"><div class="loading">請先在上方貼入後端網址並連線…</div></div>
@@ -503,6 +521,16 @@ const OPEN=new Set();
 function shouldAutoX(){return (ROLE==="boss"&&(FSTAT==="待核准"||FSTAT==="@todo"))||(ROLE==="manager"&&FSTAT==="待指派");}
 const SIDE_ITEMS=[["","全部"],["待歸檔","待歸檔"],["待指派","待指派"],["待核准","待核准"],["已核准","已核准待報告"],["逾期","逾期"],["待評分","待評分"],["已報告","已評分"],["免報告","免報告"]];
 function setStat(v){FSTAT=v;AUTOX=shouldAutoX();render();}
+function setStatAndJump(v,id){
+  FSTAT=v;
+  if(id)OPEN.add(String(id));
+  AUTOX=shouldAutoX();
+  render();
+  requestAnimationFrame(()=>{
+    const target=id?document.querySelector(`.item[data-id="${CSS.escape(String(id))}"]`):document.getElementById("tableArea");
+    if(target)target.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+}
 function toggleItem(id,el){
   const it=el.closest(".item");it.classList.toggle("open");
   if(it.classList.contains("open"))OPEN.add(id);else OPEN.delete(id);
@@ -527,11 +555,39 @@ function buildSideNav(counts){
     return `<button class="side-item${FSTAT===v?" active":""}" data-st="${v}" onclick="setStat('${v}')"><span class="si-dot"></span>${label}<span class="si-n${warn}">${n}</span></button>`;
   }).join("");
 }
+function esc(v){return String(v??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+function renderDashboard(counts){
+  const dash=document.getElementById("dashboard");
+  if(!dash)return;
+  const byStatus=s=>DATA.filter(r=>statusOf(r)===s);
+  const pending=byStatus("待核准").length, grading=byStatus("待評分").length, assigned=byStatus("待指派").length;
+  const overdue=byStatus("逾期").length, done=byStatus("已報告").length, active=Math.max(0,DATA.length-byStatus("免報告").length);
+  const roleCopy={
+    admin:{eyebrow:"Administration workspace",title:"管理部工作台",note:"集中建檔、補登與追蹤所有案件",cards:[["待歸檔",byStatus("待歸檔").length,"收文後待補資料","","📥"],["待指派",assigned,"等待主管安排","待指派","👤"],["待核准",pending,"已送交總經理","待核准","✓"],["本月完成",done,"已完成報告與評分","已報告","↗"]]},
+    manager:{eyebrow:"Department leadership",title:"部門主管工作台",note:"先處理指派，再掌握報告進度",cards:[["待指派",assigned,"需要安排報告人","待指派","👤"],["待報告",byStatus("已核准").length,"核准後等待報告","已核准","◷"],["逾期案件",overdue,"超過預計報告日","逾期","!"],["已完成",done,"已完成並結案","已報告","✓"]]},
+    boss:{eyebrow:"Executive overview",title:"總經理決策總覽",note:"優先核准、評分與處理逾期案件",cards:[["待您核准",pending,"可直接核准或改期","待核准","✓"],["待您評分",grading,"已完成、等待等第","待評分","★"],["逾期案件",overdue,"需要關注或結案","逾期","!"],["完成率",active?Math.round(done/active*100):0,"全部進行中案件","已報告","↗"]]}
+  }[ROLE]||{};
+  const agenda=(ROLE==="boss"?byStatus("待核准").concat(byStatus("待評分")):ROLE==="manager"?byStatus("待指派").concat(byStatus("已核准")):DATA).slice(0,4);
+  const max=Math.max(1,...DEPTS.map(d=>DATA.filter(r=>r.dept===d).length));
+  const gradeScore={"優":3,"良":2,"佳":1};
+  const reporters={};
+  DATA.filter(r=>r.reported).forEach(r=>(r.reporters||[]).forEach(name=>{
+    const p=reporters[name]||(reporters[name]={name,count:0,scores:[]});
+    p.count++;if(gradeScore[r.grade])p.scores.push(gradeScore[r.grade]);
+  }));
+  const performance=Object.values(reporters).sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,"zh-Hant")).slice(0,5);
+  const agendaHtml=agenda.length?agenda.map(r=>`<div class="dash-row" onclick="setStatAndJump('${statusOf(r)}','${r.id}')"><i class="dash-dot"></i><span class="dash-row-title">${esc(r.name)}</span><span class="dash-row-meta">${esc(r.dept||"未指定")}</span></div>`).join(""):'<div class="empty-mini">目前沒有需要優先處理的案件。</div>';
+  const performanceHtml=performance.length?performance.map(p=>{const avg=p.scores.length?(p.scores.reduce((a,b)=>a+b,0)/p.scores.length).toFixed(1):"—";return `<div class="performance-row"><div><div class="performance-name">${esc(fullName(p.name))}</div><div class="performance-meta">${esc(deptOf(p.name)||"未指定部門")}　評等均值 ${avg}</div></div><div class="performance-count">${p.count}<small> 次</small></div></div>`;}).join(""):'<div class="empty-mini">尚無已完成報告紀錄。</div>';
+  dash.innerHTML=`<div class="dashboard-head"><div><div class="dashboard-eyebrow">${roleCopy.eyebrow}</div><h2 class="dashboard-title">${roleCopy.title}</h2></div><div class="dashboard-note">${roleCopy.note}<br>共 ${DATA.length} 件案件</div></div>
+    <div class="kpi-grid">${roleCopy.cards.map((c,i)=>`<button class="kpi ${c[3]==="逾期"?"danger":i===3?"success":""}" onclick="setStatAndJump('${c[3]}')"><span class="kpi-label">${c[0]}<i class="kpi-icon">${c[4]}</i></span><strong class="kpi-value">${c[1]}${c[0]==="完成率"?"%":""}</strong><span class="kpi-sub">${c[2]}</span></button>`).join("")}</div>
+    <div class="dashboard-bottom"><section class="dash-panel"><h3>${ROLE==="boss"?"需要您決策":ROLE==="manager"?"部門優先事項":"最新案件"}</h3><div class="dash-list">${agendaHtml}</div></section><section class="dash-panel">${ROLE==="boss"?`<h3>報告績效參考 <button class="panel-action" onclick="openStats()">完整明細 →</button></h3>${performanceHtml}<hr class="panel-divider"><div class="panel-subtitle">各部門案件分布</div>`:`<h3>各部門案件分布</h3>`}${DEPTS.map(d=>{const n=DATA.filter(r=>r.dept===d).length;return `<div class="dept-row"><span>${d}</span><span class="dept-bar"><i style="width:${Math.round(n/max*100)}%"></i></span><b>${n}</b></div>`;}).join("")}</section></div>`;
+}
 function render(){
   document.getElementById("roleHint").innerHTML=ROLE_HINT[ROLE];
   const all=DATA;
   const cnt=s=>all.filter(r=>statusOf(r)===s).length;
   buildSideNav({all:all.length,"待歸檔":cnt("待歸檔"),"待指派":cnt("待指派"),"待核准":cnt("待核准"),"已核准":cnt("已核准"),"逾期":cnt("逾期"),"待評分":cnt("待評分"),"已報告":cnt("已報告"),"免報告":cnt("免報告")});
+  renderDashboard({all:all.length});
 
   const q=document.getElementById("search").value.trim();
   const fdept=document.getElementById("fDept").value;
