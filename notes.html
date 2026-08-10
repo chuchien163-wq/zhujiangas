@@ -211,7 +211,18 @@ document.getElementById('sbName').textContent=user.name||'訪客';
 document.getElementById('sbRole').textContent=isAdmin?'管理者':'學員';
 if(isAdmin)document.getElementById('addBtn').style.display='block';
 
-const DEFAULT_NOTES=[{
+const DEFAULT_NOTES=[
+  {
+    "id": "11",
+    "title": "115/08/07 老師提醒重點",
+    "tab": "老師提醒",
+    "date": "115/08/07",
+    "content": "📌 115/08/07 老師說　再次提醒大家！\n\n🔌 PE電融機使用\n插上連結 → 掃描 → 數字顯示 → 旁邊黃綠燈亮起 → 按綠色鍵 → 開始電融倒數 → 時間到 → 拔起連結 → 寫上時間。\n\n📐 落樣\n量出管子長度，長的減 2、短的減 10，做記號 → 清潔與刨除 → 套入零件 → 螺絲鎖緊。\n\n🔨 搶修 32、32、32\n第一個點為止氣夾的位置，第二與第三為切割點。\n敲檔片，連同切下管與搶修管與橋下檔片零件給監評檢查。\n\n🎯 崗位與考試順序\n• 崗位是奇數：早上考 PE，下午考鍍鋅\n• 崗位是偶數：早上考鍍鋅，下午考 PE\n\n⚙️ 車牙\n• 車牙要確認管確實夾緊\n• 車牙入牙圈數要控制在一定範圍，建議兩圈半至三圈\n\n📏 調壓閥高度\n• 1、4、7、10 → 1500\n• 2、5、8 → 1550\n• 3、6、9 → 1600\n不同崗位代表 1½\" 長桿的差異。\n\n🔩 球閥高度與桿件\n當天所抽的球閥高度 1400、1450、1500，\n是代表 3/4\" 最長與第二長桿件不同。\n\n📊 若你在 369 崗（1½\" 2米）\n• 27、33、39 = 99 → 剩下 101 公分就會不夠\n• 所以建議你改成 26、32、38 = 96 → 剩下 104 公分就夠\n\n⚠️ 1\" 的第二長與第三長及調牙圈數很重要\n• 建議你用 20、16\n• 若你實量是 19 與 15，這樣 1½\" 最長桿就要多出 2 公分，最長桿就會不夠\n\n🔧 球閥高度 1500（六分管）\n• 134、67、52、51、30、30、22、22\n　201＋103＋104 = 408\n　考試只給 400 鐵定不夠\n• 133、66、51、50、29、29、21、21 = 400，這樣就夠\n\n📌 如果模擬考完尺寸還差很多就用這尺寸。",
+    "photos": [],
+    "createdAt": "2026/08/07",
+    "updatedAt": "2026/08/07"
+  },
+  {
     "id": "10", "title": "鍍鋅鋼管組裝順序", "tab": "組裝順序",
     "date": "115/06/23",
     "content": "🔩 鍍鋅鋼管組裝分解步驟（1～7）\n\n依照片編號順序組裝，點圖片可放大／旋轉檢視細節。\n\n加油！💪",
@@ -287,12 +298,12 @@ const DEFAULT_NOTES=[{
     "createdAt": "2026/06/23", "updatedAt": "2026/06/23"
   }];
 let notes=[];
-try{const s=localStorage.getItem('classNotes_v9');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
-if(!localStorage.getItem('classNotes_v9'))localStorage.setItem('classNotes_v9',JSON.stringify(DEFAULT_NOTES));
+try{const s=localStorage.getItem('classNotes_v10');notes=s?JSON.parse(s):DEFAULT_NOTES;}catch(e){notes=DEFAULT_NOTES;}
+if(!localStorage.getItem('classNotes_v10'))localStorage.setItem('classNotes_v10',JSON.stringify(DEFAULT_NOTES));
 
 let editIdx=-1,newPhotos=[];
 
-function saveNotes(){localStorage.setItem('classNotes_v9',JSON.stringify(notes));}
+function saveNotes(){localStorage.setItem('classNotes_v10',JSON.stringify(notes));}
 
 let curNote=0;
 
