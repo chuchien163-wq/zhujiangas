@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>合約管理中心｜竹建瓦斯</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#718096;--line:#e7ebf2;
+--nav:#101827;--nav2:#182235;--accent:#3b82f6;--danger:#ef4444;--warn:#f59e0b;
+--ok:#10b981;--purple:#8b5cf6;--shadow:0 12px 32px rgba(15,23,42,.08);--fs:15px}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.side{width:238px;background:linear-gradient(180deg,var(--nav),#0b1220);color:#fff;padding:20px 14px;position:fixed;inset:0 auto 0 0;overflow-y:auto}
+.brand{font-weight:800;font-size:18px;padding:6px 10px 20px}
+.brand small{display:block;color:#94a3b8;font-size:11px;margin-top:5px;font-weight:500}
+.nav button{width:100%;background:transparent;border:0;color:#cbd5e1;text-align:left;padding:11px 13px;border-radius:10px;margin:3px 0;font-size:calc(var(--fs) + 1px)}
+.nav button:hover,.nav button.active{background:var(--nav2);color:#fff}
+.sidefoot{margin-top:18px;padding:12px;border-top:1px solid #1e293b;color:#94a3b8;font-size:11px;line-height:1.7}
+.main{margin-left:238px;width:calc(100% - 238px);padding:24px 30px 60px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+h1{font-size:calc(var(--fs) * 1.85);margin:0 0 5px}.sub{color:var(--muted);font-size:var(--fs)}
+.user{background:#fff;border:1px solid var(--line);padding:9px 13px;border-radius:12px;box-shadow:0 4px 14px rgba(15,23,42,.04);font-size:var(--fs);display:flex;align-items:center;gap:10px}
+.pill{padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800}
+.pill.adm{background:#dcfce7;color:#15803d}.pill.ro{background:#eef2f7;color:#475569}
+.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow);cursor:pointer;transition:.15s}
+.card:hover{transform:translateY(-2px)}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 2px #bfdbfe}
+.card .label{color:var(--muted);font-size:calc(var(--fs) - 1px)}.card .num{font-size:calc(var(--fs) * 2);font-weight:800;margin-top:5px}
+.card .hint{font-size:10px;color:#94a3b8;margin-top:4px}
+.rowlink{cursor:pointer;color:#1d4ed8;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.dl{display:grid;grid-template-columns:120px 1fr;gap:0;font-size:var(--fs)}
+.dl dt{color:var(--muted);font-weight:700;font-size:var(--fs);padding:9px 0;border-bottom:1px solid var(--line)}
+.dl dd{margin:0;padding:9px 0;border-bottom:1px solid var(--line);white-space:pre-wrap;line-height:1.6}
+.red{color:var(--danger)}.orange{color:var(--warn)}.blue{color:var(--accent)}.green{color:var(--ok)}.purple{color:var(--purple)}
+.grid{display:grid;grid-template-columns:1.9fr 1fr;gap:16px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.panel-head{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.panel-head h2{font-size:calc(var(--fs) + 3px);margin:0}
+.tblwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:calc(var(--fs) - 4px) calc(var(--fs) + 1px);border-bottom:1px solid var(--line);font-size:var(--fs);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:700;background:#fafbfc;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tr:hover{background:#f8fafc}
+.nm{font-weight:600;line-height:1.45;font-size:var(--fs)}
+td.nw,th.nw{white-space:nowrap}
+.badge{white-space:nowrap}
+.sm{color:var(--muted);font-size:calc(var(--fs) - 2px);margin-top:3px}
+.badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:calc(var(--fs) - 2px);font-weight:700;white-space:nowrap}
+.b-red{background:#fee2e2;color:#b91c1c}.b-org{background:#fef3c7;color:#b45309}
+.b-grn{background:#d1fae5;color:#047857}.b-gray{background:#eef2f7;color:#475569}
+.b-blue{background:#dbeafe;color:#1d4ed8}.b-pur{background:#ede9fe;color:#6d28d9}
+.btn{border:1px solid var(--line);background:#fff;padding:7px 11px;border-radius:9px;font-size:var(--fs);white-space:nowrap}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.ok{background:#059669;color:#fff;border-color:#059669}
+.btn.danger{background:#fff1f2;color:#be123c;border-color:#fecdd3}
+.btn.sm{padding:5px 9px;font-size:calc(var(--fs) - 1px)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.toolbar input,.toolbar select,.form input,.form select,.form textarea{border:1px solid #dbe1ea;border-radius:9px;padding:8px 11px;background:#fff;outline:none}
+.toolbar input:focus,.form input:focus,.form select:focus,.form textarea:focus{border-color:#93c5fd}
+.page{display:none}.page.active{display:block}
+.notice{padding:12px 15px;border-radius:11px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:13px;margin-bottom:16px;line-height:1.7}
+.warnbox{padding:12px 15px;border-radius:11px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;font-size:13px;margin-bottom:16px;line-height:1.7}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:11px;font-size:var(--fs);font-weight:600}
+.tabs button.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+.tabs button .c{display:inline-block;margin-left:6px;background:#eef2f7;color:#475569;border-radius:999px;padding:1px 7px;font-size:11px}
+.tabs button.active .c{background:#334155;color:#fff}
+.list{padding:8px 16px 14px}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+.item strong{font-size:13px}.item small{display:block;color:var(--muted);margin-top:4px}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;padding:18px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;color:#475569;font-weight:700}
+.form textarea{min-height:76px;resize:vertical}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;padding:18px;z-index:40}
+.modal.show{display:flex}
+.modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.25)}
+.modal-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;position:sticky;bottom:0;background:#fff}
+#toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(18px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:60;font-size:14px}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.money{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.loginwrap{position:fixed;inset:0;background:linear-gradient(160deg,#101827,#0b1220);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.loginbox{width:min(380px,100%);background:#fff;border-radius:18px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.lgbrand{font-size:21px;font-weight:800;text-align:center}
+.lgsub{text-align:center;color:var(--muted);font-size:12px;margin:6px 0 24px}
+.lgfield{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.lgfield label{font-size:12px;font-weight:700;color:#475569}
+.lgfield input{border:1px solid #dbe1ea;border-radius:10px;padding:11px 13px;outline:none;font-size:15px}
+.lgfield input:focus{border-color:#93c5fd}
+.lgbtn{width:100%;background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px;font-size:15px;font-weight:700;margin-top:6px}
+.lgmsg{text-align:center;color:var(--danger);font-size:13px;min-height:20px;margin-top:10px;font-weight:600}
+.lgnote{text-align:center;color:var(--muted);font-size:11px;line-height:1.7;margin-top:8px}
+@media(max-width:1150px){.cards{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}}
+@media(max-width:780px){.side{position:static;width:100%}.app{display:block}.main{margin:0;width:100%;padding:16px}.cards{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login" class="loginwrap">
+  <div class="loginbox">
+    <div class="lgbrand">📑 合約管理中心</div>
+    <div class="lgsub">竹建瓦斯股份有限公司</div>
+    <div class="lgfield"><label>姓名</label>
+      <input id="lgName" list="userList" placeholder="點一下選，或直接打字" autocomplete="off">
+      <datalist id="userList"></datalist>
+    </div>
+    <div class="lgfield"><label>密碼（工號）</label><input id="lgPw" type="password" placeholder="請輸入你的工號" autocomplete="off"></div>
+    <button class="lgbtn" onclick="doLogin()">登　入</button>
+    <div class="lgmsg" id="lgMsg"></div>
+    <div class="lgnote">姓名欄可下拉挑選，也可以直接打字。<br>密碼就是你的三碼工號。名單沒有你請找管理部 白沛豫。</div>
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none">
+<aside class="side">
+  <div class="brand">📑 合約管理中心<small>竹建瓦斯 · Contract Lifecycle</small></div>
+  <div class="nav">
+    <button class="active" data-page="dashboard">▦　管理總覽</button>
+    <button data-page="depts">🏛　部門檢視</button>
+    <button data-page="all">▤　合約總表</button>
+    <button data-page="work">↻　作業追蹤</button>
+    <button data-page="add">＋　新增合約</button>
+    <button data-page="data">⚙　資料管理</button>
+  </div>
+  <div class="sidefoot">
+    基準日 <span id="sfToday"></span><br>
+    資料筆數 <span id="sfN"></span> 筆<br>
+    <span id="sfRole"></span>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- ============ 管理總覽 ============ -->
+<section id="dashboard" class="page active">
+  <div class="top">
+    <div><h1>管理總覽</h1><div class="sub">只看需要你介入的事，不用再跟 Excel 玩躲貓貓。　<span style="color:#059669;font-weight:700">🔒 本版不顯示任何金額</span>　<span id="modeTag"></span></div></div>
+    <div class="user"><span id="whoTxt">—</span><span class="pill ro" id="rolePill">—</span>
+    <span style="display:inline-flex;gap:4px;border-left:1px solid var(--line);padding-left:9px">
+      <button class="btn sm" onclick="setFS(13)" title="小 13px">Ａ⁻</button>
+      <button class="btn sm" onclick="setFS(15)" title="中 15px（預設）">Ａ</button>
+      <button class="btn sm" onclick="setFS(18)" title="大 18px">Ａ⁺</button>
+    </span>
+    <button class="btn sm" onclick="logout()">登出</button></div>
+  </div>
+  <div class="cards">
+    <div class="card" onclick="openGroup('all')"><div class="label">追蹤中合約</div><div class="num" id="kTotal">0</div><div class="hint">點一下看明細</div></div>
+    <div class="card" onclick="openGroup('over')"><div class="label">🔴 已逾期</div><div class="num red" id="kOver">0</div><div class="hint">立即處理</div></div>
+    <div class="card" onclick="openGroup('r')"><div class="label">🔴 紅燈 30 天</div><div class="num red" id="kR">0</div><div class="hint">副本主管</div></div>
+    <div class="card" onclick="openGroup('a')"><div class="label">🟠 催辦 90 天</div><div class="num orange" id="kA">0</div><div class="hint">要回報進度</div></div>
+    <div class="card" onclick="openGroup('g')"><div class="label">🔵 首報階段</div><div class="num blue" id="kG">0</div><div class="hint">購氣約180／其他90</div></div>
+    <div class="card" onclick="openGroup('silent')"><div class="label">🟣 久未回報</div><div class="num purple" id="kS">0</div><div class="hint">超過 7 天沒更新</div></div>
+  </div>
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-head"><h2>🔴 優先處理</h2><div class="toolbar"><button class="btn sm" onclick="copyNudge()">📋 複製催辦名單</button></div></div>
+      <div class="tblwrap"><table><thead><tr><th>合約</th><th>部門／經辦</th><th>到期</th><th>作業狀態</th><th></th></tr></thead><tbody id="priRows"></tbody></table></div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-head"><h2>🏛 部門負荷</h2></div>
+        <div class="tblwrap"><table><thead><tr><th>部門</th><th>總數</th><th>需處理</th><th>久未回報</th></tr></thead><tbody id="deptRows"></tbody></table></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>🕐 最近回報</h2></div>
+        <div class="list" id="recent"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 部門檢視 ============ -->
+<section id="depts" class="page">
+  <div class="top"><div><h1>部門檢視</h1><div class="sub">按部門切開，各部門主管只要看自己那一頁。</div></div></div>
+  <div class="tabs" id="deptTabs"></div>
+  <div id="deptWarn"></div>
+  <div class="panel">
+    <div class="panel-head"><h2 id="deptTitle">部門</h2><div class="toolbar"><input id="dq" placeholder="🔍 搜尋" oninput="drawDept()" style="width:180px"><button class="btn sm" onclick="copyDept()">📋 複製本部門清單</button></div></div>
+    <div class="tblwrap"><table><thead><tr><th>編號</th><th>合約名稱</th><th>廠商</th><th>經辦</th><th>到期日</th><th>剩餘</th><th>作業狀態</th><th>動作</th></tr></thead><tbody id="deptTbl"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ============ 合約總表 ============ -->
+<section id="all" class="page">
+  <div class="top"><div><h1>合約總表</h1><div class="sub">全部追蹤中的合約，可搜尋、篩選、排序。</div></div></div>
+  <div class="panel">
+    <div class="panel-head">
+      <div class="toolbar">
+        <input id="aq" placeholder="🔍 編號／名稱／廠商" oninput="drawAll()" style="min-width:210px">
+        <select id="adept" onchange="drawAll()"></select>
+        <select id="atype" onchange="drawAll()"></select>
+        <select id="alamp" onchange="drawAll()">
+          <option value="">全部階段</option><option value="over">已逾期</option><option value="r">紅燈 30天</option>
+          <option value="a">催辦 90天</option><option value="g">首報階段</option><option value="ok">尚未進預警</option><option value="done">已結案</option>
+        </select>
+      </div>
+      <button class="btn primary" onclick="go('add')">＋ 新增合約</button>
+    </div>
+    <div class="tblwrap"><table><thead><tr>
+      <th data-k="code" onclick="sortBy('code')">編號</th><th data-k="dept" onclick="sortBy('dept')">部門</th>
+      <th data-k="name" onclick="sortBy('name')">合約名稱</th><th>類型</th>
+      <th data-k="due" onclick="sortBy('due')">到期日</th><th data-k="left" onclick="sortBy('left')">剩餘</th>
+      <th>作業狀態</th><th>動作</th>
+    </tr></thead><tbody id="allTbl"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ============ 作業追蹤 ============ -->
+<section id="work" class="page">
+  <div class="top"><div><h1>作業追蹤</h1><div class="sub">誰要做、做到哪、多久沒更新。</div></div></div>
+  <div class="notice">規則：到期前 <b>90 天</b>進入預警；作業狀態超過 <b>7 天</b>沒更新會標示「久未回報」。</div>
+  <div class="panel">
+    <div class="panel-head"><div class="toolbar">
+      <select id="wdept" onchange="drawWork()"></select>
+      <select id="wstat" onchange="drawWork()">
+        <option value="">全部作業狀態</option><option>未啟動</option><option>已通知經辦</option><option>續約評估中</option>
+        <option>洽談中</option><option>用印中</option><option>已完成</option><option>不續約結案</option>
+      </select>
+      <label style="font-size:13px"><input type="checkbox" id="wsilent" onchange="drawWork()"> 只看久未回報</label>
+    </div></div>
+    <div class="tblwrap"><table><thead><tr><th>合約</th><th>部門</th><th>經辦</th><th>到期</th><th>續約意向</th><th>作業狀態</th><th>最後回報</th><th>動作</th></tr></thead><tbody id="workTbl"></tbody></table></div>
+  </div>
+</section>
+
+<!-- ============ 新增合約 ============ -->
+<section id="add" class="page">
+  <div class="top"><div><h1>新增合約</h1><div class="sub">部門在正式簽約前先登記，管理部當下就知道，來得及查印花稅票。</div></div></div>
+  <div class="panel"><div class="form" id="addForm"></div>
+    <div class="modal-foot" style="position:static"><button class="btn" onclick="fillAdd()">清空</button><button class="btn primary" onclick="saveAdd()">送出登記</button></div>
+  </div>
+</section>
+
+<!-- ============ 資料管理 ============ -->
+<section id="data" class="page">
+  <div class="top"><div><h1>資料管理</h1><div class="sub">備份、還原、匯出給我重建系統用。</div></div></div>
+  <div class="warnbox"><b>尚未填 GAS 網址時</b>，資料只存在你這台電腦的瀏覽器裡，換電腦或清快取就沒了；填上 GAS 網址後改存 Google 試算表，就沒這問題。改完記得按「匯出 JSON」留一份。等接上 Google 試算表後就不用擔心這件事。<br>本版<b>不含任何金額欄位</b>（含稅金額、未稅金額、應貼印花已全數移除），匯出檔也不會有。</div>
+  <div class="panel"><div class="panel-head"><h2>備份與轉移</h2></div>
+    <div class="form">
+      <div class="field full"><label>匯出</label><div class="toolbar">
+        <button class="btn primary" onclick="expJSON()">⬇ 匯出 JSON（回傳給我用這個）</button>
+        <button class="btn" onclick="expCSV()">⬇ 匯出 CSV（Excel 可開）</button>
+      </div></div>
+      <div class="field full"><label>匯入（會覆蓋目前資料）</label><input type="file" id="impFile" accept=".json" onchange="impJSON(this)"></div>
+      <div class="field full"><label>還原</label><div class="toolbar"><button class="btn danger" onclick="resetAll()">↺ 還原成原始 38 筆</button></div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- 編輯 / 回報 Modal -->
+<div class="modal" id="mdl"><div class="modal-box">
+  <div class="modal-head"><strong id="mdlTitle">編輯</strong><button class="btn" onclick="closeM()">關閉</button></div>
+  <div id="mdlBody"></div>
+  <div class="modal-foot" id="mdlFoot"></div>
+</div></div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= 設定 ================= */
+var API = "https://script.google.com/macros/s/AKfycbx6x4pLqTBzHWknGzQfREy_FAQFtuGPZUkianACxbXmBevATknqRdr1qhd7qxIhnrnZ/exec";   /* ← 部署後把 /exec 網址貼在這裡，貼上後就改吃 Google 試算表 */
+var ONLINE = API.indexOf("script.google.com") >= 0;
+var KEY = "zj_contract_v1";
+var USERS = [
+  {id:"060", name:"白沛豫", dept:"管理部", title:"專員", role:"管理員"},
+  {id:"068", name:"陳朝鑫", dept:"總經理室", title:"秘書", role:"部門"},
+  {id:"008", name:"陳炳宏", dept:"工務部", title:"經理", role:"部門"},
+  {id:"070", name:"張鈞豪", dept:"工務部", title:"", role:"部門"},
+  {id:"075", name:"王璽凱", dept:"工務部", title:"", role:"部門"},
+  {id:"074", name:"劉德泓", dept:"工務部", title:"", role:"部門"},
+  {id:"021", name:"黃美月", dept:"財務部", title:"副理", role:"部門"},
+  {id:"067", name:"洪姝筠", dept:"財務部", title:"", role:"部門"},
+  {id:"023", name:"黃晨晞", dept:"資訊室", title:"副理", role:"部門"},
+  {id:"053", name:"董哲淵", dept:"總經理室", title:"", role:"部門"}
+];
+var ME = null;
+var DEPTS = ["總經理室","業務部","工務部","管理部","財務部","資訊室"];
+var TYPES = ["工業用戶","設備維護","租賃","設備租賃","設備租借","法律顧問","財務","陰極防蝕","中油","物料採購","免貼印花","其他"];
+var WORKS = ["未啟動","已通知經辦","續約評估中","洽談中","用印中","已完成","不續約結案"];
+var RENEWS = ["", "續約", "不續約", "評估中", "換約"];
+var MANUALS = ["", "作業中", "期滿", "解約", "提前終止", "已封箱"];
+var SEED = [{"code": "114-A-011", "year": "114", "zi": "竹財約", "cat": "A", "dept": "財務部", "owner": "", "sign": "2025-07-08", "due": "2026-07-07", "type": "財務", "vendor": "勤業", "proj": "", "name": "會計簽證委託書-勤業眾信聯合會計師事務所108年財務報表及查核工作", "period": "113-114", "stampType": "", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-013", "year": "114", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2025-07-24", "due": "2026-07-23", "type": "設備維護", "vendor": "正業機電", "proj": "", "name": "正業機電技術顧問有限公司", "period": "114/7/24-115/7/23", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "110-A-004", "year": "110", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2021-08-03", "due": "2026-08-30", "type": "工業用戶", "vendor": "台積電", "proj": "", "name": "台積電(AP6)北廠 天然氣工程暨購氣合約 (擔保物-銀行保證書(土銀))", "period": "110/8/31-115/8/30\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期五年)。\n113/7/30通知哲淵續保作業\n須90天前開始續保作業-115/5/30", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "1.總工程:［金額］元，50%(［金額］-含稅)，另50%用氣保證金(［金額］)\n工程保證金［金額］元，氣費賒銷擔保金［金額］元\n3.用氣保證金擔保\n3.1累計使用總氣量達6,000,000M3(度)，退［金額］元整。\n3.2累計使用總氣量達12,000,000M3 (度)，退［金額］元整。\n3.3累計使用總氣量達22,230,000M3 (度)，退［金額］元整。\n3.4正式供氣滿十二年內使用總氣量未達22,230,000M3 (度)，則未退款之用氣保證金不予退還。上述費用均需於用氣前繳納。", "file": ""}, {"code": "112-A-013", "year": "112", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2023-11-13", "due": "2026-11-08", "type": "設備維護", "vendor": "森泰儀器", "proj": "", "name": "測量儀器維護合約書", "period": "112/811/9-115/11/8", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-B-001", "year": "113", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2024-11-28", "due": "2026-12-13", "type": "租賃", "vendor": "", "proj": "", "name": "房屋租賃契約書-童安玉 (中正路275號1~2層)", "period": "113/12/14-115/12/13", "stampType": "", "stamped": "", "notice": "90", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "110-A-011", "year": "110", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2021-12-02", "due": "2026-12-31", "type": "工業用戶", "vendor": "台灣菸酒", "proj": "", "name": "財物採購契約書-台灣菸酒股份有限公司竹南啤酒廠 110-115年度採購鍋爐燃燒與製瓶課玻璃製程用天然氣 110-0440-4-001", "period": "111/1/1起算5年~115/12/31", "stampType": "2.買賣動產契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-001", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-01-02", "due": "2027-01-01", "type": "設備維護", "vendor": "安德成", "proj": "", "name": "安德成商行保養合約書", "period": "115/1/2-116/1/1", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-016", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-07-29", "due": "2027-01-29", "type": "設備維護", "vendor": "英曜", "proj": "", "name": "瓦斯管線圖資系統維護", "period": "14年7月29日加18個月後是116年1月29日，故到期日為116年1月28日。", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-017", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-07-29", "due": "2027-01-29", "type": "設備維護", "vendor": "英曜", "proj": "", "name": "瓦斯管線圖資系統擴充整合案", "period": "", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-A-002", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2023-12-28", "due": "2027-02-26", "type": "工業用戶", "vendor": "永豐餘", "proj": "231107P014", "name": "永豐餘 天然氣工程暨購氣合約 (保證金-銀行本票)", "period": "113/2/26-116/2/26\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "承攬貼印花稅2283元+買賣貼12元", "file": ""}, {"code": "113-A-003", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-03-15", "due": "2027-03-15", "type": "工業用戶", "vendor": "永昕生物醫藥", "proj": "", "name": "永昕生物醫藥 天然氣工程暨購買契約 (擔保物-現金支票)", "period": "113/3/15~116/3/15\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-005", "year": "114", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2025-04-10", "due": "2027-04-09", "type": "法律顧問", "vendor": "宋國鼎", "proj": "", "name": "常年法律顧問聘任書-宋國鼎律師", "period": "114/4/10-116/4/9", "stampType": "", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-006", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-04-21", "due": "2027-04-20", "type": "陰極防蝕", "vendor": "騰湘", "proj": "", "name": "華夏整流站陰極防蝕系統新設工程", "period": "114/4/21-116/4/20", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-A-005", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-05-07", "due": "2027-05-06", "type": "工業用戶", "vendor": "宏明紙業", "proj": "", "name": "宏明紙業 天然氣工程暨購氣合約 (保證金)", "period": "113/5/7-116/5/6", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "承攬貼印花稅1000元+買賣貼12元", "file": ""}, {"code": "113-A-009", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-07-01", "due": "2027-06-30", "type": "工業用戶", "vendor": "富騁科技", "proj": "", "name": "富騁科技 天然氣工程暨購氣合約 (保證金)", "period": "113/7/1-116/6/30", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-015", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-07-28", "due": "2027-07-23", "type": "設備維護", "vendor": "正業機電", "proj": "", "name": "正業機電技術顧問有限公司", "period": "115/7/24-116/7/23", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-A-014", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-10-01", "due": "2027-09-30", "type": "工業用戶", "vendor": "霖揚", "proj": "", "name": "霖揚生技製藥 購氣合約 (保證金-定期存單)", "period": "113/10/1-116/9/30", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "113/9/30列入管理部保管", "file": ""}, {"code": "113-A-015", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-10-01", "due": "2027-09-30", "type": "工業用戶", "vendor": "亞欣達", "proj": "", "name": "亞欣達特殊材料 購氣合約", "period": "113/10/1-116/9/30", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-002", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-01-15", "due": "2028-01-15", "type": "工業用戶", "vendor": "華夏海灣", "proj": "", "name": "天然氣工程暨購買合約", "period": "114/1/15-117/1/15", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "工程總價［金額］元，同意轉為天然氣工程保證金，每月用氣量達1200000度設定退款", "file": ""}, {"code": "114-A-004", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-01-23", "due": "2028-01-22", "type": "設備維護", "vendor": "力泰", "proj": "", "name": "華夏海灣南廠專用整壓站", "period": "114/1/23---117/1/22", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-003", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-03-10", "due": "2028-03-30", "type": "工業用戶", "vendor": "鼎元光電", "proj": "", "name": "天然氣購買契約", "period": "114/3/31-117/3/30", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "天然氣費賒銷保證金［金額］元整(現金交付擔保)", "file": ""}, {"code": "112-A-008", "year": "112", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2023-04-18", "due": "2028-05-02", "type": "工業用戶", "vendor": "台積電", "proj": "", "name": "台積電(AP6)二期南廠 天然氣工程暨購氣合約 (擔保物-銀行保證書(第一銀行))", "period": "112/5/2-117/5/2\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期五年)。\n每三年辦理銀行續保作業-115/1/28通知哲淵續保作業", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "1120717收入管理部\n承攬+買賣", "file": ""}, {"code": "114-A-007", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-05-20", "due": "2028-05-31", "type": "工業用戶", "vendor": "華夏海灣", "proj": "", "name": "華夏海灣 購氣合約 (擔保物-存單) 第二次展延，原契約111-A-003", "period": "114/6/1-117/5/31\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A--009", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-06-11", "due": "2028-06-10", "type": "工業用戶", "vendor": "大夏紙業", "proj": "", "name": "大夏紙業 工程購氣合約 (擔保物-存單)", "period": "114/6/11-117/6/10\n第二次展延\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-026", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-01", "due": "2028-06-30", "type": "工業用戶", "vendor": "漢民科技", "proj": "", "name": "天然氣長期供應契約", "period": "114/7/1-117/6/30(每期3年)期滿前1個月函文確認", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-B-001", "year": "114", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2025-07-25", "due": "2028-07-31", "type": "租賃", "vendor": "", "proj": "", "name": "公證書正本-租賃契約書-中油 竹南段1小段1454地號(田寮站)", "period": "114/8/1-117/7/31", "stampType": "1.銀錢收據", "stamped": "", "notice": "90", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-012", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-10", "due": "2028-08-04", "type": "工業用戶", "vendor": "四方乳品", "proj": "", "name": "四方乳品-展延(原111-A-010) 天然氣購買契約 (擔保物-現金)", "period": "114/8/4-117/8/4\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-A-019", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-31", "due": "2028-08-17", "type": "工業用戶", "vendor": "久立美", "proj": "", "name": "久立美興業(股)公司 工程購氣合約 (擔保物-存單) (第一次續約)原契約111-A-009)", "period": "114/8/17-117/8/17\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stampType": "3.承攬契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-006", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-02-12", "due": "2028-11-14", "type": "工業用戶", "vendor": "創意電子", "proj": "", "name": "創意電子天然氣買賣契約", "period": "114/11/15-117/11/14", "stampType": "2.買賣動產契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-008", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-01-31", "due": "2029-01-31", "type": "中油", "vendor": "中油", "proj": "", "name": "公用天然氣事業用天然氣買賣契約(115年公用第008號)", "period": "115/2/1-118/1/31", "stampType": "2.買賣動產契據", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-004", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-01-23", "due": "2029-03-12", "type": "工業用戶", "vendor": "加和紙業", "proj": "", "name": "加和紙業", "period": "115/3/13-118/3/12", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-010", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-03-20", "due": "2029-04-05", "type": "工業用戶", "vendor": "吉伸", "proj": "", "name": "吉伸紙業天然氣購氣合約", "period": "", "stampType": "", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-011", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-04-15", "due": "2029-04-14", "type": "工業用戶", "vendor": "台英帝國", "proj": "", "name": "台英帝國菸草製造天然氣買賣契約", "period": "", "stampType": "2.買賣動產契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "115-A-012", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-04-20", "due": "2029-04-24", "type": "工業用戶", "vendor": "昕一", "proj": "", "name": "昕一天然氣買賣契約", "period": "", "stampType": "2.買賣動產契據", "stamped": "已貼", "notice": "180", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-A-016", "year": "113", "zi": "竹業約", "cat": "A", "dept": "業務部", "owner": "", "sign": "2024-10-23", "due": "2029-12-31", "type": "設備租賃", "vendor": "鯨躍", "proj": "", "name": "天然氣公用事業電子發票平台租賃合約書-鯨躍科技", "period": "114/1/1-118/12/31屆滿前二個月以EMAIL通知，自動展延一年", "stampType": "", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "113-A-010", "year": "113", "zi": "竹資約", "cat": "A", "dept": "資訊室", "owner": "", "sign": "2024-07-08", "due": "2034-07-07", "type": "設備租借", "vendor": "中華電信", "proj": "", "name": "瓦斯表通訊子機暨雲端管理平台服務-竹南綻", "period": "113/7/8-123/7/7", "stampType": "", "stamped": "已貼", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "112-B-001", "year": "112", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2023-05-29", "due": "2040-05-31", "type": "租賃", "vendor": "", "proj": "", "name": "大同段279-1~883", "period": "112/6/1-129/5/31", "stampType": "", "stamped": "", "notice": "90", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}, {"code": "114-B-002", "year": "114", "zi": "", "cat": "B免貼", "dept": "財務部", "owner": "", "sign": "2025-11-14", "due": "", "type": "免貼印花", "vendor": "", "proj": "", "name": "尚順君樂飯店住房合約書", "period": "114/11/14-116/11/13", "stampType": "免貼", "stamped": "", "notice": "90", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": ""}];
+var UIKEY = "zj_contract_ui_v2";
+function setFS(px){
+  document.documentElement.style.setProperty("--fs", px + "px");
+  try{ localStorage.setItem(UIKEY, String(px)); }catch(e){}
+}
+(function(){ var v=null; try{ v=localStorage.getItem(UIKEY); }catch(e){} if(v) document.documentElement.style.setProperty("--fs", v+"px"); })();
+var TODAY = new Date(new Date().toDateString());
+var RED = 30, CHASE = 90, FIRST_GAS = 180, FIRST_STD = 90, QUIET = 7;
+
+/* ================= 狀態 ================= */
+var DB = load();
+var isAdmin = false;
+var curDept = DEPTS[0];
+var RETURN_TO = "";
+var sortK = "left", sortAsc = true;
+
+function load(){
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY) || "null");
+    if(s && s.rows && s.rows.length) return s;
+  }catch(e){}
+  return { rows: JSON.parse(JSON.stringify(SEED)), ver: 1 };
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ toast("儲存失敗，瀏覽器空間可能已滿"); } }
+
+/* ================= 通訊 ================= */
+function jsonp(params){
+  return new Promise(function(res, rej){
+    var cb = "cb_" + Date.now() + Math.floor(Math.random()*9999);
+    var sc = document.createElement("script");
+    var tm = setTimeout(function(){ cleanup(); rej(new Error("連線逾時，請確認 GAS 已部署為「任何人」可存取")); }, 25000);
+    function cleanup(){ clearTimeout(tm); try{ delete window[cb]; }catch(e){} if(sc.parentNode) sc.parentNode.removeChild(sc); }
+    window[cb] = function(d){ cleanup(); res(d); };
+    sc.onerror = function(){ cleanup(); rej(new Error("連線失敗，請檢查 GAS 網址")); };
+    var qs = Object.keys(params).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(params[k]); }).join("&");
+    sc.src = API + "?callback=" + cb + "&" + qs;
+    document.body.appendChild(sc);
+  });
+}
+async function pull(){
+  var r = await jsonp({action:"bootstrap"});
+  if(!r.ok) throw new Error(r.msg || "讀取失敗");
+  DB = { rows: r.rows, ver: 2 };
+  if(r.cfg){
+    RED       = Number(r.cfg["紅燈天數"]) || RED;
+    CHASE     = Number(r.cfg["催辦天數"]) || CHASE;
+    FIRST_GAS = Number(r.cfg["購氣約首報天數"]) || FIRST_GAS;
+    FIRST_STD = Number(r.cfg["一般約首報天數"]) || FIRST_STD;
+    QUIET     = Number(r.cfg["久未回報催辦天數"]) || QUIET;
+  }
+  if(r.users && r.users.length) USERS = r.users.filter(function(u){ return u.on !== "N"; });
+  if(r.today) TODAY = new Date(r.today + "T00:00:00");
+}
+async function push(action, payload){
+  var r = await jsonp({ action: action, data: JSON.stringify(payload) });
+  if(!r.ok) throw new Error(r.msg || "寫入失敗");
+  await pull();
+  return r;
+}
+
+/* ================= 工具 ================= */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); setTimeout(function(){t.classList.remove("on")},2500); }
+function num(v){ var n=Number(String(v==null?"":v).replace(/[^0-9.\-]/g,"")); return isNaN(n)?0:n; }
+function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
+function daysLeft(due){
+  if(!due) return null;
+  var d = new Date(String(due).replace(/\//g,"-") + "T00:00:00");
+  if(isNaN(d.getTime())) return null;
+  return Math.round((d - TODAY)/86400000);
+}
+function lamp(r){
+  var st = r.manual || "";
+  if(st==="期滿"||st==="解約"||st==="提前終止"||st==="已封箱") return "done";
+  if(r.work==="已完成"||r.work==="不續約結案") return "done";
+  var L = daysLeft(r.due);
+  if(L===null) return "none";
+  var first = num(r.notice) || (r.type==="工業用戶" ? FIRST_GAS : FIRST_STD);
+  if(L<0) return "over";
+  if(L<=RED) return "r";
+  if(L<=CHASE) return "a";
+  if(L<=first) return "g";
+  return "ok";
+}
+function quiet(r){
+  if(!r.rptDate) return null;
+  var d = new Date(String(r.rptDate).replace(/\//g,"-")+"T00:00:00");
+  return isNaN(d.getTime()) ? null : Math.round((TODAY-d)/86400000);
+}
+function isSilent(r){
+  var l = lamp(r);
+  if(l!=="over" && l!=="r" && l!=="a") return false;
+  var q = quiet(r);
+  return q===null || q>=QUIET;
+}
+function leftBadge(r){
+  var L = daysLeft(r.due);
+  if(L===null) return '<span class="badge b-gray">無到期日</span>';
+  if(L<0) return '<span class="badge b-red">逾期 '+(-L)+' 天</span>';
+  if(L<=RED) return '<span class="badge b-red">剩 '+L+' 天</span>';
+  if(L<=CHASE) return '<span class="badge b-org">剩 '+L+' 天</span>';
+  var first = num(r.notice) || (r.type==="工業用戶" ? FIRST_GAS : FIRST_STD);
+  if(L<=first) return '<span class="badge b-blue">剩 '+L+' 天</span>';
+  return '<span class="badge b-grn">剩 '+L+' 天</span>';
+}
+function workBadge(r){
+  var w = r.work || "未啟動";
+  var cls = (w==="已完成"||w==="不續約結案") ? "b-grn" : (w==="未啟動" ? "b-gray" : "b-blue");
+  var h = '<span class="badge '+cls+'">'+esc(w)+'</span>';
+  if(isSilent(r)){
+    var q = quiet(r);
+    h += ' <span class="badge b-pur">'+(q===null?"從未回報":q+"天未更新")+'</span>';
+  }
+  return h;
+}
+function deptOf(r){ return DEPTS.indexOf(r.dept)>=0 ? r.dept : "未歸屬"; }
+function find(code){ for(var i=0;i<DB.rows.length;i++){ if(DB.rows[i].code===code) return DB.rows[i]; } return null; }
+
+/* ================= 導覽 ================= */
+function go(p){
+  var ps = document.querySelectorAll(".page");
+  for(var i=0;i<ps.length;i++) ps[i].classList.remove("active");
+  document.getElementById(p).classList.add("active");
+  var bs = document.querySelectorAll(".nav button");
+  for(var j=0;j<bs.length;j++) bs[j].classList.toggle("active", bs[j].dataset.page===p);
+  window.scrollTo({top:0,behavior:"smooth"});
+  drawAllPages();
+}
+(function(){
+  var bs = document.querySelectorAll(".nav button");
+  for(var i=0;i<bs.length;i++){ (function(b){ b.onclick=function(){ go(b.dataset.page); }; })(bs[i]); }
+})();
+
+/* ================= 權限 ================= */
+async function doLogin(){
+  var nm = (document.getElementById("lgName").value||"").trim();
+  var pw = (document.getElementById("lgPw").value||"").trim();
+  var msg = document.getElementById("lgMsg");
+  if(!nm || !pw){ msg.textContent = "請選姓名並輸入工號"; return; }
+  nm = nm.replace(/[（(].*$/,"").trim();
+  var u = null;
+  if(ONLINE){
+    msg.style.color = "#475569"; msg.textContent = "連線中…";
+    try{
+      var lr = await jsonp({action:"login", name:nm, pw:pw});
+      if(!lr.ok){ msg.style.color = ""; msg.textContent = lr.msg; return; }
+      u = lr.user;
+      await pull();
+    }catch(err){ msg.style.color = ""; msg.textContent = err.message; return; }
+    msg.style.color = ""; msg.textContent = "";
+  } else {
+    for(var i=0;i<USERS.length;i++){
+      if(USERS[i].name === nm || (USERS[i].name + (USERS[i].title||"")) === nm || USERS[i].id === nm) u = USERS[i];
+    }
+    if(!u){ msg.textContent = "名單裡查無「" + nm + "」，請從下拉選單挑選"; return; }
+    if(pw !== u.id){ msg.textContent = "工號錯誤"; return; }
+  }
+  ME = u;
+  isAdmin = (u.role === "管理員");
+  if(!isAdmin) curDept = u.dept;
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "flex";
+  applyRoleUI();
+  drawAllPages();
+  toast("歡迎，" + u.name + (u.title || ""));
+}
+function logout(){
+  if(!confirm("確定要登出？")) return;
+  ME = null; isAdmin = false;
+  document.getElementById("lgName").value = "";
+  document.getElementById("lgPw").value = "";
+  document.getElementById("lgMsg").textContent = "";
+  document.getElementById("app").style.display = "none";
+  document.getElementById("login").style.display = "flex";
+}
+function applyRoleUI(){
+  var bs = document.querySelectorAll(".nav button");
+  for(var i=0;i<bs.length;i++){
+    var pg = bs[i].dataset.page;
+    bs[i].style.display = (!isAdmin && pg === "data") ? "none" : "block";
+  }
+  fillAdd();
+  go("dashboard");
+}
+/* 依角色可見的資料範圍 */
+function scope(){
+  if(isAdmin) return DB.rows;
+  return DB.rows.filter(function(x){ return x.dept === ME.dept; });
+}
+function canEdit(){ return isAdmin; }
+
+/* ================= 總覽 ================= */
+function alive(r){ var l=lamp(r); return l==="over"||l==="r"||l==="a"||l==="g"||l==="b"; }
+function drawDash(){
+  var rows = scope();
+  var over=0,r30=0,a90=0,g180=0,sil=0;
+  for(var i=0;i<rows.length;i++){
+    var l = lamp(rows[i]);
+    if(l==="over") over++;
+    if(l==="r") r30++;
+    if(l==="a") a90++;
+    if(l==="g") g180++;
+    if(isSilent(rows[i])) sil++;
+  }
+  document.getElementById("kTotal").textContent = rows.length;
+  document.getElementById("kOver").textContent = over;
+  document.getElementById("kR").textContent = r30;
+  document.getElementById("kA").textContent = a90;
+  document.getElementById("kG").textContent = g180;
+  document.getElementById("kS").textContent = sil;
+
+  var pri = rows.filter(alive).sort(function(x,y){
+    var a=daysLeft(x.due), b=daysLeft(y.due);
+    return (a===null?99999:a)-(b===null?99999:b);
+  });
+  document.getElementById("priRows").innerHTML = pri.length ? pri.map(function(x){
+    return '<tr><td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.code)+'　'+esc(x.type||"—")+'</div></td>'+
+      '<td>'+esc(deptOf(x))+'<div class="sm">'+esc(x.owner||"未指定經辦")+'</div></td>'+
+      '<td class="nw">'+esc(x.due||"—")+'　'+leftBadge(x)+'</td>'+
+      '<td>'+workBadge(x)+'</td>'+
+      '<td><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
+      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+  }).join("") : '<tr><td colspan="5" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的項目</td></tr>';
+
+  var groups = isAdmin ? DEPTS.concat(["未歸屬"]) : [ME.dept];
+  var html = "";
+  for(var g=0; g<groups.length; g++){
+    var d = groups[g];
+    var list = rows.filter(function(x){ return deptOf(x)===d; });
+    if(!list.length) continue;
+    var near = list.filter(function(x){ var l=lamp(x); return l==="over"||l==="r"||l==="a"||l==="g"; }).length;
+    var si = list.filter(isSilent).length;
+    html += '<tr><td><b class="rowlink" onclick="setDept(\''+d+'\');go(\'depts\')">'+esc(d)+'</b></td><td>'+list.length+'</td><td>'+(near?'<span class="badge b-org">'+near+'</span>':'—')+
+      '</td><td>'+(si?'<span class="badge b-pur">'+si+'</span>':'—')+'</td></tr>';
+  }
+  document.getElementById("deptRows").innerHTML = html;
+
+  var rec = rows.filter(function(x){ return x.rptDate; })
+    .sort(function(a,b){ return String(b.rptDate).localeCompare(String(a.rptDate)); }).slice(0,6);
+  document.getElementById("recent").innerHTML = rec.length ? rec.map(function(x){
+    return '<div class="item"><strong>'+esc(x.name)+'</strong> '+workBadge(x)+
+      '<small>'+esc(deptOf(x))+' · '+esc(x.rptBy||"—")+' · '+esc(x.rptDate)+(x.rptNote?'　「'+esc(x.rptNote)+'」':'')+'</small></div>';
+  }).join("") : '<div class="item"><small>還沒有人回報過。</small></div>';
+}
+
+/* ================= 卡片明細彈窗 ================= */
+var GROUPS = {
+  all:    {t:"追蹤中合約", f:function(x){ return alive(x); }},
+  over:   {t:"已逾期（每週催＋副本主管）", f:function(x){ return lamp(x)==="over"; }},
+  r:      {t:"紅燈 30 天內（副本主管）", f:function(x){ return lamp(x)==="r"; }},
+  a:      {t:"催辦 90 天內（要回報進度）", f:function(x){ return lamp(x)==="a"; }},
+  g:      {t:"首報階段（購氣約 180 天／其他 90 天）", f:function(x){ return lamp(x)==="g"; }},
+  silent: {t:"久未回報（超過 7 天沒更新）", f:isSilent}
+};
+function openGroup(kind){
+  var g = GROUPS[kind]; if(!g) return;
+  var list = scope().filter(g.f).sort(function(a,b){
+    var x=daysLeft(a.due), y=daysLeft(b.due);
+    return (x===null?99999:x)-(y===null?99999:y);
+  });
+  document.getElementById("mdlTitle").innerHTML = esc(g.t) + '　<span class="badge b-blue">' + list.length + ' 筆</span>';
+  var body = list.length ? '<div class="tblwrap"><table><thead><tr><th>合約</th><th>部門／經辦</th><th>到期</th><th>作業狀態</th><th></th></tr></thead><tbody>' +
+    list.map(function(x){
+      return '<tr><td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\',\''+kind+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.code)+'　'+esc(x.type||"—")+'</div></td>'+
+        '<td>'+esc(deptOf(x))+'<div class="sm">'+esc(x.owner||"未指定經辦")+'</div></td>'+
+        '<td class="nw">'+esc(x.due||"—")+'　'+leftBadge(x)+'</td>'+
+        '<td>'+workBadge(x)+'</td>'+
+        '<td class="nw"><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\',\''+kind+'\')">回報</button> '+
+        (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\',\''+kind+'\')">編輯</button>':'')+'</td></tr>';
+    }).join("") + '</tbody></table></div>'
+    : '<div style="padding:44px;text-align:center;color:#94a3b8">這一組目前沒有合約 👍</div>';
+  document.getElementById("mdlBody").innerHTML = body;
+  document.getElementById("mdlFoot").innerHTML =
+    (list.length ? '<button class="btn" onclick="copyGroup(\''+kind+'\')">📋 複製這份清單</button>' : '') +
+    '<span style="flex:1"></span><button class="btn primary" onclick="closeM()">關閉</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+function copyGroup(kind){
+  var g = GROUPS[kind];
+  var list = scope().filter(g.f).sort(function(a,b){
+    var x=daysLeft(a.due), y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y);
+  });
+  var t = "【" + g.t + "】共 " + list.length + " 筆（" + todayStr() + "）\n\n" + list.map(function(x){
+    var L = daysLeft(x.due);
+    return x.code + "　" + x.name + "\n　" + deptOf(x) + "　經辦：" + (x.owner||"未指定") +
+      "\n　到期 " + (x.due||"—") + (L===null?"":("（"+(L<0?"已逾期"+(-L):"剩"+L)+"天）")) +
+      "　狀態：" + (x.work||"未啟動");
+  }).join("\n\n");
+  copy(t);
+}
+/* ================= 合約詳情 ================= */
+function openDetail(code, back){
+  var r = find(code); if(!r) return;
+  var L = daysLeft(r.due);
+  function row(k,v){ return '<dt>'+k+'</dt><dd>'+(v?esc(v):'<span style="color:#cbd5e1">—</span>')+'</dd>'; }
+  document.getElementById("mdlTitle").innerHTML = esc(r.code) + '　<span class="badge b-gray">' + esc(deptOf(r)) + '</span>';
+  document.getElementById("mdlBody").innerHTML = '<div style="padding:18px 20px">' +
+    '<div style="font-size:17px;font-weight:700;line-height:1.5;margin-bottom:14px">' + esc(r.name) + '</div>' +
+    '<dl class="dl">' +
+    row("類型", r.type) + row("廠商", r.vendor) + row("權責部門", deptOf(r)) + row("經辦人", r.owner) +
+    row("簽訂日", r.sign) + row("到期日", (r.due||"") + (L===null?"":"（"+(L<0?"已逾期"+(-L)+"天":"剩 "+L+" 天")+"）")) +
+    row("合約起訖", r.period) + row("提前通知天數", r.notice || "未設定（預設 90 天）") +
+    row("印花稅種類", r.stampType) + row("印花狀態", r.stamped) +
+    row("人工狀態", r.manual) + row("續約意向", r.renew) + row("作業狀態", r.work || "未啟動") +
+    row("最後回報", (r.rptDate||"") + (r.rptBy?("　"+r.rptBy):"")) + row("回報說明", r.rptNote) +
+    row("備註", r.memo) +
+    '</dl><div class="sm" style="margin-top:12px">🔒 本系統不儲存任何金額資料</div></div>';
+  document.getElementById("mdlFoot").innerHTML =
+    (back ? '<button class="btn" onclick="openGroup(\''+back+'\')">← 回清單</button>' : '') +
+    '<span style="flex:1"></span>' +
+    '<button class="btn" onclick="openRpt(\''+esc(code)+'\')">回報進度</button>' +
+    (isAdmin ? '<button class="btn primary" onclick="openEdit(\''+esc(code)+'\')">編輯</button>' : '') +
+    '<button class="btn" onclick="closeM()">關閉</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+
+/* ================= 部門檢視 ================= */
+function drawTabs(){
+  var groups = isAdmin ? DEPTS.slice() : [ME.dept];
+  var un = isAdmin ? DB.rows.filter(function(x){ return deptOf(x)==="未歸屬"; }) : [];
+  if(un.length) groups.push("未歸屬");
+  if(groups.indexOf(curDept)<0) curDept = groups[0];
+  document.getElementById("deptTabs").innerHTML = groups.map(function(d){
+    var n = scope().filter(function(x){ return deptOf(x)===d; }).length;
+    return '<button class="'+(curDept===d?"active":"")+'" onclick="setDept(\''+d+'\')">'+
+      (d==="未歸屬"?"⚠ 未歸屬":esc(d))+'<span class="c">'+n+'</span></button>';
+  }).join("");
+}
+function setDept(d){ curDept=d; drawTabs(); drawDept(); }
+function drawDept(){
+  document.getElementById("deptTitle").textContent = curDept + "　合約清單";
+  var q = (document.getElementById("dq").value||"").toLowerCase();
+  var list = scope().filter(function(x){
+    if(deptOf(x)!==curDept) return false;
+    if(q && (x.code+x.name+x.vendor+(x.owner||"")).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  }).sort(function(a,b){ var x=daysLeft(a.due),y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y); });
+
+  document.getElementById("deptWarn").innerHTML = curDept==="未歸屬" ?
+    '<div class="warnbox">這幾筆的權責部門不在六個部門名單內。點「編輯」改成正確單位，這一頁就會自動消失。</div>' : "";
+
+  document.getElementById("deptTbl").innerHTML = list.length ? list.map(function(x){
+    return '<tr><td class="nw"><b>'+esc(x.code)+'</b></td>'+
+      '<td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.type||"—")+'</div></td>'+
+      '<td>'+esc(x.vendor||"—")+'</td><td>'+esc(x.owner||"—")+'</td>'+
+      '<td class="nw">'+esc(x.due||"—")+'</td><td class="nw">'+leftBadge(x)+'</td>'+
+      '<td>'+workBadge(x)+'</td>'+
+      '<td><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
+      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+  }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">這個部門目前沒有合約</td></tr>';
+}
+function copyDept(){
+  var list = scope().filter(function(x){ return deptOf(x)===curDept; })
+    .sort(function(a,b){ var x=daysLeft(a.due),y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y); });
+  var t = "【"+curDept+" 合約追蹤清單】共 "+list.length+" 筆（"+todayStr()+"）\n\n" + list.map(function(x){
+    var L=daysLeft(x.due);
+    return x.code+"　"+x.name+"\n　到期 "+(x.due||"—")+(L===null?"":("　"+(L<0?"已逾期"+(-L):"剩"+L)+"天"))+"　狀態："+(x.work||"未啟動");
+  }).join("\n\n");
+  copy(t);
+}
+function copyNudge(){
+  var list = scope().filter(isSilent);
+  if(!list.length){ toast("目前沒有久未回報的合約"); return; }
+  var by = {};
+  list.forEach(function(x){ (by[deptOf(x)] = by[deptOf(x)]||[]).push(x); });
+  var t = "【合約續約進度催辦】"+todayStr()+"\n以下合約已進入到期預警但超過 "+QUIET+" 天沒有回報進度，請經辦更新：\n\n";
+  Object.keys(by).forEach(function(d){
+    t += "◆ "+d+"（"+by[d].length+" 筆）\n";
+    by[d].sort(function(a,b){ var x=daysLeft(a.due),y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y); })
+      .forEach(function(x){
+        var L=daysLeft(x.due);
+        t += "　"+x.code+"　"+x.name+"　到期 "+(x.due||"—")+(L===null?"":("（"+(L<0?"已逾期"+(-L):"剩"+L)+"天）"))+"\n";
+      });
+    t += "\n";
+  });
+  copy(t);
+}
+function copy(t){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(function(){ toast("已複製到剪貼簿"); }, function(){ fallbackCopy(t); });
+  } else fallbackCopy(t);
+}
+function fallbackCopy(t){
+  var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); toast("已複製到剪貼簿"); }catch(e){ toast("複製失敗，請手動選取"); }
+  ta.remove();
+}
+
+/* ================= 合約總表 ================= */
+function fillSelects(){
+  var ds = isAdmin
+    ? ['<option value="">全部部門</option>'].concat(DEPTS.concat(["未歸屬"]).map(function(d){return '<option>'+esc(d)+'</option>';})).join("")
+    : '<option>'+esc(ME.dept)+'</option>';
+  document.getElementById("adept").innerHTML = ds;
+  document.getElementById("wdept").innerHTML = ds;
+  var ts = {};
+  scope().forEach(function(x){ if(x.type) ts[x.type]=1; });
+  document.getElementById("atype").innerHTML = '<option value="">全部類型</option>'+Object.keys(ts).sort().map(function(t){return '<option>'+esc(t)+'</option>';}).join("");
+}
+function sortBy(k){ if(sortK===k) sortAsc=!sortAsc; else { sortK=k; sortAsc=true; } drawAll(); }
+function drawAll(){
+  var q=(document.getElementById("aq").value||"").toLowerCase();
+  var dp=document.getElementById("adept").value, tp=document.getElementById("atype").value, lp=document.getElementById("alamp").value;
+  var list = scope().filter(function(x){
+    if(q && (x.code+x.name+x.vendor+(x.owner||"")).toLowerCase().indexOf(q)<0) return false;
+    if(dp && deptOf(x)!==dp) return false;
+    if(tp && x.type!==tp) return false;
+    if(lp && lamp(x)!==lp) return false;
+    return true;
+  });
+  list.sort(function(a,b){
+    var x,y;
+    if(sortK==="left"){ x=daysLeft(a.due); y=daysLeft(b.due); x=(x===null?99999:x); y=(y===null?99999:y); return sortAsc?x-y:y-x; }
+    x=String(a[sortK]||""); y=String(b[sortK]||"");
+    return sortAsc?x.localeCompare(y,"zh-Hant"):y.localeCompare(x,"zh-Hant");
+  });
+  document.getElementById("allTbl").innerHTML = list.length ? list.map(function(x){
+    return '<tr><td class="nw"><b>'+esc(x.code)+'</b></td>'+
+      '<td class="nw">'+esc(deptOf(x))+'</td>'+
+      '<td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.vendor||"—")+'</div></td>'+
+      '<td><span class="badge b-gray">'+esc(x.type||"—")+'</span></td>'+
+      '<td class="nw">'+esc(x.due||"—")+'</td><td class="nw">'+leftBadge(x)+'</td>'+
+      '<td>'+workBadge(x)+'</td>'+
+      '<td class="nw"><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
+      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+  }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的合約</td></tr>';
+}
+
+/* ================= 作業追蹤 ================= */
+function drawWork(){
+  var dp=document.getElementById("wdept").value, st=document.getElementById("wstat").value;
+  var only=document.getElementById("wsilent").checked;
+  var list = scope().filter(function(x){
+    if(!alive(x)) return false;
+    if(dp && deptOf(x)!==dp) return false;
+    if(st && (x.work||"未啟動")!==st) return false;
+    if(only && !isSilent(x)) return false;
+    return true;
+  }).sort(function(a,b){ var x=daysLeft(a.due),y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y); });
+  document.getElementById("workTbl").innerHTML = list.length ? list.map(function(x){
+    return '<tr><td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.code)+'</div></td>'+
+      '<td>'+esc(deptOf(x))+'</td><td>'+esc(x.owner||"—")+'</td>'+
+      '<td class="nw">'+esc(x.due||"—")+'　'+leftBadge(x)+'</td>'+
+      '<td>'+(x.renew?'<span class="badge b-blue">'+esc(x.renew)+'</span>':'—')+'</td>'+
+      '<td>'+workBadge(x)+'</td><td>'+esc(x.rptDate||"—")+'<div class="sm">'+esc(x.rptBy||"")+'</div></td>'+
+      '<td class="nw"><button class="btn sm primary" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
+      (isAdmin?'<button class="btn sm" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+  }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的項目</td></tr>';
+}
+
+/* ================= 回報 ================= */
+function openRpt(code, back){
+  var r = find(code); if(!r) return;
+  RETURN_TO = back || "";
+  document.getElementById("mdlTitle").textContent = "回報進度｜" + r.name;
+  document.getElementById("mdlBody").innerHTML =
+    '<div class="form">'+
+    '<div class="field full"><label>合約</label><div>'+esc(r.code)+'　'+esc(r.name)+'<div class="sm">'+esc(deptOf(r))+'　到期 '+esc(r.due||"—")+'</div></div></div>'+
+    '<div class="field"><label>經辦人</label><input id="rOwner" value="'+esc(r.owner||"")+'" placeholder="例如：王小明"></div>'+
+    '<div class="field"><label>續約意向</label><select id="rRenew">'+RENEWS.map(function(v){return '<option'+(v===(r.renew||"")?' selected':'')+'>'+esc(v)+'</option>';}).join("")+'</select></div>'+
+    '<div class="field"><label>作業狀態</label><select id="rWork">'+WORKS.map(function(v){return '<option'+(v===(r.work||"未啟動")?' selected':'')+'>'+esc(v)+'</option>';}).join("")+'</select></div>'+
+    '<div class="field"><label>回報人</label><input id="rBy" value="'+esc(ME.name+(ME.title||""))+'" readonly style="background:#f1f5f9"></div>'+
+    '<div class="field full"><label>回報說明</label><textarea id="rNote" placeholder="例如：已聯繫廠商，8/20 前送新約用印">'+esc(r.rptNote||"")+'</textarea></div>'+
+    '</div>';
+  document.getElementById("mdlFoot").innerHTML =
+    '<button class="btn" onclick="closeM()">取消</button><button class="btn primary" onclick="saveRpt(\''+esc(code)+'\')">送出回報</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+async function saveRpt(code){
+  var r=find(code); if(!r) return;
+  if(ONLINE){
+    try{
+      await push("report", { code:code, owner:document.getElementById("rOwner").value.trim(),
+        renew:document.getElementById("rRenew").value, work:document.getElementById("rWork").value,
+        by:document.getElementById("rBy").value.trim(), note:document.getElementById("rNote").value.trim() });
+    }catch(e){ toast(e.message); return; }
+    closeM(); drawAllPages(); toast("已回報：" + code);
+    if(RETURN_TO){ var k0=RETURN_TO; RETURN_TO=""; openGroup(k0); }
+    return;
+  }
+  r.owner = document.getElementById("rOwner").value.trim();
+  r.renew = document.getElementById("rRenew").value;
+  r.work = document.getElementById("rWork").value;
+  r.rptBy = document.getElementById("rBy").value.trim();
+  r.rptNote = document.getElementById("rNote").value.trim();
+  r.rptDate = todayStr();
+  save(); closeM(); drawAllPages(); toast("已回報：" + r.code);
+  if(RETURN_TO){ var k=RETURN_TO; RETURN_TO=""; openGroup(k); }
+}
+
+/* ================= 編輯（管理員） ================= */
+function openEdit(code, back){
+  if(!isAdmin){ toast("你不是管理員，不能編輯"); return; }
+  var r = find(code); if(!r) return;
+  RETURN_TO = back || "";
+  document.getElementById("mdlTitle").textContent = "編輯合約｜" + r.code;
+  document.getElementById("mdlBody").innerHTML = editForm(r,"e");
+  document.getElementById("mdlFoot").innerHTML =
+    '<button class="btn danger" onclick="delRow(\''+esc(code)+'\')">刪除這筆</button>'+
+    '<span style="flex:1"></span>'+
+    '<button class="btn" onclick="closeM()">取消</button>'+
+    '<button class="btn primary" onclick="saveEdit(\''+esc(code)+'\')">儲存修改</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+function sel(id,opts,cur,allowFree){
+  var has = opts.indexOf(cur)>=0;
+  var o = opts.map(function(v){ return '<option'+(v===cur?' selected':'')+'>'+esc(v)+'</option>'; }).join("");
+  if(!has && cur) o = '<option selected>'+esc(cur)+'</option>' + o;
+  return '<select id="'+id+'">'+o+'</select>';
+}
+function editForm(r,p){
+  p = p || "e";
+  return '<div class="form">'+
+  '<div class="field"><label>合約編號</label><input id="'+p+'Code" value="'+esc(r.code||"")+'"></div>'+
+  '<div class="field"><label>權責部門</label>'+sel(p+"Dept",(ME&&!isAdmin)?[ME.dept]:DEPTS,r.dept||(ME?ME.dept:DEPTS[0]))+'</div>'+
+  '<div class="field full"><label>合約名稱</label><input id="'+p+'Name" value="'+esc(r.name||"")+'"></div>'+
+  '<div class="field"><label>類型</label>'+sel(p+"Type",TYPES,r.type||"")+'</div>'+
+  '<div class="field"><label>廠商</label><input id="'+p+'Vendor" value="'+esc(r.vendor||"")+'"></div>'+
+  '<div class="field"><label>經辦人</label><input id="'+p+'Owner" value="'+esc(r.owner||"")+'"></div>'+
+  '<div class="field"><label>簽訂日</label><input id="'+p+'Sign" type="date" value="'+esc(r.sign||"")+'"></div>'+
+  '<div class="field"><label>到期日</label><input id="'+p+'Due" type="date" value="'+esc(r.due||"")+'"></div>'+
+  '<div class="field"><label>提前通知天數</label><input id="'+p+'Notice" type="number" min="0" value="'+esc(r.notice||"")+'" placeholder="購氣約180／其他90"></div>'+
+  '<div class="field"><label>印花稅種類</label><input id="'+p+'StampType" value="'+esc(r.stampType||"")+'"></div>'+
+  '<div class="field"><label>人工狀態</label>'+sel(p+"Manual",MANUALS,r.manual||"")+'</div>'+
+  '<div class="field"><label>續約意向</label>'+sel(p+"Renew",RENEWS,r.renew||"")+'</div>'+
+  '<div class="field"><label>作業狀態</label>'+sel(p+"Work",WORKS,r.work||"未啟動")+'</div>'+
+  '<div class="field full"><label>備註</label><textarea id="'+p+'Memo">'+esc(r.memo||"")+'</textarea></div>'+
+  '</div>';
+}
+function readForm(r,p){
+  p = p || "e";
+  function g(k){ return document.getElementById(p+k); }
+  r.code = g("Code").value.trim();
+  r.dept = g("Dept").value;
+  r.name = g("Name").value.trim();
+  r.type = g("Type").value;
+  r.vendor = g("Vendor").value.trim();
+  r.owner = g("Owner").value.trim();
+  r.sign = g("Sign").value;
+  r.due = g("Due").value;
+  r.notice = g("Notice").value;
+  r.stampType = g("StampType").value.trim();
+  r.manual = g("Manual").value;
+  r.renew = g("Renew").value;
+  r.work = g("Work").value;
+  r.memo = g("Memo").value.trim();
+  return r;
+}
+async function saveEdit(code){
+  var r = find(code); if(!r) return;
+  var newCode = document.getElementById("eCode").value.trim();
+  if(!newCode){ toast("合約編號不能空白"); return; }
+  if(newCode!==code && find(newCode)){ toast("合約編號重複：" + newCode); return; }
+  if(!document.getElementById("eName").value.trim()){ toast("合約名稱不能空白"); return; }
+  if(ONLINE){
+    var o = readForm(JSON.parse(JSON.stringify(r)), "e");
+    try{ await push("save", { row:o, oldCode:code, by:ME.name }); }
+    catch(e){ toast(e.message); return; }
+    closeM(); drawAllPages(); toast("已儲存：" + o.code);
+    if(RETURN_TO){ var k1=RETURN_TO; RETURN_TO=""; openGroup(k1); }
+    return;
+  }
+  readForm(r,"e");
+  save(); closeM(); drawAllPages(); toast("已儲存：" + r.code);
+  if(RETURN_TO){ var k=RETURN_TO; RETURN_TO=""; openGroup(k); }
+}
+async function delRow(code){
+  if(!confirm("確定刪除 " + code + " ？這動作不能復原（建議先到「資料管理」匯出備份）。")) return;
+  if(ONLINE){
+    try{ await push("del", { code:code, by:ME.name }); }
+    catch(e){ toast(e.message); return; }
+    closeM(); drawAllPages(); toast("已刪除：" + code); return;
+  }
+  DB.rows = DB.rows.filter(function(x){ return x.code!==code; });
+  save(); closeM(); drawAllPages(); toast("已刪除：" + code);
+}
+function closeM(){ document.getElementById("mdl").classList.remove("show"); }
+
+/* ================= 新增 ================= */
+function fillAdd(){
+  var blank = {code:"",dept:(ME?ME.dept:DEPTS[0]),name:"",type:"",vendor:"",owner:"",sign:todayStr(),due:"",notice:"",stampType:"",manual:"作業中",renew:"",work:"未啟動",memo:""};
+  var h = editForm(blank,"n");
+  document.getElementById("addForm").innerHTML = h.slice(h.indexOf(">")+1, h.lastIndexOf("</div>"));
+}
+async function saveAdd(){
+  var r = readForm({},"n");
+  if(!r.code){ toast("請填合約編號"); return; }
+  if(find(r.code)){ toast("合約編號重複：" + r.code); return; }
+  if(!r.name){ toast("請填合約名稱"); return; }
+  r.rptDate=""; r.rptBy=""; r.rptNote="";
+  if(ONLINE){
+    try{ await push("save", { row:r, oldCode:"", by:ME.name }); }
+    catch(e){ toast(e.message); return; }
+    fillAdd(); drawAllPages(); toast("已新增：" + r.code); go("all"); return;
+  }
+  DB.rows.push(r); save(); fillAdd(); drawAllPages();
+  toast("已新增：" + r.code); go("all");
+}
+
+/* ================= 匯出入 ================= */
+function dl(blob,fn){ var u=URL.createObjectURL(blob),a=document.createElement("a"); a.href=u; a.download=fn; a.click(); URL.revokeObjectURL(u); toast("已下載：" + fn); }
+function expJSON(){ dl(new Blob([JSON.stringify(DB,null,1)],{type:"application/json"}), "竹建合約資料_"+todayStr()+".json"); }
+function expCSV(){
+  var head = ["合約編號","權責部門","類型","合約名稱","廠商","經辦人","簽訂日","到期日","剩餘天數","印花稅種類","人工狀態","續約意向","作業狀態","最後回報日","回報人","回報說明","備註"];
+  var body = DB.rows.map(function(r){
+    var L = daysLeft(r.due);
+    return [r.code,deptOf(r),r.type,r.name,r.vendor,r.owner,r.sign,r.due,L===null?"":L,r.stampType,r.manual,r.renew,r.work||"未啟動",r.rptDate,r.rptBy,r.rptNote,r.memo]
+      .map(function(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }).join(",");
+  }).join("\n");
+  dl(new Blob(["\ufeff"+head.join(",")+"\n"+body],{type:"text/csv;charset=utf-8"}), "竹建合約資料_"+todayStr()+".csv");
+}
+function impJSON(el){
+  var f = el.files[0]; if(!f) return;
+  var rd = new FileReader();
+  rd.onload = function(){
+    try{
+      var o = JSON.parse(rd.result);
+      if(!o.rows || !o.rows.length) throw new Error("檔案裡沒有 rows");
+      DB = o; save(); drawAllPages(); toast("已匯入 " + o.rows.length + " 筆");
+    }catch(e){ toast("匯入失敗：" + e.message); }
+    el.value = "";
+  };
+  rd.readAsText(f);
+}
+function resetAll(){
+  if(!confirm("會把資料還原成最初的 38 筆，你改過的東西都會不見。確定？")) return;
+  DB = { rows: JSON.parse(JSON.stringify(SEED)), ver: 1 };
+  save(); drawAllPages(); toast("已還原");
+}
+
+/* ================= 繪製 ================= */
+function drawAllPages(){
+  if(!ME) return;
+  document.getElementById("rolePill").className = "pill " + (isAdmin?"adm":"ro");
+  document.getElementById("rolePill").textContent = isAdmin ? "管理員" : ME.dept;
+  document.getElementById("whoTxt").textContent = ME.dept + "　" + ME.name + (ME.title||"");
+  document.getElementById("modeTag").innerHTML = ONLINE
+    ? '<span style="color:#1d4ed8;font-weight:700">☁ 已連線 Google 試算表</span>'
+    : '<span style="color:#b45309;font-weight:700">⚠ 離線試用（資料只存在這台電腦）</span>';
+  document.getElementById("sfToday").textContent = todayStr();
+  document.getElementById("sfN").textContent = scope().length;
+  document.getElementById("sfRole").textContent = isAdmin ? "🔓 管理員（全部門）" : ("🔒 " + ME.dept + " · 僅本部門");
+  fillSelects(); drawDash(); drawTabs(); drawDept(); drawAll(); drawWork();
+}
+document.getElementById("userList").innerHTML = USERS.map(function(u){
+  return '<option value="'+esc(u.name)+'">'+esc(u.dept + (u.title?"　"+u.title:""))+'</option>';
+}).join("");
+document.getElementById("lgPw").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+document.getElementById("lgName").addEventListener("keydown", function(e){ if(e.key==="Enter") document.getElementById("lgPw").focus(); });
+document.getElementById("lgName").addEventListener("change", function(){ document.getElementById("lgPw").focus(); });
+fillAdd();
+</script>
+</body>
+</html>
