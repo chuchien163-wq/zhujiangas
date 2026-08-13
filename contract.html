@@ -357,7 +357,7 @@ function load(){
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ toast("儲存失敗，瀏覽器空間可能已滿"); } }
 
 /* ================= 連線動畫 ================= */
-var NET = { n:0, t0:0, timer:null, prog:0, pt:null, hide:null, grace:null, idle:true };
+var NET = { n:0, t0:0, timer:null, prog:0, pt:null, hide:null, grace:null, idle:true, okLabel:"" };
 
 function _netEl(){
   return {
@@ -402,7 +402,21 @@ function netPhase(label){
   var e = _netEl();
   e.msg.className = "dots";
   e.msg.textContent = label;
+  // 重新排程收尾：若 700ms 內沒有下一個階段或 netFinish，就自動結束
+  NET.grace = setTimeout(function(){
+    if(NET.n > 0) return;
+    netFinish(true, NET.okLabel || "完成");
+  }, 700);
 }
+
+/* 看門狗：任何情況下最多轉 40 秒，避免卡住讓人以為當機 */
+function netWatch(){
+  if(NET.idle) return;
+  if(Date.now() - NET.t0 > 40000){
+    netFinish(false, "逾時未回應，請重新整理（Ctrl+Shift+R）");
+  }
+}
+setInterval(netWatch, 2000);
 
 function netEnd(ok, label){
   NET.n = Math.max(0, NET.n - 1);
@@ -474,6 +488,7 @@ function _jsonpRaw(params){
 async function pull(){
   var r = await jsonp({action:"bootstrap"});
   if(!r.ok) throw new Error(r.msg || "讀取失敗");
+  NET.okLabel = "載入完成 " + (r.rows ? r.rows.length : 0) + " 筆";
   netPhase("整理 " + (r.rows ? r.rows.length : 0) + " 筆合約");
   DB = { rows: r.rows, ver: 2 };
   if(r.cfg){
@@ -498,11 +513,19 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){retur
 function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("on"); setTimeout(function(){t.classList.remove("on")},2500); }
 function num(v){ var n=Number(String(v==null?"":v).replace(/[^0-9.\-]/g,"")); return isNaN(n)?0:n; }
 function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2); }
+/* 統一日期解析：容忍 2026/8/13、2026-8-13、2026-08-13、含時間的字串 */
+function parseD(v){
+  if(!v) return null;
+  if(v instanceof Date) return isNaN(v.getTime()) ? null : new Date(v.toDateString());
+  var t = String(v).trim().split(" ")[0].split("T")[0].replace(/\//g,"-");
+  var m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if(!m) return null;
+  var d = new Date(Number(m[1]), Number(m[2])-1, Number(m[3]));
+  return isNaN(d.getTime()) ? null : d;
+}
 function daysLeft(due){
-  if(!due) return null;
-  var d = new Date(String(due).replace(/\//g,"-") + "T00:00:00");
-  if(isNaN(d.getTime())) return null;
-  return Math.round((d - TODAY)/86400000);
+  var d = parseD(due);
+  return d===null ? null : Math.round((d - TODAY)/86400000);
 }
 function lamp(r){
   var st = r.manual || "";
@@ -518,9 +541,8 @@ function lamp(r){
   return "ok";
 }
 function quiet(r){
-  if(!r.rptDate) return null;
-  var d = new Date(String(r.rptDate).replace(/\//g,"-")+"T00:00:00");
-  return isNaN(d.getTime()) ? null : Math.round((TODAY-d)/86400000);
+  var d = parseD(r.rptDate);
+  return d===null ? null : Math.round((TODAY-d)/86400000);
 }
 function isSilent(r){
   var l = lamp(r);
