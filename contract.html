@@ -82,6 +82,37 @@ td.nw,th.nw{white-space:nowrap}
 .modal-box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.25)}
 .modal-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;position:sticky;bottom:0;background:#fff}
+/* ===== 連線動畫 ===== */
+#netbar{position:fixed;top:0;left:0;height:3px;width:0;z-index:80;
+  background:linear-gradient(90deg,#3b82f6,#8b5cf6,#10b981);
+  box-shadow:0 0 10px rgba(59,130,246,.7);opacity:0;transition:opacity .2s}
+#netbar.on{opacity:1}
+#netbar.done{width:100%!important;opacity:0;transition:width .2s,opacity .5s .2s}
+#netpill{position:fixed;right:18px;bottom:22px;z-index:81;display:none;
+  align-items:center;gap:9px;background:rgba(15,23,42,.94);color:#fff;
+  padding:10px 16px;border-radius:999px;font-size:13px;letter-spacing:.3px;
+  box-shadow:0 8px 24px rgba(15,23,42,.28);
+  transform:translateY(14px);opacity:0;transition:.28s}
+#netpill.on{display:flex;transform:translateY(0);opacity:1}
+#netpill.ok{background:rgba(16,185,129,.96)}
+#netpill.err{background:rgba(239,68,68,.96)}
+.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.28);
+  border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex:0 0 auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+#netpill.ok .spin,#netpill.err .spin{animation:none;border:0;
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+#netsec{opacity:.62;font-variant-numeric:tabular-nums;font-size:12px}
+.dots::after{content:"";animation:dt 1.2s steps(4,end) infinite}
+@keyframes dt{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+/* 卡片載入骨架 */
+.skel{background:linear-gradient(90deg,#eef2f7 25%,#f8fafc 50%,#eef2f7 75%);
+  background-size:200% 100%;animation:sk 1.2s ease-in-out infinite;border-radius:8px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* 登入按鈕忙碌態 */
+button.busy{position:relative;color:transparent!important;pointer-events:none}
+button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:16px;
+  margin:-8px 0 0 -8px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;
+  border-radius:50%;animation:sp .7s linear infinite}
 #toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(18px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:11px;opacity:0;transition:.25s;z-index:60;font-size:14px}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 .money{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -111,7 +142,7 @@ td.nw,th.nw{white-space:nowrap}
       <datalist id="userList"></datalist>
     </div>
     <div class="lgfield"><label>密碼（工號）</label><input id="lgPw" type="password" placeholder="請輸入你的工號" autocomplete="off"></div>
-    <button class="lgbtn" onclick="doLogin()">登　入</button>
+    <button class="lgbtn" id="lgBtn" onclick="doLogin()">登　入</button>
     <div class="lgmsg" id="lgMsg"></div>
     <div class="lgnote">姓名欄可下拉挑選，也可以直接打字。<br>密碼就是你的三碼工號。名單沒有你請找管理部 白沛豫。</div>
   </div>
@@ -262,6 +293,8 @@ td.nw,th.nw{white-space:nowrap}
   <div class="modal-foot" id="mdlFoot"></div>
 </div></div>
 
+<div id="netbar"></div>
+<div id="netpill"><span class="spin" id="netico"></span><span id="netmsg" class="dots">連線中</span><span id="netsec"></span></div>
 <div id="toast"></div>
 
 <script>
@@ -313,8 +346,78 @@ function load(){
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ toast("儲存失敗，瀏覽器空間可能已滿"); } }
 
+/* ================= 連線動畫 ================= */
+var NET = { n:0, t0:0, timer:null, prog:0, pt:null };
+function netStart(label){
+  NET.n++;
+  var bar = document.getElementById("netbar");
+  var pill = document.getElementById("netpill");
+  var msg = document.getElementById("netmsg");
+  var ico = document.getElementById("netico");
+  if(NET.n === 1){
+    NET.t0 = Date.now(); NET.prog = 0;
+    bar.className = "on"; bar.style.width = "0%";
+    pill.className = "on"; ico.className = "spin"; ico.textContent = "";
+    msg.className = "dots";
+    clearInterval(NET.pt);
+    NET.pt = setInterval(function(){
+      NET.prog += (92 - NET.prog) * 0.09 + 0.4;
+      if(NET.prog > 92) NET.prog = 92;
+      bar.style.width = NET.prog.toFixed(1) + "%";
+    }, 90);
+    clearInterval(NET.timer);
+    NET.timer = setInterval(function(){
+      var s = (Date.now() - NET.t0) / 1000;
+      document.getElementById("netsec").textContent = s.toFixed(1) + "s";
+    }, 100);
+  }
+  msg.textContent = label || "與 Google 試算表通訊中";
+}
+function netEnd(ok, label){
+  NET.n = Math.max(0, NET.n - 1);
+  if(NET.n > 0) return;
+  clearInterval(NET.pt); clearInterval(NET.timer);
+  var bar = document.getElementById("netbar");
+  var pill = document.getElementById("netpill");
+  var msg = document.getElementById("netmsg");
+  var ico = document.getElementById("netico");
+  var sec = ((Date.now() - NET.t0) / 1000).toFixed(1);
+  bar.className = "on done";
+  msg.className = "";
+  ico.className = "spin";
+  if(ok){
+    pill.className = "on ok"; ico.textContent = "\u2713";
+    msg.textContent = label || "完成";
+  } else {
+    pill.className = "on err"; ico.textContent = "\u2715";
+    msg.textContent = label || "連線失敗";
+  }
+  document.getElementById("netsec").textContent = sec + "s";
+  setTimeout(function(){
+    pill.className = ""; bar.className = ""; bar.style.width = "0%";
+  }, ok ? 1100 : 3200);
+}
+
 /* ================= 通訊 ================= */
 function jsonp(params){
+  var LBL = {
+    bootstrap: "讀取合約資料",
+    login: "驗證身分",
+    report: "送出回報",
+    save: "儲存合約",
+    del: "刪除合約",
+    nudge: "寄送催辦"
+  };
+  netStart(LBL[params.action] || "與 Google 試算表通訊中");
+  return _jsonpRaw(params).then(function(r){
+    netEnd(!!(r && r.ok !== false), (r && r.ok === false) ? (r.msg || "後端回報錯誤") : null);
+    return r;
+  }, function(e){
+    netEnd(false, e.message || "連線失敗");
+    throw e;
+  });
+}
+function _jsonpRaw(params){
   return new Promise(function(res, rej){
     var cb = "cb_" + Date.now() + Math.floor(Math.random()*9999);
     var sc = document.createElement("script");
@@ -431,12 +534,15 @@ async function doLogin(){
   var u = null;
   if(ONLINE){
     msg.style.color = "#475569"; msg.textContent = "連線中…";
+    var lgBtn = document.getElementById("lgBtn");
+    if(lgBtn) lgBtn.classList.add("busy");
     try{
       var lr = await jsonp({action:"login", name:nm, pw:pw});
-      if(!lr.ok){ msg.style.color = ""; msg.textContent = lr.msg; return; }
+      if(!lr.ok){ if(lgBtn) lgBtn.classList.remove("busy"); msg.style.color = ""; msg.textContent = lr.msg; return; }
       u = lr.user;
       await pull();
-    }catch(err){ msg.style.color = ""; msg.textContent = err.message; return; }
+    }catch(err){ if(lgBtn) lgBtn.classList.remove("busy"); msg.style.color = ""; msg.textContent = err.message; return; }
+    if(lgBtn) lgBtn.classList.remove("busy");
     msg.style.color = ""; msg.textContent = "";
   } else {
     for(var i=0;i<USERS.length;i++){
