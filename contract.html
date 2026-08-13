@@ -83,25 +83,29 @@ td.nw,th.nw{white-space:nowrap}
 .modal-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
 .modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:9px;justify-content:flex-end;position:sticky;bottom:0;background:#fff}
 /* ===== 連線動畫 ===== */
-#netbar{position:fixed;top:0;left:0;height:3px;width:0;z-index:80;
+#netbar{position:fixed;top:0;left:0;height:5px;width:0;z-index:80;
   background:linear-gradient(90deg,#3b82f6,#8b5cf6,#10b981);
-  box-shadow:0 0 10px rgba(59,130,246,.7);opacity:0;transition:opacity .2s}
+  box-shadow:0 0 14px rgba(59,130,246,.75);opacity:0;transition:opacity .2s}
 #netbar.on{opacity:1}
 #netbar.done{width:100%!important;opacity:0;transition:width .2s,opacity .5s .2s}
-#netpill{position:fixed;right:18px;bottom:22px;z-index:81;display:none;
-  align-items:center;gap:9px;background:rgba(15,23,42,.94);color:#fff;
-  padding:10px 16px;border-radius:999px;font-size:13px;letter-spacing:.3px;
-  box-shadow:0 8px 24px rgba(15,23,42,.28);
-  transform:translateY(14px);opacity:0;transition:.28s}
+#netpill{position:fixed;right:22px;bottom:26px;z-index:81;display:none;
+  align-items:center;gap:13px;background:rgba(15,23,42,.95);color:#fff;
+  padding:16px 26px;border-radius:999px;font-size:20px;font-weight:600;letter-spacing:.5px;
+  box-shadow:0 12px 34px rgba(15,23,42,.34);
+  transform:translateY(16px);opacity:0;transition:.28s}
 #netpill.on{display:flex;transform:translateY(0);opacity:1}
-#netpill.ok{background:rgba(16,185,129,.96)}
-#netpill.err{background:rgba(239,68,68,.96)}
-.spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.28);
+#netpill.ok{background:rgba(16,185,129,.97)}
+#netpill.err{background:rgba(239,68,68,.97)}
+.spin{width:22px;height:22px;border:3px solid rgba(255,255,255,.28);
   border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex:0 0 auto}
 @keyframes sp{to{transform:rotate(360deg)}}
-#netpill.ok .spin,#netpill.err .spin{animation:none;border:0;
-  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
-#netsec{opacity:.62;font-variant-numeric:tabular-nums;font-size:12px}
+#netpill.ok .spin,#netpill.err .spin{animation:none;border:0;width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;font-size:23px;font-weight:700}
+#netsec{opacity:.66;font-variant-numeric:tabular-nums;font-size:17px;font-weight:500}
+@media(max-width:640px){
+  #netpill{right:12px;left:12px;bottom:16px;justify-content:center;
+    font-size:18px;padding:15px 20px}
+}
 .dots::after{content:"";animation:dt 1.2s steps(4,end) infinite}
 @keyframes dt{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 /* 卡片載入骨架 */
@@ -347,55 +351,86 @@ function load(){
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ toast("儲存失敗，瀏覽器空間可能已滿"); } }
 
 /* ================= 連線動畫 ================= */
-var NET = { n:0, t0:0, timer:null, prog:0, pt:null };
+var NET = { n:0, t0:0, timer:null, prog:0, pt:null, hide:null, grace:null, idle:true };
+
+function _netEl(){
+  return {
+    bar : document.getElementById("netbar"),
+    pill: document.getElementById("netpill"),
+    msg : document.getElementById("netmsg"),
+    ico : document.getElementById("netico"),
+    sec : document.getElementById("netsec")
+  };
+}
 function netStart(label){
+  var e = _netEl();
+  clearTimeout(NET.hide);   // 關鍵：取消上一輪的隱藏計時，避免動畫被中途掐掉
+  clearTimeout(NET.grace);
   NET.n++;
-  var bar = document.getElementById("netbar");
-  var pill = document.getElementById("netpill");
-  var msg = document.getElementById("netmsg");
-  var ico = document.getElementById("netico");
-  if(NET.n === 1){
+  if(NET.idle){
     NET.t0 = Date.now(); NET.prog = 0;
-    bar.className = "on"; bar.style.width = "0%";
-    pill.className = "on"; ico.className = "spin"; ico.textContent = "";
-    msg.className = "dots";
+    e.bar.className = "on"; e.bar.style.width = "0%";
     clearInterval(NET.pt);
     NET.pt = setInterval(function(){
-      NET.prog += (92 - NET.prog) * 0.09 + 0.4;
-      if(NET.prog > 92) NET.prog = 92;
-      bar.style.width = NET.prog.toFixed(1) + "%";
+      NET.prog += (94 - NET.prog) * 0.07 + 0.35;
+      if(NET.prog > 94) NET.prog = 94;
+      e.bar.style.width = NET.prog.toFixed(1) + "%";
     }, 90);
     clearInterval(NET.timer);
     NET.timer = setInterval(function(){
-      var s = (Date.now() - NET.t0) / 1000;
-      document.getElementById("netsec").textContent = s.toFixed(1) + "s";
+      e.sec.textContent = ((Date.now() - NET.t0)/1000).toFixed(1) + "s";
     }, 100);
   }
-  msg.textContent = label || "與 Google 試算表通訊中";
+  NET.idle = false;
+  e.pill.className = "on";
+  e.ico.className = "spin"; e.ico.textContent = "";
+  e.msg.className = "dots";
+  e.msg.textContent = label || "與 Google 試算表通訊中";
 }
+
+/* 同一輪連線裡切換階段文字，不中斷動畫 */
+function netPhase(label){
+  if(NET.idle) return;
+  clearTimeout(NET.grace);   // 還在忙，別讓上一次的收尾提前觸發
+  clearTimeout(NET.hide);
+  var e = _netEl();
+  e.msg.className = "dots";
+  e.msg.textContent = label;
+}
+
 function netEnd(ok, label){
   NET.n = Math.max(0, NET.n - 1);
   if(NET.n > 0) return;
+  // 緩衝 180ms：若緊接著還有下一次呼叫，就當成同一輪，不收尾
+  clearTimeout(NET.grace);
+  NET.grace = setTimeout(function(){
+    if(NET.n > 0) return;
+    netFinish(ok, label);
+  }, ok ? 180 : 0);
+}
+
+function netFinish(ok, label){
+  if(NET.idle) return;
+  NET.idle = true;
+  NET.n = 0;
   clearInterval(NET.pt); clearInterval(NET.timer);
-  var bar = document.getElementById("netbar");
-  var pill = document.getElementById("netpill");
-  var msg = document.getElementById("netmsg");
-  var ico = document.getElementById("netico");
-  var sec = ((Date.now() - NET.t0) / 1000).toFixed(1);
-  bar.className = "on done";
-  msg.className = "";
-  ico.className = "spin";
+  var e = _netEl();
+  var sec = ((Date.now() - NET.t0)/1000).toFixed(1);
+  e.bar.className = "on done";
+  e.msg.className = "";
+  e.ico.className = "spin";
   if(ok){
-    pill.className = "on ok"; ico.textContent = "\u2713";
-    msg.textContent = label || "完成";
+    e.pill.className = "on ok"; e.ico.textContent = "\u2713";
+    e.msg.textContent = label || "完成";
   } else {
-    pill.className = "on err"; ico.textContent = "\u2715";
-    msg.textContent = label || "連線失敗";
+    e.pill.className = "on err"; e.ico.textContent = "\u2715";
+    e.msg.textContent = label || "連線失敗";
   }
-  document.getElementById("netsec").textContent = sec + "s";
-  setTimeout(function(){
-    pill.className = ""; bar.className = ""; bar.style.width = "0%";
-  }, ok ? 1100 : 3200);
+  e.sec.textContent = sec + "s";
+  clearTimeout(NET.hide);
+  NET.hide = setTimeout(function(){
+    e.pill.className = ""; e.bar.className = ""; e.bar.style.width = "0%";
+  }, ok ? 1200 : 4000);
 }
 
 /* ================= 通訊 ================= */
@@ -433,6 +468,7 @@ function _jsonpRaw(params){
 async function pull(){
   var r = await jsonp({action:"bootstrap"});
   if(!r.ok) throw new Error(r.msg || "讀取失敗");
+  netPhase("整理 " + (r.rows ? r.rows.length : 0) + " 筆合約");
   DB = { rows: r.rows, ver: 2 };
   if(r.cfg){
     RED       = Number(r.cfg["紅燈天數"]) || RED;
@@ -554,10 +590,13 @@ async function doLogin(){
   ME = u;
   isAdmin = (u.role === "管理員");
   if(!isAdmin) curDept = u.dept;
+  netPhase("繪製畫面");
   document.getElementById("login").style.display = "none";
   document.getElementById("app").style.display = "flex";
   applyRoleUI();
+  await new Promise(function(r){ requestAnimationFrame(function(){ setTimeout(r, 0); }); });
   drawAllPages();
+  netFinish(true, "載入完成 " + DB.rows.length + " 筆");
   toast("歡迎，" + u.name + (u.title || ""));
 }
 function logout(){
