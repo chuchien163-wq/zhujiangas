@@ -188,12 +188,13 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
     <button class="btn sm" onclick="logout()">登出</button></div>
   </div>
   <div class="cards">
-    <div class="card" onclick="openGroup('all')"><div class="label">追蹤中合約</div><div class="num" id="kTotal">0</div><div class="hint">點一下看明細</div></div>
+    <div class="card" onclick="openGroup('all')"><div class="label">追蹤中合約</div><div class="num" id="kTotal">0</div><div class="hint" id="hTotal">點一下看明細</div></div>
     <div class="card" onclick="openGroup('over')"><div class="label">🔴 已逾期</div><div class="num red" id="kOver">0</div><div class="hint">立即處理</div></div>
     <div class="card" onclick="openGroup('r')"><div class="label">🔴 紅燈 30 天</div><div class="num red" id="kR">0</div><div class="hint">副本主管</div></div>
     <div class="card" onclick="openGroup('a')"><div class="label">🟠 催辦 90 天</div><div class="num orange" id="kA">0</div><div class="hint">要回報進度</div></div>
     <div class="card" onclick="openGroup('g')"><div class="label">🔵 首報階段</div><div class="num blue" id="kG">0</div><div class="hint">購氣約180／其他90</div></div>
     <div class="card" onclick="openGroup('silent')"><div class="label">🟣 久未回報</div><div class="num purple" id="kS">0</div><div class="hint">超過 7 天沒更新</div></div>
+    <div class="card" id="cardReg" style="display:none" onclick="openGroup('reg')"><div class="label">📋 僅登記</div><div class="num" id="kReg">0</div><div class="hint">無到期日，不進提醒</div></div>
     <div class="card" id="cardTmp" style="display:none" onclick="openGroup('tmp')"><div class="label">🟡 待編號</div><div class="num orange" id="kT">0</div><div class="hint">部門新登記，等我編碼</div></div>
   </div>
   <div class="grid">
@@ -269,7 +270,7 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
 
 <!-- ============ 新增合約 ============ -->
 <section id="add" class="page">
-  <div class="top"><div><h1>新增合約</h1><div class="sub">部門在正式簽約前先登記。<b>合約編號不用填</b>，系統會給暫編（暫-115-001），管理部收到後統一正式編碼。</div></div></div>
+  <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會給暫編（暫-115-001），到期提醒由管理部視需要另外設定。</div></div></div>
   <div class="panel"><div class="form" id="addForm"></div>
     <div class="modal-foot" style="position:static"><button class="btn" onclick="fillAdd()">清空</button><button class="btn primary" onclick="saveAdd()">送出登記</button></div>
   </div>
@@ -642,7 +643,11 @@ function drawDash(){
     if(l==="g") g180++;
     if(isSilent(rows[i])) sil++;
   }
-  document.getElementById("kTotal").textContent = rows.length;
+  var liveN = rows.filter(alive).length;
+  var regN  = rows.filter(function(x){ return lamp(x)==="none"; }).length;
+  document.getElementById("kTotal").textContent = liveN;
+  document.getElementById("hTotal").textContent =
+    regN ? ("另有 " + regN + " 筆僅登記") : "點一下看明細";
   document.getElementById("kOver").textContent = over;
   document.getElementById("kR").textContent = r30;
   document.getElementById("kA").textContent = a90;
@@ -651,6 +656,8 @@ function drawDash(){
   var tmpN = scope().filter(isTemp).length;
   document.getElementById("kT").textContent = tmpN;
   document.getElementById("cardTmp").style.display = (isAdmin && tmpN > 0) ? "" : "none";
+  document.getElementById("kReg").textContent = regN;
+  document.getElementById("cardReg").style.display = (regN > 0) ? "" : "none";
 
   var pri = rows.filter(alive).sort(function(x,y){
     var a=daysLeft(x.due), b=daysLeft(y.due);
@@ -694,7 +701,8 @@ var GROUPS = {
   a:      {t:"催辦 90 天內（要回報進度）", f:function(x){ return lamp(x)==="a"; }},
   g:      {t:"首報階段（購氣約 180 天／其他 90 天）", f:function(x){ return lamp(x)==="g"; }},
   silent: {t:"久未回報（超過 7 天沒更新）", f:isSilent},
-  tmp:    {t:"待編號（部門新登記，等管理部正式編碼）", f:isTemp}
+  tmp:    {t:"待編號（部門新登記，等管理部正式編碼）", f:isTemp},
+  reg:    {t:"僅登記（沒有到期日，不進提醒；要追蹤請補到期日）", f:function(x){ return lamp(x)==="none"; }}
 };
 function isTemp(x){ return String(x.code||"").indexOf("暫-")===0; }
 function openGroup(kind){
@@ -965,8 +973,8 @@ function editForm(r,p){
   '<div class="field"><label>類型</label>'+sel(p+"Type",TYPES,r.type||"")+'</div>'+
   '<div class="field"><label>廠商</label><input id="'+p+'Vendor" value="'+esc(r.vendor||"")+'"></div>'+
   '<div class="field"><label>經辦人</label><input id="'+p+'Owner" value="'+esc(r.owner||"")+'"></div>'+
-  '<div class="field"><label>簽訂日</label><input id="'+p+'Sign" type="date" value="'+esc(r.sign||"")+'"></div>'+
-  '<div class="field"><label>到期日</label><input id="'+p+'Due" type="date" value="'+esc(r.due||"")+'"></div>'+
+  '<div class="field"><label>簽訂日</label><input id="'+p+'Sign" type="date" value="'+esc(r.sign||"")+'"><div class="hint">還沒簽就留空，簽完再回來補</div></div>'+
+  '<div class="field"><label>到期日 <span style="color:#94a3b8;font-weight:400">選填</span></label><input id="'+p+'Due" type="date" value="'+esc(r.due||"")+'"><div class="hint">不確定就留空。要進到期提醒的合約由管理部設定</div></div>'+
   '<div class="field"><label>建案名稱</label><input id="'+p+'Build" value="'+esc(r.build||"")+'" placeholder="例：華夏海灣南廠"></div>'+
   '<div class="field"><label>工程編號</label><input id="'+p+'Eng" value="'+esc(r.eng||"")+'" placeholder="例：231107P014"></div>'+
   '<div class="field"><label>金額級距</label>'+sel(p+"Amt",[""].concat(AMTS),r.amt||"")+'<div class="hint">只選區間，不必填實際金額</div></div>'+
@@ -1001,6 +1009,8 @@ async function saveEdit(code){
   var newCode = document.getElementById("eCode").value.trim();
   if(!newCode){ toast("合約編號不能空白"); return; }
   if(!isAdmin && newCode !== code){ toast("只有管理部能修改合約編號"); return; }
+  var sg = document.getElementById("eSign").value, du = document.getElementById("eDue").value;
+  if(sg && du && sg > du){ toast("簽訂日不能晚於到期日"); return; }
   if(newCode!==code && find(newCode)){ toast("合約編號重複：" + newCode); return; }
   if(!document.getElementById("eName").value.trim()){ toast("合約名稱不能空白"); return; }
   if(ONLINE){
@@ -1029,7 +1039,7 @@ function closeM(){ document.getElementById("mdl").classList.remove("show"); }
 
 /* ================= 新增 ================= */
 function fillAdd(){
-  var blank = {code:"",dept:(ME?ME.dept:DEPTS[0]),name:"",type:"",vendor:"",owner:"",sign:todayStr(),due:"",build:"",eng:"",amt:"",manual:"作業中",renew:"",work:"未啟動",memo:""};
+  var blank = {code:"",dept:(ME?ME.dept:DEPTS[0]),name:"",type:"",vendor:"",owner:"",sign:"",due:"",build:"",eng:"",amt:"",manual:"作業中",renew:"",work:"未啟動",memo:""};
   var h = editForm(blank,"n");
   document.getElementById("addForm").innerHTML = h.slice(h.indexOf(">")+1, h.lastIndexOf("</div>"));
 }
@@ -1046,7 +1056,7 @@ async function saveAdd(){
   var r = readForm({},"n");
   if(r.code && find(r.code)){ toast("合約編號重複：" + r.code); return; }
   if(!r.name){ toast("請填合約名稱"); return; }
-  if(!r.due && !confirm("沒填到期日，這筆不會進到期提醒。確定送出？")) return;
+  if(r.sign && r.due && r.sign > r.due){ toast("簽訂日不能晚於到期日"); return; }
   r.rptDate=""; r.rptBy=""; r.rptNote="";
   if(ONLINE){
     var res;
