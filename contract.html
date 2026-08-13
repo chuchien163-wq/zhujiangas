@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>合約管理中心｜竹建瓦斯</title>
+<!--
+  竹建瓦斯 合約管理系統  前端 v3.3   2026-08-13  管理部 白沛豫
+  後端：contract_gas.gs（綁定「竹建合約管理_雲端主檔」Google 試算表）
+  網址：https://chuchien163-wq.github.io/zhujiangas/contract.html
+
+  v2.0 初版
+  v3.0 欄位 21→22：移除印花稅種類/提前通知天數，新增建案名稱/工程編號/金額級距
+       類型加「管線工程」；合約編號部門免填(系統給暫編)；簽訂日不預帶今天
+       到期日改選填；新增「僅登記」「待編號」兩張分組卡
+  v3.1 連線動畫（頂端進度條＋右下狀態膠囊，含階段文字與即時秒數）
+  v3.2 動畫防卡死：netPhase 自動重排收尾、40 秒看門狗；日期改用 parseD()
+  v3.3 新增「工業用戶」頁：已簽約 20 家／未簽約 25 家，與合約主檔自動勾稽
+       後端需同步升到 contract_gas.gs v3.3，並執行一次 initIndustrial
+
+  維護提醒：改版後上傳 GitHub 覆蓋同名檔 → Ctrl+Shift+R 強刷
+-->
 <style>
 :root{--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#718096;--line:#e7ebf2;
 --nav:#101827;--nav2:#182235;--accent:#3b82f6;--danger:#ef4444;--warn:#f59e0b;
@@ -163,6 +179,7 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
     <button data-page="depts">🏛　部門檢視</button>
     <button data-page="all">▤　合約總表</button>
     <button data-page="work">↻　作業追蹤</button>
+    <button data-page="ind">🏭　工業用戶</button>
     <button data-page="add">＋　新增合約</button>
     <button data-page="data">⚙　資料管理</button>
   </div>
@@ -268,6 +285,37 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
   </div>
 </section>
 
+<!-- ============ 工業用戶 ============ -->
+<section id="ind" class="page">
+  <div class="top"><div><h1>工業用戶</h1><div class="sub">已簽約用戶的合約期間與使用量，以及尚未簽約的潛在名單。用戶名稱、合約期間、使用量一律照原表原文。</div></div></div>
+  <div id="indWarn"></div>
+  <div class="cards" style="grid-template-columns:repeat(4,1fr)">
+    <div class="card" onclick="setIndTab('signed')"><div class="label">✅ 已簽約</div><div class="num green" id="iSign">0</div><div class="hint">含未續約</div></div>
+    <div class="card" onclick="setIndTab('unsigned')"><div class="label">⭕ 尚未簽約</div><div class="num blue" id="iUn">0</div><div class="hint">潛在客戶名單</div></div>
+    <div class="card" onclick="setIndTab('due')"><div class="label">🔴 到期預警</div><div class="num red" id="iDue">0</div><div class="hint">表列到期日已過或剩 30 天內</div></div>
+    <div class="card" onclick="setIndTab('chk')"><div class="label">⚠ 勾稽異常</div><div class="num orange" id="iChk">0</div><div class="hint">與合約主檔對不上</div></div>
+  </div>
+  <div class="tabs" id="indTabs"></div>
+  <div class="panel">
+    <div class="panel-head">
+      <div class="toolbar">
+        <input id="iq" placeholder="🔍 用戶名稱／合約編號" oninput="drawInd()" style="min-width:200px">
+        <select id="ichk" onchange="drawInd()">
+          <option value="">全部勾稽結果</option><option>相符</option><option>表未更新</option>
+          <option>主檔查無</option><option>差1天</option><option>疑似已簽約</option>
+          <option>待釐清</option><option>重複</option><option>未續約</option>
+        </select>
+      </div>
+      <div class="toolbar">
+        <button class="btn sm" onclick="copyIndChk()">📋 複製勾稽異常</button>
+        <button class="btn sm" onclick="expIndCSV()">⬇ 匯出 CSV</button>
+        <button class="btn primary" id="indAddBtn" onclick="openIndEdit('')">＋ 新增工業用戶</button>
+      </div>
+    </div>
+    <div class="tblwrap"><table><thead id="indHead"></thead><tbody id="indTbl"></tbody></table></div>
+  </div>
+</section>
+
 <!-- ============ 新增合約 ============ -->
 <section id="add" class="page">
   <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會給暫編（暫-115-001），到期提醒由管理部視需要另外設定。</div></div></div>
@@ -330,6 +378,11 @@ var AMTS  = ["10萬以下","10-50萬","50-100萬","100-500萬","500-1000萬","10
 var WORKS = ["未啟動","已通知經辦","續約評估中","洽談中","用印中","已完成","不續約結案"];
 var RENEWS = ["", "續約", "不續約", "評估中", "換約"];
 var MANUALS = ["", "作業中", "期滿", "解約", "提前終止", "已封箱"];
+var IND_STATS = ["已簽約", "未簽約", "未續約"];
+var IND_STAGES = ["未接觸", "已拜訪", "報價中", "洽談中", "待簽約", "暫緩", "婉拒", "已簽約"];
+var IND_CHKS = ["", "相符", "表未更新", "主檔查無", "差1天", "疑似已簽約", "待釐清", "重複", "未續約"];
+/* 工業用戶離線種子（線上模式會被 bootstrap 的 ind 覆蓋） */
+var IND_SEED = [{"seq": "1","stat": "已簽約","cust": "漢民科技","s1": "111/7/1","s2": "114/6/30","due": "2025-06-30","vol": "7,200","minvol": "720","link": "114-A-026","chk": "表未更新","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔已續約 114/7/1-117/6/30（114-A-026），本表仍為前期"},{"seq": "2","stat": "已簽約","cust": "久立美興業","s1": "111/8/17","s2": "114/8/16","due": "2025-08-16","vol": "20,280","minvol": "2,028","link": "114-A-019","chk": "表未更新","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔已續約 114/8/17-117/8/17（114-A-019），本表仍為前期"},{"seq": "3","stat": "已簽約","cust": "興銘工業","s1": "111/11/14","s2": "114/11/13","due": "2025-11-13","vol": "30,000","minvol": "3,000","link": "","chk": "主檔查無","stage": "","owner": "","updDate": "","updBy": "","memo": "已逾期，合約主檔查無對應合約，請確認是否已解約"},{"seq": "4","stat": "已簽約","cust": "加和紙業","s1": "112/3/12","s2": "115/3/11","due": "2026-03-11","vol": "30,000","minvol": "3,000","link": "115-A-004","chk": "表未更新","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔已續約 115/3/13-118/3/12（115-A-004），本表仍為前期"},{"seq": "5","stat": "已簽約","cust": "紡安(停業中)","s1": "112/3/31","s2": "115/3/30","due": "2026-03-30","vol": "500,000","minvol": "50,000","link": "","chk": "主檔查無","stage": "","owner": "","updDate": "","updBy": "","memo": "原表註記停業中；已逾期，主檔查無對應合約"},{"seq": "6","stat": "已簽約","cust": "吉伸紙業","s1": "112/4/6","s2": "115/4/5","due": "2026-04-05","vol": "15,000","minvol": "1,500","link": "115-A-010","chk": "表未更新","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔已續約（115-A-010，到期 118/4/5），本表仍為前期"},{"seq": "7","stat": "已簽約","cust": "台灣積體電路(北)","s1": "110/8/31","s2": "115/8/30","due": "2026-08-30","vol": "-","minvol": "-","link": "110-A-004","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "★ 期滿前1個月須函文確認並辦理保證文件(土銀保證書)期限更新；備註載明須90天前啟動-115/5/30，該日已過"},{"seq": "8","stat": "已簽約","cust": "竹南啤酒廠","s1": "111/1/1","s2": "115/12/31","due": "2026-12-31","vol": "-","minvol": "-","link": "110-A-011","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "台灣菸酒 110-115年度採購案"},{"seq": "9","stat": "已簽約","cust": "永豐餘","s1": "113/2/26","s2": "116/2/25","due": "2027-02-25","vol": "52,560","minvol": "5,256","link": "113-A-002","chk": "差1天","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔到期日 116/2/26，本表 116/2/25"},{"seq": "10","stat": "已簽約","cust": "永昕生物醫藥","s1": "113/3/15","s2": "116/3/14","due": "2027-03-14","vol": "35,000","minvol": "3,500","link": "113-A-003","chk": "差1天","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔到期日 116/3/15，本表 116/3/14"},{"seq": "11","stat": "已簽約","cust": "宏明紙業(尚未使用)","s1": "113/5/7","s2": "116/5/6","due": "2027-05-06","vol": "58,800","minvol": "5,880","link": "113-A-005","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "原表註記尚未使用"},{"seq": "12","stat": "已簽約","cust": "漸欣食品(富騁)","s1": "113/7/1","s2": "116/6/30","due": "2027-06-30","vol": "20,000","minvol": "2,000","link": "113-A-009","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔廠商名為富騁科技"},{"seq": "13","stat": "已簽約","cust": "霖揚生技製藥(科研)(晶元.松瑞2.展旺)","s1": "113/10/1-","s2": "116/9/30","due": "2027-09-30","vol": "20,000","minvol": "2,000","link": "113-A-014","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "原表起日誤植為 113/10/1-（多一個連字號），照原文保留"},{"seq": "14","stat": "已簽約","cust": "亞欣達","s1": "113/10/1","s2": "116/9/30","due": "2027-09-30","vol": "2,000","minvol": "200","link": "113-A-015","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "16","stat": "已簽約","cust": "鼎元(光華)","s1": "114/3/31","s2": "117/3/30","due": "2028-03-30","vol": "3,500","minvol": "350","link": "114-A-003","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔廠商名為鼎元光電"},{"seq": "17","stat": "已簽約","cust": "台灣積體電路(南)","s1": "112/5/2","s2": "117/5/1","due": "2028-05-01","vol": "-","minvol": "-","link": "112-A-008","chk": "差1天","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔到期日 117/5/2，本表 117/5/1。每三年辦理第一銀行保證書續保"},{"seq": "18","stat": "已簽約","cust": "華夏海灣(北)","s1": "114/6/1","s2": "117/5/31","due": "2028-05-31","vol": "300,000","minvol": "30,000","link": "114-A-007","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "第二次展延，原契約 111-A-003"},{"seq": "19","stat": "已簽約","cust": "大夏","s1": "114/6/11","s2": "117/6/10","due": "2028-06-10","vol": "60,000","minvol": "6,000","link": "114-A--009","chk": "相符","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔合約編號為 114-A--009（雙連字號，主檔既有誤植）"},{"seq": "20","stat": "已簽約","cust": "四方乳品","s1": "114/8/4","s2": "117/8/3","due": "2028-08-03","vol": "5,600","minvol": "560","link": "114-A-012","chk": "差1天","stage": "","owner": "","updDate": "","updBy": "","memo": "主檔到期日 117/8/4，本表 117/8/3"},{"seq": "21","stat": "未續約","cust": "進春紙器(未續約)","s1": "109/6/16","s2": "112/6/17","due": "2023-06-17","vol": "12,000","minvol": "1,200","link": "","chk": "未續約","stage": "","owner": "","updDate": "","updBy": "","memo": "原表註記未續約；同名亦出現在尚未簽約名單"},{"seq": "","stat": "未簽約","cust": "國衛院","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "疫苗工廠","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "晶元(科中)","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "待釐清","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "霖揚 113-A-014 合約備註含「(科研)(晶元.松瑞2.展旺)」，是否為同一供氣點待確認"},{"seq": "","stat": "未簽約","cust": "達輝","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "益邦製藥","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "力積電","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "友輝(新輝)","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "群創1","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "群創2","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "群創3(奇美.統寶)","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "頭份工業","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "台英","s1": "","s2": "","due": "","vol": "","minvol": "","link": "115-A-011","chk": "疑似已簽約","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "合約主檔有「台英帝國菸草製造天然氣買賣契約」115-A-011，簽訂 115/4/15、到期 118/4/14"},{"seq": "","stat": "未簽約","cust": "漢泰先進","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "昕一","s1": "","s2": "","due": "","vol": "","minvol": "","link": "115-A-012","chk": "疑似已簽約","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "合約主檔有「昕一天然氣買賣契約」115-A-012，簽訂 115/4/20、到期 118/4/24"},{"seq": "","stat": "未簽約","cust": "騰淵(騰翔)","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "與下一列「騰翔」疑似重複列名"},{"seq": "","stat": "未簽約","cust": "騰翔","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "與上一列「騰淵(騰翔)」疑似重複列名"},{"seq": "","stat": "未簽約","cust": "長虹朔膠","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "普惠食品","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "進春紙器","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "重複","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": "已列於已簽約名單第 21 序（109/6/16-112/6/17，未續約）"},{"seq": "","stat": "未簽約","cust": "民景(一廠)-公義","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "民景(二廠)-公館","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "華鴻紙業","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "成龍精陶藝","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "大郕","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""},{"seq": "","stat": "未簽約","cust": "脫普聚益","s1": "","s2": "","due": "","vol": "","minvol": "","link": "","chk": "","stage": "未接觸","owner": "","updDate": "","updBy": "","memo": ""}];
 var SEED = [{"code": "114-A-011", "year": "114", "zi": "竹財約", "cat": "A", "dept": "財務部", "owner": "", "sign": "2025-07-08", "due": "2026-07-07", "type": "財務", "vendor": "勤業", "name": "會計簽證委託書-勤業眾信聯合會計師事務所108年財務報表及查核工作", "period": "113-114", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-013", "year": "114", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2025-07-24", "due": "2026-07-23", "type": "設備維護", "vendor": "正業機電", "name": "正業機電技術顧問有限公司", "period": "114/7/24-115/7/23", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "110-A-004", "year": "110", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2021-08-03", "due": "2026-08-30", "type": "工業用戶", "vendor": "台積電", "name": "台積電(AP6)北廠 天然氣工程暨購氣合約 (擔保物-銀行保證書(土銀))", "period": "110/8/31-115/8/30\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期五年)。\n113/7/30通知哲淵續保作業\n須90天前開始續保作業-115/5/30", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "1.總工程:［金額］元，50%(［金額］-含稅)，另50%用氣保證金(［金額］)\n工程保證金［金額］元，氣費賒銷擔保金［金額］元\n3.用氣保證金擔保\n3.1累計使用總氣量達6,000,000M3(度)，退［金額］元整。\n3.2累計使用總氣量達12,000,000M3 (度)，退［金額］元整。\n3.3累計使用總氣量達22,230,000M3 (度)，退［金額］元整。\n3.4正式供氣滿十二年內使用總氣量未達22,230,000M3 (度)，則未退款之用氣保證金不予退還。上述費用均需於用氣前繳納。", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "112-A-013", "year": "112", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2023-11-13", "due": "2026-11-08", "type": "設備維護", "vendor": "森泰儀器", "name": "測量儀器維護合約書", "period": "112/811/9-115/11/8", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-B-001", "year": "113", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2024-11-28", "due": "2026-12-13", "type": "租賃", "vendor": "", "name": "房屋租賃契約書-童安玉 (中正路275號1~2層)", "period": "113/12/14-115/12/13", "stamped": "", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "110-A-011", "year": "110", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2021-12-02", "due": "2026-12-31", "type": "工業用戶", "vendor": "台灣菸酒", "name": "財物採購契約書-台灣菸酒股份有限公司竹南啤酒廠 110-115年度採購鍋爐燃燒與製瓶課玻璃製程用天然氣 110-0440-4-001", "period": "111/1/1起算5年~115/12/31", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-001", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-01-02", "due": "2027-01-01", "type": "設備維護", "vendor": "安德成", "name": "安德成商行保養合約書", "period": "115/1/2-116/1/1", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-016", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-07-29", "due": "2027-01-29", "type": "設備維護", "vendor": "英曜", "name": "瓦斯管線圖資系統維護", "period": "14年7月29日加18個月後是116年1月29日，故到期日為116年1月28日。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-017", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-07-29", "due": "2027-01-29", "type": "設備維護", "vendor": "英曜", "name": "瓦斯管線圖資系統擴充整合案", "period": "", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-002", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2023-12-28", "due": "2027-02-26", "type": "工業用戶", "vendor": "永豐餘", "name": "永豐餘 天然氣工程暨購氣合約 (保證金-銀行本票)", "period": "113/2/26-116/2/26\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "承攬貼印花稅2283元+買賣貼12元", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-003", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-03-15", "due": "2027-03-15", "type": "工業用戶", "vendor": "永昕生物醫藥", "name": "永昕生物醫藥 天然氣工程暨購買契約 (擔保物-現金支票)", "period": "113/3/15~116/3/15\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-005", "year": "114", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2025-04-10", "due": "2027-04-09", "type": "法律顧問", "vendor": "宋國鼎", "name": "常年法律顧問聘任書-宋國鼎律師", "period": "114/4/10-116/4/9", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-006", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-04-21", "due": "2027-04-20", "type": "陰極防蝕", "vendor": "騰湘", "name": "華夏整流站陰極防蝕系統新設工程", "period": "114/4/21-116/4/20", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-005", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-05-07", "due": "2027-05-06", "type": "工業用戶", "vendor": "宏明紙業", "name": "宏明紙業 天然氣工程暨購氣合約 (保證金)", "period": "113/5/7-116/5/6", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "承攬貼印花稅1000元+買賣貼12元", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-009", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-07-01", "due": "2027-06-30", "type": "工業用戶", "vendor": "富騁科技", "name": "富騁科技 天然氣工程暨購氣合約 (保證金)", "period": "113/7/1-116/6/30", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-015", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-07-28", "due": "2027-07-23", "type": "設備維護", "vendor": "正業機電", "name": "正業機電技術顧問有限公司", "period": "115/7/24-116/7/23", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-014", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-10-01", "due": "2027-09-30", "type": "工業用戶", "vendor": "霖揚", "name": "霖揚生技製藥 購氣合約 (保證金-定期存單)", "period": "113/10/1-116/9/30", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "113/9/30列入管理部保管", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-015", "year": "113", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2024-10-01", "due": "2027-09-30", "type": "工業用戶", "vendor": "亞欣達", "name": "亞欣達特殊材料 購氣合約", "period": "113/10/1-116/9/30", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-002", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-01-15", "due": "2028-01-15", "type": "工業用戶", "vendor": "華夏海灣", "name": "天然氣工程暨購買合約", "period": "114/1/15-117/1/15", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "工程總價［金額］元，同意轉為天然氣工程保證金，每月用氣量達1200000度設定退款", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-004", "year": "114", "zi": "竹工約", "cat": "A", "dept": "工務部", "owner": "", "sign": "2025-01-23", "due": "2028-01-22", "type": "設備維護", "vendor": "力泰", "name": "華夏海灣南廠專用整壓站", "period": "114/1/23---117/1/22", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-003", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-03-10", "due": "2028-03-30", "type": "工業用戶", "vendor": "鼎元光電", "name": "天然氣購買契約", "period": "114/3/31-117/3/30", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "天然氣費賒銷保證金［金額］元整(現金交付擔保)", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "112-A-008", "year": "112", "zi": "竹專約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2023-04-18", "due": "2028-05-02", "type": "工業用戶", "vendor": "台積電", "name": "台積電(AP6)二期南廠 天然氣工程暨購氣合約 (擔保物-銀行保證書(第一銀行))", "period": "112/5/2-117/5/2\n「期滿前1個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期五年)。\n每三年辦理銀行續保作業-115/1/28通知哲淵續保作業", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "1120717收入管理部\n承攬+買賣", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-007", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-05-20", "due": "2028-05-31", "type": "工業用戶", "vendor": "華夏海灣", "name": "華夏海灣 購氣合約 (擔保物-存單) 第二次展延，原契約111-A-003", "period": "114/6/1-117/5/31\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A--009", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-06-11", "due": "2028-06-10", "type": "工業用戶", "vendor": "大夏紙業", "name": "大夏紙業 工程購氣合約 (擔保物-存單)", "period": "114/6/11-117/6/10\n第二次展延\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-026", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-01", "due": "2028-06-30", "type": "工業用戶", "vendor": "漢民科技", "name": "天然氣長期供應契約", "period": "114/7/1-117/6/30(每期3年)期滿前1個月函文確認", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-B-001", "year": "114", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2025-07-25", "due": "2028-07-31", "type": "租賃", "vendor": "", "name": "公證書正本-租賃契約書-中油 竹南段1小段1454地號(田寮站)", "period": "114/8/1-117/7/31", "stamped": "", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-012", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-10", "due": "2028-08-04", "type": "工業用戶", "vendor": "四方乳品", "name": "四方乳品-展延(原111-A-010) 天然氣購買契約 (擔保物-現金)", "period": "114/8/4-117/8/4\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-A-019", "year": "114", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2025-07-31", "due": "2028-08-17", "type": "工業用戶", "vendor": "久立美", "name": "久立美興業(股)公司 工程購氣合約 (擔保物-存單) (第一次續約)原契約111-A-009)", "period": "114/8/17-117/8/17\n「期滿前一個月，須以函文確認，並辦理保證文件期限更新)最多展延2期」(每期三年)。", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-006", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-02-12", "due": "2028-11-14", "type": "工業用戶", "vendor": "創意電子", "name": "創意電子天然氣買賣契約", "period": "114/11/15-117/11/14", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-008", "year": "115", "zi": "竹管約", "cat": "A", "dept": "管理部", "owner": "", "sign": "2026-01-31", "due": "2029-01-31", "type": "中油", "vendor": "中油", "name": "公用天然氣事業用天然氣買賣契約(115年公用第008號)", "period": "115/2/1-118/1/31", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-004", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-01-23", "due": "2029-03-12", "type": "工業用戶", "vendor": "加和紙業", "name": "加和紙業", "period": "115/3/13-118/3/12", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-010", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-03-20", "due": "2029-04-05", "type": "工業用戶", "vendor": "吉伸", "name": "吉伸紙業天然氣購氣合約", "period": "", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-011", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-04-15", "due": "2029-04-14", "type": "工業用戶", "vendor": "台英帝國", "name": "台英帝國菸草製造天然氣買賣契約", "period": "", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "115-A-012", "year": "115", "zi": "竹總約", "cat": "A", "dept": "總經理室", "owner": "", "sign": "2026-04-20", "due": "2029-04-24", "type": "工業用戶", "vendor": "昕一", "name": "昕一天然氣買賣契約", "period": "", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-016", "year": "113", "zi": "竹業約", "cat": "A", "dept": "業務部", "owner": "", "sign": "2024-10-23", "due": "2029-12-31", "type": "設備租賃", "vendor": "鯨躍", "name": "天然氣公用事業電子發票平台租賃合約書-鯨躍科技", "period": "114/1/1-118/12/31屆滿前二個月以EMAIL通知，自動展延一年", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "113-A-010", "year": "113", "zi": "竹資約", "cat": "A", "dept": "資訊室", "owner": "", "sign": "2024-07-08", "due": "2034-07-07", "type": "設備租借", "vendor": "中華電信", "name": "瓦斯表通訊子機暨雲端管理平台服務-竹南綻", "period": "113/7/8-123/7/7", "stamped": "已貼", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "112-B-001", "year": "112", "zi": "", "cat": "B", "dept": "管理部", "owner": "", "sign": "2023-05-29", "due": "2040-05-31", "type": "租賃", "vendor": "", "name": "大同段279-1~883", "period": "112/6/1-129/5/31", "stamped": "", "manual": "有效", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}, {"code": "114-B-002", "year": "114", "zi": "", "cat": "B免貼", "dept": "財務部", "owner": "", "sign": "2025-11-14", "due": "", "type": "免貼印花", "vendor": "", "name": "尚順君樂飯店住房合約書", "period": "114/11/14-116/11/13", "stamped": "", "manual": "", "renew": "", "work": "", "rptDate": "", "rptBy": "", "rptNote": "", "memo": "", "file": "", "build": "", "eng": "", "amt": ""}];
 var UIKEY = "zj_contract_ui_v2";
 function setFS(px){
@@ -346,6 +399,8 @@ var isAdmin = false;
 var curDept = DEPTS[0];
 var RETURN_TO = "";
 var sortK = "left", sortAsc = true;
+var IND = JSON.parse(JSON.stringify(IND_SEED));
+var indTab = "signed";
 
 function load(){
   try{
@@ -500,6 +555,7 @@ async function pull(){
   }
   if(r.users && r.users.length) USERS = r.users.filter(function(u){ return u.on !== "N"; });
   if(r.today) TODAY = new Date(r.today + "T00:00:00");
+  if(r.ind) IND = r.ind;
 }
 async function push(action, payload){
   var r = await jsonp({ action: action, data: JSON.stringify(payload) });
@@ -1092,9 +1148,288 @@ async function saveAdd(){
   toast("已新增：" + r.code); go("all");
 }
 
+/* ================= 工業用戶 ================= */
+function indFind(cust){ for(var i=0;i<IND.length;i++){ if(IND[i].cust===cust) return IND[i]; } return null; }
+function indIsSigned(o){ return o.stat!=="未簽約"; }
+
+/* 表列到期日燈號（未簽約不算） */
+function indLamp(o){
+  if(!indIsSigned(o)) return "none";
+  var L = daysLeft(o.due);
+  if(L===null) return "none";
+  if(L<0) return "over";
+  if(L<=RED) return "r";
+  if(L<=CHASE) return "a";
+  if(L<=FIRST_GAS) return "g";
+  return "ok";
+}
+function indLeftBadge(o){
+  var L = daysLeft(o.due);
+  if(L===null) return '<span class="badge b-gray">—</span>';
+  if(L<0) return '<span class="badge b-red">逾期 '+(-L)+' 天</span>';
+  if(L<=RED) return '<span class="badge b-red">剩 '+L+' 天</span>';
+  if(L<=CHASE) return '<span class="badge b-org">剩 '+L+' 天</span>';
+  if(L<=FIRST_GAS) return '<span class="badge b-blue">剩 '+L+' 天</span>';
+  return '<span class="badge b-grn">剩 '+L+' 天</span>';
+}
+function chkBadge(c){
+  if(!c) return '<span class="badge b-gray">未勾稽</span>';
+  var cls = (c==="相符") ? "b-grn"
+    : (c==="主檔查無"||c==="疑似已簽約") ? "b-red"
+    : (c==="表未更新"||c==="差1天"||c==="待釐清") ? "b-org" : "b-gray";
+  return '<span class="badge '+cls+'">'+esc(c)+'</span>';
+}
+function statBadge(s){
+  var cls = (s==="已簽約") ? "b-grn" : (s==="未續約") ? "b-gray" : "b-blue";
+  return '<span class="badge '+cls+'">'+esc(s||"")+'</span>';
+}
+function stageBadge(s){
+  if(!s) return '<span class="badge b-gray">未填</span>';
+  var cls = (s==="待簽約"||s==="洽談中") ? "b-blue" : (s==="婉拒"||s==="暫緩") ? "b-gray"
+    : (s==="已簽約") ? "b-grn" : "b-gray";
+  return '<span class="badge '+cls+'">'+esc(s)+'</span>';
+}
+/* 該用戶在合約主檔的對應合約（有填對應合約編號才查） */
+function indMaster(o){ return o.link ? find(o.link) : null; }
+
+function indIsChkBad(o){ return !!(o.chk && o.chk!=="相符"); }
+function indIsDue(o){ var l=indLamp(o); return l==="over"||l==="r"; }
+
+function setIndTab(t){ indTab=t; drawInd(); }
+
+function drawInd(){
+  if(!ME) return;
+  var sign = IND.filter(indIsSigned);
+  var un   = IND.filter(function(o){ return !indIsSigned(o); });
+  var due  = IND.filter(indIsDue);
+  var bad  = IND.filter(indIsChkBad);
+  document.getElementById("iSign").textContent = sign.length;
+  document.getElementById("iUn").textContent   = un.length;
+  document.getElementById("iDue").textContent  = due.length;
+  document.getElementById("iChk").textContent  = bad.length;
+
+  var btn = document.getElementById("indAddBtn");
+  if(btn) btn.style.display = isAdmin ? "" : "none";
+
+  var TAB = [
+    ["signed",  "已簽約",     sign.length],
+    ["unsigned","尚未簽約",   un.length],
+    ["due",     "🔴 到期預警", due.length],
+    ["chk",     "⚠ 勾稽異常",  bad.length]
+  ];
+  document.getElementById("indTabs").innerHTML = TAB.map(function(t){
+    return '<button class="'+(indTab===t[0]?"active":"")+'" onclick="setIndTab(\''+t[0]+'\')">'+
+      t[1]+'<span class="c">'+t[2]+'</span></button>';
+  }).join("");
+
+  document.getElementById("indWarn").innerHTML = bad.length
+    ? '<div class="warnbox"><b>工業用戶表與合約主檔有 '+bad.length+' 筆對不上。</b>'
+      +'其中「疑似已簽約」代表該戶還掛在未簽約名單、但合約主檔已經有約；'
+      +'「表未更新」代表主檔已續約、本表還停在前一期。點「⚠ 勾稽異常」分頁看明細。</div>'
+    : "";
+
+  var q = (document.getElementById("iq").value||"").toLowerCase();
+  var fc = document.getElementById("ichk").value;
+  var base = indTab==="signed" ? sign : indTab==="unsigned" ? un : indTab==="due" ? due : bad;
+  var list = base.filter(function(o){
+    if(fc && o.chk!==fc) return false;
+    if(q && ((o.cust||"")+(o.link||"")+(o.memo||"")).toLowerCase().indexOf(q)<0) return false;
+    return true;
+  });
+
+  if(indTab==="unsigned"){
+    list.sort(function(a,b){ return (a.cust||"").localeCompare(b.cust||"","zh-Hant"); });
+  } else {
+    list.sort(function(a,b){
+      var x=daysLeft(a.due), y=daysLeft(b.due);
+      return (x===null?99999:x)-(y===null?99999:y);
+    });
+  }
+
+  var head, body;
+  if(indTab==="unsigned"){
+    head = '<tr><th>用戶名稱</th><th>開發階段</th><th>負責人</th><th>勾稽</th><th>對應合約</th><th>最後更新</th><th>備考</th><th class="nw">動作</th></tr>';
+    body = list.map(function(o){
+      return '<tr><td><span class="nm rowlink" onclick="openIndDetail(\''+esc(o.cust)+'\')">'+esc(o.cust)+'</span></td>'
+        + '<td>'+stageBadge(o.stage)+'</td>'
+        + '<td class="nw">'+esc(o.owner||"—")+'</td>'
+        + '<td>'+chkBadge(o.chk)+'</td>'
+        + '<td class="nw">'+(o.link?'<span class="rowlink" onclick="openDetail(\''+esc(o.link)+'\')">'+esc(o.link)+'</span>':"—")+'</td>'
+        + '<td class="nw sm">'+esc(o.updDate||"—")+'</td>'
+        + '<td class="sm">'+esc(o.memo||"")+'</td>'
+        + '<td class="nw"><button class="btn sm" onclick="openIndEdit(\''+esc(o.cust)+'\')">'+(isAdmin?"編輯":"更新進度")+'</button></td></tr>';
+    }).join("");
+  } else {
+    head = '<tr><th class="nw">序</th><th>用戶名稱</th><th class="nw">合約期間</th><th class="nw">表列到期</th><th class="nw">剩餘</th>'
+         + '<th class="money">月使用量</th><th class="money">最低月計費</th><th class="nw">對應合約</th><th>勾稽</th><th class="nw">動作</th></tr>';
+    body = list.map(function(o){
+      var m = indMaster(o);
+      var mtxt = m ? ('<span class="rowlink" onclick="openDetail(\''+esc(o.link)+'\')">'+esc(o.link)+'</span>'
+                      + '<div class="sm">主檔到期 '+esc(m.due||"—")+'</div>')
+                   : (o.link ? esc(o.link) : '<span style="color:#cbd5e1">—</span>');
+      return '<tr><td class="nw">'+esc(o.seq||"")+'</td>'
+        + '<td><span class="nm rowlink" onclick="openIndDetail(\''+esc(o.cust)+'\')">'+esc(o.cust)+'</span>'
+        + (o.stat==="未續約"?' <span class="badge b-gray">未續約</span>':"")+'</td>'
+        + '<td class="nw sm">'+esc(o.s1||"")+'<br>～'+esc(o.s2||"")+'</td>'
+        + '<td class="nw">'+esc(o.due||"—")+'</td>'
+        + '<td class="nw">'+indLeftBadge(o)+'</td>'
+        + '<td class="money">'+esc(o.vol||"")+'</td>'
+        + '<td class="money">'+esc(o.minvol||"")+'</td>'
+        + '<td class="nw">'+mtxt+'</td>'
+        + '<td>'+chkBadge(o.chk)+'</td>'
+        + '<td class="nw"><button class="btn sm" onclick="openIndEdit(\''+esc(o.cust)+'\')">'+(isAdmin?"編輯":"更新進度")+'</button></td></tr>';
+    }).join("");
+  }
+  document.getElementById("indHead").innerHTML = head;
+  document.getElementById("indTbl").innerHTML = body ||
+    '<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:30px">沒有符合條件的資料</td></tr>';
+}
+
+/* ---------- 明細 ---------- */
+function openIndDetail(cust){
+  var o = indFind(cust); if(!o) return;
+  var m = indMaster(o);
+  function row(k,v){ return '<dt>'+k+'</dt><dd>'+(v?v:'<span style="color:#cbd5e1">—</span>')+'</dd>'; }
+  document.getElementById("mdlTitle").innerHTML = esc(o.cust) + '　' + statBadge(o.stat);
+  document.getElementById("mdlBody").innerHTML = '<div style="padding:18px 20px"><dl class="dl">' +
+    row("到期序", esc(o.seq)) +
+    row("合約期間", esc(o.s1) + (o.s2 ? ("　～　" + esc(o.s2)) : "")) +
+    row("表列到期日", esc(o.due) + (daysLeft(o.due)===null?"":("　" + indLeftBadge(o)))) +
+    row("月使用量", esc(o.vol)) +
+    row("最低月計費使用量", esc(o.minvol)) +
+    row("開發階段", o.stat==="未簽約" ? stageBadge(o.stage) : "") +
+    row("負責人", esc(o.owner)) +
+    row("對應合約", o.link ? (esc(o.link) + (m ? ('　<span class="sm">' + esc(m.name) + '</span><br>主檔到期日 ' + esc(m.due||"—") + '　權責 ' + esc(deptOf(m))) : '　<span class="badge b-red">主檔查無此編號</span>')) : "") +
+    row("勾稽結果", chkBadge(o.chk)) +
+    row("最後更新", esc(o.updDate) + (o.updBy ? ("　" + esc(o.updBy)) : "")) +
+    row("備考", esc(o.memo)) +
+    '</dl><div class="sm" style="margin-top:12px">用戶名稱、合約期間、使用量照原表原文；到期日(西元)為民國曆換算，僅供剩餘天數計算。</div></div>';
+  document.getElementById("mdlFoot").innerHTML =
+    (o.link && m ? '<button class="btn" onclick="openDetail(\''+esc(o.link)+'\')">看合約主檔</button>' : '') +
+    '<span style="flex:1"></span>' +
+    '<button class="btn primary" onclick="openIndEdit(\''+esc(cust)+'\')">'+(isAdmin?"編輯":"更新進度")+'</button>' +
+    '<button class="btn" onclick="closeM()">關閉</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+
+/* ---------- 編輯 ---------- */
+var indEditing = "";
+function openIndEdit(cust){
+  var o = cust ? indFind(cust) : null;
+  if(cust && !o) return;
+  if(!cust && !isAdmin){ toast("只有管理部可以新增工業用戶"); return; }
+  indEditing = cust || "";
+  var r = o || { seq:"", stat:"未簽約", cust:"", s1:"", s2:"", due:"", vol:"", minvol:"",
+                 link:"", chk:"", stage:"未接觸", owner:"", updDate:"", updBy:"", memo:"" };
+  var ro = isAdmin ? "" : ' readonly tabindex="-1" style="background:#f1f5f9;color:#64748b;cursor:not-allowed"';
+  var lock = isAdmin ? "" : ' disabled';
+  document.getElementById("mdlTitle").textContent = cust ? ("編輯　" + cust) : "新增工業用戶";
+  document.getElementById("mdlBody").innerHTML = '<div class="form">' +
+    '<div class="field"><label>用戶名稱 <span style="color:#ef4444">必填</span></label><input id="iCust" value="'+esc(r.cust)+'"'+ro+'></div>' +
+    '<div class="field"><label>簽約狀態</label><select id="iStat"'+lock+'>' +
+      IND_STATS.map(function(v){ return '<option'+(v===r.stat?' selected':'')+'>'+esc(v)+'</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label>到期序</label><input id="iSeq" value="'+esc(r.seq)+'"'+ro+'></div>' +
+    '<div class="field"><label>對應合約編號</label><input id="iLink" value="'+esc(r.link)+'"'+ro+' placeholder="例：114-A-026"></div>' +
+    '<div class="field"><label>合約期間起（原文）</label><input id="iS1" value="'+esc(r.s1)+'"'+ro+' placeholder="例：114/7/1"></div>' +
+    '<div class="field"><label>合約期間訖（原文）</label><input id="iS2" value="'+esc(r.s2)+'"'+ro+' placeholder="例：117/6/30"></div>' +
+    '<div class="field"><label>到期日（西元，算剩餘天數用）</label><input id="iDueD" type="date" value="'+esc(r.due)+'"'+ro+'><div class="hint">民國 117/6/30 → 2028-06-30</div></div>' +
+    '<div class="field"><label>勾稽結果</label><select id="iChkS"'+lock+'>' +
+      IND_CHKS.map(function(v){ return '<option'+(v===r.chk?' selected':'')+'>'+esc(v)+'</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label>月使用量（原文照填）</label><input id="iVol" value="'+esc(r.vol)+'"'+ro+' placeholder="例：7,200"></div>' +
+    '<div class="field"><label>最低月計費使用量</label><input id="iMin" value="'+esc(r.minvol)+'"'+ro+' placeholder="例：720"></div>' +
+    '<div class="field"><label>開發階段</label><select id="iStage">' +
+      [""].concat(IND_STAGES).map(function(v){ return '<option'+(v===r.stage?' selected':'')+'>'+esc(v)+'</option>'; }).join("") + '</select></div>' +
+    '<div class="field"><label>負責人</label><input id="iOwner" value="'+esc(r.owner || (ME?ME.name:""))+'"></div>' +
+    '<div class="field full"><label>備考</label><textarea id="iMemo">'+esc(r.memo)+'</textarea></div>' +
+    (isAdmin ? "" : '<div class="field full"><div class="hint">你可以更新「開發階段／負責人／備考」，其餘欄位由管理部維護。</div></div>') +
+    '</div>';
+  document.getElementById("mdlFoot").innerHTML =
+    (cust && isAdmin ? '<button class="btn danger" onclick="delInd(\''+esc(cust)+'\')">刪除</button>' : '') +
+    '<span style="flex:1"></span>' +
+    '<button class="btn" onclick="closeM()">取消</button>' +
+    '<button class="btn primary" onclick="saveInd()">儲存</button>';
+  document.getElementById("mdl").classList.add("show");
+}
+
+async function saveInd(){
+  function g(id){ return document.getElementById(id); }
+  var old = indEditing ? indFind(indEditing) : null;
+  var o = {
+    seq:    isAdmin ? g("iSeq").value.trim()   : (old?old.seq:""),
+    stat:   isAdmin ? g("iStat").value          : (old?old.stat:"未簽約"),
+    cust:   isAdmin ? g("iCust").value.trim()   : (old?old.cust:""),
+    s1:     isAdmin ? g("iS1").value.trim()     : (old?old.s1:""),
+    s2:     isAdmin ? g("iS2").value.trim()     : (old?old.s2:""),
+    due:    isAdmin ? g("iDueD").value.trim()   : (old?old.due:""),
+    vol:    isAdmin ? g("iVol").value.trim()    : (old?old.vol:""),
+    minvol: isAdmin ? g("iMin").value.trim()    : (old?old.minvol:""),
+    link:   isAdmin ? g("iLink").value.trim()   : (old?old.link:""),
+    chk:    isAdmin ? g("iChkS").value          : (old?old.chk:""),
+    stage:  g("iStage").value,
+    owner:  g("iOwner").value.trim(),
+    updDate: todayStr(),
+    updBy:  ME ? ME.name : "",
+    memo:   g("iMemo").value
+  };
+  if(!o.cust){ toast("用戶名稱是必填"); return; }
+  if(ONLINE){
+    try{
+      var r = await push("indSave", { row:o, oldCust:indEditing, by:(ME?ME.name:"") });
+      closeM(); drawAllPages(); toast(r.msg || "已儲存");
+    }catch(e){ toast("儲存失敗：" + e.message); }
+    return;
+  }
+  if(indEditing){
+    for(var i=0;i<IND.length;i++){ if(IND[i].cust===indEditing){ IND[i]=o; break; } }
+  } else {
+    if(indFind(o.cust)){ toast("用戶名稱重複：" + o.cust); return; }
+    IND.push(o);
+  }
+  closeM(); drawAllPages(); toast("已儲存（離線）：" + o.cust);
+}
+
+async function delInd(cust){
+  if(!isAdmin) return;
+  if(!confirm("確定要刪除「" + cust + "」？這一筆會從工業用戶分頁移除。")) return;
+  if(ONLINE){
+    try{
+      var r = await push("indDel", { cust:cust, by:(ME?ME.name:"") });
+      closeM(); drawAllPages(); toast(r.msg || "已刪除");
+    }catch(e){ toast("刪除失敗：" + e.message); }
+    return;
+  }
+  IND = IND.filter(function(o){ return o.cust!==cust; });
+  closeM(); drawAllPages(); toast("已刪除（離線）");
+}
+
+/* ---------- 匯出／複製 ---------- */
+function expIndCSV(){
+  var head = ["到期序","簽約狀態","用戶名稱","合約期間起","合約期間訖","到期日(西元)","剩餘天數",
+              "月使用量","最低月計費使用量","對應合約編號","主檔到期日","勾稽結果","開發階段",
+              "負責人","最後更新日","更新人","備考"];
+  var body = IND.map(function(o){
+    var L = daysLeft(o.due), m = indMaster(o);
+    return [o.seq,o.stat,o.cust,o.s1,o.s2,o.due,(L===null?"":L),o.vol,o.minvol,o.link,
+            (m?m.due:""),o.chk,o.stage,o.owner,o.updDate,o.updBy,o.memo]
+      .map(function(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }).join(",");
+  }).join("\n");
+  dl(new Blob(["\ufeff"+head.join(",")+"\n"+body],{type:"text/csv;charset=utf-8"}),
+     "竹建工業用戶簽約狀況_"+todayStr()+".csv");
+}
+function copyIndChk(){
+  var bad = IND.filter(indIsChkBad);
+  if(!bad.length){ toast("目前沒有勾稽異常"); return; }
+  var t = "工業用戶勾稽異常　" + todayStr() + "\n\n";
+  bad.forEach(function(o){
+    t += "[" + o.chk + "] " + o.cust + (o.link ? ("　→ " + o.link) : "") + "\n";
+    if(o.memo) t += "　　" + o.memo + "\n";
+  });
+  copy(t);
+}
+
 /* ================= 匯出入 ================= */
 function dl(blob,fn){ var u=URL.createObjectURL(blob),a=document.createElement("a"); a.href=u; a.download=fn; a.click(); URL.revokeObjectURL(u); toast("已下載：" + fn); }
-function expJSON(){ dl(new Blob([JSON.stringify(DB,null,1)],{type:"application/json"}), "竹建合約資料_"+todayStr()+".json"); }
+function expJSON(){ dl(new Blob([JSON.stringify({rows:DB.rows,ind:IND,ver:3},null,1)],{type:"application/json"}), "竹建合約資料_"+todayStr()+".json"); }
 function expCSV(){
   var head = ["合約編號","權責部門","類型","合約名稱","建案名稱","工程編號","金額級距","廠商","經辦人","簽訂日","到期日","剩餘天數","人工狀態","續約意向","作業狀態","最後回報日","回報人","回報說明","備註"];
   var body = DB.rows.map(function(r){
@@ -1111,7 +1446,9 @@ function impJSON(el){
     try{
       var o = JSON.parse(rd.result);
       if(!o.rows || !o.rows.length) throw new Error("檔案裡沒有 rows");
-      DB = o; save(); drawAllPages(); toast("已匯入 " + o.rows.length + " 筆");
+      DB = { rows:o.rows, ver:o.ver||3 };
+      if(o.ind && o.ind.length) IND = o.ind;
+      save(); drawAllPages(); toast("已匯入 " + o.rows.length + " 筆合約／" + IND.length + " 筆工業用戶");
     }catch(e){ toast("匯入失敗：" + e.message); }
     el.value = "";
   };
@@ -1135,7 +1472,7 @@ function drawAllPages(){
   document.getElementById("sfToday").textContent = todayStr();
   document.getElementById("sfN").textContent = scope().length;
   document.getElementById("sfRole").textContent = isAdmin ? "🔓 管理員（全部門）" : ("🔒 " + ME.dept + " · 僅本部門");
-  fillSelects(); drawDash(); drawTabs(); drawDept(); drawAll(); drawWork();
+  fillSelects(); drawDash(); drawTabs(); drawDept(); drawAll(); drawWork(); drawInd();
 }
 document.getElementById("userList").innerHTML = USERS.map(function(u){
   return '<option value="'+esc(u.name)+'">'+esc(u.dept + (u.title?"　"+u.title:""))+'</option>';
