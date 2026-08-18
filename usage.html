@@ -135,6 +135,18 @@ padding:13px 17px;font-size:16px;margin-bottom:18px;color:#1c3d78;line-height:1.
 display:flex;gap:12px;align-items:center;flex:none;flex-wrap:wrap}
 .bar .s{flex:1;font-size:16px;color:var(--muted);min-width:180px}.bar .s b{color:var(--ink);font-size:19px}
 .hide{display:none}
+.drop{border:3px dashed var(--line);border-radius:14px;padding:38px 24px;text-align:center;
+background:#fbfcfe;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--blue);background:var(--blueL)}
+.drop .di{font-size:44px;line-height:1;margin-bottom:12px}
+.drop .dt{font-size:19px;font-weight:800;color:var(--ink)}
+.drop .ds{font-size:15.5px;color:var(--muted);margin-top:6px}
+.drop.over .dt{color:var(--blue)}
+.fname{display:flex;align-items:center;gap:12px;background:var(--grnL);border-radius:11px;
+padding:13px 17px;font-size:16px;font-weight:700;color:#0d6b31;margin-top:14px}
+.or{display:flex;align-items:center;gap:14px;margin:20px 0;color:var(--muted);font-size:15.5px;font-weight:800}
+.or:before,.or:after{content:"";flex:1;height:1px;background:var(--line)}
+.sheetsel{margin-top:14px}
 .login{max-width:440px;margin:70px auto}
 .burger{display:none;width:42px;height:42px;border-radius:10px;background:var(--bg);
 border:1px solid var(--line);align-items:center;justify-content:center;font-size:19px;cursor:pointer;flex:none}
@@ -150,6 +162,7 @@ border:1px solid var(--line);align-items:center;justify-content:center;font-size
  .tw{overflow-x:auto}table{min-width:800px}
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="mask" id="mask" onclick="toggleSide()"></div>
@@ -655,11 +668,18 @@ function pDiff(){
 function pImport(){
   $("stage").innerHTML =
    '<div class="ph"><div><h1>匯入新建案</h1><div class="psub">從工程備料專用表整塊複製貼上即可</div></div></div>' +
-   '<div class="note"><b>操作步驟：</b>開啟「工程備料專用表.xls」→ 用滑鼠框選<b>整張表（含標題那幾列）</b>→ Ctrl+C → 點下方大框 → Ctrl+V → 按「解析預覽」→ 確認無誤按「建立建案」。<br>' +
-    '系統會自動抓出工程編號、工程名稱與所有料項；抓不到就手動補在上面欄位。</div>' +
+   '<div class="note"><b>最快的做法：</b>把「工程備料專用表.xls」直接拖進下面的框，或點框選檔案。系統會自動讀出工程編號、工程名稱與全部料項。<br>' +
+    '確認預覽表沒問題 → 補上監工與管理密碼 → 按「建立建案」。<br>' +
+    '如果公司網路擋住讀檔元件，改用下方的複製貼上一樣可以。</div>' +
    '<div id="mImp"></div>' +
-   '<div class="card"><div class="ch"><h2>1. 貼上備料表</h2></div>' +
-    '<textarea id="raw" placeholder="在這裡貼上（Ctrl+V）"></textarea>' +
+   '<div class="card"><div class="ch"><h2>1. 上傳備料表</h2></div>' +
+    '<div class="drop" id="drop" onclick="document.getElementById(\'fin\').click()">' +
+     '<div class="di">📄</div><div class="dt">點這裡選擇檔案，或把檔案拖進來</div>' +
+     '<div class="ds">支援 .xls／.xlsx／.csv　（工程備料專用表原檔直接丟進來就好）</div></div>' +
+    '<input type="file" id="fin" class="hide" accept=".xls,.xlsx,.csv" onchange="pickFile(this.files[0])">' +
+    '<div id="fname"></div><div id="sheetsel"></div>' +
+    '<div class="or">或者，用複製貼上</div>' +
+    '<textarea id="raw" placeholder="從 Excel 框選整張表 Ctrl+C，在這裡 Ctrl+V"></textarea>' +
     '<div style="height:14px"></div><button class="btn" onclick="doParse()">解析預覽</button></div>' +
    '<div class="card"><div class="ch"><h2>2. 確認基本資料</h2></div>' +
     '<div class="row"><div><label>工程編號 *</label><input type="text" id="iNo"></div>' +
@@ -673,36 +693,112 @@ function pImport(){
     '<div class="row"><div><label>管理密碼</label><input type="password" id="iPw" placeholder="建立建案需輸入"></div>' +
      '<div style="display:flex;align-items:flex-end"><button class="btn grn" onclick="doAdd()">建立建案</button></div></div></div>' +
    '<div id="pv"></div>';
+  bindDrop();
 }
-function parseRaw(txt){
-  var lines = txt.replace(/\r/g,"").split("\n");
+function clean_(v){
+  return String(v == null ? "" : v).replace(/\u3000/g," ").replace(/\s+/g," ").trim();
+}
+function parseRows(rows){
   var no = "", nm = "", items = [];
-  for(var i = 0; i < lines.length; i++){
-    var raw = lines[i];
-    if(!raw.trim()) continue;
-    var mNo = raw.match(/工程編號[：: ]\s*([A-Za-z0-9\-]+)/);
+  for(var i = 0; i < rows.length; i++){
+    var p = rows[i] || [];
+    var joined = p.map(clean_).join("\t");
+    if(!joined.replace(/\t/g,"")) continue;
+    var mNo = joined.match(/工程編號[：:\s]\s*([A-Za-z0-9\-]+)/);
     if(mNo && !no) no = mNo[1].trim();
-    var mNm = raw.match(/工程名稱[：: ]\s*([^\t]+)/);
+    var mNm = joined.match(/工程名稱[：:\s]\s*([^\t]+)/);
     if(mNm && !nm) nm = mNm[1].trim();
-    var p = raw.indexOf("\t") >= 0 ? raw.split("\t") : raw.split(",");
     if(p.length < 4) continue;
-    var seq = parseFloat(String(p[0]).trim());
+    var seq = parseFloat(clean_(p[0]));
     if(isNaN(seq)) continue;
-    var code = String(p[1] || "").trim();
-    var mat  = String(p[2] || "").trim();
-    var unit = String(p[3] || "").trim();
+    var code = clean_(p[1]), mat = clean_(p[2]), unit = clean_(p[3]);
     if(!mat) continue;
-    var f = function(k){ var v = parseFloat(String(p[k] || "").replace(/,/g,"")); return isNaN(v) ? 0 : v; };
+    var f = function(k){ var v = parseFloat(clean_(p[k]).replace(/,/g,"")); return isNaN(v) ? 0 : v; };
     var d1 = f(4), d2 = f(5), d3 = f(6);
-    var des = (p.length > 7 && String(p[7]).trim() !== "") ? f(7) : (d1 + d2 + d3);
+    var des = (p.length > 7 && clean_(p[7]) !== "") ? f(7) : (d1 + d2 + d3);
     items.push({ code:code, mat:mat, unit:unit, d1:d1, d2:d2, d3:d3, des:des });
   }
   return { no:no, nm:nm, items:items };
 }
+function parseRaw(txt){
+  var lines = String(txt || "").replace(/\r/g,"").split("\n");
+  var rows = lines.map(function(L){
+    return L.indexOf("\t") >= 0 ? L.split("\t") : L.split(",");
+  });
+  return parseRows(rows);
+}
+
+/* ---------- Excel 上傳 ---------- */
+var WB = null, WBROWS = null;
+function pickFile(f){
+  if(!f) return;
+  if(typeof XLSX === "undefined"){
+    document.getElementById("fname").innerHTML =
+      '<div class="msg e">讀取 Excel 的元件載入失敗（公司網路可能擋了外部資源）。請改用下方複製貼上的方式。</div>';
+    return;
+  }
+  document.getElementById("fname").innerHTML = '<div class="msg i">讀取中：' + esc(f.name) + '</div>';
+  var rd = new FileReader();
+  rd.onerror = function(){
+    document.getElementById("fname").innerHTML = '<div class="msg e">檔案讀取失敗，請改用複製貼上。</div>';
+  };
+  rd.onload = function(ev){
+    try{
+      WB = XLSX.read(new Uint8Array(ev.target.result), { type:"array" });
+    }catch(err){
+      document.getElementById("fname").innerHTML =
+        '<div class="msg e">這個檔案讀不出來（' + esc(String(err.message || err)) + '）。請改用複製貼上。</div>';
+      return;
+    }
+    var ns = WB.SheetNames || [];
+    if(!ns.length){
+      document.getElementById("fname").innerHTML = '<div class="msg e">這個檔案沒有任何工作表。</div>';
+      return;
+    }
+    document.getElementById("fname").innerHTML =
+      '<div class="fname"><span>✓</span><span>' + esc(f.name) + '</span>' +
+      '<span style="margin-left:auto;font-weight:700">' + ns.length + ' 個工作表</span></div>';
+    document.getElementById("sheetsel").innerHTML = ns.length > 1
+      ? '<div class="sheetsel"><label>選擇工作表</label><select id="shSel" onchange="useSheet()">' +
+        ns.map(function(x,i){ return '<option value="' + i + '">' + esc(x) + '</option>'; }).join("") +
+        '</select></div>'
+      : "";
+    useSheet();
+  };
+  rd.readAsArrayBuffer(f);
+}
+function useSheet(){
+  if(!WB) return;
+  var el = document.getElementById("shSel");
+  var i = el ? parseInt(el.value,10) : 0;
+  var ws = WB.Sheets[WB.SheetNames[i]];
+  WBROWS = XLSX.utils.sheet_to_json(ws, { header:1, raw:true, defval:"" });
+  doParse();
+}
+function bindDrop(){
+  var dz = document.getElementById("drop");
+  if(!dz) return;
+  ["dragenter","dragover"].forEach(function(t){
+    dz.addEventListener(t, function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.add("over"); });
+  });
+  ["dragleave","drop"].forEach(function(t){
+    dz.addEventListener(t, function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.remove("over"); });
+  });
+  dz.addEventListener("drop", function(e){
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) pickFile(f);
+  });
+}
+function getParsed(){
+  var txt = ($("raw") && $("raw").value) ? $("raw").value.trim() : "";
+  if(txt) return parseRaw(txt);
+  if(WBROWS) return parseRows(WBROWS);
+  return { no:"", nm:"", items:[] };
+}
 function doParse(){
-  var r = parseRaw($("raw").value);
+  var r = getParsed();
   if(!r.items.length){
-    $("pv").innerHTML = '<div class="msg e">解析不到任何料項。請確認是從 Excel 直接複製（會是 Tab 分隔），且有包含項次、物料編號、品名、單位這幾欄。</div>';
+    $("pv").innerHTML = '<div class="msg e">解析不到任何料項。請確認這是「工程備料專用表」，且有項次、物料編號、品名及尺寸、單位這幾欄。也可以換一個工作表試試。</div>';
     return;
   }
   if(r.no) $("iNo").value = r.no;
@@ -721,7 +817,7 @@ function doParse(){
     ' 項料' + (r.no ? "，工程編號 " + esc(r.no) : "") + (r.nm ? "，" + esc(r.nm) : "") + '。請確認下方資料後按「建立建案」。</div>';
 }
 function doAdd(){
-  var r = parseRaw($("raw").value);
+  var r = getParsed();
   var no = $("iNo").value.trim(), nm = $("iNm").value.trim();
   var sup = $("iSup").value.trim(), pw = $("iPw").value.trim();
   if(!r.items.length){ $("mImp").innerHTML = '<div class="msg e">請先貼上備料表並解析</div>'; return; }
@@ -735,6 +831,9 @@ function doAdd(){
     $("mImp").innerHTML = '<div class="msg ' + (d.ok ? "s" : "e") + '">' + esc(d.msg) + '</div>';
     if(d.ok){
       $("raw").value = ""; $("pv").innerHTML = "";
+      WB = null; WBROWS = null;
+      if($("fname")) $("fname").innerHTML = "";
+      if($("sheetsel")) $("sheetsel").innerHTML = "";
       loadCases();
       setTimeout(function(){ openCase(no,"dash"); }, 600);
     }
