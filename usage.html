@@ -167,6 +167,34 @@ border:1px solid var(--line);align-items:center;justify-content:center;font-size
 <body>
 <div class="mask" id="mask" onclick="toggleSide()"></div>
 
+<div id="pLogin" style="position:fixed;inset:0;background:#f1f4f9;z-index:320;overflow:auto;padding:30px 16px">
+ <div style="max-width:430px;margin:60px auto">
+  <div style="text-align:center;margin-bottom:24px">
+   <div style="width:64px;height:64px;border-radius:16px;margin:0 auto 14px;
+    background:linear-gradient(135deg,#2563eb,#59a5f5);color:#fff;font-size:30px;font-weight:800;
+    display:flex;align-items:center;justify-content:center">竹</div>
+   <div style="font-size:24px;font-weight:800">工程用料對帳系統</div>
+   <div style="font-size:15.5px;color:var(--muted)">竹建瓦斯股份有限公司　管理部</div>
+  </div>
+  <div class="card">
+   <div id="mLogin"></div>
+   <label>工號</label>
+   <input type="text" id="lUid" inputmode="numeric" placeholder="請輸入工號" onkeydown="if(event.key==='Enter')doLogin()">
+   <div style="height:14px"></div>
+   <label>密碼</label>
+   <input type="password" id="lPw" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+   <div style="height:20px"></div>
+   <button class="btn" style="width:100%" onclick="doLogin()">登入</button>
+   <div style="height:14px;"></div>
+   <div style="font-size:15px;color:var(--muted);line-height:1.9">
+    <b>倉管</b>　填備料（B倉／A倉）<br>
+    <b>工務部</b>　填實際用量與餘料退庫<br>
+    <b>管理員</b>　全部權限＋匯入新建案
+   </div>
+  </div>
+ </div>
+</div>
+
 <div id="pSetup" class="hide" style="position:fixed;inset:0;background:#f1f4f9;z-index:300;overflow:auto;padding:30px 16px">
  <div style="max-width:620px;margin:30px auto">
   <div class="card">
@@ -217,9 +245,10 @@ border:1px solid var(--line);align-items:center;justify-content:center;font-size
    <input type="text" id="q" placeholder="搜尋料項名稱或編號…" oninput="draw()"></div>
   <div class="tright">
    <span class="savetag off" id="savetag">未變更</span>
-   <select class="casesel" id="role" style="max-width:130px" onchange="setRole()">
-    <option value="sup">監工</option><option value="wh">倉管</option><option value="adm">管理員</option></select>
-   <div class="ava" id="ava">監</div>
+   <div class="ava" id="ava">－</div>
+   <div style="line-height:1.25"><div style="font-size:15.5px;font-weight:800" id="uName">－</div>
+    <div style="font-size:14px;color:var(--muted)" id="uNo">－</div></div>
+   <button class="btn gray sm" onclick="doLogout()">登出</button>
   </div>
  </div>
  <div class="body" id="stage"></div>
@@ -236,7 +265,14 @@ var API_DEFAULT = "https://script.google.com/macros/s/AKfycbxbAxSrBz5fpVvFG3BWqF
 var API = API_DEFAULT;
 try{ var _sv = localStorage.getItem(API_KEY); if(_sv) API = _sv; }catch(e){}
 var ADMIN_PW = "1688";
-var TH = 0.10, PAGE = "cases", ROLE = "sup", FLT = "ALL", DIRTY = false;
+var TH = 0.10, PAGE = "cases", ROLE = "", FLT = "ALL", DIRTY = false;
+var UID = "", UNAME = "";
+var SESS_KEY = "matctl_sess";
+var USERS = {
+  "070": { pw:"8888", role:"sup", name:"工務部" },
+  "054": { pw:"1688", role:"wh",  name:"倉管" },
+  "060": { pw:"1688", role:"adm", name:"管理員" }
+};
 var CASES = [], CUR = null, HEAD = null, D = [], SUPS = [];
 var TITLE = { cases:"建案清單", dash:"本案總覽", prep:"備料作業", usage:"實際用量填報", diff:"差異分析", imp:"匯入新建案" };
 
@@ -360,18 +396,65 @@ function openCase(no, page){
 }
 function toggleSide(){ $("side").classList.toggle("open"); $("mask").classList.toggle("on"); }
 function go(p){
+  if(p === "imp" && ROLE !== "adm"){ alert("只有管理員可以匯入新建案。"); p = "cases"; }
+  if(p === "prep" && !(ROLE === "wh" || ROLE === "adm")){ alert("備料作業僅限倉管填寫。"); p = "cases"; }
+  if((p === "usage" || p === "diff") && !(ROLE === "sup" || ROLE === "adm")){
+    alert("實際用量填報僅限工務部填寫。"); p = "cases"; }
   if(p !== "cases" && p !== "imp" && !CUR){ alert("請先從上方選一個建案。"); p = "cases"; }
   PAGE = p; FLT = "ALL";
   document.querySelectorAll(".ni").forEach(function(e){ e.classList.toggle("on", e.dataset.p === p); });
   $("crumb").textContent = TITLE[p] || "";
   $("side").classList.remove("open"); $("mask").classList.remove("on");
-  $("bar").classList.toggle("hide", p === "cases" || p === "imp" || p === "diff");
+  var canW = (p === "prep") ? (ROLE === "wh" || ROLE === "adm")
+           : ((p === "usage") ? (ROLE === "sup" || ROLE === "adm") : false);
+  var signed2 = HEAD && HEAD.st === "已簽核";
+  $("bar").classList.toggle("hide", !canW || signed2);
+  $("bSub").classList.toggle("hide", p === "prep");
   draw(); $("stage").scrollTop = 0;
 }
-function setRole(){
-  ROLE = $("role").value;
-  $("ava").textContent = { sup:"監", wh:"倉", adm:"管" }[ROLE];
-  draw();
+function applyRole(){
+  $("ava").textContent = { sup:"工", wh:"倉", adm:"管" }[ROLE] || "－";
+  $("uName").textContent = UNAME || "－";
+  $("uNo").textContent = UID ? ("工號 " + UID) : "－";
+  document.querySelectorAll(".ni[data-p]").forEach(function(e){
+    var p = e.dataset.p, show = true;
+    if(p === "imp") show = (ROLE === "adm");
+    if(p === "prep") show = (ROLE === "wh" || ROLE === "adm");
+    if(p === "usage" || p === "diff") show = (ROLE === "sup" || ROLE === "adm");
+    e.classList.toggle("hide", !show);
+  });
+}
+function doLogin(){
+  var u = $("lUid").value.trim(), pw = $("lPw").value.trim();
+  var m = USERS[u];
+  if(!m || m.pw !== pw){
+    $("mLogin").innerHTML = '<div class="msg e">工號或密碼錯誤</div>';
+    $("lPw").value = ""; $("lPw").focus(); return;
+  }
+  UID = u; ROLE = m.role; UNAME = m.name;
+  try{ localStorage.setItem(SESS_KEY, JSON.stringify({ u:u, t:Date.now() })); }catch(e){}
+  $("mLogin").innerHTML = "";
+  $("pLogin").classList.add("hide");
+  applyRole();
+  if(API) boot(); else showSetup("");
+}
+function doLogout(){
+  if(DIRTY && !confirm("有尚未儲存的資料，確定登出？")) return;
+  try{ localStorage.removeItem(SESS_KEY); }catch(e){}
+  UID = ""; ROLE = ""; UNAME = ""; CUR = null; HEAD = null; D = []; DIRTY = false;
+  $("lUid").value = ""; $("lPw").value = "";
+  $("pLogin").classList.remove("hide");
+}
+function tryResume(){
+  try{
+    var o = JSON.parse(localStorage.getItem(SESS_KEY) || "null");
+    if(!o || !o.u || !USERS[o.u]) return false;
+    if(Date.now() - o.t > 12 * 3600 * 1000) return false;
+    UID = o.u; ROLE = USERS[o.u].role; UNAME = USERS[o.u].name;
+    $("pLogin").classList.add("hide");
+    applyRole();
+    return true;
+  }catch(e){ return false; }
 }
 function setF(f){ FLT = f; draw(); }
 function stat(){
@@ -413,7 +496,10 @@ function upd(i,k,v){
 }
 function pack(){ return D.map(function(r){
   return { seq:r.seq, b:r.b, a:r.a, act:r.act, ret:r.ret, rsn:r.rsn }; }); }
-function whoName(){ return (HEAD && HEAD.sup) ? HEAD.sup : ({ sup:"監工", wh:"倉管", adm:"管理員" }[ROLE]); }
+function whoName(){
+  if(ROLE === "sup" && HEAD && HEAD.sup) return HEAD.sup + "(" + UID + ")";
+  return UNAME + "(" + UID + ")";
+}
 function doSave(){
   if(!CUR) return;
   $("bSave").disabled = true; tag("儲存中…","off");
@@ -586,7 +672,9 @@ function qb(i,t,fn){ return '<div class="qb" onclick="' + fn + '"><span class="q
 function pTable(mode){
   if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
   var rs = rowsF(), wh = (mode === "prep");
-  var lock = (HEAD.st === "已簽核");
+  var signed = (HEAD.st === "已簽核");
+  var canEdit = wh ? (ROLE === "wh" || ROLE === "adm") : (ROLE === "sup" || ROLE === "adm");
+  var lock = signed || !canEdit;
   var head = wh
    ? '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">B倉備料</th><th class="n">A倉備料</th><th class="n">出庫量</th><th class="n">差設計</th><th>狀態</th>'
    : '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">出庫量</th><th class="n">實際用量</th><th class="n">餘料退庫</th><th class="n">未回收</th><th>差異原因說明</th>';
@@ -614,7 +702,8 @@ function pTable(mode){
   $("stage").innerHTML =
    '<div class="ph"><div><h1>' + TITLE[PAGE] + '</h1><div class="psub">' + esc(HEAD.no) + '　' + esc(HEAD.nm) + '</div></div>' +
     '<div class="pdate">顯示 ' + rs.length + ' / ' + D.length + ' 項</div></div>' +
-   (lock ? '<div class="msg i">本案已於 ' + esc(HEAD.signAt) + ' 簽核完成，內容已鎖定。如需修改請洽管理部退回。</div>' : '') +
+   (signed ? '<div class="msg i">本案已於 ' + esc(HEAD.signAt) + ' 簽核完成，內容已鎖定。如需修改請洽管理部退回。</div>'
+    : (!canEdit ? '<div class="msg i">此頁面為唯讀。' + (wh ? "備料作業僅限倉管填寫。" : "實際用量僅限工務部填寫。") + '</div>' : '')) +
    '<div class="note">' + (wh
      ? "填入每一項的 B倉／A倉備料數量，出庫量由系統自動加總。設計量由工務提供，不可修改。"
      : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 出庫 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
@@ -690,8 +779,8 @@ function pImport(){
        ? '<select id="iSup">' + SUPS.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join("") + '</select>'
        : '<input type="text" id="iSup">') + '</div>' +
      '<div><label>預定竣工日</label><input type="text" id="iDate" placeholder="2026-08-18"></div></div>' +
-    '<div class="row"><div><label>管理密碼</label><input type="password" id="iPw" placeholder="建立建案需輸入"></div>' +
-     '<div style="display:flex;align-items:flex-end"><button class="btn grn" onclick="doAdd()">建立建案</button></div></div></div>' +
+    '<div class="row"><div style="display:flex;align-items:flex-end">' +
+      '<button class="btn grn" onclick="doAdd()">建立建案</button></div><div></div><div></div></div></div>' +
    '<div id="pv"></div>';
   bindDrop();
 }
@@ -819,11 +908,10 @@ function doParse(){
 function doAdd(){
   var r = getParsed();
   var no = $("iNo").value.trim(), nm = $("iNm").value.trim();
-  var sup = $("iSup").value.trim(), pw = $("iPw").value.trim();
+  var sup = $("iSup").value.trim(), pw = ADMIN_PW;
   if(!r.items.length){ $("mImp").innerHTML = '<div class="msg e">請先貼上備料表並解析</div>'; return; }
   if(!no || !nm){ $("mImp").innerHTML = '<div class="msg e">工程編號與工程名稱必填</div>'; return; }
   if(!sup){ $("mImp").innerHTML = '<div class="msg e">請指定監工</div>'; return; }
-  if(!pw){ $("mImp").innerHTML = '<div class="msg e">請輸入管理密碼</div>'; return; }
   $("mImp").innerHTML = '<div class="msg i">建立中，請稍候…</div>';
   post({ action:"addCase", pw:pw, no:no, nm:nm, cat:$("iCat").value.trim(),
          con:$("iCon").value.trim(), sup:sup, date:$("iDate").value.trim(),
@@ -859,8 +947,7 @@ function exportCsv(){
 window.addEventListener("beforeunload", function(e){
   if(DIRTY){ e.preventDefault(); e.returnValue = ""; }
 });
-setRole();
-if(API) boot(); else showSetup("");
+if(tryResume()){ if(API) boot(); else showSetup(""); }
 </script>
 </body>
 </html>
