@@ -229,7 +229,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
   <div class="hd-row">
     <div>
       <h1>竹建瓦斯 乙級導管配管自主練習</h1>
-      <p>13:30–17:30 ｜ 顯示 7/27–8/31 ｜ 第三批 8/3–8/31 ｜ 每場2人+空白位</p>
+      <p>13:30–17:30 ｜ 顯示 7/27–9/30 ｜ 第四批 9/1–9/30 ｜ 每場2人+空白位</p>
     </div>
     <div class="hd-btns">
       <button class="hd-btn mgr" onclick="checkMgr()">管理</button>
@@ -269,6 +269,7 @@ canvas{display:block;width:100%;height:160px;cursor:crosshair;touch-action:none}
       <div class="sched-note-body">
         <p><b>排班對象：</b>乙級導管配管受訓學員共 8 位（林孟賢、陳人豪、張鈞豪、劉建彣、黃禹竣、王璽凱、蔡凱程、陳東彥）。</p>
         <p><b>排班原則：</b>每場固定排 2 人、平日輪流，盡量讓每個人練習次數平均（第三批共 21 場，每人 5～6 次）。</p>
+        <p class="hl"><b>📅 第四批（9/1～9/30）已避開：</b><br>・9/5、9/12、9/19：術科考照（暫定）<br>・9/9：職安訓練，全體不排<br>・9/25：中秋節國定假日<br>・9/16：陳人豪、張鈞豪不排<br>・9/18：陳人豪、王璽凱、陳東彥、劉建彣、林孟賢不排<br>（第四批共 20 場，每人各 5 次）</p>
         <p class="hl"><b>📅 第三批（8/3～8/31）已避開的勤務：</b><br>・8/4～8/10：劉建彣特休<br>・8/5：陳人豪勤務<br>・8/11～8/14 第一梯抄表：林孟賢、王璽凱、陳東彥<br>・8/17～8/20 第二梯抄表：陳人豪、劉建彣、黃禹竣、蔡凱程</p>
         <p class="hl2">📌 排班時有查漏、健檢勤務的日子我都避開了，不會卡到大家的工作，可以安心來練。如果臨時有異動、需要自行調開，再跟我說一聲喔～<br><span class="sign">—— 管理部 沛豫</span></p>
         <p class="hl"><b>👉 沒排到你的名字，也歡迎來！</b>每場都保留「＋ 空白位」，<b>任何人都能自由加入練習</b>，現場簽到即可，不限被排到的兩位。</p>
@@ -488,6 +489,27 @@ const SCHED = [
   {seq:71, date:'08/27', wd:'四', m1:'林孟賢', m2:'劉建彣'},
   {seq:72, date:'08/28', wd:'五', m1:'蔡凱程', m2:'陳東彥'},
   {seq:73, date:'08/31', wd:'一', m1:'陳人豪', m2:'王璽凱'},
+  // === 第四批 9/1–9/30（避開術科考照、職安訓練、中秋節）===
+  {seq:74, date:'09/01', wd:'二', m1:'王璽凱', m2:'蔡凱程'},
+  {seq:75, date:'09/02', wd:'三', m1:'陳人豪', m2:'陳東彥'},
+  {seq:76, date:'09/03', wd:'四', m1:'張鈞豪', m2:'黃禹竣'},
+  {seq:77, date:'09/04', wd:'五', m1:'林孟賢', m2:'劉建彣'},
+  {seq:78, date:'09/07', wd:'一', m1:'蔡凱程', m2:'陳東彥'},
+  {seq:79, date:'09/08', wd:'二', m1:'陳人豪', m2:'王璽凱'},
+  {seq:80, date:'09/10', wd:'四', m1:'劉建彣', m2:'黃禹竣'},
+  {seq:81, date:'09/11', wd:'五', m1:'林孟賢', m2:'張鈞豪'},
+  {seq:82, date:'09/14', wd:'一', m1:'王璽凱', m2:'陳東彥'},
+  {seq:83, date:'09/15', wd:'二', m1:'陳人豪', m2:'蔡凱程'},
+  {seq:84, date:'09/16', wd:'三', m1:'林孟賢', m2:'黃禹竣'},
+  {seq:85, date:'09/17', wd:'四', m1:'張鈞豪', m2:'劉建彣'},
+  {seq:86, date:'09/18', wd:'五', m1:'黃禹竣', m2:'蔡凱程'},
+  {seq:87, date:'09/21', wd:'一', m1:'林孟賢', m2:'王璽凱'},
+  {seq:88, date:'09/22', wd:'二', m1:'張鈞豪', m2:'陳東彥'},
+  {seq:89, date:'09/23', wd:'三', m1:'陳人豪', m2:'劉建彣'},
+  {seq:90, date:'09/24', wd:'四', m1:'黃禹竣', m2:'王璽凱'},
+  {seq:91, date:'09/28', wd:'一', m1:'林孟賢', m2:'蔡凱程'},
+  {seq:92, date:'09/29', wd:'二', m1:'劉建彣', m2:'陳東彥'},
+  {seq:93, date:'09/30', wd:'三', m1:'陳人豪', m2:'張鈞豪'},
 ];
 
 const REMINDER = {date:'06/23', wd:'二', text:'第四次內訓\n乙級技術士訓練\n舊倉庫'};
@@ -496,6 +518,15 @@ const REMINDER3 = {date:'06/19', wd:'五', text:'端午節\n國定假日'};
 
 const REMINDER4 = {date:'07/03', wd:'五', text:'學科考前\n當日不排'};
 const REMINDER5 = {date:'07/16', wd:'四', text:'能源署查核\n當日不排'};
+const REMINDER6 = {date:'09/09', wd:'三', text:'職安訓練\n當日不排'};
+const REMINDER7 = {date:'09/25', wd:'五', text:'中秋節\n國定假日'};
+const REMINDER8 = {date:'09/05', wd:'六', text:'術科考照\n（暫定）'};
+const REMINDER9 = {date:'09/12', wd:'六', text:'術科考照\n（暫定）'};
+const REMINDER10= {date:'09/19', wd:'六', text:'術科考照\n（暫定）'};
+
+const REMINDERS = [REMINDER,REMINDER2,REMINDER3,REMINDER4,REMINDER5,REMINDER6,REMINDER7,REMINDER8,REMINDER9,REMINDER10];
+const REMINDER_MAP = {};
+REMINDERS.forEach(function(r){ REMINDER_MAP[r.date]=r; });
 
 // 抄表勤務標記（不影響簽到，僅在月曆格子顯示小標籤）
 const DUTY = {
@@ -504,9 +535,9 @@ const DUTY = {
 };
 
 // 月曆顯示區間（7/27 之前的排班已結束，僅保留 7/27–8/31；舊資料仍在 SCHED 內未刪除）
-const VIEW_MONTHS = [7,8];
+const VIEW_MONTHS = [7,8,9];
 const VIEW_FROM = '07/27';
-const VIEW_TO   = '08/31';
+const VIEW_TO   = '09/30';
 function inView(mmdd){ var s=String(mmdd); return s>=VIEW_FROM && s<=VIEW_TO; }
 function schedOf(name){ return SCHED_DATA.filter(d=>inView(d.date)&&(d.m1===name||d.m2===name)); }
 function doneOf(name){ return Object.keys(sigRec).filter(k=>{var p=k.split('_');return p[1]===name&&inView(p[0]);}).length; }
@@ -611,6 +642,7 @@ function renderCal(){
   const months=[
     {year:2026,month:7,label:'2026年7月（7/27起）',firstDow:0, startDate:27},
     {year:2026,month:8,label:'2026年8月（第三批）',firstDow:5, startDate:1},
+    {year:2026,month:9,label:'2026年9月（第四批．術科考照月）',firstDow:1, startDate:1},
   ];
 
   months.forEach(m=>{
@@ -631,8 +663,8 @@ function renderCal(){
       const dow=(firstDow + (day - m.startDate)) % 7;
       const isWeekend=(dow===5||dow===6);
       const sched=schedMap[mmdd];
-      const isReminder=(mmdd===REMINDER.date||mmdd===REMINDER2.date||mmdd===REMINDER3.date||mmdd===REMINDER4.date||mmdd===REMINDER5.date);
-      const reminderData=mmdd===REMINDER.date?REMINDER:mmdd===REMINDER2.date?REMINDER2:mmdd===REMINDER3.date?REMINDER3:mmdd===REMINDER4.date?REMINDER4:REMINDER5;
+      const reminderData=REMINDER_MAP[mmdd];
+      const isReminder=!!reminderData;
       const inRange=VIEW_MONTHS.indexOf(m.month)>-1;
       const duty=DUTY[mmdd]||'';
 
