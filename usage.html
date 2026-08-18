@@ -187,9 +187,9 @@ border:1px solid var(--line);align-items:center;justify-content:center;font-size
    <button class="btn" style="width:100%" onclick="doLogin()">登入</button>
    <div style="height:14px;"></div>
    <div style="font-size:15px;color:var(--muted);line-height:1.9">
-    <b>倉管</b>　填備料（B倉／A倉）<br>
-    <b>工務部</b>　填實際用量與餘料退庫<br>
-    <b>管理員</b>　全部權限＋匯入新建案
+    <b>倉管</b>　全部權限＋匯入新建案<br>
+    <b>管理員</b>　全部權限＋匯入新建案<br>
+    <b>工務部</b>　填實際用量與餘料退庫
    </div>
   </div>
  </div>
@@ -396,31 +396,32 @@ function openCase(no, page){
 }
 function toggleSide(){ $("side").classList.toggle("open"); $("mask").classList.toggle("on"); }
 function go(p){
-  if(p === "imp" && ROLE !== "adm"){ alert("只有管理員可以匯入新建案。"); p = "cases"; }
-  if(p === "prep" && !(ROLE === "wh" || ROLE === "adm")){ alert("備料作業僅限倉管填寫。"); p = "cases"; }
-  if((p === "usage" || p === "diff") && !(ROLE === "sup" || ROLE === "adm")){
-    alert("實際用量填報僅限工務部填寫。"); p = "cases"; }
+  if(p === "imp" && !FULL()){ alert("匯入新建案僅限倉管或管理員。"); p = "cases"; }
+  if(p === "prep" && !FULL()){ alert("備料作業僅限倉管或管理員。"); p = "cases"; }
+  if((p === "usage" || p === "diff") && !(ROLE === "sup" || FULL())){
+    alert("實際用量填報僅限工務部、倉管或管理員。"); p = "cases"; }
   if(p !== "cases" && p !== "imp" && !CUR){ alert("請先從上方選一個建案。"); p = "cases"; }
   PAGE = p; FLT = "ALL";
   document.querySelectorAll(".ni").forEach(function(e){ e.classList.toggle("on", e.dataset.p === p); });
   $("crumb").textContent = TITLE[p] || "";
   $("side").classList.remove("open"); $("mask").classList.remove("on");
-  var canW = (p === "prep") ? (ROLE === "wh" || ROLE === "adm")
-           : ((p === "usage") ? (ROLE === "sup" || ROLE === "adm") : false);
+  var canW = (p === "prep") ? FULL()
+           : ((p === "usage") ? (ROLE === "sup" || FULL()) : false);
   var signed2 = HEAD && HEAD.st === "已簽核";
   $("bar").classList.toggle("hide", !canW || signed2);
   $("bSub").classList.toggle("hide", p === "prep");
   draw(); $("stage").scrollTop = 0;
 }
+function FULL(){ return ROLE === "adm" || ROLE === "wh"; }
 function applyRole(){
   $("ava").textContent = { sup:"工", wh:"倉", adm:"管" }[ROLE] || "－";
   $("uName").textContent = UNAME || "－";
   $("uNo").textContent = UID ? ("工號 " + UID) : "－";
   document.querySelectorAll(".ni[data-p]").forEach(function(e){
     var p = e.dataset.p, show = true;
-    if(p === "imp") show = (ROLE === "adm");
-    if(p === "prep") show = (ROLE === "wh" || ROLE === "adm");
-    if(p === "usage" || p === "diff") show = (ROLE === "sup" || ROLE === "adm");
+    if(p === "imp") show = FULL();
+    if(p === "prep") show = FULL();
+    if(p === "usage" || p === "diff") show = (ROLE === "sup" || FULL());
     e.classList.toggle("hide", !show);
   });
 }
@@ -673,7 +674,7 @@ function pTable(mode){
   if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
   var rs = rowsF(), wh = (mode === "prep");
   var signed = (HEAD.st === "已簽核");
-  var canEdit = wh ? (ROLE === "wh" || ROLE === "adm") : (ROLE === "sup" || ROLE === "adm");
+  var canEdit = wh ? FULL() : (ROLE === "sup" || FULL());
   var lock = signed || !canEdit;
   var head = wh
    ? '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">B倉備料</th><th class="n">A倉備料</th><th class="n">出庫量</th><th class="n">差設計</th><th>狀態</th>'
@@ -703,7 +704,7 @@ function pTable(mode){
    '<div class="ph"><div><h1>' + TITLE[PAGE] + '</h1><div class="psub">' + esc(HEAD.no) + '　' + esc(HEAD.nm) + '</div></div>' +
     '<div class="pdate">顯示 ' + rs.length + ' / ' + D.length + ' 項</div></div>' +
    (signed ? '<div class="msg i">本案已於 ' + esc(HEAD.signAt) + ' 簽核完成，內容已鎖定。如需修改請洽管理部退回。</div>'
-    : (!canEdit ? '<div class="msg i">此頁面為唯讀。' + (wh ? "備料作業僅限倉管填寫。" : "實際用量僅限工務部填寫。") + '</div>' : '')) +
+    : (!canEdit ? '<div class="msg i">此頁面為唯讀。' + (wh ? "備料作業僅限倉管或管理員填寫。" : "實際用量僅限工務部、倉管或管理員填寫。") + '</div>' : '')) +
    '<div class="note">' + (wh
      ? "填入每一項的 B倉／A倉備料數量，出庫量由系統自動加總。設計量由工務提供，不可修改。"
      : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 出庫 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
