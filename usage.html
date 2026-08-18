@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工程用料對帳系統</title>
+<style>
+:root{--side:#111c33;--sideTx:#93a4bd;--bg:#f1f4f9;--card:#fff;--line:#e3e8ef;--ink:#1c2434;--muted:#67748c;
+--blue:#2563eb;--blueL:#e8effd;--org:#f0910c;--orgL:#fef3e2;--red:#e0413a;--redL:#fdeceb;
+--grn:#17a04a;--grnL:#e8f7ee;--gray:#8a94a6;--grayL:#eef1f6}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",-apple-system,sans-serif;
+background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55;display:flex;overflow:hidden}
+.side{width:250px;flex:none;background:var(--side);color:#fff;display:flex;flex-direction:column;overflow:auto}
+.brand{padding:20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.09)}
+.logo{width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#2563eb,#59a5f5);
+display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;flex:none}
+.bname{font-size:18px;font-weight:800;line-height:1.25}.bsub{font-size:14px;color:var(--sideTx)}
+.nav{padding:14px 12px;flex:1}
+.ng{font-size:14px;color:#65758f;font-weight:800;letter-spacing:1.4px;padding:14px 12px 7px}
+.ni{display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:10px;cursor:pointer;
+font-size:16px;font-weight:700;color:#c6d2e4;margin-bottom:3px;user-select:none}
+.ni:hover{background:rgba(255,255,255,.07);color:#fff}
+.ni.on{background:var(--blue);color:#fff;box-shadow:0 3px 12px rgba(37,99,235,.4)}
+.ni .i{width:22px;text-align:center;font-size:17px;flex:none}
+.ni .bdg{margin-left:auto;background:var(--red);color:#fff;font-size:14px;font-weight:800;padding:1px 9px;border-radius:10px}
+.ni.on .bdg{background:rgba(255,255,255,.28)}
+.ni.dis{opacity:.4;pointer-events:none}
+.sfoot{padding:16px 20px;border-top:1px solid rgba(255,255,255,.09);font-size:14px;color:var(--sideTx)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--card);border-bottom:1px solid var(--line);padding:12px 26px;
+display:flex;align-items:center;gap:16px;flex:none}
+.crumb{font-size:15.5px;color:var(--muted);font-weight:700;white-space:nowrap}.crumb b{color:var(--ink)}
+.casesel{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+font-size:16px;font-weight:700;font-family:inherit;color:var(--ink);max-width:330px}
+.search{flex:1;max-width:330px;position:relative}
+.search input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+padding:11px 14px 11px 42px;font-size:16px;font-family:inherit;color:var(--ink)}
+.search input:focus{outline:none;border-color:var(--blue);background:#fff}
+.search .mag{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.tright{margin-left:auto;display:flex;align-items:center;gap:13px}
+.savetag{font-size:14.5px;font-weight:800;color:var(--grn);white-space:nowrap}
+.savetag.off{color:var(--muted)}.savetag.err{color:var(--red)}
+.ava{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;
+display:flex;align-items:center;justify-content:center;font-size:16px}
+.body{flex:1;overflow:auto;padding:22px 26px 40px}
+.ph{display:flex;align-items:flex-end;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+h1{font-size:28px;font-weight:800;letter-spacing:-.3px}
+.psub{font-size:15.5px;color:var(--muted)}
+.pdate{margin-left:auto;font-size:16px;color:var(--muted);font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-bottom:20px}
+.kc{border-radius:15px;padding:20px 22px;color:#fff}
+.kc.b{background:linear-gradient(135deg,#2563eb,#3d7ff0)}.kc.o{background:linear-gradient(135deg,#f0910c,#f8b13f)}
+.kc.r{background:linear-gradient(135deg,#e0413a,#f0665f)}.kc.g{background:linear-gradient(135deg,#17a04a,#3cc271)}
+.kc .ki{width:44px;height:44px;border-radius:11px;background:rgba(255,255,255,.22);
+display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:13px}
+.kc .kv{font-size:34px;font-weight:800;line-height:1.1}.kc .kv small{font-size:17px;font-weight:700;opacity:.85;margin-left:7px}
+.kc .kl{font-size:16px;font-weight:700;opacity:.95;margin-top:3px}
+.kbar{height:7px;background:rgba(255,255,255,.28);border-radius:4px;margin-top:13px;overflow:hidden}
+.kbar>i{display:block;height:100%;background:#fff;border-radius:4px}
+.kpct{font-size:14.5px;opacity:.9;margin-top:5px;font-weight:700}
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:18px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:20px 22px;
+box-shadow:0 1px 3px rgba(28,36,52,.05);margin-bottom:18px}
+.ch{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ch h2{font-size:20px;font-weight:800}.ch .sp{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
+.donut{display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.lgd{flex:1;min-width:180px}
+.lg{display:flex;align-items:center;gap:11px;padding:8px 0;font-size:16px;border-bottom:1px solid #f2f4f8}
+.lg:last-child{border:none}.lg .dot{width:13px;height:13px;border-radius:4px;flex:none}
+.lg .nm{font-weight:700}.lg .vv{margin-left:auto;font-weight:800;font-size:18px}
+.lg .pc{color:var(--muted);font-size:14.5px;width:52px;text-align:right}
+.flow{display:flex;flex-direction:column;gap:11px}
+.fi{display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:11px;background:var(--bg)}
+.fi.done{background:var(--grnL)}.fi.on{background:var(--blueL)}
+.fn{width:32px;height:32px;border-radius:9px;background:#cfd7e4;color:#fff;font-weight:800;
+display:flex;align-items:center;justify-content:center;font-size:15px;flex:none}
+.fi.done .fn{background:var(--grn)}.fi.on .fn{background:var(--blue)}
+.ft{font-size:16.5px;font-weight:800}.fw{font-size:14.5px;color:var(--muted)}
+.fv{margin-left:auto;font-size:22px;font-weight:800}
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:16px}
+.tb{background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:9px 16px;cursor:pointer;
+font-size:15.5px;font-weight:800;display:flex;gap:9px;align-items:center;user-select:none;color:var(--muted)}
+.tb .n{background:#dce2ec;color:var(--ink);border-radius:9px;padding:0 9px;font-size:14.5px}
+.tb.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.tb.on .n{background:rgba(255,255,255,.28);color:#fff}
+.tb.red.on{background:var(--red);border-color:var(--red)}.tb.grn.on{background:var(--grn);border-color:var(--grn)}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:16px;background:#fff}
+th{background:#f7f9fc;padding:13px 12px;text-align:left;font-size:15px;font-weight:800;color:var(--muted);
+white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:3}
+th.n,td.n{text-align:right}
+td{padding:12px;border-bottom:1px solid #f0f3f7;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}tbody tr:hover td{background:#fafbfd}
+tr.warn td{background:#fef7f6}tr.clk{cursor:pointer}
+.mn{font-weight:800;font-size:16.5px;line-height:1.35}
+.mc{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px;color:var(--muted)}
+.thumb{width:40px;height:40px;border-radius:10px;background:var(--blueL);color:var(--blue);
+display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex:none}
+tr.warn .thumb{background:var(--redL);color:var(--red)}tr.ok .thumb{background:var(--grnL);color:var(--grn)}
+.mcell{display:flex;align-items:center;gap:12px}
+input,select,textarea{background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;
+font-size:16.5px;font-family:inherit;color:var(--ink);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px var(--blueL)}
+textarea{min-height:230px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px;resize:vertical}
+td input[type=number]{text-align:right;font-weight:800;min-width:92px}
+td input[type=text]{min-width:200px}
+label{display:block;font-size:15px;color:var(--muted);font-weight:800;margin-bottom:6px}
+.row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}.row>*{flex:1;min-width:170px}
+.pill{display:inline-block;padding:4px 13px;border-radius:20px;font-size:14.5px;font-weight:800;white-space:nowrap}
+.p-wait{background:var(--grayL);color:var(--gray)}.p-part{background:var(--blueL);color:var(--blue)}
+.p-ok{background:var(--grnL);color:var(--grn)}.p-warn{background:var(--redL);color:var(--red)}
+.p-sign{background:#eae4fb;color:#6941c6}
+.uv{font-weight:800;font-size:18px}.uv.p{color:var(--red)}.uv.m{color:var(--org)}.uv.z{color:var(--grn)}
+.big{font-size:18px;font-weight:800}.big.d{color:var(--grn)}.big.o{color:var(--org)}
+.qa{display:flex;flex-direction:column;gap:10px}
+.qb{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);
+border-radius:11px;cursor:pointer;font-size:16px;font-weight:700;background:#fff}
+.qb:hover{background:var(--bg);border-color:var(--blue);color:var(--blue)}
+.qb .qi{width:32px;height:32px;border-radius:9px;background:var(--blueL);color:var(--blue);
+display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.btn{background:var(--blue);border:none;color:#fff;padding:11px 19px;border-radius:9px;
+font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap;width:auto}
+.btn.gray{background:#7b8698}.btn.grn{background:var(--grn)}.btn.org{background:var(--org)}.btn.red{background:var(--red)}
+.btn.sm{padding:8px 14px;font-size:14.5px}
+.btn:disabled{background:#bcc4d0;cursor:not-allowed}
+.msg{padding:14px 18px;border-radius:11px;margin-bottom:16px;font-size:16px;font-weight:700}
+.msg.e{background:var(--redL);color:#96201a}.msg.s{background:var(--grnL);color:#0d6b31}
+.msg.i{background:var(--blueL);color:#1c3d78}
+.note{background:var(--blueL);border-left:5px solid var(--blue);border-radius:10px;
+padding:13px 17px;font-size:16px;margin-bottom:18px;color:#1c3d78;line-height:1.75}
+.empty{padding:52px;text-align:center;color:var(--muted);font-size:17px}
+.bar{background:var(--card);border-top:1px solid var(--line);padding:12px 26px;
+display:flex;gap:12px;align-items:center;flex:none;flex-wrap:wrap}
+.bar .s{flex:1;font-size:16px;color:var(--muted);min-width:180px}.bar .s b{color:var(--ink);font-size:19px}
+.hide{display:none}
+.login{max-width:440px;margin:70px auto}
+.burger{display:none;width:42px;height:42px;border-radius:10px;background:var(--bg);
+border:1px solid var(--line);align-items:center;justify-content:center;font-size:19px;cursor:pointer;flex:none}
+.mask{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150}.mask.on{display:block}
+@media(max-width:1180px){.grid2{grid-template-columns:1fr}}
+@media(max-width:900px){
+ body{overflow:auto}
+ .side{position:fixed;left:-260px;top:0;bottom:0;z-index:200;transition:left .22s}
+ .side.open{left:0;box-shadow:0 0 40px rgba(0,0,0,.4)}
+ .main{width:100%}.burger{display:flex}
+ .body{padding:16px 13px 30px}h1{font-size:23px}
+ .topbar{padding:10px 13px;gap:10px;flex-wrap:wrap}.search,.casesel{max-width:none;flex:1 1 100%}
+ .tw{overflow-x:auto}table{min-width:800px}
+}
+</style>
+</head>
+<body>
+<div class="mask" id="mask" onclick="toggleSide()"></div>
+
+<div id="pSetup" class="hide" style="position:fixed;inset:0;background:#f1f4f9;z-index:300;overflow:auto;padding:30px 16px">
+ <div style="max-width:620px;margin:30px auto">
+  <div class="card">
+   <div class="ch"><h2>第一次使用 · 連線設定</h2></div>
+   <div class="note">
+    請貼上你的 Google Apps Script 網頁應用程式網址（<b>結尾是 /exec</b>）。<br>
+    取得方式：Apps Script → 右上「部署」→ 部署完成後跳出的視窗裡，「網頁應用程式」下方那串網址，按旁邊的「複製」。
+   </div>
+   <div id="mSetup"></div>
+   <label>後端網址</label>
+   <input type="text" id="apiIn" placeholder="https://script.google.com/macros/s/AKfycb...../exec">
+   <div style="height:16px"></div>
+   <button class="btn" style="width:100%" onclick="saveApi()">儲存並連線</button>
+   <div style="height:14px"></div>
+   <div style="font-size:15px;color:var(--muted);line-height:1.8">
+    ※ 只需設定一次，之後這台裝置會記住。<br>
+    ※ 網址結尾若是 <b>/library</b> 是錯的，那是程式庫網址，請回部署視窗找 /exec 那一串。<br>
+    ※ 要換網址：左下角「重設連線」。
+   </div>
+  </div>
+ </div>
+</div>
+
+<aside class="side" id="side">
+ <div class="brand"><div class="logo">竹</div>
+  <div><div class="bname">用料對帳系統</div><div class="bsub">Material Control</div></div></div>
+ <nav class="nav" id="nav">
+  <div class="ng">建案</div>
+  <div class="ni on" data-p="cases" onclick="go('cases')"><span class="i">▣</span>建案清單</div>
+  <div class="ni" data-p="dash" onclick="go('dash')"><span class="i">▦</span>本案總覽</div>
+  <div class="ng">作業</div>
+  <div class="ni" data-p="prep" onclick="go('prep')"><span class="i">▤</span>備料作業</div>
+  <div class="ni" data-p="usage" onclick="go('usage')"><span class="i">✎</span>實際用量填報<span class="bdg" id="bdgU">0</span></div>
+  <div class="ni" data-p="diff" onclick="go('diff')"><span class="i">⚠</span>差異分析<span class="bdg" id="bdgD">0</span></div>
+  <div class="ng">管理</div>
+  <div class="ni" data-p="imp" onclick="go('imp')"><span class="i">⤒</span>匯入新建案</div>
+  <div class="ni" onclick="exportCsv()"><span class="i">⤓</span>匯出報表</div>
+ </nav>
+ <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.0</span><br><span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
+</aside>
+
+<div class="main">
+ <div class="topbar">
+  <div class="burger" onclick="toggleSide()">☰</div>
+  <div class="crumb">用料對帳 › <b id="crumb">建案清單</b></div>
+  <select class="casesel" id="caseSel" onchange="pickCase()"><option value="">— 選擇建案 —</option></select>
+  <div class="search"><span class="mag">⌕</span>
+   <input type="text" id="q" placeholder="搜尋料項名稱或編號…" oninput="draw()"></div>
+  <div class="tright">
+   <span class="savetag off" id="savetag">未變更</span>
+   <select class="casesel" id="role" style="max-width:130px" onchange="setRole()">
+    <option value="sup">監工</option><option value="wh">倉管</option><option value="adm">管理員</option></select>
+   <div class="ava" id="ava">監</div>
+  </div>
+ </div>
+ <div class="body" id="stage"></div>
+ <div class="bar" id="bar">
+  <div class="s" id="stat"></div>
+  <button class="btn org" id="bSave" onclick="doSave()">儲存</button>
+  <button class="btn grn" id="bSub" onclick="doSubmit()">送出簽核</button>
+ </div>
+</div>
+
+<script>
+var API_KEY = "matctl_api";
+var API_DEFAULT = "https://script.google.com/macros/s/AKfycbxbAxSrBz5fpVvFG3BWqFmBYzj8woYGGo2dOYj6xxFIU7CvjfcprYRWiwD8TkMJn4Y/exec";
+var API = API_DEFAULT;
+try{ var _sv = localStorage.getItem(API_KEY); if(_sv) API = _sv; }catch(e){}
+var ADMIN_PW = "1688";
+var TH = 0.10, PAGE = "cases", ROLE = "sup", FLT = "ALL", DIRTY = false;
+var CASES = [], CUR = null, HEAD = null, D = [], SUPS = [];
+var TITLE = { cases:"建案清單", dash:"本案總覽", prep:"備料作業", usage:"實際用量填報", diff:"差異分析", imp:"匯入新建案" };
+
+function $(i){ return document.getElementById(i); }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){
+  return { "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c]; }); }
+function n(v){ var x = parseFloat(v); return isNaN(x) ? 0 : x; }
+function has(v){ return v !== "" && v !== null && v !== undefined; }
+function rnd(v){ return Math.round(v * 100) / 100; }
+function out(r){ return (has(r.b) || has(r.a)) ? rnd(n(r.b) + n(r.a)) : ""; }
+function unrec(r){ return has(r.act) ? rnd(n(out(r)) - n(r.act) - n(r.ret)) : ""; }
+function state(r){
+  if(!has(r.b) && !has(r.a)) return "wait";
+  if(!has(r.act)) return "part";
+  var o = n(out(r)), u = n(unrec(r));
+  return (o > 0 ? (Math.abs(u)/o > TH) : (u !== 0)) ? "warn" : "ok";
+}
+var LBL = { wait:"待備料", part:"待填實際", ok:"完成", warn:"異常" };
+
+/* ---------- 連線 ---------- */
+var jc = 0;
+function jsonp(params, cb, err){
+  if(!API){ err("尚未設定後端網址"); return; }
+  var nm = "__cb" + (++jc) + "_" + Date.now(), sc;
+  var t = setTimeout(function(){ clean(); err("連線逾時，請檢查網路後重試"); }, 30000);
+  function clean(){ clearTimeout(t);
+    try{ delete window[nm]; }catch(e){ window[nm] = undefined; }
+    if(sc && sc.parentNode) sc.parentNode.removeChild(sc); }
+  window[nm] = function(d){ clean(); cb(d); };
+  var qs = [];
+  for(var k in params) qs.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k]));
+  qs.push("callback=" + nm);
+  sc = document.createElement("script");
+  sc.src = API + "?" + qs.join("&");
+  sc.onerror = function(){ clean(); err("無法連線到後端"); };
+  document.body.appendChild(sc);
+}
+function post(body, cb, err){
+  if(!API){ err("尚未設定後端網址"); return; }
+  var ct = new AbortController();
+  var t = setTimeout(function(){ ct.abort(); }, 45000);
+  fetch(API, { method:"POST", body:JSON.stringify(body), signal:ct.signal,
+    headers:{ "Content-Type":"text/plain;charset=utf-8" } })
+   .then(function(r){ return r.json(); })
+   .then(function(d){ clearTimeout(t); cb(d); })
+   .catch(function(e){ clearTimeout(t); err("連線失敗：" + e.message); });
+}
+function tag(t,c){ $("savetag").className = "savetag " + (c||""); $("savetag").textContent = t; }
+
+/* ---------- 連線設定 ---------- */
+function showSetup(msg){
+  document.getElementById("pSetup").classList.remove("hide");
+  document.getElementById("mSetup").innerHTML = msg ? '<div class="msg e">' + esc(msg) + '</div>' : "";
+  var el = document.getElementById("apiIn");
+  el.value = API || "";
+  el.focus();
+}
+function hideSetup(){ document.getElementById("pSetup").classList.add("hide"); }
+function saveApi(){
+  var v = document.getElementById("apiIn").value.trim();
+  if(!v){ showSetup("請貼上網址"); return; }
+  if(v.indexOf("http") !== 0){ showSetup("這不像一個網址，請重新複製一次"); return; }
+  if(v.indexOf("/library") >= 0){
+    showSetup("這是程式庫網址（/library），不能用。請回部署視窗複製結尾是 /exec 的那一串。"); return; }
+  if(v.slice(-5) !== "/exec"){
+    showSetup("網址結尾必須是 /exec，你貼的結尾是「" + v.slice(-12) + "」。請重新複製。"); return; }
+  API = v;
+  try{ localStorage.setItem(API_KEY, v); }catch(e){}
+  document.getElementById("mSetup").innerHTML = '<div class="msg i">連線測試中，請稍候…</div>';
+  jsonp({ action:"config" }, function(d){
+    if(!d || !d.ok){ showSetup("連得上但回應異常：" + ((d && d.msg) || "未知錯誤") +
+      "。請確認 Apps Script 已執行過 initSheets。"); return; }
+    hideSetup(); boot();
+  }, function(e){
+    showSetup("連不上：" + e + "。請確認部署時「誰可以存取」有選「任何人」。");
+  });
+}
+function resetApi(){
+  if(!confirm("要重新設定後端網址嗎？")) return;
+  try{ localStorage.removeItem(API_KEY); }catch(e){}
+  API = ""; showSetup("");
+}
+
+/* ---------- 啟動 ---------- */
+function boot(){
+  tag("載入中…","off");
+  jsonp({ action:"config" }, function(d){
+    if(d.ok){ TH = d.threshold || 0.10; SUPS = d.supervisors || []; if(d.version) $("ver").textContent = d.version; }
+    loadCases();
+  }, function(e){ tag(e,"err"); loadCases(); });
+}
+function loadCases(){
+  jsonp({ action:"cases" }, function(d){
+    if(!d.ok){ tag(d.msg,"err"); return; }
+    CASES = d.cases || [];
+    var sel = $("caseSel");
+    sel.innerHTML = '<option value="">— 選擇建案 —</option>' + CASES.map(function(c){
+      return '<option value="' + esc(c.no) + '"' + (CUR === c.no ? " selected" : "") + '>' +
+        esc(c.no) + '　' + esc(c.nm) + '</option>'; }).join("");
+    tag("已連線","off");
+    draw();
+  }, function(e){ tag(e,"err"); draw(); });
+}
+function pickCase(){
+  var no = $("caseSel").value;
+  if(!no){ CUR = null; HEAD = null; D = []; go("cases"); return; }
+  openCase(no, PAGE === "cases" ? "dash" : PAGE);
+}
+function openCase(no, page){
+  CUR = no; tag("載入中…","off");
+  jsonp({ action:"detail", no:no }, function(d){
+    if(!d.ok){ tag(d.msg,"err"); alert(d.msg); return; }
+    HEAD = d.head;
+    D = (d.items || []).map(function(x){
+      return { seq:x.seq, code:x.code, mat:x.mat, unit:x.unit, des:x.des,
+               b:x.b, a:x.a, act:x.act, ret:x.ret, rsn:x.rsn }; });
+    DIRTY = false; tag("已載入","off");
+    $("caseSel").value = no;
+    go(page || "dash");
+  }, function(e){ tag(e,"err"); alert(e); });
+}
+function toggleSide(){ $("side").classList.toggle("open"); $("mask").classList.toggle("on"); }
+function go(p){
+  if(p !== "cases" && p !== "imp" && !CUR){ alert("請先從上方選一個建案。"); p = "cases"; }
+  PAGE = p; FLT = "ALL";
+  document.querySelectorAll(".ni").forEach(function(e){ e.classList.toggle("on", e.dataset.p === p); });
+  $("crumb").textContent = TITLE[p] || "";
+  $("side").classList.remove("open"); $("mask").classList.remove("on");
+  $("bar").classList.toggle("hide", p === "cases" || p === "imp" || p === "diff");
+  draw(); $("stage").scrollTop = 0;
+}
+function setRole(){
+  ROLE = $("role").value;
+  $("ava").textContent = { sup:"監", wh:"倉", adm:"管" }[ROLE];
+  draw();
+}
+function setF(f){ FLT = f; draw(); }
+function stat(){
+  var s = { wait:0, part:0, ok:0, warn:0, prep:0, act:0 };
+  D.forEach(function(r){ s[state(r)]++;
+    if(has(r.b) || has(r.a)) s.prep++;
+    if(has(r.act)) s.act++; });
+  return s;
+}
+function rowsF(){
+  var q = $("q").value.trim().toLowerCase();
+  return D.filter(function(r){
+    if(q && ((r.code || "") + r.mat).toLowerCase().indexOf(q) < 0) return false;
+    var st = state(r);
+    if(FLT === "WAIT") return st === "wait" || st === "part";
+    if(FLT === "WARN") return st === "warn";
+    if(FLT === "OK") return st === "ok";
+    return true;
+  });
+}
+function inp(i,k,v){
+  return '<input type="' + (k === "rsn" ? "text" : "number") + '"' +
+    (k === "rsn" ? ' placeholder="請說明差異原因"' : ' step="any" inputmode="decimal"') +
+    ' value="' + esc(v) + '" oninput="upd(' + i + ',\'' + k + '\',this.value)">';
+}
+function upd(i,k,v){
+  D[i][k] = v; DIRTY = true; tag("尚未儲存","off");
+  var sc = $("stage").scrollTop;
+  draw(); $("stage").scrollTop = sc;
+  var els = $("stage").querySelectorAll("input");
+  for(var z = 0; z < els.length; z++){
+    var o = els[z].getAttribute("oninput");
+    if(o && o.indexOf("upd(" + i + ",'" + k + "'") === 0){
+      els[z].focus();
+      try{ els[z].setSelectionRange(els[z].value.length, els[z].value.length); }catch(e){}
+      break;
+    }
+  }
+}
+function pack(){ return D.map(function(r){
+  return { seq:r.seq, b:r.b, a:r.a, act:r.act, ret:r.ret, rsn:r.rsn }; }); }
+function whoName(){ return (HEAD && HEAD.sup) ? HEAD.sup : ({ sup:"監工", wh:"倉管", adm:"管理員" }[ROLE]); }
+function doSave(){
+  if(!CUR) return;
+  $("bSave").disabled = true; tag("儲存中…","off");
+  post({ action:"save", no:CUR, who:whoName(), items:pack() }, function(d){
+    $("bSave").disabled = false;
+    if(!d.ok){ tag(d.msg,"err"); alert(d.msg); return; }
+    DIRTY = false;
+    tag("已儲存 " + new Date().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"}));
+    loadCases();
+  }, function(e){ $("bSave").disabled = false; tag(e,"err"); alert(e); });
+}
+function doSubmit(){
+  if(!CUR) return;
+  var bad = D.filter(function(r){ return state(r) === "warn" && !has(r.rsn); });
+  if(bad.length){
+    alert("第 " + bad.map(function(r){ return r.seq; }).join("、") + " 項有異常但未填差異原因，無法送出。");
+    setF("WARN"); return;
+  }
+  if(!confirm("送出後本案將鎖定，需管理部退回才能修改。確定送出？")) return;
+  $("bSub").disabled = true; tag("送出中…","off");
+  post({ action:"submit", no:CUR, who:whoName(), items:pack() }, function(d){
+    $("bSub").disabled = false;
+    if(!d.ok){ tag(d.msg,"err"); alert(d.msg); return; }
+    DIRTY = false; tag("已送出簽核");
+    alert("送出成功！共 " + d.done + " 項，異常 " + d.bad + " 項。");
+    loadCases(); openCase(CUR,"dash");
+  }, function(e){ $("bSub").disabled = false; tag(e,"err"); alert(e); });
+}
+function donut(parts){
+  var tot = parts.reduce(function(a,p){ return a + p.v; }, 0) || 1;
+  var R = 62, C = 2 * Math.PI * R, off = 0, seg = "";
+  parts.forEach(function(p){
+    var len = p.v / tot * C;
+    seg += '<circle cx="80" cy="80" r="' + R + '" fill="none" stroke="' + p.c + '" stroke-width="27" ' +
+      'stroke-dasharray="' + len + ' ' + (C - len) + '" stroke-dashoffset="' + (-off) +
+      '" transform="rotate(-90 80 80)"></circle>';
+    off += len;
+  });
+  var n2 = parts.reduce(function(a,p){ return a + p.v; }, 0);
+  return '<svg viewBox="0 0 160 160" width="170" height="170">' + seg +
+    '<text x="80" y="74" text-anchor="middle" font-size="30" font-weight="800" fill="#1c2434">' + n2 + '</text>' +
+    '<text x="80" y="96" text-anchor="middle" font-size="14" fill="#67748c">料項總數</text></svg>';
+}
+function tabsHtml(){
+  var s = stat();
+  var T = [["ALL","全部","",D.length],["WAIT","待處理","",s.wait + s.part],
+           ["WARN","異常","red",s.warn],["OK","已完成","grn",s.ok]];
+  return '<div class="tabs">' + T.map(function(t){
+    return '<div class="tb ' + t[2] + (FLT === t[0] ? " on" : "") + '" onclick="setF(\'' + t[0] + '\')">' +
+      '<span>' + t[1] + '</span><span class="n">' + t[3] + '</span></div>'; }).join("") + '</div>';
+}
+
+/* ========== 繪製 ========== */
+function draw(){
+  var s = stat();
+  $("bdgU").textContent = D.length ? (D.length - s.act) : 0;
+  $("bdgD").textContent = s.warn;
+  $("stat").innerHTML = CUR
+    ? "備料 <b>" + s.prep + "</b>/" + D.length + "　實際用量 <b>" + s.act + "</b>/" + D.length +
+      "　異常 <b style='color:#e0413a'>" + s.warn + "</b>" + (DIRTY ? "　· 尚未儲存" : "")
+    : "";
+  if(PAGE === "cases") pCases();
+  else if(PAGE === "dash") pDash(s);
+  else if(PAGE === "imp") pImport();
+  else if(PAGE === "diff") pDiff();
+  else pTable(PAGE);
+}
+
+function pCases(){
+  var tot = CASES.length;
+  var sign = CASES.filter(function(c){ return c.st === "已簽核"; }).length;
+  var bad = CASES.reduce(function(a,c){ return a + c.bad; }, 0);
+  var items = CASES.reduce(function(a,c){ return a + c.cnt; }, 0);
+  $("stage").innerHTML =
+   '<div class="ph"><div><h1>建案清單</h1><div class="psub">所有已匯入的工程案件</div></div>' +
+    '<div class="pdate">共 ' + tot + ' 案</div></div>' +
+   '<div class="kpis">' +
+    '<div class="kc b"><div class="ki">▣</div><div class="kv">' + tot + '<small>案</small></div>' +
+      '<div class="kl">建案總數</div></div>' +
+    '<div class="kc o"><div class="ki">▤</div><div class="kv">' + (tot - sign) + '<small>案</small></div>' +
+      '<div class="kl">進行中</div></div>' +
+    '<div class="kc g"><div class="ki">✓</div><div class="kv">' + sign + '<small>案</small></div>' +
+      '<div class="kl">已簽核</div></div>' +
+    '<div class="kc r"><div class="ki">⚠</div><div class="kv">' + bad + '<small>項</small></div>' +
+      '<div class="kl">未回收異常料項</div><div class="kpct">料項總數 ' + items + '</div></div>' +
+   '</div>' +
+   '<div class="card"><div class="ch"><h2>案件列表</h2><div class="sp">' +
+     '<button class="btn" onclick="go(\'imp\')">＋ 匯入新建案</button>' +
+     '<button class="btn gray" onclick="loadCases()">重新整理</button></div></div>' +
+    (tot ? '<div class="tw"><table><thead><tr><th>工程編號</th><th>工程名稱</th><th>承包商</th><th>監工</th>' +
+      '<th class="n">料項</th><th class="n">備料</th><th class="n">實際</th><th class="n">異常</th>' +
+      '<th>進度</th><th>狀態</th></tr></thead><tbody>' +
+      CASES.map(function(c){
+        var pct = c.cnt ? Math.round(c.done / c.cnt * 100) : 0;
+        var pc = c.st === "已簽核" ? "sign" : (c.bad > 0 ? "warn" : (c.done ? "part" : "wait"));
+        return '<tr class="clk" onclick="openCase(\'' + esc(c.no) + '\',\'dash\')">' +
+          '<td><span class="mc" style="font-size:16px;color:#1c2434;font-weight:800">' + esc(c.no) + '</span></td>' +
+          '<td><span class="mn">' + esc(c.nm) + '</span></td><td>' + esc(c.con || "—") + '</td>' +
+          '<td>' + esc(c.sup || "—") + '</td><td class="n">' + c.cnt + '</td>' +
+          '<td class="n">' + c.prep + '</td><td class="n">' + c.done + '</td>' +
+          '<td class="n">' + (c.bad ? '<span class="pill p-warn">' + c.bad + '</span>' : "0") + '</td>' +
+          '<td><div style="min-width:100px">' + pct + '%<div style="height:7px;background:#e8ecf3;border-radius:4px;margin-top:4px">' +
+            '<i style="display:block;height:100%;border-radius:4px;background:#2563eb;width:' + pct + '%"></i></div></div></td>' +
+          '<td><span class="pill p-' + pc + '">' + esc(c.st) + '</span></td></tr>';
+      }).join("") + '</tbody></table></div>'
+     : '<div class="empty">目前沒有建案。點右上「＋ 匯入新建案」開始。</div>') + '</div>';
+}
+
+function pDash(s){
+  if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
+  var pct = function(v){ return Math.round(v / D.length * 100); };
+  var warns = D.filter(function(r){ return state(r) === "warn"; });
+  $("stage").innerHTML =
+   '<div class="ph"><div><h1>' + esc(HEAD.nm) + '</h1><div class="psub">' + esc(HEAD.no) +
+     '　承包商 ' + esc(HEAD.con || "—") + '　監工 ' + esc(HEAD.sup || "—") +
+     '　<span class="pill p-' + (HEAD.st === "已簽核" ? "sign" : "part") + '">' + esc(HEAD.st) + '</span></div></div>' +
+     '<div class="pdate">料項 ' + D.length + ' 項</div></div>' +
+   '<div class="kpis">' +
+    kc("b","▤",s.prep,"/ " + D.length,"已備料項目",pct(s.prep)) +
+    kc("o","✎",s.act,"/ " + D.length,"已填實際用量",pct(s.act)) +
+    kc("r","⚠",s.warn,"項","未回收量異常",pct(s.warn)) +
+    kc("g","✓",s.ok,"項","對帳完成",pct(s.ok)) +
+   '</div>' +
+   '<div class="grid2">' +
+    '<div class="card"><div class="ch"><h2>對帳狀態分布</h2></div><div class="donut">' +
+     donut([{v:s.ok,c:"#17a04a"},{v:s.warn,c:"#e0413a"},{v:s.part,c:"#2563eb"},{v:s.wait,c:"#c8d0dd"}]) +
+     '<div class="lgd">' + lg("#17a04a","對帳完成",s.ok) + lg("#e0413a","異常需說明",s.warn) +
+      lg("#2563eb","待填實際用量",s.part) + lg("#c8d0dd","待備料",s.wait) + '</div></div></div>' +
+    '<div class="card"><div class="ch"><h2>作業流程進度</h2></div><div class="flow">' +
+     fi(1,"設計量","工務提供",D.length,"done") +
+     fi(2,"備料 B倉／A倉","倉管",s.prep,s.prep === D.length ? "done" : (s.prep ? "on" : "")) +
+     fi(3,"出庫量","系統自動加總",s.prep,s.prep === D.length ? "done" : (s.prep ? "on" : "")) +
+     fi(4,"實際用量","監工現場實測",s.act,s.act === D.length ? "done" : (s.act ? "on" : "")) +
+    '</div></div></div>' +
+   '<div class="grid2">' +
+    '<div class="card"><div class="ch"><h2>異常項目</h2><div class="sp">' +
+     '<button class="btn" onclick="go(\'diff\')">前往差異分析</button></div></div>' +
+     (warns.length ? '<div class="tw"><table><thead><tr><th>料項</th><th class="n">設計</th><th class="n">出庫</th>' +
+      '<th class="n">實際</th><th class="n">未回收</th><th>原因</th></tr></thead><tbody>' +
+      warns.map(function(r){ var u = unrec(r);
+       return '<tr class="warn"><td><div class="mcell"><div class="thumb">' + r.seq + '</div><div>' +
+         '<div class="mn">' + esc(r.mat) + '</div><div class="mc">' + esc(r.code) + '</div></div></div></td>' +
+         '<td class="n"><span class="big d">' + r.des + '</span></td>' +
+         '<td class="n"><span class="big o">' + out(r) + '</span></td>' +
+         '<td class="n"><span class="big">' + n(r.act) + '</span></td>' +
+         '<td class="n"><span class="uv ' + (u > 0 ? "p" : "m") + '">' + u + '</span></td>' +
+         '<td>' + (r.rsn ? esc(r.rsn) : '<span class="pill p-warn">未填原因</span>') + '</td></tr>';
+      }).join("") + '</tbody></table></div>' : '<div class="empty">目前沒有異常項目</div>') + '</div>' +
+    '<div class="card"><div class="ch"><h2>快速操作</h2></div><div class="qa">' +
+     qb("▤","前往備料作業","go(\'prep\')") + qb("✎","填寫實際用量","go(\'usage\')") +
+     qb("⤓","匯出本案 CSV","exportCsv()") + qb("▣","回建案清單","go(\'cases\')") +
+    '</div></div></div>';
+}
+function kc(c,i,v,sm,lb,p){
+  return '<div class="kc ' + c + '"><div class="ki">' + i + '</div><div class="kv">' + v +
+    '<small>' + sm + '</small></div><div class="kl">' + lb + '</div>' +
+    '<div class="kbar"><i style="width:' + p + '%"></i></div><div class="kpct">' + p + '%</div></div>';
+}
+function lg(c,nm,v){
+  return '<div class="lg"><span class="dot" style="background:' + c + '"></span><span class="nm">' + nm +
+    '</span><span class="vv">' + v + '</span><span class="pc">' +
+    (D.length ? Math.round(v / D.length * 100) : 0) + '%</span></div>';
+}
+function fi(k,t,w,v,cls){
+  return '<div class="fi ' + cls + '"><div class="fn">' + k + '</div><div><div class="ft">' + t +
+    '</div><div class="fw">' + w + '</div></div><div class="fv">' + v + '</div></div>';
+}
+function qb(i,t,fn){ return '<div class="qb" onclick="' + fn + '"><span class="qi">' + i + '</span>' + t + '</div>'; }
+
+function pTable(mode){
+  if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
+  var rs = rowsF(), wh = (mode === "prep");
+  var lock = (HEAD.st === "已簽核");
+  var head = wh
+   ? '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">B倉備料</th><th class="n">A倉備料</th><th class="n">出庫量</th><th class="n">差設計</th><th>狀態</th>'
+   : '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">出庫量</th><th class="n">實際用量</th><th class="n">餘料退庫</th><th class="n">未回收</th><th>差異原因說明</th>';
+  var body = rs.map(function(r){
+    var i = D.indexOf(r), st = state(r), o = out(r), u = unrec(r);
+    var c0 = '<td><div class="mcell"><div class="thumb">' + r.seq + '</div><div><div class="mn">' + esc(r.mat) +
+      '</div><div class="mc">' + esc(r.code) + '</div></div></div></td><td>' + esc(r.unit) +
+      '</td><td class="n"><span class="big d">' + r.des + '</span></td>';
+    if(wh){
+      return '<tr class="' + st + '">' + c0 +
+        '<td class="n">' + (lock ? n(r.b) : inp(i,"b",r.b)) + '</td>' +
+        '<td class="n">' + (lock ? n(r.a) : inp(i,"a",r.a)) + '</td>' +
+        '<td class="n"><span class="big o">' + (o === "" ? "—" : o) + '</span></td>' +
+        '<td class="n">' + (o === "" ? "—" : rnd(o - r.des)) + '</td>' +
+        '<td><span class="pill p-' + st + '">' + LBL[st] + '</span></td></tr>';
+    }
+    var uc = u === "" ? "" : (u === 0 ? "z" : (u > 0 ? "p" : "m"));
+    return '<tr class="' + st + '">' + c0 +
+      '<td class="n"><span class="big o">' + (o === "" ? "—" : o) + '</span></td>' +
+      '<td class="n">' + (lock ? n(r.act) : inp(i,"act",r.act)) + '</td>' +
+      '<td class="n">' + (lock ? n(r.ret) : inp(i,"ret",r.ret)) + '</td>' +
+      '<td class="n"><span class="uv ' + uc + '">' + (u === "" ? "—" : u) + '</span></td>' +
+      '<td>' + (lock ? esc(r.rsn) : inp(i,"rsn",r.rsn)) + '</td></tr>';
+  }).join("");
+  $("stage").innerHTML =
+   '<div class="ph"><div><h1>' + TITLE[PAGE] + '</h1><div class="psub">' + esc(HEAD.no) + '　' + esc(HEAD.nm) + '</div></div>' +
+    '<div class="pdate">顯示 ' + rs.length + ' / ' + D.length + ' 項</div></div>' +
+   (lock ? '<div class="msg i">本案已於 ' + esc(HEAD.signAt) + ' 簽核完成，內容已鎖定。如需修改請洽管理部退回。</div>' : '') +
+   '<div class="note">' + (wh
+     ? "填入每一項的 B倉／A倉備料數量，出庫量由系統自動加總。設計量由工務提供，不可修改。"
+     : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 出庫 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
+   '<div class="card">' + tabsHtml() + '<div class="tw"><table><thead><tr>' + head + '</tr></thead><tbody>' +
+   (rs.length ? body : '<tr><td colspan="8"><div class="empty">沒有符合的項目</div></td></tr>') +
+   '</tbody></table></div></div>';
+}
+
+function pDiff(){
+  if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
+  var s = stat();
+  var rs = rowsF().filter(function(r){ return has(r.act); })
+    .sort(function(x,y){ return Math.abs(n(unrec(y))) - Math.abs(n(unrec(x))); });
+  var pos = 0, neg = 0, zero = 0;
+  D.forEach(function(r){ var u = unrec(r); if(u === "") return;
+    if(u > 0) pos++; else if(u < 0) neg++; else zero++; });
+  $("stage").innerHTML =
+   '<div class="ph"><div><h1>差異分析</h1><div class="psub">' + esc(HEAD.no) + '　依未回收量絕對值排序</div></div>' +
+    '<div class="pdate">已填 ' + s.act + ' / ' + D.length + ' 項</div></div>' +
+   '<div class="kpis">' +
+    '<div class="kc r"><div class="ki">↑</div><div class="kv">' + pos + '<small>項</small></div>' +
+     '<div class="kl">未回收量 &gt; 0</div><div class="kpct">領出未用、也未退庫</div></div>' +
+    '<div class="kc o"><div class="ki">↓</div><div class="kv">' + neg + '<small>項</small></div>' +
+     '<div class="kl">未回收量 &lt; 0</div><div class="kpct">用量大於領用量，料由他處而來</div></div>' +
+    '<div class="kc g"><div class="ki">=</div><div class="kv">' + zero + '<small>項</small></div>' +
+     '<div class="kl">帳目平衡</div><div class="kpct">出庫 ＝ 實際 ＋ 退庫</div></div>' +
+    '<div class="kc b"><div class="ki">%</div><div class="kv">' + (s.act ? Math.round(zero / s.act * 100) : 0) +
+     '<small>%</small></div><div class="kl">平衡率</div><div class="kpct">已填項目中帳目平衡比例</div></div>' +
+   '</div>' +
+   '<div class="card">' + tabsHtml() + '<div class="tw"><table><thead><tr><th>料項</th><th class="n">設計</th>' +
+    '<th class="n">出庫</th><th class="n">實際</th><th class="n">退庫</th><th class="n">未回收</th>' +
+    '<th class="n">達成率</th><th>判讀</th><th>差異原因</th></tr></thead><tbody>' +
+   (rs.length ? rs.map(function(r){
+     var st = state(r), o = out(r), u = unrec(r);
+     var uc = u === 0 ? "z" : (u > 0 ? "p" : "m");
+     var jt = u > 0 ? "領出未用也未退，須說明去向" : (u < 0 ? "用量大於領用量，須說明來源" : "帳目平衡");
+     return '<tr class="' + st + '"><td><div class="mcell"><div class="thumb">' + r.seq + '</div><div>' +
+       '<div class="mn">' + esc(r.mat) + '</div><div class="mc">' + esc(r.code) + ' · ' + esc(r.unit) + '</div>' +
+       '</div></div></td><td class="n"><span class="big d">' + r.des + '</span></td>' +
+       '<td class="n"><span class="big o">' + o + '</span></td>' +
+       '<td class="n"><span class="big">' + n(r.act) + '</span></td><td class="n">' + n(r.ret) + '</td>' +
+       '<td class="n"><span class="uv ' + uc + '">' + u + '</span></td>' +
+       '<td class="n">' + (r.des > 0 ? (n(r.act) / r.des * 100).toFixed(1) + "%" : "—") + '</td>' +
+       '<td>' + jt + '</td><td>' + (r.rsn ? esc(r.rsn) :
+        (st === "warn" ? '<span class="pill p-warn">未填原因</span>' : "—")) + '</td></tr>';
+   }).join("") : '<tr><td colspan="9"><div class="empty">尚無已填實際用量的項目</div></td></tr>') +
+   '</tbody></table></div></div>';
+}
+
+/* ========== 匯入 ========== */
+function pImport(){
+  $("stage").innerHTML =
+   '<div class="ph"><div><h1>匯入新建案</h1><div class="psub">從工程備料專用表整塊複製貼上即可</div></div></div>' +
+   '<div class="note"><b>操作步驟：</b>開啟「工程備料專用表.xls」→ 用滑鼠框選<b>整張表（含標題那幾列）</b>→ Ctrl+C → 點下方大框 → Ctrl+V → 按「解析預覽」→ 確認無誤按「建立建案」。<br>' +
+    '系統會自動抓出工程編號、工程名稱與所有料項；抓不到就手動補在上面欄位。</div>' +
+   '<div id="mImp"></div>' +
+   '<div class="card"><div class="ch"><h2>1. 貼上備料表</h2></div>' +
+    '<textarea id="raw" placeholder="在這裡貼上（Ctrl+V）"></textarea>' +
+    '<div style="height:14px"></div><button class="btn" onclick="doParse()">解析預覽</button></div>' +
+   '<div class="card"><div class="ch"><h2>2. 確認基本資料</h2></div>' +
+    '<div class="row"><div><label>工程編號 *</label><input type="text" id="iNo"></div>' +
+     '<div><label>工程名稱 *</label><input type="text" id="iNm"></div>' +
+     '<div><label>類別</label><input type="text" id="iCat" placeholder="N / E / R / D"></div></div>' +
+    '<div class="row"><div><label>承包商</label><input type="text" id="iCon"></div>' +
+     '<div><label>監工 *</label>' + (SUPS.length
+       ? '<select id="iSup">' + SUPS.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join("") + '</select>'
+       : '<input type="text" id="iSup">') + '</div>' +
+     '<div><label>預定竣工日</label><input type="text" id="iDate" placeholder="2026-08-18"></div></div>' +
+    '<div class="row"><div><label>管理密碼</label><input type="password" id="iPw" placeholder="建立建案需輸入"></div>' +
+     '<div style="display:flex;align-items:flex-end"><button class="btn grn" onclick="doAdd()">建立建案</button></div></div></div>' +
+   '<div id="pv"></div>';
+}
+function parseRaw(txt){
+  var lines = txt.replace(/\r/g,"").split("\n");
+  var no = "", nm = "", items = [];
+  for(var i = 0; i < lines.length; i++){
+    var raw = lines[i];
+    if(!raw.trim()) continue;
+    var mNo = raw.match(/工程編號[：: ]\s*([A-Za-z0-9\-]+)/);
+    if(mNo && !no) no = mNo[1].trim();
+    var mNm = raw.match(/工程名稱[：: ]\s*([^\t]+)/);
+    if(mNm && !nm) nm = mNm[1].trim();
+    var p = raw.indexOf("\t") >= 0 ? raw.split("\t") : raw.split(",");
+    if(p.length < 4) continue;
+    var seq = parseFloat(String(p[0]).trim());
+    if(isNaN(seq)) continue;
+    var code = String(p[1] || "").trim();
+    var mat  = String(p[2] || "").trim();
+    var unit = String(p[3] || "").trim();
+    if(!mat) continue;
+    var f = function(k){ var v = parseFloat(String(p[k] || "").replace(/,/g,"")); return isNaN(v) ? 0 : v; };
+    var d1 = f(4), d2 = f(5), d3 = f(6);
+    var des = (p.length > 7 && String(p[7]).trim() !== "") ? f(7) : (d1 + d2 + d3);
+    items.push({ code:code, mat:mat, unit:unit, d1:d1, d2:d2, d3:d3, des:des });
+  }
+  return { no:no, nm:nm, items:items };
+}
+function doParse(){
+  var r = parseRaw($("raw").value);
+  if(!r.items.length){
+    $("pv").innerHTML = '<div class="msg e">解析不到任何料項。請確認是從 Excel 直接複製（會是 Tab 分隔），且有包含項次、物料編號、品名、單位這幾欄。</div>';
+    return;
+  }
+  if(r.no) $("iNo").value = r.no;
+  if(r.nm) $("iNm").value = r.nm;
+  $("pv").innerHTML = '<div class="card"><div class="ch"><h2>3. 解析結果預覽</h2>' +
+    '<div class="sp"><span class="pill p-ok">共 ' + r.items.length + ' 項</span></div></div>' +
+    '<div class="tw"><table><thead><tr><th class="n">#</th><th>物料編號</th><th>品名及尺寸</th><th>單位</th>' +
+    '<th class="n">輸配</th><th class="n">表外</th><th class="n">表內</th><th class="n">設計量</th></tr></thead><tbody>' +
+    r.items.map(function(x,i){
+      return '<tr><td class="n">' + (i+1) + '</td><td><span class="mc">' + esc(x.code) + '</span></td>' +
+        '<td><span class="mn">' + esc(x.mat) + '</span></td><td>' + esc(x.unit) + '</td>' +
+        '<td class="n">' + x.d1 + '</td><td class="n">' + x.d2 + '</td><td class="n">' + x.d3 + '</td>' +
+        '<td class="n"><span class="big d">' + x.des + '</span></td></tr>';
+    }).join("") + '</tbody></table></div></div>';
+  $("mImp").innerHTML = '<div class="msg s">解析成功，共 ' + r.items.length +
+    ' 項料' + (r.no ? "，工程編號 " + esc(r.no) : "") + (r.nm ? "，" + esc(r.nm) : "") + '。請確認下方資料後按「建立建案」。</div>';
+}
+function doAdd(){
+  var r = parseRaw($("raw").value);
+  var no = $("iNo").value.trim(), nm = $("iNm").value.trim();
+  var sup = $("iSup").value.trim(), pw = $("iPw").value.trim();
+  if(!r.items.length){ $("mImp").innerHTML = '<div class="msg e">請先貼上備料表並解析</div>'; return; }
+  if(!no || !nm){ $("mImp").innerHTML = '<div class="msg e">工程編號與工程名稱必填</div>'; return; }
+  if(!sup){ $("mImp").innerHTML = '<div class="msg e">請指定監工</div>'; return; }
+  if(!pw){ $("mImp").innerHTML = '<div class="msg e">請輸入管理密碼</div>'; return; }
+  $("mImp").innerHTML = '<div class="msg i">建立中，請稍候…</div>';
+  post({ action:"addCase", pw:pw, no:no, nm:nm, cat:$("iCat").value.trim(),
+         con:$("iCon").value.trim(), sup:sup, date:$("iDate").value.trim(),
+         items:r.items, by:"管理端" }, function(d){
+    $("mImp").innerHTML = '<div class="msg ' + (d.ok ? "s" : "e") + '">' + esc(d.msg) + '</div>';
+    if(d.ok){
+      $("raw").value = ""; $("pv").innerHTML = "";
+      loadCases();
+      setTimeout(function(){ openCase(no,"dash"); }, 600);
+    }
+  }, function(e){ $("mImp").innerHTML = '<div class="msg e">' + esc(e) + '</div>'; });
+}
+
+function exportCsv(){
+  jsonp({ action:"export", no:CUR || "" }, function(d){
+    if(!d.ok){ alert(d.msg); return; }
+    var keys = d.keys, rr = d.rows || [];
+    if(!rr.length){ alert("沒有可匯出的資料"); return; }
+    var q = function(v){ return '"' + String(v == null ? "" : v).replace(/"/g,'""') + '"'; };
+    var L = [keys.map(q).join(",")];
+    rr.forEach(function(x){ L.push(keys.map(function(k){ return q(x[k]); }).join(",")); });
+    var blob = new Blob(["\uFEFF" + L.join("\r\n")], { type:"text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (CUR || "全部") + "_用料對帳_" + new Date().toISOString().slice(0,10) + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+  }, function(e){ alert(e); });
+}
+window.addEventListener("beforeunload", function(e){
+  if(DIRTY){ e.preventDefault(); e.returnValue = ""; }
+});
+setRole();
+if(API) boot(); else showSetup("");
+</script>
+</body>
+</html>
