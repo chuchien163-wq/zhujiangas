@@ -401,7 +401,7 @@ display:flex;align-items:center;justify-content:center;line-height:1}
   <div class="ni" data-p="imp" onclick="go('imp')"><span class="i">⤒</span>匯入新建案</div>
   <div class="ni" id="niExport" onclick="exportCsv()"><span class="i">⤓</span>匯出報表</div>
  </nav>
- <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.1</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
+ <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.2</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
 </aside>
 
 <div class="main">
@@ -453,7 +453,7 @@ display:flex;align-items:center;justify-content:center;line-height:1}
    <div class="twt" id="twt">歡迎使用工程用料對帳系統</div>
   </div>
   <div class="twb">
-   <div id="twdesc">看起來這是你第一次進來。花 <b>60 秒</b> 帶你看一遍，之後就知道每個按鈕在幹嘛。</div>
+   <div id="twdesc">第一次進來？<b>30 秒</b>帶你看一遍怎麼操作。</div>
    <ul class="twlist" id="twlist"></ul>
   </div>
   <div class="twbtns">
@@ -1270,7 +1270,7 @@ function exportCsv(){
 }
 
 /* ==================== 新手導覽 Guided Tour ==================== */
-var TOUR_VER = "v1";
+var TOUR_VER = "v2";
 var TOUR = { on:false, i:0, steps:[], key:"done", sideOpen:false, wd:null };
 
 function tourKey(){ return "matctl_tour_" + TOUR_VER + "_" + (UID || "guest"); }
@@ -1287,103 +1287,51 @@ function tourSteps(){
   var full = FULL(), sup = (ROLE === "sup" || full);
   var L = [];
 
-  L.push({ sel:".side .brand", icon:"料", title:"這套系統在補哪一段",
-    html:"材料有三段：<b>設計量 → 出庫量 → 實際用量</b>。<br>" +
-         "前兩段公司本來就有紀錄，<b>第三段從來沒有部門在記</b>，做報表時只好把出庫量當實際用量填進去，差異就全部指向倉庫。" +
-         '<div class="tnote">這套系統就是把第三段（工地實際用掉多少）記起來，讓帳對得起來。</div>' });
+  L.push({ sel:"#caseSel", icon:"1", title:"先選建案",
+    html:"從這個下拉選單挑要做的案子。<b>沒選建案，左邊的作業頁面都進不去。</b>" +
+         '<div class="tnote">也可以在「建案清單」點任一列，直接開啟那個案子。</div>' });
 
-  L.push({ sel:"#caseSel", icon:"▾", title:"一切從「選建案」開始",
-    html:"這裡是<b>建案下拉選單</b>。除了建案清單和匯入，其他頁面都必須<b>先選一個建案</b>才進得去。" +
-         '<div class="tnote">沒選建案就點左邊選單，系統會擋下來並跳回建案清單 —— 不是壞掉，是提醒你先選案子。</div>' });
+  if(full) L.push({ sel:'.ni[data-p="imp"]', icon:"2", title:"匯入新建案",
+    html:"把「工程備料專用表」<b>拖進大框</b> → 按「解析預覽」核對 → 補監工、承包商、竣工日 → 按「建立建案」。" +
+         '<div class="tnote">拖不進去（公司網路擋元件）就用下方複製貼上：Excel 框選整張表 Ctrl+C，貼進去一樣能解析。</div>' });
 
-  L.push({ sel:'.ni[data-p="cases"]', icon:"▣", title:"建案清單",
-    html:"全部案子的總覽：狀態（<b>備料中／填報中／待簽核／已簽核</b>）、料項數、已備料數、已填實際數、異常數。<br>" +
-         "點任一列就直接開啟那個案子。" });
+  if(full) L.push({ sel:'.ni[data-p="prep"]', icon:"3", title:"備料作業：填兩欄",
+    html:"逐列填 <b>B倉備料</b>、<b>A倉備料</b>。出庫量自動加總，不用自己算。" +
+         '<div class="tnote">沒出的料留<b>空白</b>，不要填 0。填完按底部「儲存」。</div>' });
 
-  L.push({ sel:'.ni[data-p="dash"]', icon:"▦", title:"本案總覽",
-    html:"單一案子的儀表板：<b>KPI 卡</b>（料項數／已備料／已填實際／異常）、達成率、狀態分布甜甜圈。<br>" +
-         "想知道「這案還差多少」，看這頁最快。" });
+  if(sup) L.push({ sel:'.ni[data-p="usage"]', icon:"4", title:"實際用量填報：填兩欄",
+    html:"填 <b>實際用量</b>、<b>餘料退庫</b>。未回收量自動算（出庫量 − 實際用量 − 餘料退庫）。" +
+         '<div class="tnote warn">整列變紅 = 超過門檻，<b>差異原因必填</b>，不填送不出去。</div>' });
 
-  if(full) L.push({ sel:'.ni[data-p="prep"]', icon:"▤", title:"備料作業（倉管）",
-    html:"填 <b>B倉備料</b>（地下室）和 <b>A倉備料</b>（倉庫），系統自動加總成出庫量。" +
-         '<div class="tform">出庫量 <i>=</i> B倉備料 <i>+</i> A倉備料</div>' +
-         '<div class="tnote">B倉的量以前沒進 MIS，是全公司三成「零出庫」的最大嫌疑來源。這欄一定要填。</div>' });
+  if(sup) L.push({ sel:"#bar", icon:"5", title:"儲存 ≠ 送出簽核",
+    html:"<b>儲存</b>：暫存，之後還能改，可以分好幾天慢慢填。<br>" +
+         "<b>送出簽核</b>：全部填完才過得了，送出後整案鎖定。" +
+         '<div class="tnote warn">要改已送出的案子得請管理端退回，送出前先看一遍。</div>' });
 
-  if(sup) L.push({ sel:'.ni[data-p="usage"]', icon:"✎", title:"實際用量填報（工務）",
-    html:"填<b>工地實際用掉多少</b>、<b>餘料退庫多少</b>，未回收量自動算出來。" +
-         '<div class="tform">未回收量 <i>=</i> 出庫量 <i>−</i> 實際用量 <i>−</i> 餘料退庫</div>' +
-         '<div class="tnote">超過門檻整列會變紅，<b>差異原因變成必填</b>，不填不能送簽核。</div>' });
+  if(sup) L.push({ sel:'.ni[data-p="diff"]', icon:"6", title:"差異分析",
+    html:"只列出有差異的料項，附差異原因，就是要拿給主管看的那一頁。" });
 
-  if(sup) L.push({ sel:'.ni[data-p="diff"]', icon:"⚠", title:"差異分析",
-    html:"只挑出<b>有問題的料項</b>，附上差異原因，是要交給主管或能源署看的那一頁。" +
-         '<div class="tnote">正常案子不會零差異；重點是每筆差異<b>說得出去向</b>。</div>' });
+  L.push({ sel:"#niExport", icon:"7", title:"匯出報表",
+    html:"目前建案（沒選就是全部）一鍵匯出 <b>CSV</b>，Excel 直接打得開。" });
 
-  if(full) L.push({ sel:'.ni[data-p="imp"]', icon:"⤒", title:"匯入新建案",
-    html:"把「<b>工程備料專用表</b>」的 Excel <b>直接拖進大框</b>，系統自動抓工程編號、名稱和全部料項。<br>" +
-         "按「解析預覽」核對 → 補監工／承包商／竣工日 → 「建立建案」。" +
-         '<div class="tnote">公司網路擋掉讀檔元件時，改用下方「複製貼上」：在 Excel 框選整張表 Ctrl+C，貼進去一樣能解析。</div>' });
-
-  L.push({ sel:"#niExport", icon:"⤓", title:"匯出報表",
-    html:"把目前建案（沒選就是全部）的明細匯出成 <b>CSV</b>，可直接用 Excel 開，拿去做報告或存證。" });
-
-  L.push({ sel:null, icon:"＝", title:"三條公式，記住就夠用",
-    html:'<div class="tform">出庫量 <i>=</i> B倉備料 <i>+</i> A倉備料<br>' +
-         '未回收量 <i>=</i> 出庫量 <i>−</i> 實際用量 <i>−</i> 餘料退庫<br>' +
-         '達成率 <i>=</i> 實際用量 <i>÷</i> 設計量</div>' +
-         "<b>未回收量怎麼讀：</b><br>" +
-         "<b>= 0</b>　帳平，不用說明<br>" +
-         "<b>&gt; 0</b>　領了沒用也沒退 → 要說明去向（挪去他案／報廢／遺失）<br>" +
-         "<b>&lt; 0</b>　用得比領的多 → 要說明料從哪來" +
-         '<div class="tnote">負數不是打錯字。旭嘉案就是實際用量大於出庫量的實例，那是現場改料，不是倉庫短發。</div>' });
-
-  L.push({ sel:null, icon:"●", title:"四種狀態燈號",
-    html:"表格每一列會依資料自動亮燈：" +
-         '<div class="tlamp">' +
-         '<span style="background:var(--grayL);color:var(--gray)">灰 · 待備料</span>' +
-         '<span style="background:var(--infoL);color:var(--info)">藍 · 待填實際</span>' +
-         '<span style="background:var(--grnL);color:#0d6b31">綠 · 完成</span>' +
-         '<span style="background:var(--redL);color:#96201a">紅 · 異常</span></div>' +
-         '<div class="tnote">紅燈條件：未回收量佔出庫量超過門檻（預設 10%），或出庫掛 0 卻有未回收量。門檻可在試算表「設定」B3 改。</div>' });
-
-  L.push({ sel:".search", icon:"⌕", title:"搜尋與存檔狀態",
-    html:"搜尋框可即時篩<b>料項名稱或物料編號</b>，長表格找料靠它。<br>" +
-         "右邊那行小字是<b>存檔狀態</b>：改了東西會變「未儲存」，存好會變「已儲存」。" +
-         '<div class="tnote warn">看到「未儲存」就別關視窗。系統會攔你，但不要考驗它。</div>' });
-
-  L.push({ sel:"#bar", icon:"✓", title:"儲存 ≠ 送出簽核",
-    html:"底部那條有兩顆按鈕：<br>" +
-         "<b>儲存</b>：暫存，之後還能改，可以分很多天慢慢填。<br>" +
-         "<b>送出簽核</b>：全部填完才過得了，送出後<b>整案鎖定</b>，所有人只能看不能改。" +
-         '<div class="tnote warn">要改已送出的案子，得請管理端退回重填。送出前先確認一遍。</div>' });
-
-  L.push({ sel:"#btnTour", icon:"?", title:"忘記了就再看一次",
-    html:"這顆 <b>?</b> 按鈕隨時可以重播這份導覽，左下角側欄也有「操作導覽」。<br>" +
-         "以上，導覽結束 —— 剩下的靠實際點兩下比較快。" +
-         '<div class="tnote">問題排除、部署步驟、帳號權限，都寫在交接文件裡。</div>' });
+  L.push({ sel:"#btnTour", icon:"?", title:"忘了就點這顆",
+    html:"隨時可以重播這份導覽，左下角側欄也有「操作導覽」。" });
 
   return L;
 }
 
 /* ---------- 各頁首次進入提示 ---------- */
 var TIPS = {
-  prep: { icon:"▤", title:"備料作業怎麼填",
-    html:"逐列填 <b>B倉備料</b> 與 <b>A倉備料</b>，出庫量自動加總，不用自己算。<br>" +
-         "沒出的料就留空白，<b>不要填 0</b>（0 和空白在報表上意義不同）。" +
-         '<div class="tnote">填完按底部「儲存」。這頁沒有「送出簽核」，簽核是填報端的事。</div>' },
-  usage:{ icon:"✎", title:"實際用量填報怎麼填",
-    html:"填<b>實際用量</b>和<b>餘料退庫</b>，未回收量自動算。<br>" +
-         "整列變紅 = 超過門檻，<b>差異原因必填</b>。" +
-         '<div class="tnote">「儲存」是暫存可再改；「送出簽核」後整案鎖定。全部料項都填完才送得出去。</div>' },
-  diff: { icon:"⚠", title:"差異分析在看什麼",
-    html:"這頁只列<b>有差異的料項</b>。重點不是「有沒有差異」（191 案沒有一案零差異），而是<b>每筆差異說不說得出去向</b>。" },
-  imp:  { icon:"⤒", title:"匯入建案三步驟",
-    html:"<b>1.</b> 把「工程備料專用表」拖進大框（.xls／.xlsx／.csv 都行）<br>" +
-         "<b>2.</b> 按「解析預覽」核對料項數對不對<br>" +
-         "<b>3.</b> 補監工、承包商、竣工日 → 「建立建案」" +
-         '<div class="tnote">拖不進去或元件載入失敗（公司網路擋 cdnjs），改用下方複製貼上。</div>' },
-  dash: { icon:"▦", title:"本案總覽",
-    html:"上排 KPI 卡：<b>料項數／已備料／已填實際／異常數</b>，數字會從 0 跑到目標值。<br>" +
-         "下方甜甜圈是四種狀態的分布，點圖例可以篩選。" }
+  prep: { icon:"▤", title:"備料作業",
+    html:"填 <b>B倉備料</b>、<b>A倉備料</b> 兩欄，出庫量自動加總。<br>沒出的料留空白，不要填 0。填完按底部「儲存」。" },
+  usage:{ icon:"✎", title:"實際用量填報",
+    html:"填 <b>實際用量</b>、<b>餘料退庫</b> 兩欄，未回收量自動算。<br>整列變紅 → 差異原因必填。" +
+         '<div class="tnote">儲存 = 暫存可再改；送出簽核 = 整案鎖定。</div>' },
+  diff: { icon:"⚠", title:"差異分析",
+    html:"只列有差異的料項。每一筆都要寫得出料的去向或來源。" },
+  imp:  { icon:"⤒", title:"匯入建案四步",
+    html:"<b>1.</b> 把「工程備料專用表」拖進大框<br><b>2.</b> 按「解析預覽」核對料項數<br><b>3.</b> 補監工、承包商、竣工日<br><b>4.</b> 按「建立建案」" +
+         '<div class="tnote">拖不進去就用下方複製貼上。</div>' }
 };
 
 /* ---------- 引擎 ---------- */
@@ -1538,12 +1486,11 @@ function tourWelcome(){
   var rn = { sup:"工務部", wh:"倉管", adm:"管理員" }[ROLE] || "";
   $("twt").textContent = "歡迎，" + (UNAME || "") + (rn ? "（" + rn + "）" : "");
   var full = FULL(), sup = (ROLE === "sup" || full);
-  var it = [];
-  if(full) it.push("<b>備料作業</b>　填 B倉／A倉，出庫量自動加總");
-  if(sup) it.push("<b>實際用量填報</b>　填工地實際用掉多少、退庫多少");
-  if(sup) it.push("<b>差異分析</b>　挑出對不起來的料項");
-  if(full) it.push("<b>匯入新建案</b>　拖一張 Excel 就建好一案");
-  it.push("<b>匯出報表</b>　一鍵出 CSV");
+  var it = ["<b>選建案</b>　所有作業都從這裡開始"];
+  if(full) it.push("<b>匯入建案</b>　拖一張 Excel 就建好");
+  if(full) it.push("<b>備料</b>　填 B倉、A倉兩欄");
+  if(sup) it.push("<b>填報</b>　填實際用量、餘料退庫兩欄");
+  if(sup) it.push("<b>送出簽核</b>　跟「儲存」不一樣，要分清楚");
   var h = "";
   it.forEach(function(x, i){ h += '<li><span class="twn">' + (i + 1) + "</span><span>" + x + "</span></li>"; });
   $("twlist").innerHTML = h;
