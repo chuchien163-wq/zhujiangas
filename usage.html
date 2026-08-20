@@ -114,6 +114,15 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);bo
 textarea{min-height:230px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14.5px;resize:vertical}
 td input[type=number]{text-align:right;font-weight:800;min-width:92px}
 td input[type=text]{min-width:200px}
+.tbl-e{table-layout:fixed;min-width:960px}
+.tbl-e th.n,.tbl-e td.n{text-align:center}
+.tbl-e td input[type=number]{text-align:center;min-width:0;padding:10px 8px}
+.tbl-e td input[type=text]{min-width:0;padding:10px 10px;font-size:15.5px}
+.tbl-e td{padding:12px 8px}
+.tbl-e th{padding:13px 8px;text-align:center}
+.tbl-e th:first-child,.tbl-e td:first-child{text-align:left;padding-left:14px}
+.tbl-e .mn{font-size:16px}
+.dash{color:#c2d2c8;font-weight:800}
 label{display:block;font-size:15px;color:var(--muted);font-weight:800;margin-bottom:6px}
 .row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}.row>*{flex:1;min-width:170px}
 .pill{display:inline-block;padding:4px 13px;border-radius:20px;font-size:14.5px;font-weight:800;white-space:nowrap}
@@ -401,7 +410,7 @@ display:flex;align-items:center;justify-content:center;line-height:1}
   <div class="ni" data-p="imp" onclick="go('imp')"><span class="i">⤒</span>匯入新建案</div>
   <div class="ni" id="niExport" onclick="exportCsv()"><span class="i">⤓</span>匯出報表</div>
  </nav>
- <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.5</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
+ <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.6</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
 </aside>
 
 <div class="main">
@@ -993,6 +1002,7 @@ function qb(i,t,fn){ return '<div class="qb" onclick="' + fn + '"><span class="q
 function pTable(mode){
   if(!D.length){ $("stage").innerHTML = '<div class="empty">請先選擇建案</div>'; return; }
   var rs = rowsF(), wh = (mode === "prep");
+  var noPrep = D.filter(function(r){ return out(r) === ""; }).length;
   var signed = (HEAD.st === "已簽核");
   var canEdit = wh ? FULL() : (ROLE === "sup" || FULL());
   var lock = signed || !canEdit;
@@ -1006,16 +1016,16 @@ function pTable(mode){
       '</td><td class="n"><span class="big d">' + r.des + '</span></td>';
     if(wh){
       return '<tr class="' + st + '">' + c0 +
-        '<td class="n">' + (lock ? '<span class="big o">' + (o === "" ? "—" : o) + '</span>' : inp(i,"a",r.a)) + '</td>' +
-        '<td class="n">' + (o === "" ? "—" : rnd(o - r.des)) + '</td>' +
+        '<td class="n">' + (lock ? (o === "" ? '<span class="dash">—</span>' : '<span class="big o">' + o + '</span>') : inp(i,"a",r.a)) + '</td>' +
+        '<td class="n">' + (o === "" ? '<span class="dash">—</span>' : rnd(o - r.des)) + '</td>' +
         '<td><span class="pill p-' + st + '">' + LBL[st] + '</span></td></tr>';
     }
     var uc = u === "" ? "" : (u === 0 ? "z" : (u > 0 ? "p" : "m"));
     return '<tr class="' + st + '">' + c0 +
-      '<td class="n"><span class="big o">' + (o === "" ? "—" : o) + '</span></td>' +
+      '<td class="n">' + (o === "" ? '<span class="dash">—</span>' : '<span class="big o">' + o + '</span>') + '</td>' +
       '<td class="n">' + (lock ? n(r.act) : inp(i,"act",r.act)) + '</td>' +
       '<td class="n">' + (lock ? n(r.ret) : inp(i,"ret",r.ret)) + '</td>' +
-      '<td class="n"><span class="uv ' + uc + '">' + (u === "" ? "—" : u) + '</span></td>' +
+      '<td class="n">' + (u === "" ? '<span class="dash">—</span>' : '<span class="uv ' + uc + '">' + u + '</span>') + '</td>' +
       '<td>' + (lock ? esc(r.rsn) : inp(i,"rsn",r.rsn)) + '</td></tr>';
   }).join("");
   $("stage").innerHTML =
@@ -1025,8 +1035,14 @@ function pTable(mode){
     : (!canEdit ? '<div class="msg i">此頁面為唯讀。' + (wh ? "備料作業僅限倉管或管理員填寫。" : "實際用量僅限工務部、倉管或管理員填寫。") + '</div>' : '')) +
    '<div class="note">' + (wh
      ? "逐列填入實際備料的數量。沒備的料留空白，不要填 0。設計量由工務提供，不可修改。"
-     : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 備料量 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
-   '<div class="card">' + tabsHtml() + '<div class="tw"><table><thead><tr>' + head + '</tr></thead><tbody>' +
+     : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 備料量 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") +
+    (noPrep ? '<br><b>目前有 ' + noPrep + ' / ' + D.length + ' 項備料量是空的（顯示 —）</b>' +
+      (wh ? "，請倉管逐列填入，或到「匯入新建案」拖 ISO 領用表按「更新既有案」一次帶入。"
+          : "，那些料倉管還沒登記備料量。未回收量要等備料量進來才算得出來。") : "") + '</div>' +
+   '<div class="card">' + tabsHtml() + '<div class="tw"><table class="tbl-e">' + (wh
+     ? '<colgroup><col><col style="width:72px"><col style="width:96px"><col style="width:136px"><col style="width:112px"><col style="width:120px"></colgroup>'
+     : '<colgroup><col><col style="width:72px"><col style="width:96px"><col style="width:104px"><col style="width:136px"><col style="width:128px"><col style="width:112px"><col style="width:236px"></colgroup>') +
+    '<thead><tr>' + head + '</tr></thead><tbody>' +
    (rs.length ? body : '<tr><td colspan="' + (wh ? 6 : 8) + '"><div class="empty">沒有符合的項目</div></td></tr>') +
    '</tbody></table></div></div>';
 }
