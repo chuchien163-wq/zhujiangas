@@ -401,7 +401,7 @@ display:flex;align-items:center;justify-content:center;line-height:1}
   <div class="ni" data-p="imp" onclick="go('imp')"><span class="i">⤒</span>匯入新建案</div>
   <div class="ni" id="niExport" onclick="exportCsv()"><span class="i">⤓</span>匯出報表</div>
  </nav>
- <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.4</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
+ <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.5</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
 </aside>
 
 <div class="main">
@@ -682,8 +682,10 @@ function openCase(no, page){
     if(!d.ok){ tag(d.msg,"err"); alert(d.msg); ANIM = true; go("cases"); return; }
     HEAD = d.head;
     D = (d.items || []).map(function(x){
+      var pv = x.a;
+      if(has(x.b)) pv = rnd(n(x.b) + n(x.a));
       return { seq:x.seq, code:x.code, mat:x.mat, unit:x.unit, des:x.des,
-               b:x.b, a:x.a, act:x.act, ret:x.ret, rsn:x.rsn }; });
+               b:"", a:pv, act:x.act, ret:x.ret, rsn:x.rsn }; });
     DIRTY = false; tag("已載入","off");
     $("caseSel").value = no;
     ANIM = true;
@@ -950,14 +952,13 @@ function pDash(s){
       lg("#2166c4","待填實際用量",s.part) + lg("#b4c7ba","待備料",s.wait) + '</div></div></div>' +
     '<div class="card"><div class="ch"><h2>作業流程進度</h2></div><div class="flow">' +
      fi(1,"設計量","工務提供",D.length,"done") +
-     fi(2,"備料 B倉／A倉","倉管",s.prep,s.prep === D.length ? "done" : (s.prep ? "on" : "")) +
-     fi(3,"出庫量","系統自動加總",s.prep,s.prep === D.length ? "done" : (s.prep ? "on" : "")) +
-     fi(4,"實際用量","監工現場實測",s.act,s.act === D.length ? "done" : (s.act ? "on" : "")) +
+     fi(2,"備料量","倉管填寫",s.prep,s.prep === D.length ? "done" : (s.prep ? "on" : "")) +
+     fi(3,"實際用量","監工現場實測",s.act,s.act === D.length ? "done" : (s.act ? "on" : "")) +
     '</div></div></div>' +
    '<div class="grid2">' +
     '<div class="card"><div class="ch"><h2>異常項目</h2><div class="sp">' +
      '<button class="btn" onclick="go(\'diff\')">前往差異分析</button></div></div>' +
-     (warns.length ? '<div class="tw"><table><thead><tr><th>料項</th><th class="n">設計</th><th class="n">出庫</th>' +
+     (warns.length ? '<div class="tw"><table><thead><tr><th>料項</th><th class="n">設計</th><th class="n">備料</th>' +
       '<th class="n">實際</th><th class="n">未回收</th><th>原因</th></tr></thead><tbody>' +
       warns.map(function(r){ var u = unrec(r);
        return '<tr class="warn"><td><div class="mcell"><div class="thumb">' + r.seq + '</div><div>' +
@@ -996,8 +997,8 @@ function pTable(mode){
   var canEdit = wh ? FULL() : (ROLE === "sup" || FULL());
   var lock = signed || !canEdit;
   var head = wh
-   ? '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">B倉備料</th><th class="n">A倉備料</th><th class="n">出庫量</th><th class="n">差設計</th><th>狀態</th>'
-   : '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">出庫量</th><th class="n">實際用量</th><th class="n">餘料退庫</th><th class="n">未回收</th><th>差異原因說明</th>';
+   ? '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">備料量</th><th class="n">差設計量</th><th>狀態</th>'
+   : '<th>料項</th><th>單位</th><th class="n">設計量</th><th class="n">備料量</th><th class="n">實際用量</th><th class="n">餘料退庫</th><th class="n">未回收量</th><th>差異原因說明</th>';
   var body = rs.map(function(r){
     var i = D.indexOf(r), st = state(r), o = out(r), u = unrec(r);
     var c0 = '<td><div class="mcell"><div class="thumb">' + r.seq + '</div><div><div class="mn">' + esc(r.mat) +
@@ -1005,9 +1006,7 @@ function pTable(mode){
       '</td><td class="n"><span class="big d">' + r.des + '</span></td>';
     if(wh){
       return '<tr class="' + st + '">' + c0 +
-        '<td class="n">' + (lock ? n(r.b) : inp(i,"b",r.b)) + '</td>' +
-        '<td class="n">' + (lock ? n(r.a) : inp(i,"a",r.a)) + '</td>' +
-        '<td class="n"><span class="big o">' + (o === "" ? "—" : o) + '</span></td>' +
+        '<td class="n">' + (lock ? '<span class="big o">' + (o === "" ? "—" : o) + '</span>' : inp(i,"a",r.a)) + '</td>' +
         '<td class="n">' + (o === "" ? "—" : rnd(o - r.des)) + '</td>' +
         '<td><span class="pill p-' + st + '">' + LBL[st] + '</span></td></tr>';
     }
@@ -1025,10 +1024,10 @@ function pTable(mode){
    (signed ? '<div class="msg i">本案已於 ' + esc(HEAD.signAt) + ' 簽核完成，內容已鎖定。如需修改請洽管理部退回。</div>'
     : (!canEdit ? '<div class="msg i">此頁面為唯讀。' + (wh ? "備料作業僅限倉管或管理員填寫。" : "實際用量僅限工務部、倉管或管理員填寫。") + '</div>' : '')) +
    '<div class="note">' + (wh
-     ? "填入每一項的 B倉／A倉備料數量，出庫量由系統自動加總。設計量由工務提供，不可修改。"
-     : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 出庫 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
+     ? "逐列填入實際備料的數量。沒備的料留空白，不要填 0。設計量由工務提供，不可修改。"
+     : "填入現場實際用掉的數量與退回倉庫的數量。未回收量 ＝ 備料量 − 實際用量 − 餘料退庫，不為 0 必須填寫原因。") + '</div>' +
    '<div class="card">' + tabsHtml() + '<div class="tw"><table><thead><tr>' + head + '</tr></thead><tbody>' +
-   (rs.length ? body : '<tr><td colspan="8"><div class="empty">沒有符合的項目</div></td></tr>') +
+   (rs.length ? body : '<tr><td colspan="' + (wh ? 6 : 8) + '"><div class="empty">沒有符合的項目</div></td></tr>') +
    '</tbody></table></div></div>';
 }
 
@@ -1049,12 +1048,12 @@ function pDiff(){
     '<div class="kc o"><div class="ki">↓</div><div class="kv">' + neg + '<small>項</small></div>' +
      '<div class="kl">未回收量 &lt; 0</div><div class="kpct">用量大於領用量，料由他處而來</div></div>' +
     '<div class="kc g"><div class="ki">=</div><div class="kv">' + zero + '<small>項</small></div>' +
-     '<div class="kl">帳目平衡</div><div class="kpct">出庫 ＝ 實際 ＋ 退庫</div></div>' +
+     '<div class="kl">帳目平衡</div><div class="kpct">備料量 ＝ 實際 ＋ 退庫</div></div>' +
     '<div class="kc b"><div class="ki">%</div><div class="kv">' + (s.act ? Math.round(zero / s.act * 100) : 0) +
      '<small>%</small></div><div class="kl">平衡率</div><div class="kpct">已填項目中帳目平衡比例</div></div>' +
    '</div>' +
    '<div class="card">' + tabsHtml() + '<div class="tw"><table><thead><tr><th>料項</th><th class="n">設計</th>' +
-    '<th class="n">出庫</th><th class="n">實際</th><th class="n">退庫</th><th class="n">未回收</th>' +
+    '<th class="n">備料</th><th class="n">實際</th><th class="n">退庫</th><th class="n">未回收</th>' +
     '<th class="n">達成率</th><th>判讀</th><th>差異原因</th></tr></thead><tbody>' +
    (rs.length ? rs.map(function(r){
      var st = state(r), o = out(r), u = unrec(r);
@@ -1103,8 +1102,8 @@ function pImport(){
      '<div><label>預定竣工日</label><input type="text" id="iDate" placeholder="2026-08-18"></div></div>' +
     '<div class="row"><div style="display:flex;align-items:flex-end">' +
       '<button class="btn grn" onclick="doAdd()">建立建案</button></div>' +
-     '<div><label>既有料項的備料欄</label><select id="prepMode">' +
-      '<option value="fill">只補還沒填過的（安全）</option>' +
+     '<div><label>既有料項的備料量</label><select id="prepMode">' +
+      '<option value="fill">只補還沒填過的備料量（安全）</option>' +
       '<option value="over">全部覆蓋成這張表的數字</option>' +
       '<option value="none">完全不動，只補新料項</option></select></div>' +
      '<div style="display:flex;align-items:flex-end">' +
@@ -1135,7 +1134,7 @@ var HRULES = [
 ];
 var HLABEL = { seq:"項次", code:"物料編號", mat:"品名及尺寸", unit:"單位",
   d1:"設計輸配", d2:"設計表外", d3:"設計表內", des:"設計量",
-  prep:"備料量", b:"B倉備料", a:"A倉備料", act:"實際用量", ret:"餘料退庫", rsn:"備註/差異原因" };
+  prep:"備料量", b:"備料量(B倉舊欄)", a:"備料量(A倉舊欄)", act:"實際用量", ret:"餘料退庫", rsn:"備註/差異原因" };
 
 function mapHeader(cells){
   var map = {}, used = {};
@@ -1327,10 +1326,9 @@ function doParse(){
   }
   var prepHtml = "";
   if(r.prepCnt > 0){
-    prepHtml = '<div class="note" style="margin:0 0 14px"><b>這張表有「備料量」欄，其中 ' + r.prepCnt + ' 項有填數字。</b>要帶進哪一欄？' +
+    prepHtml = '<div class="note" style="margin:0 0 14px"><b>這張表有「備料量」欄，其中 ' + r.prepCnt + ' 項有填數字，會一起帶進系統的備料量。</b>' +
       '<div style="margin-top:9px"><select id="prepTo" style="max-width:280px">' +
-      '<option value="A">A倉備料（倉庫）</option>' +
-      '<option value="B">B倉備料（地下室）</option>' +
+      '<option value="A">帶入備料量（建議）</option>' +
       '<option value="none">不要匯入，只當參考</option></select></div></div>';
   }
   var hasBA = r.map && (r.map.b !== undefined || r.map.a !== undefined);
@@ -1341,14 +1339,14 @@ function doParse(){
     '<div class="tw"><table><thead><tr><th class="n">#</th><th>物料編號</th><th>品名及尺寸</th><th>單位</th>' +
     '<th class="n">輸配</th><th class="n">表外</th><th class="n">表內</th><th class="n">設計量</th>' +
     (r.prepCnt ? '<th class="n">備料量</th>' : "") +
-    (hasBA ? '<th class="n">B倉</th><th class="n">A倉</th>' : "") + '</tr></thead><tbody>' +
+    (hasBA ? '<th class="n">表上備料</th>' : "") + '</tr></thead><tbody>' +
     r.items.map(function(x,i){
       return '<tr><td class="n">' + (i+1) + '</td><td><span class="mc">' + esc(x.code) + '</span></td>' +
         '<td><span class="mn">' + esc(x.mat) + '</span></td><td>' + esc(x.unit) + '</td>' +
         '<td class="n">' + x.d1 + '</td><td class="n">' + x.d2 + '</td><td class="n">' + x.d3 + '</td>' +
         '<td class="n"><span class="big d">' + x.des + '</span></td>' +
         (r.prepCnt ? '<td class="n">' + (x.prep === "" ? "" : x.prep) + '</td>' : "") +
-        (hasBA ? '<td class="n">' + (x.b === "" ? "" : x.b) + '</td><td class="n">' + (x.a === "" ? "" : x.a) + '</td>' : "") +
+        (hasBA ? '<td class="n">' + ((x.b === "" && x.a === "") ? "" : rnd(n(x.b) + n(x.a))) + '</td>' : "") +
         '</tr>';
     }).join("") + '</tbody></table></div></div>';
   $("mImp").innerHTML = '<div class="msg s">解析成功，共 ' + r.items.length +
@@ -1445,7 +1443,7 @@ function exportCsv(){
 }
 
 /* ==================== 新手導覽 Guided Tour ==================== */
-var TOUR_VER = "v4";
+var TOUR_VER = "v5";
 var TOUR = { on:false, i:0, steps:[], key:"done", sideOpen:false, wd:null };
 
 function tourKey(){ return "matctl_tour_" + TOUR_VER + "_" + (UID || "guest"); }
@@ -1471,11 +1469,11 @@ function tourSteps(){
          '<div class="tnote">案子已經存在、只是備料表多了料項 → 改按「<b>補料項</b>」，已填的資料不會被動到。<br>拖不進去（公司網路擋元件）就用下方複製貼上。</div>' });
 
   if(full) L.push({ sel:'.ni[data-p="prep"]', icon:"3", title:"備料作業：填兩欄",
-    html:"逐列填 <b>B倉備料</b>、<b>A倉備料</b>。出庫量自動加總，不用自己算。" +
-         '<div class="tnote">沒出的料留<b>空白</b>，不要填 0。填完按底部「儲存」。</div>' });
+    html:"逐列填一欄 <b>備料量</b> —— 倉庫實際備了多少就填多少。" +
+         '<div class="tnote">沒備的料留<b>空白</b>，不要填 0。填完按底部「儲存」。<br>用 ISO 領用表匯入的話，備料量會自動帶進來，不用手動填。</div>' });
 
   if(sup) L.push({ sel:'.ni[data-p="usage"]', icon:"4", title:"實際用量填報：填兩欄",
-    html:"填 <b>實際用量</b>、<b>餘料退庫</b>。未回收量自動算（出庫量 − 實際用量 − 餘料退庫）。" +
+    html:"填 <b>實際用量</b>、<b>餘料退庫</b>。未回收量自動算（備料量 − 實際用量 − 餘料退庫）。" +
          '<div class="tnote warn">整列變紅 = 超過門檻，<b>差異原因必填</b>，不填送不出去。</div>' });
 
   if(sup) L.push({ sel:"#bar", icon:"5", title:"儲存 ≠ 送出簽核",
@@ -1498,9 +1496,9 @@ function tourSteps(){
 /* ---------- 各頁首次進入提示 ---------- */
 var TIPS = {
   prep: { icon:"▤", title:"備料作業",
-    html:"填 <b>B倉備料</b>、<b>A倉備料</b> 兩欄，出庫量自動加總。<br>沒出的料留空白，不要填 0。填完按底部「儲存」。" },
+    html:"只有一欄 <b>備料量</b>：倉庫實際備了多少就填多少。<br>沒備的料留空白，不要填 0。填完按底部「儲存」。" },
   usage:{ icon:"✎", title:"實際用量填報",
-    html:"填 <b>實際用量</b>、<b>餘料退庫</b> 兩欄，未回收量自動算。<br>整列變紅 → 差異原因必填。" +
+    html:"填 <b>實際用量</b>、<b>餘料退庫</b> 兩欄，未回收量自動算（備料量 − 實際用量 − 餘料退庫）。<br>整列變紅 → 差異原因必填。" +
          '<div class="tnote">儲存 = 暫存可再改；送出簽核 = 整案鎖定。</div>' },
   diff: { icon:"⚠", title:"差異分析",
     html:"只列有差異的料項。每一筆都要寫得出料的去向或來源。" },
@@ -1663,7 +1661,7 @@ function tourWelcome(){
   var full = FULL(), sup = (ROLE === "sup" || full);
   var it = ["<b>選建案</b>　所有作業都從這裡開始"];
   if(full) it.push("<b>匯入建案</b>　拖一張 Excel 就建好");
-  if(full) it.push("<b>備料</b>　填 B倉、A倉兩欄");
+  if(full) it.push("<b>備料</b>　填一欄備料量");
   if(sup) it.push("<b>填報</b>　填實際用量、餘料退庫兩欄");
   if(sup) it.push("<b>送出簽核</b>　跟「儲存」不一樣，要分清楚");
   var h = "";
