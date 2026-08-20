@@ -401,7 +401,7 @@ display:flex;align-items:center;justify-content:center;line-height:1}
   <div class="ni" data-p="imp" onclick="go('imp')"><span class="i">⤒</span>匯入新建案</div>
   <div class="ni" id="niExport" onclick="exportCsv()"><span class="i">⤓</span>匯出報表</div>
  </nav>
- <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.3</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
+ <div class="sfoot">竹建瓦斯股份有限公司<br>管理部 · <span id="ver">v1.4</span><br><span style="cursor:pointer;text-decoration:underline" onclick="tourStart(true)">操作導覽</span>　｜　<span style="cursor:pointer;text-decoration:underline" onclick="resetApi()">重設連線</span></div>
 </aside>
 
 <div class="main">
@@ -1079,7 +1079,8 @@ function pImport(){
    '<div class="ph"><div><h1>匯入新建案</h1><div class="psub">從工程備料專用表整塊複製貼上即可</div></div></div>' +
    '<div class="note"><b>最快的做法：</b>把「工程備料專用表.xls」直接拖進下面的框，或點框選檔案。系統會自動讀出工程編號、工程名稱與全部料項。<br>' +
     '確認預覽表沒問題 → 補上監工 → 按「建立建案」。<br>' +
-    '<b>案子已經存在</b>（備料表事後多了料項）：一樣拖檔解析，改按「<b>補料項</b>」。只會補進沒見過的料，已填的備料與實際用量完全不動。<br>' +
+    '<b>各種表單都吃</b>：工程備料專用表、ISO 工程備料領用表都可以，系統自己讀表頭認欄位（含「備料量」欄）。<br>' +
+    '<b>案子已經存在</b>（要補料項、或把 ISO 表的備料量帶進系統）：一樣拖檔解析，改按「<b>更新既有案</b>」。<br>' +
     '如果公司網路擋住讀檔元件，改用下方的複製貼上一樣可以。</div>' +
    '<div id="mImp"></div>' +
    '<div class="card"><div class="ch"><h2>1. 上傳備料表</h2></div>' +
@@ -1101,37 +1102,129 @@ function pImport(){
        : '<input type="text" id="iSup">') + '</div>' +
      '<div><label>預定竣工日</label><input type="text" id="iDate" placeholder="2026-08-18"></div></div>' +
     '<div class="row"><div style="display:flex;align-items:flex-end">' +
-      '<button class="btn grn" onclick="doAdd()">建立建案</button>' +
-      '<button class="btn org" style="margin-left:10px" onclick="doMerge()">補料項</button>' +
-      '</div><div style="display:flex;align-items:flex-end;font-size:14.5px;color:var(--muted);line-height:1.5">' +
-      '新案子按「建立建案」；案子已經存在、只是備料表多了料項，按「補料項」。</div><div></div></div></div>' +
+      '<button class="btn grn" onclick="doAdd()">建立建案</button></div>' +
+     '<div><label>既有料項的備料欄</label><select id="prepMode">' +
+      '<option value="fill">只補還沒填過的（安全）</option>' +
+      '<option value="over">全部覆蓋成這張表的數字</option>' +
+      '<option value="none">完全不動，只補新料項</option></select></div>' +
+     '<div style="display:flex;align-items:flex-end">' +
+      '<button class="btn org" onclick="doMerge()">更新既有案</button></div></div>' +
+     '<div class="note" style="margin:14px 0 0"><b>新案子</b>按「建立建案」。<b>案子已經存在</b>（要補料項、或用 ISO 領用表把備料量帶進去）按「更新既有案」。實際用量、餘料退庫、差異原因<b>任何情況都不會被動到</b>。</div></div>' +
    '<div id="pv"></div>';
   bindDrop();
 }
 function clean_(v){
   return String(v == null ? "" : v).replace(/\u3000/g," ").replace(/\s+/g," ").trim();
 }
+/* ========== 通用表頭辨識（吃各種備料表 / ISO 領用表） ========== */
+var HRULES = [
+  ["b",    /(^|[^A-Za-z])B\s*倉|地下室/i],
+  ["a",    /(^|[^A-Za-z])A\s*倉/i],
+  ["act",  /實際/],
+  ["ret",  /退庫|餘料/],
+  ["des",  /設計量|設計數量|需求量|需求數量|^數量$|申請量/],
+  ["d1",   /輸配/],
+  ["d2",   /表外/],
+  ["d3",   /表內/],
+  ["prep", /備料量|備料數|已備|領用量|領料量|發料量|實發|備料/],
+  ["code", /物料編號|材料編號|物料代號|材料代號|料號|品號|編號/],
+  ["mat",  /品名|材料名稱|規格|名稱|材料/],
+  ["unit", /單位/],
+  ["seq",  /項次|項目|序號|編次/],
+  ["rsn",  /差異原因|備註|說明/]
+];
+var HLABEL = { seq:"項次", code:"物料編號", mat:"品名及尺寸", unit:"單位",
+  d1:"設計輸配", d2:"設計表外", d3:"設計表內", des:"設計量",
+  prep:"備料量", b:"B倉備料", a:"A倉備料", act:"實際用量", ret:"餘料退庫", rsn:"備註/差異原因" };
+
+function mapHeader(cells){
+  var map = {}, used = {};
+  for(var c = 0; c < cells.length; c++){
+    var t = clean_(cells[c]);
+    if(!t) continue;
+    if(/工程|案號|日期|公司/.test(t)) continue;
+    for(var i = 0; i < HRULES.length; i++){
+      var k = HRULES[i][0];
+      if(used[k]) continue;
+      if(HRULES[i][1].test(t)){ map[k] = c; used[k] = 1; break; }
+    }
+  }
+  return map;
+}
+function headerScore(map){
+  var s = 0;
+  if(map.mat !== undefined) s += 3;
+  if(map.code !== undefined) s += 2;
+  if(map.unit !== undefined) s += 2;
+  if(map.seq !== undefined) s += 1;
+  if(map.des !== undefined) s += 1;
+  if(map.prep !== undefined) s += 1;
+  if(map.d1 !== undefined || map.d2 !== undefined || map.d3 !== undefined) s += 1;
+  return s;
+}
+function findHeader(rows){
+  var best = null, bestScore = 0, lim = Math.min(rows.length, 25);
+  for(var r = 0; r < lim; r++){
+    var m = mapHeader(rows[r] || []);
+    var sc = headerScore(m);
+    if(m.mat !== undefined && sc > bestScore){ bestScore = sc; best = { row:r, map:m }; }
+  }
+  return (bestScore >= 5) ? best : null;
+}
+function numAt(p, i){
+  if(i === undefined || i === null) return 0;
+  var v = parseFloat(clean_(p[i]).replace(/,/g,""));
+  return isNaN(v) ? 0 : v;
+}
+function rawAt(p, i){ return (i === undefined || i === null) ? "" : clean_(p[i]); }
+
 function parseRows(rows){
   var no = "", nm = "", items = [];
   for(var i = 0; i < rows.length; i++){
-    var p = rows[i] || [];
-    var joined = p.map(clean_).join("\t");
+    var joined = (rows[i] || []).map(clean_).join("\t");
     if(!joined.replace(/\t/g,"")) continue;
     var mNo = joined.match(/工程編號[：:\s]\s*([A-Za-z0-9\-]+)/);
     if(mNo && !no) no = mNo[1].trim();
     var mNm = joined.match(/工程名稱[：:\s]\s*([^\t]+)/);
     if(mNm && !nm) nm = mNm[1].trim();
-    if(p.length < 4) continue;
-    var seq = parseFloat(clean_(p[0]));
-    if(isNaN(seq)) continue;
-    var code = clean_(p[1]), mat = clean_(p[2]), unit = clean_(p[3]);
-    if(!mat) continue;
-    var f = function(k){ var v = parseFloat(clean_(p[k]).replace(/,/g,"")); return isNaN(v) ? 0 : v; };
-    var d1 = f(4), d2 = f(5), d3 = f(6);
-    var des = (p.length > 7 && clean_(p[7]) !== "") ? f(7) : (d1 + d2 + d3);
-    items.push({ code:code, mat:mat, unit:unit, d1:d1, d2:d2, d3:d3, des:des });
   }
-  return { no:no, nm:nm, items:items };
+  var H = findHeader(rows);
+  var map = H ? H.map : null;
+  var start = H ? H.row + 1 : 0;
+  var prepCnt = 0;
+
+  for(var r = start; r < rows.length; r++){
+    var p = rows[r] || [];
+    if(!p.map(clean_).join("").length) continue;
+    var code, mat, unit, d1, d2, d3, des, seqv, bv, av, hasPrep = false, pv = "";
+    if(map){
+      mat = rawAt(p, map.mat);
+      code = rawAt(p, map.code);
+      if(!mat) continue;
+      if(/^(合計|小計|總計|以下空白|備註)/.test(mat)) continue;
+      seqv = (map.seq !== undefined) ? parseFloat(clean_(p[map.seq])) : NaN;
+      if(map.seq !== undefined && isNaN(seqv) && !code) continue;
+      unit = rawAt(p, map.unit);
+      d1 = numAt(p, map.d1); d2 = numAt(p, map.d2); d3 = numAt(p, map.d3);
+      des = (map.des !== undefined && rawAt(p, map.des) !== "") ? numAt(p, map.des) : (d1 + d2 + d3);
+      bv = (map.b !== undefined && rawAt(p, map.b) !== "") ? numAt(p, map.b) : "";
+      av = (map.a !== undefined && rawAt(p, map.a) !== "") ? numAt(p, map.a) : "";
+      if(map.prep !== undefined && rawAt(p, map.prep) !== ""){ pv = numAt(p, map.prep); hasPrep = true; prepCnt++; }
+    }else{
+      /* 舊版固定欄位：項次 物料編號 品名 單位 輸配 表外 表內 設計量 */
+      if(p.length < 4) continue;
+      seqv = parseFloat(clean_(p[0]));
+      if(isNaN(seqv)) continue;
+      code = clean_(p[1]); mat = clean_(p[2]); unit = clean_(p[3]);
+      if(!mat) continue;
+      d1 = numAt(p, 4); d2 = numAt(p, 5); d3 = numAt(p, 6);
+      des = (p.length > 7 && clean_(p[7]) !== "") ? numAt(p, 7) : (d1 + d2 + d3);
+      bv = ""; av = "";
+    }
+    items.push({ code:code, mat:mat, unit:unit, d1:d1, d2:d2, d3:d3, des:des,
+                 b:bv, a:av, prep:hasPrep ? pv : "" });
+  }
+  return { no:no, nm:nm, items:items, map:map, hrow:H ? H.row : -1, prepCnt:prepCnt };
 }
 function parseRaw(txt){
   var lines = String(txt || "").replace(/\r/g,"").split("\n");
@@ -1142,7 +1235,7 @@ function parseRaw(txt){
 }
 
 /* ---------- Excel 上傳 ---------- */
-var WB = null, WBROWS = null;
+var WB = null, WBROWS = null, PARSED = null;
 function pickFile(f){
   if(!f) return;
   if(typeof XLSX === "undefined"){
@@ -1211,23 +1304,68 @@ function getParsed(){
 function doParse(){
   var r = getParsed();
   if(!r.items.length){
-    $("pv").innerHTML = '<div class="msg e">解析不到任何料項。請確認這是「工程備料專用表」，且有項次、物料編號、品名及尺寸、單位這幾欄。也可以換一個工作表試試。</div>';
+    $("pv").innerHTML = '<div class="msg e">解析不到任何料項。請確認表頭有「品名及尺寸」（或「材料名稱」）這一欄，且下方是逐列的料項。也可以換一個工作表試試。</div>';
     return;
   }
+  PARSED = r;
   if(r.no) $("iNo").value = r.no;
   if(r.nm) $("iNm").value = r.nm;
+  if(!$("iCat").value){
+    var mc = String(r.no || "").match(/[A-Za-z]/);
+    if(mc) $("iCat").value = mc[0].toUpperCase();
+  }
+  var mapHtml = "";
+  if(r.map){
+    var ks = ["seq","code","mat","unit","d1","d2","d3","des","prep","b","a","rsn"];
+    mapHtml = '<div class="note" style="margin:0 0 14px"><b>辨識到的欄位對應</b>（先確認這裡對不對，再看下面的數字）：<div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:9px">' +
+      ks.map(function(k){
+        var has = (r.map[k] !== undefined);
+        return '<span class="pill ' + (has ? "p-ok" : "p-wait") + '">' + HLABEL[k] + (has ? " ✓" : " 無") + '</span>';
+      }).join("") + '</div></div>';
+  }else{
+    mapHtml = '<div class="note" style="margin:0 0 14px">找不到表頭列，已改用<b>固定欄位順序</b>解析（項次／物料編號／品名／單位／輸配／表外／表內／設計量）。請務必核對下方數字。</div>';
+  }
+  var prepHtml = "";
+  if(r.prepCnt > 0){
+    prepHtml = '<div class="note" style="margin:0 0 14px"><b>這張表有「備料量」欄，其中 ' + r.prepCnt + ' 項有填數字。</b>要帶進哪一欄？' +
+      '<div style="margin-top:9px"><select id="prepTo" style="max-width:280px">' +
+      '<option value="A">A倉備料（倉庫）</option>' +
+      '<option value="B">B倉備料（地下室）</option>' +
+      '<option value="none">不要匯入，只當參考</option></select></div></div>';
+  }
+  var hasBA = r.map && (r.map.b !== undefined || r.map.a !== undefined);
   $("pv").innerHTML = '<div class="card"><div class="ch"><h2>3. 解析結果預覽</h2>' +
-    '<div class="sp"><span class="pill p-ok">共 ' + r.items.length + ' 項</span></div></div>' +
+    '<div class="sp"><span class="pill p-ok">共 ' + r.items.length + ' 項</span>' +
+    (r.prepCnt ? '<span class="pill p-part">備料量 ' + r.prepCnt + ' 項</span>' : "") + '</div></div>' +
+    mapHtml + prepHtml +
     '<div class="tw"><table><thead><tr><th class="n">#</th><th>物料編號</th><th>品名及尺寸</th><th>單位</th>' +
-    '<th class="n">輸配</th><th class="n">表外</th><th class="n">表內</th><th class="n">設計量</th></tr></thead><tbody>' +
+    '<th class="n">輸配</th><th class="n">表外</th><th class="n">表內</th><th class="n">設計量</th>' +
+    (r.prepCnt ? '<th class="n">備料量</th>' : "") +
+    (hasBA ? '<th class="n">B倉</th><th class="n">A倉</th>' : "") + '</tr></thead><tbody>' +
     r.items.map(function(x,i){
       return '<tr><td class="n">' + (i+1) + '</td><td><span class="mc">' + esc(x.code) + '</span></td>' +
         '<td><span class="mn">' + esc(x.mat) + '</span></td><td>' + esc(x.unit) + '</td>' +
         '<td class="n">' + x.d1 + '</td><td class="n">' + x.d2 + '</td><td class="n">' + x.d3 + '</td>' +
-        '<td class="n"><span class="big d">' + x.des + '</span></td></tr>';
+        '<td class="n"><span class="big d">' + x.des + '</span></td>' +
+        (r.prepCnt ? '<td class="n">' + (x.prep === "" ? "" : x.prep) + '</td>' : "") +
+        (hasBA ? '<td class="n">' + (x.b === "" ? "" : x.b) + '</td><td class="n">' + (x.a === "" ? "" : x.a) + '</td>' : "") +
+        '</tr>';
     }).join("") + '</tbody></table></div></div>';
   $("mImp").innerHTML = '<div class="msg s">解析成功，共 ' + r.items.length +
-    ' 項料' + (r.no ? "，工程編號 " + esc(r.no) : "") + (r.nm ? "，" + esc(r.nm) : "") + '。請確認下方資料後按「建立建案」。</div>';
+    ' 項料' + (r.no ? "，工程編號 " + esc(r.no) : "") + (r.nm ? "，" + esc(r.nm) : "") +
+    (r.prepCnt ? "，其中 " + r.prepCnt + " 項有備料量" : "") + '。請先核對欄位對應，再按下方按鈕。</div>';
+}
+function applyPrep(items){
+  var to = $("prepTo") ? $("prepTo").value : "A";
+  return items.map(function(x){
+    var y = {};
+    for(var k in x) y[k] = x[k];
+    if(to !== "none" && y.prep !== "" && y.prep !== undefined && y.prep !== null){
+      if(to === "A" && (y.a === "" || y.a === undefined)) y.a = y.prep;
+      if(to === "B" && (y.b === "" || y.b === undefined)) y.b = y.prep;
+    }
+    return y;
+  });
 }
 function doAdd(){
   var r = getParsed();
@@ -1240,7 +1378,7 @@ function doAdd(){
   showLoad("建立建案中…","正在寫入 " + r.items.length + " 項料到 Google 試算表");
   post({ action:"addCase", pw:pw, no:no, nm:nm, cat:$("iCat").value.trim(),
          con:$("iCon").value.trim(), sup:sup, date:$("iDate").value.trim(),
-         items:r.items, by:"管理端" }, function(d){
+         items:applyPrep(r.items), by:whoName() }, function(d){
     hideLoad();
     var hint = (!d.ok && String(d.msg).indexOf("已存在") >= 0)
       ? '<br>要補新料項請改按旁邊的「補料項」，已填的備料與實際用量不會被動到。' : "";
@@ -1259,16 +1397,27 @@ function doAdd(){
 function doMerge(){
   var r = getParsed();
   var no = $("iNo").value.trim();
-  if(!r.items.length){ $("mImp").innerHTML = '<div class="msg e">請先拖檔或貼上備料表，並按「解析預覽」</div>'; return; }
-  if(!no){ $("mImp").innerHTML = '<div class="msg e">請填工程編號（要補料的那個案子）</div>'; return; }
-  if(!confirm("補料項到 " + no + "\n\n只會新增這個案子目前沒有的料項。\n已填的備料、實際用量、餘料退庫、差異原因一律不動。\n\n確定執行？")) return;
+  if(!r.items.length){ $("mImp").innerHTML = '<div class="msg e">請先拖檔或貼上表單，並按「解析預覽」</div>'; return; }
+  if(!no){ $("mImp").innerHTML = '<div class="msg e">請填工程編號（要更新的那個案子）</div>'; return; }
+  var mode = $("prepMode") ? $("prepMode").value : "fill";
+  var items = applyPrep(r.items);
+  var withPrep = 0;
+  items.forEach(function(x){ if(x.b !== "" || x.a !== "") withPrep++; });
+  var txt = "更新既有案 " + no + "\n\n" +
+    "1. 這張表有、系統沒有的料項 → 新增\n" +
+    "2. 兩邊都有的料項 → " +
+    (mode === "none" ? "完全不動\n" :
+     mode === "fill" ? "只補「還沒填過」的備料欄（這張表有 " + withPrep + " 項備料數字）\n" :
+                       "覆蓋備料欄（這張表有 " + withPrep + " 項備料數字）\n") +
+    "3. 實際用量、餘料退庫、差異原因 → 一律不動\n\n確定執行？";
+  if(!confirm(txt)) return;
   $("mImp").innerHTML = '<div class="msg i">比對中，請稍候…</div>';
-  showLoad("比對料項中…", "正在與 " + no + " 現有料項逐項比對");
-  post({ action:"mergeCase", pw:ADMIN_PW, no:no, items:r.items, by:whoName() }, function(d){
+  showLoad("比對料項中…", "正在與 " + no + " 現有資料逐項比對");
+  post({ action:"mergeCase", pw:ADMIN_PW, no:no, items:items, prepMode:mode, by:whoName() }, function(d){
     hideLoad();
     $("mImp").innerHTML = '<div class="msg ' + (d.ok ? "s" : "e") + '">' + esc(d.msg) + '</div>';
     if(d.ok){
-      $("raw").value = ""; $("pv").innerHTML = "";
+      $("raw").value = ""; $("pv").innerHTML = ""; PARSED = null;
       WB = null; WBROWS = null;
       if($("fname")) $("fname").innerHTML = "";
       if($("sheetsel")) $("sheetsel").innerHTML = "";
@@ -1296,7 +1445,7 @@ function exportCsv(){
 }
 
 /* ==================== 新手導覽 Guided Tour ==================== */
-var TOUR_VER = "v3";
+var TOUR_VER = "v4";
 var TOUR = { on:false, i:0, steps:[], key:"done", sideOpen:false, wd:null };
 
 function tourKey(){ return "matctl_tour_" + TOUR_VER + "_" + (UID || "guest"); }
