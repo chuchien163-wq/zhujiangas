@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>合約管理中心｜竹建瓦斯</title>
 <!--
-  竹建瓦斯 合約管理系統  前端 v3.3   2026-08-13  管理部 白沛豫
+  竹建瓦斯 合約管理系統  前端 v3.4   2026-08-13  管理部 白沛豫
   後端：contract_gas.gs（綁定「竹建合約管理_雲端主檔」Google 試算表）
   網址：https://chuchien163-wq.github.io/zhujiangas/contract.html
 
@@ -17,6 +17,7 @@
   v3.2 動畫防卡死：netPhase 自動重排收尾、40 秒看門狗；日期改用 parseD()
   v3.3 新增「工業用戶」頁：已簽約 20 家／未簽約 25 家，與合約主檔自動勾稽
        後端需同步升到 contract_gas.gs v3.3，並執行一次 initIndustrial
+  v3.4 部門同仁可自行修改／刪除自己登記、管理部尚未編號的合約（後端二次驗證）
 
   維護提醒：改版後上傳 GitHub 覆蓋同名檔 → Ctrl+Shift+R 強刷
 -->
@@ -318,7 +319,7 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
 
 <!-- ============ 新增合約 ============ -->
 <section id="add" class="page">
-  <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會給暫編（暫-115-001），到期提醒由管理部視需要另外設定。</div></div></div>
+  <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會給暫編（暫-115-001），到期提醒由管理部視需要另外設定。<br><b>送出後發現填錯不用慌</b>：到「合約總表」或「部門檢視」找到那一筆按「<b>修改</b>」就能改，整筆錯了也可以刪掉重登。管理部正式編號後就會鎖起來，屆時請找管理部 白沛豫。</div></div></div>
   <div class="panel"><div class="form" id="addForm"></div>
     <div class="modal-foot" style="position:static"><button class="btn" onclick="fillAdd()">清空</button><button class="btn primary" onclick="saveAdd()">送出登記</button></div>
   </div>
@@ -401,11 +402,15 @@ var RETURN_TO = "";
 var sortK = "left", sortAsc = true;
 var IND = JSON.parse(JSON.stringify(IND_SEED));
 var indTab = "signed";
+/* 建立者對照表：{合約編號:{by,at}}，由後端從作業紀錄回推 */
+var OWNERS = {};
+var GRACE = 24;   /* 部門同仁自行修改的寬限時數，後端設定分頁可調 */
+var SVRNOW = null;
 
 function load(){
   try{
     var s = JSON.parse(localStorage.getItem(KEY) || "null");
-    if(s && s.rows && s.rows.length) return s;
+    if(s && s.rows && s.rows.length){ if(s.owners) OWNERS = s.owners; return s; }
   }catch(e){}
   return { rows: JSON.parse(JSON.stringify(SEED)), ver: 1 };
 }
@@ -556,6 +561,9 @@ async function pull(){
   if(r.users && r.users.length) USERS = r.users.filter(function(u){ return u.on !== "N"; });
   if(r.today) TODAY = new Date(r.today + "T00:00:00");
   if(r.ind) IND = r.ind;
+  OWNERS = r.owners || {};
+  if(r.grace) GRACE = Number(r.grace) || GRACE;
+  SVRNOW = r.now || null;
 }
 async function push(action, payload){
   var r = await jsonp({ action: action, data: JSON.stringify(payload) });
@@ -747,7 +755,7 @@ function drawDash(){
       '<td class="nw">'+esc(x.due||"—")+'　'+leftBadge(x)+'</td>'+
       '<td>'+workBadge(x)+'</td>'+
       '<td><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
-      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+      editBtn(x)+'</td></tr>';
   }).join("") : '<tr><td colspan="5" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的項目</td></tr>';
 
   var groups = isAdmin ? DEPTS.concat(["未歸屬"]) : [ME.dept];
@@ -797,7 +805,7 @@ function openGroup(kind){
         '<td class="nw">'+esc(x.due||"—")+'　'+leftBadge(x)+'</td>'+
         '<td>'+workBadge(x)+'</td>'+
         '<td class="nw"><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\',\''+kind+'\')">回報</button> '+
-        (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\',\''+kind+'\')">編輯</button>':'')+'</td></tr>';
+        editBtn(x, kind)+'</td></tr>';
     }).join("") + '</tbody></table></div>'
     : '<div style="padding:44px;text-align:center;color:#94a3b8">這一組目前沒有合約 👍</div>';
   document.getElementById("mdlBody").innerHTML = body;
@@ -841,7 +849,7 @@ function openDetail(code, back){
     (back ? '<button class="btn" onclick="openGroup(\''+back+'\')">← 回清單</button>' : '') +
     '<span style="flex:1"></span>' +
     '<button class="btn" onclick="openRpt(\''+esc(code)+'\')">回報進度</button>' +
-    (isAdmin ? '<button class="btn primary" onclick="openEdit(\''+esc(code)+'\')">編輯</button>' : '') +
+    (canEditRow(r) ? '<button class="btn primary" onclick="openEdit(\''+esc(code)+'\')">'+(isAdmin?"編輯":"修改")+'</button>' : '') +
     '<button class="btn" onclick="closeM()">關閉</button>';
   document.getElementById("mdl").classList.add("show");
 }
@@ -868,8 +876,10 @@ function drawDept(){
     return true;
   }).sort(function(a,b){ var x=daysLeft(a.due),y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y); });
 
-  document.getElementById("deptWarn").innerHTML = curDept==="未歸屬" ?
-    '<div class="warnbox">這幾筆的權責部門不在六個部門名單內。點「編輯」改成正確單位，這一頁就會自動消失。</div>' : "";
+  var mine = list.filter(myDraft).length;
+  document.getElementById("deptWarn").innerHTML = curDept==="未歸屬"
+    ? '<div class="warnbox">這幾筆的權責部門不在六個部門名單內。點「編輯」改成正確單位，這一頁就會自動消失。</div>'
+    : (mine ? '<div class="notice">你有 <b>'+mine+'</b> 筆自己登記、管理部尚未編號的合約，按「<b>修改</b>」可以自行更正或刪除重登。</div>' : "");
 
   document.getElementById("deptTbl").innerHTML = list.length ? list.map(function(x){
     return '<tr><td class="nw"><b>'+esc(x.code)+'</b></td>'+
@@ -878,7 +888,7 @@ function drawDept(){
       '<td class="nw">'+esc(x.due||"—")+'</td><td class="nw">'+leftBadge(x)+'</td>'+
       '<td>'+workBadge(x)+'</td>'+
       '<td><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
-      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+      editBtn(x)+'</td></tr>';
   }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">這個部門目前沒有合約</td></tr>';
 }
 function copyDept(){
@@ -954,7 +964,7 @@ function drawAll(){
       '<td class="nw">'+esc(x.due||"—")+'</td><td class="nw">'+leftBadge(x)+'</td>'+
       '<td>'+workBadge(x)+'</td>'+
       '<td class="nw"><button class="btn sm" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
-      (isAdmin?'<button class="btn sm primary" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+      editBtn(x)+'</td></tr>';
   }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的合約</td></tr>';
 }
 
@@ -976,8 +986,47 @@ function drawWork(){
       '<td>'+(x.renew?'<span class="badge b-blue">'+esc(x.renew)+'</span>':'—')+'</td>'+
       '<td>'+workBadge(x)+'</td><td>'+esc(x.rptDate||"—")+'<div class="sm">'+esc(x.rptBy||"")+'</div></td>'+
       '<td class="nw"><button class="btn sm primary" onclick="openRpt(\''+esc(x.code)+'\')">回報</button> '+
-      (isAdmin?'<button class="btn sm" onclick="openEdit(\''+esc(x.code)+'\')">編輯</button>':'')+'</td></tr>';
+      editBtn(x, "", "")+'</td></tr>';
   }).join("") : '<tr><td colspan="8" style="text-align:center;padding:34px;color:#94a3b8">沒有符合的項目</td></tr>';
+}
+
+/* ================= 誰能改哪一筆 ================= */
+/* 時間字串 "2026-08-13 07:58:00" -> Date（Safari 不吃連字號，先換成斜線） */
+function parseT(v){
+  if(!v) return null;
+  var d = new Date(String(v).trim().replace(/-/g,"/"));
+  return isNaN(d.getTime()) ? null : d;
+}
+/* 這一筆是不是「我登記的、管理部還沒編號的」草稿 */
+function myDraft(r){
+  if(!ME || isAdmin) return false;
+  var o = OWNERS[r.code];
+  if(!o || String(o.by).trim() !== String(ME.name).trim()) return false;
+  if(isTemp(r)) return true;                       // 還是暫編 = 尚未受理，隨時可改
+  var t = parseT(o.at);
+  if(t === null) return false;
+  var now = SVRNOW ? (parseT(SVRNOW) || new Date()) : new Date();
+  return (now - t) / 3600000 <= GRACE;             // 已編號但還在寬限時數內
+}
+function canEditRow(r){ return isAdmin || myDraft(r); }
+/* 統一產生動作欄的編輯鈕，避免四張表各寫一份 */
+function editBtn(r, kind, cls){
+  if(!canEditRow(r)) return "";
+  var back = kind ? (",'" + kind + "'") : "";
+  var label = isAdmin ? "編輯" : "修改";
+  return '<button class="btn sm ' + (cls||"primary") + '" onclick="openEdit(\'' + esc(r.code) + '\'' + back + ')">' + label + '</button>';
+}
+/* 草稿還剩多久可以自己改 */
+function draftLeftTxt(r){
+  var o = OWNERS[r.code];
+  if(!o) return "";
+  if(isTemp(r)) return "管理部尚未編號，你還可以自行修改";
+  var t = parseT(o.at);
+  if(t === null) return "";
+  var now = SVRNOW ? (parseT(SVRNOW) || new Date()) : new Date();
+  var left = GRACE - (now - t)/3600000;
+  if(left <= 0) return "";
+  return "登記後 " + GRACE + " 小時內可自行修改，剩約 " + (left < 1 ? "不到 1" : Math.floor(left)) + " 小時";
 }
 
 /* ================= 回報 ================= */
@@ -1022,11 +1071,22 @@ async function saveRpt(code){
 
 /* ================= 編輯（管理員） ================= */
 function openEdit(code, back){
-  if(!isAdmin){ toast("你不是管理員，不能編輯"); return; }
   var r = find(code); if(!r) return;
+  if(!canEditRow(r)){
+    var o = OWNERS[code];
+    toast(o && o.by && o.by !== (ME?ME.name:"")
+      ? ("這筆是 " + o.by + " 登記的，請找管理部 白沛豫修改")
+      : "管理部已完成編碼，不能再自行修改，請找管理部 白沛豫");
+    return;
+  }
   RETURN_TO = back || "";
-  document.getElementById("mdlTitle").textContent = "編輯合約｜" + r.code;
-  document.getElementById("mdlBody").innerHTML = editForm(r,"e");
+  var draft = myDraft(r);
+  document.getElementById("mdlTitle").textContent = (draft ? "修改我登記的｜" : "編輯合約｜") + r.code;
+  document.getElementById("mdlBody").innerHTML =
+    (draft ? '<div class="notice" style="margin:16px 18px 0">這是<b>你自己登記</b>的合約，'
+             + esc(draftLeftTxt(r)) + '。合約編號由管理部統一編碼，其餘欄位都可以改。'
+             + '<br>整筆登記錯了、想重來，按左下角「刪除這筆」再重新登記即可。</div>' : '')
+    + editForm(r,"e");
   document.getElementById("mdlFoot").innerHTML =
     '<button class="btn danger" onclick="delRow(\''+esc(code)+'\')">刪除這筆</button>'+
     '<span style="flex:1"></span>'+
@@ -1093,7 +1153,7 @@ async function saveEdit(code){
   if(!document.getElementById("eName").value.trim()){ toast("合約名稱不能空白"); return; }
   if(ONLINE){
     var o = readForm(JSON.parse(JSON.stringify(r)), "e");
-    try{ await push("save", { row:o, oldCode:code, by:ME.name }); }
+    try{ await push("save", { row:o, oldCode:code, by:ME.name, role:(isAdmin?"管理員":"部門") }); }
     catch(e){ toast(e.message); return; }
     closeM(); drawAllPages(); toast("已儲存：" + o.code);
     if(RETURN_TO){ var k1=RETURN_TO; RETURN_TO=""; openGroup(k1); }
@@ -1104,13 +1164,16 @@ async function saveEdit(code){
   if(RETURN_TO){ var k=RETURN_TO; RETURN_TO=""; openGroup(k); }
 }
 async function delRow(code){
+  var rr = find(code);
+  if(rr && !canEditRow(rr)){ toast("你不能刪除這一筆，請找管理部 白沛豫"); return; }
   if(!confirm("確定刪除 " + code + " ？這動作不能復原（建議先到「資料管理」匯出備份）。")) return;
   if(ONLINE){
-    try{ await push("del", { code:code, by:ME.name }); }
+    try{ await push("del", { code:code, by:ME.name, role:(isAdmin?"管理員":"部門") }); }
     catch(e){ toast(e.message); return; }
     closeM(); drawAllPages(); toast("已刪除：" + code); return;
   }
   DB.rows = DB.rows.filter(function(x){ return x.code!==code; });
+  delete OWNERS[code]; DB.owners = OWNERS;
   save(); closeM(); drawAllPages(); toast("已刪除：" + code);
 }
 function closeM(){ document.getElementById("mdl").classList.remove("show"); }
@@ -1138,14 +1201,17 @@ async function saveAdd(){
   r.rptDate=""; r.rptBy=""; r.rptNote="";
   if(ONLINE){
     var res;
-    try{ res = await push("save", { row:r, oldCode:"", by:ME.name }); }
+    try{ res = await push("save", { row:r, oldCode:"", by:ME.name, role:(isAdmin?"管理員":"部門") }); }
     catch(e){ toast(e.message); return; }
     fillAdd(); drawAllPages();
-    toast(res && res.msg ? res.msg : "已新增"); go("all"); return;
+    toast((res && res.msg ? res.msg : "已新增") + (isAdmin ? "" : "　發現填錯可按「修改」")); go("all"); return;
   }
   if(!r.code) r.code = nextTempCode();
-  DB.rows.push(r); save(); fillAdd(); drawAllPages();
-  toast("已新增：" + r.code); go("all");
+  DB.rows.push(r);
+  OWNERS[r.code] = { by: ME.name, at: todayStr() + " 00:00:00" };
+  DB.owners = OWNERS;
+  save(); fillAdd(); drawAllPages();
+  toast("已新增：" + r.code + "（發現填錯可到合約總表按「修改」）"); go("all");
 }
 
 /* ================= 工業用戶 ================= */
