@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>合約管理中心｜竹建瓦斯</title>
 <!--
-  竹建瓦斯 合約管理系統  前端 v3.4   2026-08-13  管理部 白沛豫
+  竹建瓦斯 合約管理系統  前端 v3.5   2026-08-21  管理部 白沛豫
   後端：contract_gas.gs（綁定「竹建合約管理_雲端主檔」Google 試算表）
   網址：https://chuchien163-wq.github.io/zhujiangas/contract.html
 
@@ -18,6 +18,8 @@
   v3.3 新增「工業用戶」頁：已簽約 20 家／未簽約 25 家，與合約主檔自動勾稽
        後端需同步升到 contract_gas.gs v3.3，並執行一次 initIndustrial
   v3.4 部門同仁可自行修改／刪除自己登記、管理部尚未編號的合約（後端二次驗證）
+  v3.5 管理總覽改版：全寬「最新動態」面板（今天誰動了什麼，可點開明細）
+       部門負荷的數字可點開清單；側邊欄顯示前後端版本並比對是否一致
 
   維護提醒：改版後上傳 GitHub 覆蓋同名檔 → Ctrl+Shift+R 強刷
 -->
@@ -168,6 +170,7 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
     <div class="lgfield"><label>密碼（工號）</label><input id="lgPw" type="password" placeholder="請輸入你的工號" autocomplete="off"></div>
     <button class="lgbtn" id="lgBtn" onclick="doLogin()">登　入</button>
     <div class="lgmsg" id="lgMsg"></div>
+    <div class="lgnote" id="lgVer" style="margin-top:14px;color:#94a3b8"></div>
     <div class="lgnote">姓名欄可下拉挑選，也可以直接打字。<br>密碼就是你的三碼工號。名單沒有你請找管理部 白沛豫。</div>
   </div>
 </div>
@@ -187,7 +190,8 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
   <div class="sidefoot">
     基準日 <span id="sfToday"></span><br>
     資料筆數 <span id="sfN"></span> 筆<br>
-    <span id="sfRole"></span>
+    <span id="sfRole"></span><br>
+    <span id="sfVer" style="display:inline-block;margin-top:6px"></span>
   </div>
 </aside>
 
@@ -222,13 +226,30 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
     </div>
     <div>
       <div class="panel">
-        <div class="panel-head"><h2>🏛 部門負荷</h2></div>
+        <div class="panel-head"><h2>🏛 部門負荷</h2><div class="sm" style="margin:0">數字可以點</div></div>
         <div class="tblwrap"><table><thead><tr><th>部門</th><th>總數</th><th>需處理</th><th>久未回報</th></tr></thead><tbody id="deptRows"></tbody></table></div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><h2>🕐 最近回報</h2></div>
-        <div class="list" id="recent"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>📣 最新動態</h2>
+      <div class="toolbar">
+        <span id="actTabs" class="tabs" style="margin:0"></span>
+        <select id="actWho" onchange="drawAct()" style="min-width:120px"></select>
+        <select id="actKind" onchange="drawAct()">
+          <option value="">全部動作</option><option value="新增">新增</option>
+          <option value="編輯">修改</option><option value="回報">回報</option>
+          <option value="刪除">刪除</option><option value="工業">工業用戶</option>
+        </select>
+        <button class="btn sm" onclick="copyAct()">📋 複製這份動態</button>
       </div>
+    </div>
+    <div id="actSum"></div>
+    <div class="tblwrap" style="max-height:480px;overflow:auto">
+      <table><thead><tr><th class="nw">時間</th><th class="nw">誰</th><th class="nw">做了什麼</th><th>對象</th><th>說明</th></tr></thead>
+      <tbody id="actRows"></tbody></table>
     </div>
   </div>
 </section>
@@ -406,6 +427,10 @@ var indTab = "signed";
 var OWNERS = {};
 var GRACE = 24;   /* 部門同仁自行修改的寬限時數，後端設定分頁可調 */
 var SVRNOW = null;
+var APP_VER = "3.5";     /* 前端版本，會跟後端 bootstrap 回傳的 ver 比對 */
+var SVR_VER = "";
+var LOGS = [];
+var actDays = 0;         /* 0=今天 3/7/30=近幾天 -1=全部 */
 
 function load(){
   try{
@@ -564,6 +589,8 @@ async function pull(){
   OWNERS = r.owners || {};
   if(r.grace) GRACE = Number(r.grace) || GRACE;
   SVRNOW = r.now || null;
+  SVR_VER = r.ver || "";
+  LOGS = r.logs || [];
 }
 async function push(action, payload){
   var r = await jsonp({ action: action, data: JSON.stringify(payload) });
@@ -766,17 +793,153 @@ function drawDash(){
     if(!list.length) continue;
     var near = list.filter(function(x){ var l=lamp(x); return l==="over"||l==="r"||l==="a"||l==="g"; }).length;
     var si = list.filter(isSilent).length;
-    html += '<tr><td><b class="rowlink" onclick="setDept(\''+d+'\');go(\'depts\')">'+esc(d)+'</b></td><td>'+list.length+'</td><td>'+(near?'<span class="badge b-org">'+near+'</span>':'—')+
-      '</td><td>'+(si?'<span class="badge b-pur">'+si+'</span>':'—')+'</td></tr>';
+    html += '<tr><td><b class="rowlink" onclick="setDept(\''+d+'\');go(\'depts\')">'+esc(d)+'</b></td>'+
+      '<td><span class="rowlink" onclick="openGroup(\'deptAll\',\''+d+'\')">'+list.length+'</span></td>'+
+      '<td>'+(near?'<span class="badge b-org rowlink" onclick="openGroup(\'near\',\''+d+'\')">'+near+'</span>':'—')+'</td>'+
+      '<td>'+(si?'<span class="badge b-pur rowlink" onclick="openGroup(\'silent\',\''+d+'\')">'+si+'</span>':'—')+'</td></tr>';
   }
   document.getElementById("deptRows").innerHTML = html;
 
-  var rec = rows.filter(function(x){ return x.rptDate; })
-    .sort(function(a,b){ return String(b.rptDate).localeCompare(String(a.rptDate)); }).slice(0,6);
-  document.getElementById("recent").innerHTML = rec.length ? rec.map(function(x){
-    return '<div class="item"><strong>'+esc(x.name)+'</strong> '+workBadge(x)+
-      '<small>'+esc(deptOf(x))+' · '+esc(x.rptBy||"—")+' · '+esc(x.rptDate)+(x.rptNote?'　「'+esc(x.rptNote)+'」':'')+'</small></div>';
-  }).join("") : '<div class="item"><small>還沒有人回報過。</small></div>';
+}
+
+/* ================= 最新動態 ================= */
+var ACTS = {
+  "新增合約":     {k:"新增", cls:"b-grn",  txt:"新增合約"},
+  "編輯合約":     {k:"編輯", cls:"b-blue", txt:"修改合約"},
+  "刪除合約":     {k:"刪除", cls:"b-red",  txt:"刪除合約"},
+  "經辦回報":     {k:"回報", cls:"b-org",  txt:"回報進度"},
+  "手動催辦":     {k:"回報", cls:"b-pur",  txt:"寄出催辦"},
+  "新增工業用戶": {k:"工業", cls:"b-grn",  txt:"新增工業用戶"},
+  "編輯工業用戶": {k:"工業", cls:"b-blue", txt:"修改工業用戶"},
+  "刪除工業用戶": {k:"工業", cls:"b-red",  txt:"刪除工業用戶"}
+};
+function actMeta(a){ return ACTS[a] || {k:"其他", cls:"b-gray", txt:a || "—"}; }
+function logDate(v){ return String(v||"").trim().split(" ")[0].replace(/\//g,"-"); }
+function logTime(v){ var p = String(v||"").trim().split(" "); return p.length>1 ? p[1].slice(0,5) : ""; }
+/* 這筆紀錄距今幾天（0=今天） */
+function logAge(v){
+  var d = parseD(logDate(v));
+  if(d===null) return 99999;
+  return Math.round((TODAY - d)/86400000);
+}
+/* 我看得到哪些動態：管理員全看；部門只看自己部門的合約，加上自己做過的事 */
+function myLogs(){
+  if(isAdmin) return LOGS;
+  var mine = {};
+  scope().forEach(function(x){ mine[x.code] = 1; });
+  return LOGS.filter(function(l){
+    if(l.by && ME && String(l.by).trim() === String(ME.name).trim()) return true;
+    var c = String(l.code||"").replace(/^工業-/, "");
+    return !!mine[c] || String(l.code||"").indexOf("工業-")===0;
+  });
+}
+function logTarget(l){
+  var c = String(l.code||"");
+  if(c.indexOf("工業-")===0){
+    var cust = c.slice(3);
+    return indFind(cust)
+      ? '<span class="rowlink" onclick="openIndDetail(\'' + esc(cust) + '\')">' + esc(cust) + '</span><div class="sm">工業用戶</div>'
+      : esc(cust) + '<div class="sm">工業用戶（已刪除）</div>';
+  }
+  var r = find(c);
+  if(!r) return esc(c || "—") + '<div class="sm">已刪除</div>';
+  return '<span class="rowlink" onclick="openDetail(\'' + esc(c) + '\')">' + esc(r.name) + '</span>'
+       + '<div class="sm">' + esc(c) + '　' + esc(deptOf(r)) + '</div>';
+}
+function actFiltered(){
+  var kind = document.getElementById("actKind").value;
+  var who  = document.getElementById("actWho").value;
+  return myLogs().filter(function(l){
+    var age = logAge(l.at);
+    if(actDays === 0 && age !== 0) return false;
+    if(actDays > 0 && (age < 0 || age > actDays)) return false;
+    if(kind && actMeta(l.act).k !== kind) return false;
+    if(who && String(l.by).trim() !== who) return false;
+    return true;
+  });
+}
+function setActDays(d){ actDays = d; drawAct(); }
+function drawAct(){
+  if(!ME || !document.getElementById("actRows")) return;
+  var all = myLogs();
+
+  /* 分頁與筆數 */
+  var TAB = [[0,"今天"],[3,"近 3 天"],[7,"近 7 天"],[30,"近 30 天"],[-1,"全部"]];
+  document.getElementById("actTabs").innerHTML = TAB.map(function(t){
+    var n = all.filter(function(l){
+      var a = logAge(l.at);
+      if(t[0]===0) return a===0;
+      if(t[0]<0) return true;
+      return a>=0 && a<=t[0];
+    }).length;
+    return '<button class="'+(actDays===t[0]?"active":"")+'" onclick="setActDays('+t[0]+')">'+t[1]+'<span class="c">'+n+'</span></button>';
+  }).join("");
+
+  /* 操作人下拉 */
+  var sel = document.getElementById("actWho");
+  var cur = sel.value;
+  var whos = [];
+  all.forEach(function(l){ var b=String(l.by||"").trim(); if(b && whos.indexOf(b)<0) whos.push(b); });
+  whos.sort();
+  sel.innerHTML = '<option value="">全部人員</option>' + whos.map(function(v){
+    return '<option'+(v===cur?' selected':'')+'>'+esc(v)+'</option>'; }).join("");
+
+  /* 今天摘要 */
+  var today = all.filter(function(l){ return logAge(l.at)===0; });
+  var cnt = {};
+  today.forEach(function(l){ var k=actMeta(l.act).k; cnt[k]=(cnt[k]||0)+1; });
+  var parts = ["新增","編輯","回報","刪除","工業"].filter(function(k){ return cnt[k]; })
+    .map(function(k){ return k + " " + cnt[k] + " 筆"; });
+  var whoToday = [];
+  today.forEach(function(l){ var b=String(l.by||"").trim(); if(b && whoToday.indexOf(b)<0) whoToday.push(b); });
+  document.getElementById("actSum").innerHTML = today.length
+    ? '<div class="notice" style="margin:14px 18px">今天（'+todayStr()+'）共 <b>'+today.length+'</b> 筆異動：'
+      + esc(parts.join("　·　")) + '　　經手人：<b>' + esc(whoToday.join("、")) + '</b></div>'
+    : '<div class="notice" style="margin:14px 18px">今天（'+todayStr()+'）還沒有人異動資料。'
+      + (all.length ? '往上切「近 7 天」看之前的。' : (ONLINE ? '' : '離線試用模式不會記錄動態，接上 Google 試算表後才有。')) + '</div>';
+
+  /* 明細 */
+  var list = actFiltered();
+  document.getElementById("actRows").innerHTML = list.length ? list.map(function(l){
+    var m = actMeta(l.act);
+    var d = logDate(l.at), t = logTime(l.at);
+    var age = logAge(l.at);
+    var when = (age===0 ? '<b>今天</b>' : esc(d)) + (t ? '<div class="sm">'+esc(t)+'</div>' : '');
+    var note = esc(l.note||"");
+    if(l.act==="編輯合約" && l.oldV && l.newV && l.oldV!==l.newV) note = esc(l.oldV)+" → "+esc(l.newV)+(note?("　"+note):"");
+    return '<tr><td class="nw">'+when+'</td>'
+      + '<td class="nw"><b>'+esc(l.by||"—")+'</b></td>'
+      + '<td class="nw"><span class="badge '+m.cls+'">'+esc(m.txt)+'</span></td>'
+      + '<td>'+logTarget(l)+'</td>'
+      + '<td class="sm" style="color:#475569">'+(note||'<span style="color:#cbd5e1">—</span>')+'</td></tr>';
+  }).join("") : '<tr><td colspan="5" style="text-align:center;padding:34px;color:#94a3b8">這個範圍內沒有動態</td></tr>';
+}
+function copyAct(){
+  var list = actFiltered();
+  if(!list.length){ toast("這個範圍內沒有動態"); return; }
+  var t = "【系統動態】" + todayStr() + "　共 " + list.length + " 筆\n\n";
+  list.forEach(function(l){
+    t += logDate(l.at) + " " + logTime(l.at) + "　" + (l.by||"—") + "　" + actMeta(l.act).txt + "\n";
+    t += "　" + String(l.code||"").replace(/^工業-/,"") + (l.note ? ("　" + l.note) : "") + "\n";
+  });
+  copy(t);
+}
+
+/* ================= 版本比對 ================= */
+function drawVer(){
+  var el = document.getElementById("sfVer");
+  if(!el) return;
+  if(!ONLINE){
+    el.innerHTML = '<span style="color:#fbbf24">前端 v'+APP_VER+'　離線試用</span>';
+    return;
+  }
+  if(!SVR_VER){
+    el.innerHTML = '<span style="color:#fca5a5">前端 v'+APP_VER+'　⚠ 後端版本過舊（≤3.4）<br>請重新部署 contract_gas.gs</span>';
+    return;
+  }
+  el.innerHTML = (SVR_VER === APP_VER)
+    ? '<span style="color:#86efac">✓ 版本 v'+APP_VER+'　前後端一致</span>'
+    : '<span style="color:#fca5a5">⚠ 前端 v'+APP_VER+'　後端 v'+esc(SVR_VER)+'<br>版本不一致，請更新較舊的那一邊</span>';
 }
 
 /* ================= 卡片明細彈窗 ================= */
@@ -788,16 +951,27 @@ var GROUPS = {
   g:      {t:"首報階段（購氣約 180 天／其他 90 天）", f:function(x){ return lamp(x)==="g"; }},
   silent: {t:"久未回報（超過 7 天沒更新）", f:isSilent},
   tmp:    {t:"待編號（部門新登記，等管理部正式編碼）", f:isTemp},
-  reg:    {t:"僅登記（沒有到期日，不進提醒；要追蹤請補到期日）", f:function(x){ return lamp(x)==="none"; }}
+  reg:    {t:"僅登記（沒有到期日，不進提醒；要追蹤請補到期日）", f:function(x){ return lamp(x)==="none"; }},
+  deptAll:{t:"全部合約", f:function(x){ return true; }},
+  near:   {t:"需處理（已進入到期預警）", f:function(x){ var l=lamp(x); return l==="over"||l==="r"||l==="a"||l==="g"; }}
 };
 function isTemp(x){ return String(x.code||"").indexOf("暫-")===0; }
-function openGroup(kind){
+var GRP_DEPT = "";
+function groupList(kind, dept){
+  var g = GROUPS[kind]; if(!g) return [];
+  return scope().filter(g.f).filter(function(x){ return !dept || deptOf(x)===dept; })
+    .sort(function(a,b){
+      var x=daysLeft(a.due), y=daysLeft(b.due);
+      return (x===null?99999:x)-(y===null?99999:y);
+    });
+}
+function openGroup(kind, dept){
   var g = GROUPS[kind]; if(!g) return;
-  var list = scope().filter(g.f).sort(function(a,b){
-    var x=daysLeft(a.due), y=daysLeft(b.due);
-    return (x===null?99999:x)-(y===null?99999:y);
-  });
-  document.getElementById("mdlTitle").innerHTML = esc(g.t) + '　<span class="badge b-blue">' + list.length + ' 筆</span>';
+  GRP_DEPT = dept || "";
+  var list = groupList(kind, GRP_DEPT);
+  document.getElementById("mdlTitle").innerHTML =
+    (GRP_DEPT ? '<span class="badge b-gray">'+esc(GRP_DEPT)+'</span>　' : '') +
+    esc(g.t) + '　<span class="badge b-blue">' + list.length + ' 筆</span>';
   var body = list.length ? '<div class="tblwrap"><table><thead><tr><th>合約</th><th>部門／經辦</th><th>到期</th><th>作業狀態</th><th></th></tr></thead><tbody>' +
     list.map(function(x){
       return '<tr><td><div class="nm rowlink" onclick="openDetail(\''+esc(x.code)+'\',\''+kind+'\')">'+esc(x.name)+'</div><div class="sm">'+esc(x.code)+'　'+esc(x.type||"—")+'</div></td>'+
@@ -810,16 +984,14 @@ function openGroup(kind){
     : '<div style="padding:44px;text-align:center;color:#94a3b8">這一組目前沒有合約 👍</div>';
   document.getElementById("mdlBody").innerHTML = body;
   document.getElementById("mdlFoot").innerHTML =
-    (list.length ? '<button class="btn" onclick="copyGroup(\''+kind+'\')">📋 複製這份清單</button>' : '') +
+    (list.length ? '<button class="btn" onclick="copyGroup(\''+kind+'\',\''+esc(GRP_DEPT)+'\')">📋 複製這份清單</button>' : '') +
     '<span style="flex:1"></span><button class="btn primary" onclick="closeM()">關閉</button>';
   document.getElementById("mdl").classList.add("show");
 }
-function copyGroup(kind){
+function copyGroup(kind, dept){
   var g = GROUPS[kind];
-  var list = scope().filter(g.f).sort(function(a,b){
-    var x=daysLeft(a.due), y=daysLeft(b.due); return (x===null?99999:x)-(y===null?99999:y);
-  });
-  var t = "【" + g.t + "】共 " + list.length + " 筆（" + todayStr() + "）\n\n" + list.map(function(x){
+  var list = groupList(kind, dept || "");
+  var t = "【" + (dept ? dept + "　" : "") + g.t + "】共 " + list.length + " 筆（" + todayStr() + "）\n\n" + list.map(function(x){
     var L = daysLeft(x.due);
     return x.code + "　" + x.name + "\n　" + deptOf(x) + "　經辦：" + (x.owner||"未指定") +
       "\n　到期 " + (x.due||"—") + (L===null?"":("（"+(L<0?"已逾期"+(-L):"剩"+L)+"天）")) +
@@ -1538,7 +1710,7 @@ function drawAllPages(){
   document.getElementById("sfToday").textContent = todayStr();
   document.getElementById("sfN").textContent = scope().length;
   document.getElementById("sfRole").textContent = isAdmin ? "🔓 管理員（全部門）" : ("🔒 " + ME.dept + " · 僅本部門");
-  fillSelects(); drawDash(); drawTabs(); drawDept(); drawAll(); drawWork(); drawInd();
+  fillSelects(); drawDash(); drawTabs(); drawDept(); drawAll(); drawWork(); drawInd(); drawAct(); drawVer();
 }
 document.getElementById("userList").innerHTML = USERS.map(function(u){
   return '<option value="'+esc(u.name)+'">'+esc(u.dept + (u.title?"　"+u.title:""))+'</option>';
@@ -1547,6 +1719,10 @@ document.getElementById("lgPw").addEventListener("keydown", function(e){ if(e.ke
 document.getElementById("lgName").addEventListener("keydown", function(e){ if(e.key==="Enter") document.getElementById("lgPw").focus(); });
 document.getElementById("lgName").addEventListener("change", function(){ document.getElementById("lgPw").focus(); });
 fillAdd();
+(function(){
+  var e = document.getElementById("lgVer");
+  if(e) e.textContent = "系統版本 v" + APP_VER + (ONLINE ? "" : "（離線試用）");
+})();
 </script>
 </body>
 </html>
