@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>合約管理中心｜竹建瓦斯</title>
 <!--
-  竹建瓦斯 合約管理系統  前端 v3.5   2026-08-21  管理部 白沛豫
+  竹建瓦斯 合約管理系統  前端 v3.8   2026-08-26  管理部 白沛豫
   後端：contract_gas.gs（綁定「竹建合約管理_雲端主檔」Google 試算表）
   網址：https://chuchien163-wq.github.io/zhujiangas/contract.html
 
@@ -20,6 +20,10 @@
   v3.4 部門同仁可自行修改／刪除自己登記、管理部尚未編號的合約（後端二次驗證）
   v3.5 管理總覽改版：全寬「最新動態」面板（今天誰動了什麼，可點開明細）
        部門負荷的數字可點開清單；側邊欄顯示前後端版本並比對是否一致
+  v3.6 新增合約類別／合約價／價格稅別／印花稅額；印花稅系統自動算
+       新增合約直接給正式編號 115-A-024（不再給暫編）
+  v3.7 配合合約匯入：類型下拉補齊工程建案／健檢／監控系統／竹南啤酒
+  v3.8 後端效能修正（前端無功能變動，只跟著升版號以維持前後端一致）
 
   維護提醒：改版後上傳 GitHub 覆蓋同名檔 → Ctrl+Shift+R 強刷
 -->
@@ -340,7 +344,7 @@ button.busy::after{content:"";position:absolute;left:50%;top:50%;width:16px;heig
 
 <!-- ============ 新增合約 ============ -->
 <section id="add" class="page">
-  <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會給暫編（暫-115-001），到期提醒由管理部視需要另外設定。<br><b>送出後發現填錯不用慌</b>：到「合約總表」或「部門檢視」找到那一筆按「<b>修改</b>」就能改，整筆錯了也可以刪掉重登。管理部正式編號後就會鎖起來，屆時請找管理部 白沛豫。</div></div></div>
+  <div class="top"><div><h1>新增合約</h1><div class="sub">部門把合約<b>登記報備</b>給管理部即可。<b>合約編號、到期日都不用填</b>——編號系統會自動接續給正式編號（下一號 <b id="nextNo">—</b>），到期提醒由管理部視需要另外設定。<br><b>送出後發現填錯不用慌</b>：到「合約總表」或「部門檢視」找到那一筆按「<b>修改</b>」就能改，整筆錯了也可以刪掉重登。超過時限就會鎖起來，屆時請找管理部 白沛豫。</div></div></div>
   <div class="panel"><div class="form" id="addForm"></div>
     <div class="modal-foot" style="position:static"><button class="btn" onclick="fillAdd()">清空</button><button class="btn primary" onclick="saveAdd()">送出登記</button></div>
   </div>
@@ -395,8 +399,12 @@ var USERS = [
 ];
 var ME = null;
 var DEPTS = ["總經理室","業務部","工務部","管理部","財務部","資訊室"];
-var TYPES = ["工業用戶","管線工程","設備維護","租賃","設備租賃","設備租借","法律顧問","財務","陰極防蝕","中油","物料採購","免貼印花","其他"];
+var TYPES = ["工業用戶","管線工程","工程建案","設備維護","租賃","設備租賃","設備租借","法律顧問","財務","健檢","陰極防蝕","監控系統","中油","竹南啤酒","物料採購","免貼印花","其他"];
 var AMTS  = ["10萬以下","10-50萬","50-100萬","100-500萬","500-1000萬","1000萬以上","無金額/不適用"];
+var CTYPES  = ["承攬","買賣","租賃"];
+var TAXBASE = ["含稅","未稅"];
+/* 印花稅參數：後端「設定」分頁為準，這裡只是離線時的預設值 */
+var TAX = { job:0.001, sale:12, rent:0, vat:0.05 };
 var WORKS = ["未啟動","已通知經辦","續約評估中","洽談中","用印中","已完成","不續約結案"];
 var RENEWS = ["", "續約", "不續約", "評估中", "換約"];
 var MANUALS = ["", "作業中", "期滿", "解約", "提前終止", "已封箱"];
@@ -427,7 +435,7 @@ var indTab = "signed";
 var OWNERS = {};
 var GRACE = 24;   /* 部門同仁自行修改的寬限時數，後端設定分頁可調 */
 var SVRNOW = null;
-var APP_VER = "3.5";     /* 前端版本，會跟後端 bootstrap 回傳的 ver 比對 */
+var APP_VER = "3.8";     /* 前端版本，會跟後端 bootstrap 回傳的 ver 比對 */
 var SVR_VER = "";
 var LOGS = [];
 var actDays = 0;         /* 0=今天 3/7/30=近幾天 -1=全部 */
@@ -591,6 +599,13 @@ async function pull(){
   SVRNOW = r.now || null;
   SVR_VER = r.ver || "";
   LOGS = r.logs || [];
+  if(r.cfg){
+    var cf = r.cfg;
+    if(cf["承攬印花稅率"]!==undefined && cf["承攬印花稅率"]!=="") TAX.job  = Number(cf["承攬印花稅率"]);
+    if(cf["買賣印花稅額"]!==undefined && cf["買賣印花稅額"]!=="") TAX.sale = Number(cf["買賣印花稅額"]);
+    if(cf["租賃印花稅額"]!==undefined && cf["租賃印花稅額"]!=="") TAX.rent = Number(cf["租賃印花稅額"]);
+    if(cf["營業稅率"]!==undefined && cf["營業稅率"]!=="")         TAX.vat  = Number(cf["營業稅率"]);
+  }
 }
 async function push(action, payload){
   var r = await jsonp({ action: action, data: JSON.stringify(payload) });
@@ -1012,11 +1027,14 @@ function openDetail(code, back){
     row("簽訂日", r.sign) + row("到期日", (r.due||"") + (L===null?"":"（"+(L<0?"已逾期"+(-L)+"天":"剩 "+L+" 天")+"）")) +
     row("建案名稱", r.build) + row("工程編號", r.eng) +
     row("金額級距", r.amt || "未填") +
+    row("合約類別", r.ctype) +
+    row("合約價", r.price ? (money(r.price) + " 元" + (r.taxbase ? ("（" + r.taxbase + "）") : "")) : "") +
+    row("印花稅額", (r.stamp===""||r.stamp==null) ? "" : (money(r.stamp) + " 元")) +
     row("合約起訖", r.period) + row("印花狀態", r.stamped) +
     row("人工狀態", r.manual) + row("續約意向", r.renew) + row("作業狀態", r.work || "未啟動") +
     row("最後回報", (r.rptDate||"") + (r.rptBy?("　"+r.rptBy):"")) + row("回報說明", r.rptNote) +
     row("備註", r.memo) +
-    '</dl><div class="sm" style="margin-top:12px">🔒 本系統不儲存任何金額資料</div></div>';
+    '</dl>' + (r.ctype ? '<div class="sm" style="margin-top:12px">印花稅算法：' + esc(stampWhy(r)) + '</div>' : '') + '</div>';
   document.getElementById("mdlFoot").innerHTML =
     (back ? '<button class="btn" onclick="openGroup(\''+back+'\')">← 回清單</button>' : '') +
     '<span style="flex:1"></span>' +
@@ -1201,6 +1219,73 @@ function draftLeftTxt(r){
   return "登記後 " + GRACE + " 小時內可自行修改，剩約 " + (left < 1 ? "不到 1" : Math.floor(left)) + " 小時";
 }
 
+/* ================= 印花稅試算 =================
+ * 前端只做即時預覽，存檔時後端會自己重算一次，以後端為準。
+ * 承攬：未稅價 x 稅率　買賣：每件固定額　租賃：不課徵
+ * 稅額尾數不足一元免予貼用，所以無條件捨去到元。
+ * ============================================== */
+function numOf(v){
+  var x = Number(String(v==null?"":v).replace(/[, ]/g,""));
+  return isFinite(x) ? x : NaN;
+}
+function money(v){
+  var x = numOf(v);
+  return isFinite(x) ? x.toLocaleString("en-US",{maximumFractionDigits:2}) : String(v||"");
+}
+/* 未稅金額，算不出來回 null */
+function netOf(price, base){
+  var p = numOf(price);
+  if(!isFinite(p) || p<=0) return null;
+  return (String(base||"").trim()==="含稅") ? p/(1+TAX.vat) : p;
+}
+function calcStamp(o){
+  var t = String(o.ctype||"").trim();
+  if(!t) return "";
+  if(t==="租賃") return TAX.rent;
+  if(t==="買賣") return TAX.sale;
+  if(t==="承攬"){
+    var n = netOf(o.price, o.taxbase);
+    return n===null ? "" : Math.floor(n*TAX.job);
+  }
+  return "";
+}
+/* 一句話說明怎麼算出來的 */
+function stampWhy(o){
+  var t = String(o.ctype||"").trim();
+  if(!t) return "選了合約類別才會算";
+  if(t==="租賃") return "租賃契約不在印花稅課徵範圍，免貼";
+  if(t==="買賣") return "買賣動產契據每件固定 " + TAX.sale + " 元，與金額無關";
+  if(t==="承攬"){
+    var n = netOf(o.price, o.taxbase);
+    if(n===null) return "承攬按未稅價 x " + TAX.job + " 計算，請先填合約價";
+    var base = String(o.taxbase||"").trim()==="含稅"
+      ? ("含稅 " + money(o.price) + " ÷ " + (1+TAX.vat) + " ＝ 未稅 " + money(Math.round(n)))
+      : ("未稅 " + money(n));
+    return base + "　x " + TAX.job + " ＝ " + money(Math.floor(n*TAX.job)) + " 元（元以下捨去）";
+  }
+  return "";
+}
+/* 編輯／新增表單的即時試算 */
+function reStamp(p){
+  var box = document.getElementById(p+"StampBox");
+  if(!box) return;
+  var g = function(k){ var e=document.getElementById(p+k); return e?e.value:""; };
+  var o = { ctype:g("Ctype"), price:g("Price"), taxbase:g("Taxbase") };
+  var v = calcStamp(o);
+  box.innerHTML = (v==="" ? '<b style="color:#94a3b8">—</b>' : '<b style="font-size:18px;color:#1f3864">'+money(v)+' 元</b>')
+    + '<div class="hint">' + esc(stampWhy(o)) + '</div>';
+}
+/* 下一個正式編號（離線用；線上由後端配號） */
+function nextCode(){
+  var y = new Date().getFullYear() - 1911;
+  var re = new RegExp("^" + y + "-A-+(\\d+)$"), mx = 0;
+  DB.rows.forEach(function(x){
+    var m = re.exec(String(x.code||"").trim());
+    if(m){ var v=Number(m[1]); if(v>mx) mx=v; }
+  });
+  return y + "-A-" + ("00"+(mx+1)).slice(-3);
+}
+
 /* ================= 回報 ================= */
 function openRpt(code, back){
   var r = find(code); if(!r) return;
@@ -1259,6 +1344,7 @@ function openEdit(code, back){
              + esc(draftLeftTxt(r)) + '。合約編號由管理部統一編碼，其餘欄位都可以改。'
              + '<br>整筆登記錯了、想重來，按左下角「刪除這筆」再重新登記即可。</div>' : '')
     + editForm(r,"e");
+  reStamp("e");
   document.getElementById("mdlFoot").innerHTML =
     '<button class="btn danger" onclick="delRow(\''+esc(code)+'\')">刪除這筆</button>'+
     '<span style="flex:1"></span>'+
@@ -1287,7 +1373,15 @@ function editForm(r,p){
   '<div class="field"><label>到期日 <span style="color:#94a3b8;font-weight:400">選填</span></label><input id="'+p+'Due" type="date" value="'+esc(r.due||"")+'"><div class="hint">不確定就留空。要進到期提醒的合約由管理部設定</div></div>'+
   '<div class="field"><label>建案名稱</label><input id="'+p+'Build" value="'+esc(r.build||"")+'" placeholder="例：華夏海灣南廠"></div>'+
   '<div class="field"><label>工程編號</label><input id="'+p+'Eng" value="'+esc(r.eng||"")+'" placeholder="例：231107P014"></div>'+
-  '<div class="field"><label>金額級距</label>'+sel(p+"Amt",[""].concat(AMTS),r.amt||"")+'<div class="hint">只選區間，不必填實際金額</div></div>'+
+  '<div class="field"><label>金額級距</label>'+sel(p+"Amt",[""].concat(AMTS),r.amt||"")+'<div class="hint">概略區間，可與下面的合約價併用</div></div>'+
+  '<div class="field"><label>合約類別</label><select id="'+p+'Ctype" onchange="reStamp(\''+p+'\')"><option value=""'+(r.ctype?"":" selected")+'>（未選）</option>'+
+    CTYPES.map(function(v){ return '<option'+(v===(r.ctype||"")?' selected':'')+'>'+esc(v)+'</option>'; }).join("")+
+    '</select><div class="hint">決定印花稅怎麼算</div></div>'+
+  '<div class="field"><label>合約價</label><input id="'+p+'Price" value="'+esc(r.price||"")+'" placeholder="例：250000" oninput="reStamp(\''+p+'\')"><div class="hint">只填數字，逗號可省</div></div>'+
+  '<div class="field"><label>價格稅別</label><select id="'+p+'Taxbase" onchange="reStamp(\''+p+'\')"><option value=""'+(r.taxbase?"":" selected")+'>（未選）</option>'+
+    TAXBASE.map(function(v){ return '<option'+(v===(r.taxbase||"")?' selected':'')+'>'+esc(v)+'</option>'; }).join("")+
+    '</select><div class="hint">印花稅一律以未稅價計算</div></div>'+
+  '<div class="field"><label>印花稅額（系統計算）</label><div id="'+p+'StampBox" style="padding:9px 0">—</div></div>'+
   '<div class="field"><label>人工狀態</label>'+sel(p+"Manual",MANUALS,r.manual||"")+'</div>'+
   '<div class="field"><label>續約意向</label>'+sel(p+"Renew",RENEWS,r.renew||"")+'</div>'+
   '<div class="field"><label>作業狀態</label>'+sel(p+"Work",WORKS,r.work||"未啟動")+'</div>'+
@@ -1311,6 +1405,10 @@ function readForm(r,p){
   r.manual = g("Manual").value;
   r.renew = g("Renew").value;
   r.work = g("Work").value;
+  r.ctype = g("Ctype").value;
+  r.price = g("Price").value.trim();
+  r.taxbase = g("Taxbase").value;
+  r.stamp = calcStamp(r);
   r.memo = g("Memo").value.trim();
   return r;
 }
@@ -1355,15 +1453,9 @@ function fillAdd(){
   var blank = {code:"",dept:(ME?ME.dept:DEPTS[0]),name:"",type:"",vendor:"",owner:"",sign:"",due:"",build:"",eng:"",amt:"",manual:"作業中",renew:"",work:"未啟動",memo:""};
   var h = editForm(blank,"n");
   document.getElementById("addForm").innerHTML = h.slice(h.indexOf(">")+1, h.lastIndexOf("</div>"));
-}
-function nextTempCode(){
-  var y = new Date().getFullYear() - 1911;
-  var pre = "暫-" + y + "-", mx = 0;
-  DB.rows.forEach(function(x){
-    var c = String(x.code||"");
-    if(c.indexOf(pre)===0){ var v=Number(c.slice(pre.length)); if(v>mx) mx=v; }
-  });
-  return pre + ("00"+(mx+1)).slice(-3);
+  reStamp("n");
+  var nn = document.getElementById("nextNo");
+  if(nn) nn.textContent = nextCode();
 }
 async function saveAdd(){
   var r = readForm({},"n");
@@ -1378,7 +1470,7 @@ async function saveAdd(){
     fillAdd(); drawAllPages();
     toast((res && res.msg ? res.msg : "已新增") + (isAdmin ? "" : "　發現填錯可按「修改」")); go("all"); return;
   }
-  if(!r.code) r.code = nextTempCode();
+  if(!r.code) r.code = nextCode();
   DB.rows.push(r);
   OWNERS[r.code] = { by: ME.name, at: todayStr() + " 00:00:00" };
   DB.owners = OWNERS;
@@ -1669,10 +1761,10 @@ function copyIndChk(){
 function dl(blob,fn){ var u=URL.createObjectURL(blob),a=document.createElement("a"); a.href=u; a.download=fn; a.click(); URL.revokeObjectURL(u); toast("已下載：" + fn); }
 function expJSON(){ dl(new Blob([JSON.stringify({rows:DB.rows,ind:IND,ver:3},null,1)],{type:"application/json"}), "竹建合約資料_"+todayStr()+".json"); }
 function expCSV(){
-  var head = ["合約編號","權責部門","類型","合約名稱","建案名稱","工程編號","金額級距","廠商","經辦人","簽訂日","到期日","剩餘天數","人工狀態","續約意向","作業狀態","最後回報日","回報人","回報說明","備註"];
+  var head = ["合約編號","權責部門","類型","合約名稱","建案名稱","工程編號","金額級距","合約類別","合約價","價格稅別","印花稅額","印花狀態","廠商","經辦人","簽訂日","到期日","剩餘天數","人工狀態","續約意向","作業狀態","最後回報日","回報人","回報說明","備註"];
   var body = DB.rows.map(function(r){
     var L = daysLeft(r.due);
-    return [r.code,deptOf(r),r.type,r.name,r.build,r.eng,r.amt,r.vendor,r.owner,r.sign,r.due,L===null?"":L,r.manual,r.renew,r.work||"未啟動",r.rptDate,r.rptBy,r.rptNote,r.memo]
+    return [r.code,deptOf(r),r.type,r.name,r.build,r.eng,r.amt,r.ctype||"",r.price||"",r.taxbase||"",(r.stamp===""||r.stamp==null)?"":r.stamp,r.stamped||"",r.vendor,r.owner,r.sign,r.due,L===null?"":L,r.manual,r.renew,r.work||"未啟動",r.rptDate,r.rptBy,r.rptNote,r.memo]
       .map(function(v){ return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'; }).join(",");
   }).join("\n");
   dl(new Blob(["\ufeff"+head.join(",")+"\n"+body],{type:"text/csv;charset=utf-8"}), "竹建合約資料_"+todayStr()+".csv");
