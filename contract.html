@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>合約管理中心｜竹建瓦斯</title>
 <!--
-  竹建瓦斯 合約管理系統  前端 v3.8   2026-08-26  管理部 白沛豫
+  竹建瓦斯 合約管理系統  前端 v3.9   2026-08-26  管理部 白沛豫
   後端：contract_gas.gs（綁定「竹建合約管理_雲端主檔」Google 試算表）
   網址：https://chuchien163-wq.github.io/zhujiangas/contract.html
 
@@ -24,6 +24,8 @@
        新增合約直接給正式編號 115-A-024（不再給暫編）
   v3.7 配合合約匯入：類型下拉補齊工程建案／健檢／監控系統／竹南啤酒
   v3.8 後端效能修正（前端無功能變動，只跟著升版號以維持前後端一致）
+  v3.9 動態面板改分段載入（預設 80 筆，切到近 30 天／全部時自動補抓）
+       連線看門狗 40 秒放寬到 75 秒，資料量大時不會誤判成當機
 
   維護提醒：改版後上傳 GitHub 覆蓋同名檔 → Ctrl+Shift+R 強刷
 -->
@@ -435,10 +437,12 @@ var indTab = "signed";
 var OWNERS = {};
 var GRACE = 24;   /* 部門同仁自行修改的寬限時數，後端設定分頁可調 */
 var SVRNOW = null;
-var APP_VER = "3.8";     /* 前端版本，會跟後端 bootstrap 回傳的 ver 比對 */
+var APP_VER = "3.9";     /* 前端版本，會跟後端 bootstrap 回傳的 ver 比對 */
 var SVR_VER = "";
 var LOGS = [];
 var actDays = 0;         /* 0=今天 3/7/30=近幾天 -1=全部 */
+var logsFull = false;    /* 是否已經把完整動態抓回來 */
+var logsBusy = false;
 
 function load(){
   try{
@@ -502,10 +506,11 @@ function netPhase(label){
   }, 700);
 }
 
-/* 看門狗：任何情況下最多轉 40 秒，避免卡住讓人以為當機 */
+/* 看門狗：任何情況下最多轉 75 秒，避免卡住讓人以為當機。
+   合約筆數多的時候第一次載入本來就比較久，所以不能設太短。 */
 function netWatch(){
   if(NET.idle) return;
-  if(Date.now() - NET.t0 > 40000){
+  if(Date.now() - NET.t0 > 75000){
     netFinish(false, "逾時未回應，請重新整理（Ctrl+Shift+R）");
   }
 }
@@ -554,7 +559,8 @@ function jsonp(params){
     report: "送出回報",
     save: "儲存合約",
     del: "刪除合約",
-    nudge: "寄送催辦"
+    nudge: "寄送催辦",
+    logs: "載入完整動態紀錄"
   };
   netStart(LBL[params.action] || "與 Google 試算表通訊中");
   return _jsonpRaw(params).then(function(r){
@@ -599,6 +605,7 @@ async function pull(){
   SVRNOW = r.now || null;
   SVR_VER = r.ver || "";
   LOGS = r.logs || [];
+  if(r.logN !== undefined) logsFull = (LOGS.length < r.logN);
   if(r.cfg){
     var cf = r.cfg;
     if(cf["承攬印花稅率"]!==undefined && cf["承攬印花稅率"]!=="") TAX.job  = Number(cf["承攬印花稅率"]);
@@ -873,7 +880,26 @@ function actFiltered(){
     return true;
   });
 }
-function setActDays(d){ actDays = d; drawAct(); }
+function setActDays(d){
+  actDays = d;
+  drawAct();
+  /* 看比較久以前的紀錄時才去抓完整動態，登入當下不必等這一包 */
+  if((d === -1 || d === 30) && !logsFull) loadMoreLogs();
+}
+async function loadMoreLogs(){
+  if(!ONLINE || logsFull || logsBusy) return;
+  logsBusy = true;
+  var box = document.getElementById("actSum");
+  if(box) box.innerHTML = '<div class="notice" style="margin:14px 18px">正在載入完整動態紀錄…</div>';
+  try{
+    var r = await jsonp({ action: "logs", n: 500 });
+    if(r && r.ok && r.logs){ LOGS = r.logs; logsFull = true; }
+  }catch(e){
+    toast("動態紀錄載入失敗：" + e.message);
+  }
+  logsBusy = false;
+  drawAct();
+}
 function drawAct(){
   if(!ME || !document.getElementById("actRows")) return;
   var all = myLogs();
