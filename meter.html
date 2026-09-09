@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>竹建瓦斯｜換表庫存系統 v3.3</title>
+<title>竹建瓦斯｜換表庫存系統 v3.4</title>
 <style>@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 :root{
   --bg:#f2ede4;--surface:#ffffff;--border:#e2dcd2;
@@ -163,6 +163,25 @@ body{font-family:'Noto Sans TC',system-ui,sans-serif;background:var(--bg);color:
 .ov-qty.pos{color:#1a7a50;}
 .ov-po{color:var(--muted);font-size:15px;white-space:nowrap;}
 .ov-conv-note{color:#b06a00;font-size:14px;white-space:nowrap;}
+/* ── v3.4 整修回庫（有帳／無帳）── */
+.ov-row.rf{background:#f2faf6;}
+.ov-row.rfno{background:#f7f3fd;}
+.ov-rf-note{color:#1a7a50;font-size:14px;white-space:nowrap;}
+.ov-rfno-note{color:#6d28d9;font-size:14px;white-space:nowrap;}
+.tag-acct{display:inline-block;font-size:17px;padding:2px 10px;border-radius:20px;font-weight:500;white-space:nowrap;}
+.acct-y{background:#e7f6ee;color:#1a7a50;border:1px solid #a9dcc3;}
+.acct-n{background:#f3e8ff;color:#6d28d9;border:1px solid #d8b4fe;}
+.rf-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px;}
+.rf-cell{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 10px;text-align:center;}
+.rf-cell .rf-t{font-size:16px;color:var(--muted);display:block;margin-bottom:6px;}
+.rf-cell .rf-v{font-size:26px;font-weight:700;color:var(--text);}
+.rf-cell.zero .rf-v{color:#c9c0b0;}
+.rf-cell.acct .rf-v{color:#1a7a50;}
+.rf-cell.noacct .rf-v{color:#6d28d9;}
+.sc-noacct .sc-lbl{color:#6d28d9;}
+.sc-link-purple{color:#6d28d9;white-space:nowrap;font-size:20px;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:4px;transition:background .15s;}
+.sc-link-purple:hover{background:#f3e8ff;}
+@media(max-width:820px){.rf-nums{grid-template-columns:repeat(2,1fr);}}
 .ov-empty{padding:26px 14px;text-align:center;color:var(--muted);font-size:18px;}
 .ov-rows.scrollable{max-height:560px;overflow-y:auto;}
 .ov-rows.scrollable::-webkit-scrollbar{width:8px;}
@@ -216,7 +235,7 @@ tbody tr:hover td{background:#ede8df;transition:background .15s;}
 .ven-m{background:var(--gold-bg);color:var(--gold);font-size:19px;padding:2px 6px;border-radius:20px;border:1px solid var(--gold-dim);display:inline-block;}
 .badge-act{background:var(--cyan-bg);color:var(--cyan);font-size:19px;padding:2px 7px;border-radius:20px;}
 .badge-est{background:var(--gold-bg);color:var(--gold);font-size:19px;padding:2px 7px;border-radius:20px;}
-.badge-ret{background:#1a1000;color:#aa8800;font-size:19px;padding:2px 7px;border-radius:20px;}
+.badge-ret{background:#eaf6f0;color:#1a7a50;font-size:19px;padding:2px 7px;border-radius:20px;border:1px solid #a9dcc3;}
 .dept-tag{font-size:19px;padding:2px 7px;border-radius:20px;white-space:nowrap;}
 .dept-biz{background:var(--cyan-bg);color:var(--cyan);}
 .dept-eng{background:var(--gold-bg);color:var(--gold);}
@@ -386,7 +405,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
     </div>
     <div class="login-title">換表庫存系統</div>
     <div class="login-company">竹建瓦斯股份有限公司</div>
-    <div class="login-sub">Gas Meter Inventory System v3.3</div>
+    <div class="login-sub">Gas Meter Inventory System v3.4</div>
     <div class="login-field">
       <label>部門／角色</label>
       <select id="roleSelect" style="width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--rs);background:var(--surface);color:var(--text);font-size:18px;font-family:inherit;outline:none;cursor:pointer;">
@@ -417,7 +436,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
     <div class="hdr-l">
       <div class="logo"><img src="data:image/png;base64,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" alt="竹建" style="width:28px;height:28px;object-fit:contain;"></div>
       <div>
-        <div class="hdr-title">換表庫存系統 v3.3</div>
+        <div class="hdr-title">換表庫存系統 v3.4</div>
         <div class="sync" onclick="refreshData()" title="點擊強制重新載入">
           <div class="sync-dot"></div>Google Sheets 即時同步中 ↺
         </div>
@@ -499,6 +518,9 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
           <button class="ov-menu-btn" data-ov="inbound" onclick="switchOv('inbound',this)">
             <span>📦 入庫記錄</span><span class="ov-menu-badge" id="ovb-inbound">0</span>
           </button>
+          <button class="ov-menu-btn" data-ov="refurb" onclick="switchOv('refurb',this)">
+            <span>♻️ 整修回庫</span><span class="ov-menu-badge" id="ovb-refurb">0</span>
+          </button>
           <button class="ov-menu-btn" data-ov="incoming" onclick="switchOv('incoming',this)">
             <span>🚚 預計進貨</span><span class="ov-menu-badge" id="ovb-incoming">0</span>
           </button>
@@ -533,6 +555,31 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
               <div class="ov-rows" id="inbound-dash-body">
                 <div class="ov-empty">尚無入庫記錄</div>
               </div>
+            </div>
+          </div>
+
+          <!-- 整修回庫（檢定合格）v3.4 -->
+          <div data-ovpanel="refurb">
+            <div class="card" style="margin-bottom:14px;">
+              <div class="card-hdr">
+                <span class="card-title">✅ 有帳庫存（已併入四卡）</span>
+                <span class="card-note">整修檢定合格・帳上列管</span>
+              </div>
+              <div class="rf-nums" id="rf-acct-grid"></div>
+            </div>
+            <div class="card" style="margin-bottom:14px;">
+              <div class="card-hdr">
+                <span class="card-title">⚠️ 無帳庫存（不計入庫存計算）</span>
+                <span class="card-note">實體在倉可用・帳上未列</span>
+              </div>
+              <div class="rf-nums" id="rf-noacct-grid"></div>
+            </div>
+            <div class="card">
+              <div class="card-hdr">
+                <span class="card-title">📋 整修回庫明細</span>
+                <span class="card-note" id="rf-count"></span>
+              </div>
+              <div class="ov-rows scrollable" id="rf-body"><div class="ov-empty">尚無整修回庫記錄</div></div>
             </div>
           </div>
 
@@ -715,6 +762,7 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
                 <option value="return">↩ 退料入庫</option>
                 <option value="inbound">📦 廠商入庫（直接更新庫存）</option>
                 <option value="convert">🔧 種類變更（加裝／拆除子機）</option>
+                <option value="refurb">♻️ 整修回庫（檢定合格・分有帳／無帳）</option>
                 <option value="incoming">🚚 新增預計進貨</option>
               </select>
             </div>
@@ -808,6 +856,47 @@ tr.warning td{border-left:2px solid var(--gold)!important;}
               <div class="verify-row">
                 <input type="checkbox" id="cv-verify">
                 <label class="verify-label" for="cv-verify">☑ 我已確認實體錶未移動，僅子機加裝／拆除，數量正確</label>
+              </div>
+            </div>
+
+            <!-- 整修回庫欄位（檢定合格）v3.4 -->
+            <div id="refurbFields" style="display:none;">
+              <div style="background:#f2faf6;border:1px solid #a9dcc3;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:18px;line-height:1.7;color:#1a5c3d;">
+                ♻️ <b>整修回庫</b>：舊錶整修送檢定，<b>檢定合格</b>後送回倉庫時登錄。<br>
+                <b style="color:#1a7a50;">有帳</b>＝帳上有列管的錶，回庫後<b>直接併入庫存四卡</b>可正常配發。<br>
+                <b style="color:#6d28d9;">無帳</b>＝帳上沒有的錶（來源無記錄／早期舊錶），實體在倉但<b>不計入庫存計算</b>，單獨列一池，避免帳面虛增。
+              </div>
+              <div class="fgrid">
+                <div class="fg"><label>回庫日期（民國格式）<span class="hint">例：115.09.09，留空自動帶今天</span></label><input type="text" id="rf-date" onblur="onDateBlur(this)" placeholder="115.09.09"></div>
+                <div class="fg"><label>帳別 <span class="hint">決定要不要計入庫存</span></label>
+                  <select id="rf-acct" onchange="onRefurbAcctChange()">
+                    <option value="Y">✅ 有帳（計入庫存）</option>
+                    <option value="N">⚠️ 無帳（不計入庫存）</option>
+                  </select>
+                </div>
+                <div class="fg" id="rf-dir-field" style="display:none;"><label>異動方向 <span class="hint">無帳池才需要</span></label>
+                  <select id="rf-dir" onchange="updateRefurbPreview()">
+                    <option value="in">➕ 回庫入帳（檢定合格送回）</option>
+                    <option value="out">➖ 動用出庫（無帳錶領去用／報廢）</option>
+                  </select>
+                </div>
+                <div class="fg"><label>廠商型號</label>
+                  <select id="rf-vendor" onchange="updateRefurbPreview()"><option value="N">N型（台北貿易）</option><option value="M">M型（力泰瓦斯）</option></select>
+                </div>
+                <div class="fg"><label>燈別</label>
+                  <select id="rf-light" onchange="updateRefurbPreview()"><option value="4燈">4燈</option><option value="6燈">6燈</option></select>
+                </div>
+                <div class="fg"><label>子機</label>
+                  <select id="rf-sub" onchange="updateRefurbPreview()"><option value="無子機">無子機（X）</option><option value="有子機">有子機（V）</option></select>
+                </div>
+                <div class="fg"><label>數量（只）</label><input type="number" id="rf-qty" min="1" placeholder="0" oninput="updateRefurbPreview()"></div>
+                <div class="fg"><label>檢定單號／批號 <span class="hint">選填，對應檢定合格證</span></label><input type="text" id="rf-cert" placeholder="例：CH115-018"></div>
+                <div class="fg ffull"><label>備註 <span class="hint">選填，例：拆回整修加裝子機後檢定合格</span></label><input type="text" id="rf-note" placeholder="整修檢定合格回庫"></div>
+              </div>
+              <div id="rf-preview" style="background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:10px 14px;margin:4px 0 10px;font-size:18px;color:var(--text,#2a2018);display:none;"></div>
+              <div class="verify-row">
+                <input type="checkbox" id="rf-verify">
+                <label class="verify-label" for="rf-verify">☑ 我已確認錶已檢定合格、實體已入倉，且帳別選擇正確</label>
               </div>
             </div>
 
@@ -1217,14 +1306,16 @@ function renderInboundDash() {
   const sorted = allInbound.slice().sort((a,b)=>b.date.localeCompare(a.date));
   body.innerHTML = sorted.map(r=>{
     const isConv=/種類變更/.test(r.arrivalNote||'');
-    const numCls=Number(r.qty)<0?'neg':(isConv?'pos':'');
-    return `<div class="ov-row${isConv?' conv':''}">
+    const rf=isRefurb(r), na=isNoAcct(r);
+    const numCls=Number(r.qty)<0?'neg':((isConv||rf)?'pos':'');
+    const rowCls=na?' rfno':(rf?' rf':(isConv?' conv':''));
+    return `<div class="ov-row${rowCls}">
       <div class="ov-row-l">
         <span class="ov-date">${r.date}</span>
         <span class="ov-sub">${r.vendor}</span>
         <span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span>
         <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span>
-        ${isConv?`<span class="ov-conv-note">🔧 ${r.arrivalNote}</span>`:''}
+        ${rf?`<span class="tag-acct ${na?'acct-n':'acct-y'}">${na?'無帳':'有帳'}</span><span class="${na?'ov-rfno-note':'ov-rf-note'}">♻️ ${r.arrivalNote}</span>`:(isConv?`<span class="ov-conv-note">🔧 ${r.arrivalNote}</span>`:'')}
       </div>
       <div class="ov-row-r">
         <span class="ov-po">${r.poNumber||'—'}</span>
@@ -1232,6 +1323,76 @@ function renderInboundDash() {
       </div>
     </div>`;
   }).join('');
+}
+
+// ── v3.4 整修回庫面板 ──
+const RF_BASE = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
+function renderRefurb() {
+  const { noAcct, refurbAcct } = calcStock();
+  const fill = (id, src, cls) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = RF_BASE.map(base=>{
+      const n=src[base+'-N']||0, m=src[base+'-M']||0, v=n+m;
+      return `<div class="rf-cell ${cls}${v===0?' zero':''}">
+        <span class="rf-t">${base}</span>
+        <span class="rf-v">${v}</span>
+        <span class="rf-t" style="margin:6px 0 0;">只　N ${n}／M ${m}</span>
+      </div>`;
+    }).join('');
+  };
+  fill('rf-acct-grid', refurbAcct, 'acct');
+  fill('rf-noacct-grid', noAcct, 'noacct');
+
+  const body = document.getElementById('rf-body');
+  const cnt  = document.getElementById('rf-count');
+  if (!body) return;
+  const rows = allInbound.filter(isRefurb).slice()
+    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+  if (cnt) cnt.textContent = '共 '+rows.length+' 筆';
+  if (!rows.length) { body.innerHTML='<div class="ov-empty">尚無整修回庫記錄</div>'; return; }
+  body.innerHTML = rows.map(r=>{
+    const na=isNoAcct(r), q=Number(r.qty)||0;
+    return `<div class="ov-row ${na?'rfno':'rf'}">
+      <div class="ov-row-l">
+        <span class="ov-date">${r.date}</span>
+        <span class="tag-acct ${na?'acct-n':'acct-y'}">${na?'無帳':'有帳'}</span>
+        <span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span>
+        <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span>
+        <span class="${na?'ov-rfno-note':'ov-rf-note'}">♻️ ${r.arrivalNote||''}</span>
+      </div>
+      <div class="ov-row-r">
+        <span class="ov-po">${r.poNumber?('檢定 '+r.poNumber):'—'}</span>
+        <span class="ov-qty ${q<0?'neg':'pos'}">${q>0?'+':''}${q}<span class="u">只</span></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openNoAcctModal(keyN, keyM) {
+  const rows = allInbound.filter(r=>isNoAcct(r) &&
+    ((r.light+r.sub+'-'+r.type)===keyN || (r.light+r.sub+'-'+r.type)===keyM));
+  const base = keyN.replace('-N','');
+  const total = rows.reduce((s,r)=>s+(Number(r.qty)||0),0);
+  document.getElementById('modalTitle').textContent = base+' 整修無帳明細（不計入庫存）';
+  document.getElementById('modalBody').innerHTML = !rows.length
+    ? `<div class="modal-empty">尚無無帳記錄</div>`
+    : `<div style="padding:10px 12px;font-size:19px;color:#6d28d9;">⚠️ 無帳錶實體在倉可用，但不列入庫存四卡與缺口計算。合計 <b>${total}</b> 只。</div>
+      <table style="width:100%;border-collapse:collapse;font-size:20px;">
+      <thead><tr>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);">日期</th>
+        <th style="padding:8px 12px;text-align:left;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);">型號／說明</th>
+        <th style="padding:8px 12px;text-align:right;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);">數量</th>
+      </tr></thead>
+      <tbody>${rows.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))).map(r=>`<tr>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);">${r.date}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);"><span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span> <span style="color:var(--muted);font-size:17px;">${r.arrivalNote||''}</span></td>
+        <td style="padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-weight:700;color:${Number(r.qty)<0?'#c0392b':'#6d28d9'};">${r.qty}只</td>
+      </tr>`).join('')}
+      <tr><td style="padding:8px 12px;font-weight:700;">合計</td><td></td>
+      <td style="padding:8px 12px;text-align:right;font-weight:700;color:#6d28d9;">${total}只</td></tr></tbody>
+    </table>`;
+  document.getElementById('modalBg').classList.add('show');
 }
 
 function renderTodayActivity() {
@@ -1268,7 +1429,9 @@ function renderTodayActivity() {
       spec:     r.light+r.sub,
       vendor:   r.type||'N',
       qty:      r.qty,
-      category: '<span class="badge-ret" style="background:var(--blue-bg);color:var(--blue);">廠商入庫</span>',
+      category: isNoAcct(r)?'<span class="tag-acct acct-n">♻️ 整修回庫・無帳</span>'
+                :(isRefurb(r)?'<span class="tag-acct acct-y">♻️ 整修回庫・有帳</span>'
+                :'<span class="badge-ret" style="background:var(--blue-bg);color:var(--blue);">廠商入庫</span>'),
       cls:      tagCls2(r.light, r.sub),
       borderCls: ovBorderCls(r.light, r.sub),
     }));
@@ -1319,6 +1482,7 @@ function renderAll() {
   renderStock();
   renderTodayActivity();
   renderInboundDash();
+  renderRefurb();
   renderBiz();
   renderEng();
   renderDelTable();
@@ -1350,16 +1514,26 @@ function updateOvBadges() {
   set('ovb-today',todayCnt);
   set('ovb-inbound',allInbound.length);
   set('ovb-incoming',allIncoming.length);
+  set('ovb-refurb',allInbound.filter(isRefurb).length);
   set('ovb-unpaid',eng.filter(r=>r.payment==='X').length);
   set('ovb-paid',eng.filter(r=>r.payment==='O').length);
 }
 
 // ── Stock Calc ──
+// ── v3.4 整修回庫判別（有帳／無帳）──
+const RE_REFURB = /整修回庫|整修無帳/;
+const RE_NOACCT = /整修回庫-無帳|整修無帳/;
+function isRefurb(r){ return RE_REFURB.test(String(r.arrivalNote||'')); }
+function isNoAcct(r){ return RE_NOACCT.test(String(r.arrivalNote||'')); }
+
 function calcStock() {
-  const netActual={}, actualByCase={}, estByCase={}, estNeeded={}, inboundTotal={};
+  const netActual={}, actualByCase={}, estByCase={}, estNeeded={}, inboundTotal={}, noAcct={}, refurbAcct={};
   allInbound.forEach(r=>{
     const k=r.light+r.sub+'-'+r.type;
-    inboundTotal[k]=(inboundTotal[k]||0)+Number(r.qty);
+    const q=Number(r.qty)||0;
+    if (isNoAcct(r)) { noAcct[k]=(noAcct[k]||0)+q; return; }  // 無帳池：實體在倉，不進正式庫存
+    inboundTotal[k]=(inboundTotal[k]||0)+q;
+    if (isRefurb(r)) refurbAcct[k]=(refurbAcct[k]||0)+q;      // 有帳整修回庫（已含在 inboundTotal 內，僅供統計）
   });
   allRecords.forEach(r=>{
     const vend=(r.vendor||'N');
@@ -1381,12 +1555,12 @@ function calcStock() {
     const diff=(estByCase[ck]||0)-Math.max(0,actualByCase[ck]||0);
     if (diff>0) estNeeded[k]=(estNeeded[k]||0)+diff;
   });
-  return { netActual, actualByCase, estByCase, estNeeded, inboundTotal };
+  return { netActual, actualByCase, estByCase, estNeeded, inboundTotal, noAcct, refurbAcct };
 }
 
 // ── Stock Cards ──
 function renderStock() {
-  const { netActual, estNeeded, inboundTotal } = calcStock();
+  const { netActual, estNeeded, inboundTotal, noAcct } = calcStock();
   const baseKeys = ['4燈有子機','4燈無子機','6燈有子機','6燈無子機'];
   const grid = document.getElementById('stockGrid-N');
   if (!grid) return;
@@ -1402,6 +1576,7 @@ function renderStock() {
     const pct=Math.min(100,(initN+initM)>0?Math.round(total/(initN+initM)*100):0);
     const cls=total<=0?'danger':gap<0?'warn':'ok';
     const gapHtml=gap<0?`<span class="sc-gap">⚠ 缺口 ${Math.abs(gap)} 只</span>`:`<span class="sc-safe">可用 ${gap} 只</span>`;
+    const naN=noAcct[kN]||0, naM=noAcct[kM]||0, naAll=naN+naM;
     return `<div class="sc ${cls} ripple-host click-scale">
       <div class="sc-scan"></div>
       ${gap<0?'<div class="buy-tag">採買警示</div>':''}
@@ -1429,6 +1604,10 @@ function renderStock() {
         <span class="sc-lbl">預估還需</span>
         <button class="sc-link click-scale" data-keyn="${kN}" data-keym="${kM}" onclick="openEstModalBoth(this.dataset.keyn,this.dataset.keym)">${estAll}只▸</button>
       </div>
+      ${naAll!==0?`<div class="sc-row sc-noacct">
+        <span class="sc-lbl">♻️ 整修無帳</span>
+        <button class="sc-link-purple click-scale" data-keyn="${kN}" data-keym="${kM}" onclick="openNoAcctModal(this.dataset.keyn,this.dataset.keym)">${naAll}只▸</button>
+      </div>`:''}
       <div class="sc-row">${gapHtml}</div>
       <div class="sc-bar"><div class="sc-bar-fill ${cls}" style="width:${pct}%"></div></div>
     </div>`;
@@ -1913,9 +2092,13 @@ function renderInboundTable() {
   if (!allInbound.length) { body.innerHTML='<tr><td colspan="6" class="no-data">尚無入庫記錄</td></tr>'; return; }
   body.innerHTML = allInbound.map(r=>{
     const isConv=/種類變更/.test(r.arrivalNote||'');
-    const qtyColor=Number(r.qty)<0?'#c0392b':(isConv?'#1a7a50':'inherit');
-    const convNote=isConv?`<div style="font-size:16px;color:#b06a00;margin-top:2px;">🔧 ${r.arrivalNote}</div>`:'';
-    return `<tr${isConv?' style="background:#fffaf0;"':''}>
+    const rf=isRefurb(r), na=isNoAcct(r);
+    const qtyColor=Number(r.qty)<0?'#c0392b':((isConv||rf)?'#1a7a50':'inherit');
+    const convNote=rf
+      ?`<div style="font-size:16px;color:${na?'#6d28d9':'#1a7a50'};margin-top:2px;">♻️ ${r.arrivalNote}</div>`
+      :(isConv?`<div style="font-size:16px;color:#b06a00;margin-top:2px;">🔧 ${r.arrivalNote}</div>`:'');
+    const rowBg=na?' style="background:#f7f3fd;"':(rf?' style="background:#f2faf6;"':(isConv?' style="background:#fffaf0;"':''));
+    return `<tr${rowBg}>
     <td>${r.date}</td>
     <td style="font-size:20px;">${r.vendor}</td>
     <td><span class="tag ${tagCls2(r.light,r.sub)}">${r.light}${r.sub}</span> <span class="${r.type==='N'?'ven-n':'ven-m'}">${r.type}型</span>${convNote}</td>
@@ -1973,7 +2156,7 @@ async function submitInbound() {
   const k   = light+sub+'-'+type;
   if (rowId) {
     const old = allInbound.find(x=>String(x.rowId)===String(rowId));
-    if (old) { const oldK=old.light+old.sub+'-'+old.type; INIT[oldK]=(INIT[oldK]||0)-old.qty; }
+    // v3.4 修正：庫存一律由 allInbound 統一重算，不再手動加減 INIT（避免重複計算）
     try {
       await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})});
       const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
@@ -1981,7 +2164,6 @@ async function submitInbound() {
       allInbound=allInbound.filter(x=>String(x.rowId)!==String(rowId));
       allInbound.push({...rec, rowId:d.rowId||Date.now()});
     } catch(e){}
-    INIT[k]=(INIT[k]||0)+qty;
     cancelEditInbound();
   } else {
     try {
@@ -1989,7 +2171,6 @@ async function submitInbound() {
       const d=await r.json();
       allInbound.push({...rec, rowId:d.rowId||Date.now()});
     } catch(e){}
-    INIT[k]=(INIT[k]||0)+qty;
     cancelEditInbound();
   }
   clearCache(); renderAll(); showOk();
@@ -2007,7 +2188,8 @@ function updateConvertPreview() {
   const toSub   = dir==='add' ? '有子機' : '無子機';
   const fromK = light+fromSub+'-'+vendor;
   const toK   = light+toSub+'-'+vendor;
-  const fromRemain = (INIT[fromK]||0);
+  const { netActual: naStk, inboundTotal: ibStk } = calcStock();
+  const fromRemain = (INIT[fromK]||0)+(ibStk[fromK]||0)-(naStk[fromK]||0);
   box.style.display='block';
   box.innerHTML = `變更後庫存異動：<br>`+
     `<b style="color:#c0392b;">${light}${fromSub}（${vendor}型）</b> −${qty} 只`+
@@ -2047,8 +2229,6 @@ async function submitConvert() {
     const d2=await r2.json();
     allInbound.push({...recIn, rowId:d2.rowId||(Date.now()+1)});
   } catch(e){}
-  INIT[kOut]=(INIT[kOut]||0)-Math.abs(qty);
-  INIT[kIn] =(INIT[kIn]||0)+Math.abs(qty);
   document.getElementById('cv-date').value='';
   document.getElementById('cv-qty').value='';
   document.getElementById('cv-note').value='';
@@ -2056,6 +2236,85 @@ async function submitConvert() {
   const pv=document.getElementById('cv-preview'); if(pv) pv.style.display='none';
   clearCache(); renderAll(); showOk();
   btn.disabled=false; btn.textContent='🔧 確認種類變更';
+}
+
+// ── v3.4 整修回庫：帳別切換 ──
+function onRefurbAcctChange() {
+  const acctEl = document.getElementById('rf-acct');
+  if (!acctEl) return;
+  const dirField = document.getElementById('rf-dir-field');
+  if (dirField) dirField.style.display = (acctEl.value==='N') ? '' : 'none';
+  if (acctEl.value!=='N') { const d=document.getElementById('rf-dir'); if (d) d.value='in'; }
+  updateRefurbPreview();
+}
+
+// ── v3.4 整修回庫：即時預覽 ──
+function updateRefurbPreview() {
+  const box = document.getElementById('rf-preview');
+  if (!box) return;
+  const acct  = document.getElementById('rf-acct').value;
+  const dir   = document.getElementById('rf-dir').value;
+  const light = document.getElementById('rf-light').value;
+  const sub   = document.getElementById('rf-sub').value;
+  const vendor= document.getElementById('rf-vendor').value;
+  const qty   = parseInt(document.getElementById('rf-qty').value)||0;
+  if (!qty||qty<1) { box.style.display='none'; return; }
+  const k = light+sub+'-'+vendor;
+  const { noAcct } = calcStock();
+  const pool = noAcct[k]||0;
+  box.style.display='block';
+  if (acct==='Y') {
+    box.innerHTML = `登錄後異動：<br><b style="color:#1a7a50;">${light}${sub}（${vendor}型）庫存 +${qty} 只</b>　➜　併入庫存四卡，可正常配發。`;
+  } else if (dir==='in') {
+    box.innerHTML = `登錄後異動：<br><b style="color:#6d28d9;">${light}${sub}（${vendor}型）整修無帳池 +${qty} 只</b><br>`+
+      `<span style="color:var(--muted);font-size:16px;">實體在倉可用，<b>不</b>計入庫存四卡與缺口計算。無帳池 ${pool} 只 ➜ ${pool+qty} 只</span>`;
+  } else {
+    box.innerHTML = `登錄後異動：<br><b style="color:#c0392b;">${light}${sub}（${vendor}型）整修無帳池 −${qty} 只</b><br>`+
+      `<span style="color:var(--muted);font-size:16px;">動用／報廢，不影響庫存四卡。無帳池 ${pool} 只 ➜ ${pool-qty} 只</span>`+
+      ((pool<qty) ? `<br><span style="color:#c0392b;">⚠ 注意：無帳池帳上僅 ${pool} 只，扣除後將為負數，請先確認實際庫存</span>` : '');
+  }
+}
+
+// ── v3.4 整修回庫：送出 ──
+async function submitRefurb() {
+  const date   = document.getElementById('rf-date').value.trim() || getTodayRoc();
+  const acct   = document.getElementById('rf-acct').value;
+  const dir    = document.getElementById('rf-dir').value;
+  const light  = document.getElementById('rf-light').value;
+  const sub    = document.getElementById('rf-sub').value;
+  const vendor = document.getElementById('rf-vendor').value;
+  const qtyRaw = parseInt(document.getElementById('rf-qty').value);
+  const cert   = document.getElementById('rf-cert').value.trim();
+  const note   = document.getElementById('rf-note').value.trim();
+  const verify = document.getElementById('rf-verify').checked;
+  if (!qtyRaw||qtyRaw<1) { alert('請填寫數量'); return; }
+  if (!verify) { alert('請先勾選確認！'); return; }
+  const isOut = (acct==='N' && dir==='out');
+  const qty   = isOut ? -Math.abs(qtyRaw) : Math.abs(qtyRaw);
+  const tag   = note ? ('｜'+note) : '';
+  const label = (acct==='Y')
+    ? ('整修回庫-有帳（檢定合格）'+tag)
+    : (isOut ? ('整修無帳-領用出庫'+tag) : ('整修回庫-無帳（檢定合格）'+tag));
+  const rec = { date, vendor:'整修回庫', light, sub, type:vendor, qty,
+    poNumber:cert, arrivalNote:label, nextDate:'', verified:'✓' };
+  const btn = document.getElementById('btnSub');
+  btn.disabled=true; btn.textContent='處理中…';
+  let ok=false;
+  try {
+    const r = await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'addInbound',...rec})});
+    const d = await r.json();
+    allInbound.push({...rec, rowId:d.rowId||Date.now()});
+    ok=true;
+  } catch(e) { console.log('整修回庫送出失敗',e); }
+  btn.disabled=false; btn.textContent='♻️ 確認整修回庫';
+  if (!ok) { alert('送出失敗，資料未寫入 Google Sheets。請檢查網路後再試一次。'); return; }
+  document.getElementById('rf-date').value='';
+  document.getElementById('rf-qty').value='';
+  document.getElementById('rf-cert').value='';
+  document.getElementById('rf-note').value='';
+  document.getElementById('rf-verify').checked=false;
+  const pv=document.getElementById('rf-preview'); if (pv) pv.style.display='none';
+  clearCache(); renderAll(); showOk();
 }
 
 async function deleteRecord(rowId, btn) {
@@ -2070,8 +2329,7 @@ async function deleteInbound(rowId, btn) {
   if (!confirm('確定要刪除這筆入庫記錄？⚠️ 庫存會減少！')) return;
   if (btn) { btn.disabled=true; btn.textContent='…'; }
   try { await fetch(GAS_URL,{method:'POST',body:JSON.stringify({action:'deleteInbound',rowId:Number(rowId)})}); } catch(e){}
-  const old = allInbound.find(x=>String(x.rowId)===String(rowId));
-  if (old) { const k=old.light+old.sub+'-'+old.type; INIT[k]=(INIT[k]||0)-old.qty; }
+  // v3.4 修正：庫存由 allInbound 統一重算，移除該筆即可，不再手動扣 INIT（避免重複扣兩次）
   allInbound=allInbound.filter(r=>String(r.rowId)!==String(rowId));
   clearCache(); renderAll();
 }
@@ -2361,11 +2619,13 @@ function onRecordTypeChange(val) {
   const inboundFields  = document.getElementById('inboundFields');
   const incomingFields = document.getElementById('incomingFields');
   const convertFields  = document.getElementById('convertFields');
+  const refurbFields   = document.getElementById('refurbFields');
   if (!normalFields) return;
   normalFields.style.display   = 'none';
   inboundFields.style.display  = 'none';
   incomingFields.style.display = 'none';
   if (convertFields) convertFields.style.display = 'none';
+  if (refurbFields)  refurbFields.style.display  = 'none';
   const btn = document.getElementById('btnSub');
   const verifyRow = document.getElementById('verifyRow');
   if (val==='inbound') {
@@ -2377,6 +2637,11 @@ function onRecordTypeChange(val) {
     if (btn) { btn.textContent='🔧 確認種類變更'; btn.style.background='#b06a00'; }
     if (verifyRow) verifyRow.style.display='none';
     updateConvertPreview();
+  } else if (val==='refurb') {
+    if (refurbFields) refurbFields.style.display='block';
+    if (btn) { btn.textContent='♻️ 確認整修回庫'; btn.style.background='#1a7a50'; }
+    if (verifyRow) verifyRow.style.display='none';
+    onRefurbAcctChange();
   } else if (val==='incoming') {
     incomingFields.style.display='block';
     if (btn) { btn.textContent='新增預計進貨提醒'; btn.style.background='#6d28d9'; }
@@ -2437,6 +2702,7 @@ function handleSubmit() {
   const type = document.getElementById('recordTypeSelect').value;
   if (type==='inbound')  { submitInbound();  return; }
   if (type==='convert')  { submitConvert();  return; }
+  if (type==='refurb')   { submitRefurb();   return; }
   if (type==='incoming') { submitIncoming(); return; }
   submitRecord();
 }
@@ -2466,7 +2732,7 @@ function onCaseSelect(val, nameId='f-name') {
 function renderSmartAlloc() {
   const body = document.getElementById('smart-body');
   if (!body) return;
-  const { netActual, estByCase, actualByCase } = calcStock();
+  const { netActual, estByCase, actualByCase, inboundTotal } = calcStock();
   if (!allIncoming.length) {
     document.getElementById('smart-empty').style.display='block';
     body.innerHTML='';
@@ -2478,8 +2744,9 @@ function renderSmartAlloc() {
     const k    = incoming.light + incoming.sub + '-' + incoming.type;
     const kAlt = incoming.light + incoming.sub + '-' + (incoming.type==='N'?'M':'N');
     // 現有庫存 = 同燈別+子機的 N型+M型 合計
-    const curN = Math.max(0,(INIT[incoming.light+incoming.sub+'-N']||0)-(netActual[incoming.light+incoming.sub+'-N']||0));
-    const curM = Math.max(0,(INIT[incoming.light+incoming.sub+'-M']||0)-(netActual[incoming.light+incoming.sub+'-M']||0));
+    const kN_ = incoming.light+incoming.sub+'-N', kM_ = incoming.light+incoming.sub+'-M';
+    const curN = Math.max(0,(INIT[kN_]||0)+(inboundTotal[kN_]||0)-(netActual[kN_]||0));
+    const curM = Math.max(0,(INIT[kM_]||0)+(inboundTotal[kM_]||0)-(netActual[kM_]||0));
     const cur  = curN + curM;
     const avail= cur + incoming.qty;
     // 找出需要這種錶的建案（estimate，未繳費X不算，依掛表日排序）
