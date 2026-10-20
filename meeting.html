@@ -348,10 +348,10 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
 </div></div>
 
 <!-- 操作紀錄 -->
-<div class="mask" id="maskLog"><div class="modal" style="max-width:680px">
+<div class="mask" id="maskLog"><div class="modal" style="max-width:1000px">
   <h2>操作紀錄</h2>
   <div class="desc">系統自動記錄：建檔、指派、核准、免報告、刪除、Email 提醒寄送。最新在前。</div>
-  <div class="checklist" id="logList" style="max-height:400px;background:#fff"></div>
+  <div class="checklist" id="logList" style="max-height:72vh;background:#fff"></div>
   <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('maskLog')">關閉</button></div>
 </div></div>
 
@@ -927,9 +927,14 @@ async function openLog(){
       const raw=String(L.t);
       let d,tm;
       if(/^\d{4}\/\d{1,2}\/\d{1,2} /.test(raw)){         // 新格式 2026/07/24 08:57:18
-        const parts=raw.split(" ");d=parts[0];tm=parts[1]||"";
-      }else{                                               // 舊格式（英文長字串等）
-        d="earlier";tm=raw;
+        const parts=raw.split(" ");d=parts[0];tm=(parts[1]||"").slice(0,5);
+      }else{                                               // 試算表把時間轉成日期物件 → 英文長字串，這裡轉回台灣時間
+        const dt=new Date(raw);
+        if(!isNaN(dt)){
+          const p=new Intl.DateTimeFormat("zh-TW",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}).formatToParts(dt);
+          const g=t=>(p.find(x=>x.type===t)||{}).value||"";
+          d=`${g("year")}/${g("month")}/${g("day")}`;tm=`${g("hour")}:${g("minute")}`;
+        }else{d="earlier";tm=raw;}
       }
       const gkey=d==="earlier"?"earlier":norm(d);
       if(gkey!==lastDate){
@@ -940,8 +945,8 @@ async function openLog(){
           out+=`<div class="dept-h" style="${isToday?"color:var(--flame);":""}">${isToday?"📍 今日 "+d:d}</div>`;
         }
       }
-      out+=`<div style="display:flex;gap:8px;align-items:baseline;padding:4px 6px;font-size:15px;border-radius:6px">
-        <span style="color:var(--faint);font-variant-numeric:tabular-nums;flex-shrink:0;min-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">${tm}</span>
+      out+=`<div style="display:flex;gap:10px;align-items:baseline;padding:7px 8px;font-size:16.5px;border-bottom:1px solid #f0f3f6">
+        <span style="color:var(--flame-deep);font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0;width:52px">${tm}</span>
         <span class="chip" style="flex-shrink:0">${L.role||"系統"}</span>
         <b style="flex-shrink:0">${L.act}</b>
         <span style="color:var(--ink2)">${L.detail||""}</span>
