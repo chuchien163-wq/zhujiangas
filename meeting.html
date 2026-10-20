@@ -330,7 +330,7 @@ body.busy-lock .btn,body.busy-lock .side-item,body.busy-lock .item-head{pointer-
   <h2 id="rp_title">報告完成</h2>
   <div class="desc" id="rp_desc">標記已報告，並可留下表現等第（加分用，可不評）。</div>
   <div class="field"><label>表現等第</label>
-    <select id="rp_grade"><option value="">不評等（僅記錄完成）</option><option value="優">優</option><option value="良">良</option><option value="佳">佳</option></select>
+    <select id="rp_grade"><option value="">先不評（留給總經理評分）</option><option value="優">優</option><option value="良">良</option><option value="佳">佳</option><option value="免評">不評等（直接結案）</option></select>
   </div>
   <div class="field"><label>評語（選填）</label><input id="rp_comment" placeholder="例：內容完整、台風穩健"></div>
   <div class="modal-foot">
@@ -407,6 +407,7 @@ let adminUnlocked=false;          // 管理部是否已解鎖
 let mgrDept="";                   // 主管目前選的部門
 let DATA=[],ROLE="boss",editId=null,assignId=null;
 
+function gText(g){return g==="免評"?"不評等":(g||"未評");}
 function todayLocal(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200);}
 
@@ -635,7 +636,7 @@ function render(){
       }
     }
     const meta=[r.type,r.org?`主辦｜${r.org}`:"",r.no||"",`收文 ${r.recv||"—"}`,((st==="已報告"||st==="待評分")&&r.date)?`會議日 ${fmtDate(r.date)}`:""].filter(Boolean).join("　");
-    const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}${r.reported&&r.grade?`<div style="margin-top:5px;font-size:15px"><span class="tag tag-assigned" style="padding:2px 9px">等第：${r.grade}</span>${r.gcomment?`<span class="muted" style="margin-left:7px">${r.gcomment}</span>`:""}</div>`:""}</div></div>`:"";
+    const rep=r.occ?`<div class="ib-row"><span class="k">報告</span><div><span class="occ-title">${r.occ}</span>${r.approved&&r.occ!=="免報告"?`<span class="apv">✔ 總經理已核准</span>`:""}${r.reporters.length?`<div class="namebox" style="margin-top:5px">${r.reporters.map(n=>`<span class="chip">${fullName(n)}</span>`).join("")}</div>`:""}${r.reportDate?`<div class="rdate">預計報告日 ${fmtDate(r.reportDate)}</div>`:""}${r.reported&&r.grade?`<div style="margin-top:5px;font-size:15px"><span class="tag tag-assigned" style="padding:2px 9px">${r.grade==="免評"?"不評等（已結案）":"等第："+r.grade}</span>${r.gcomment?`<span class="muted" style="margin-left:7px">${r.gcomment}</span>`:""}</div>`:""}</div></div>`:"";
     const rd=(st==="已核准"||st==="逾期"||st==="待核准")&&r.reportDate?`<span class="it-rd">報 ${r.reportDate.slice(5).replace("-","/")}</span>`:"";
     const open=OPEN.has(String(r.id))?" open":"";
     return `<div class="item${open}" data-st="${st}" data-id="${r.id}">
@@ -754,7 +755,7 @@ function openRegrade(id){
   const r=DATA.find(x=>x.id===id);
   REPORT_ID=id;REPORT_MODE="re";
   document.getElementById("rp_title").textContent=r.grade?"調整等第":"報告評分";
-  document.getElementById("rp_desc").textContent=r.grade?`「${r.name}」目前等第：${r.grade}。調整後將覆蓋原評等。`:`為「${r.name}」的報告表現給予等第（加分用）。`;
+  document.getElementById("rp_desc").textContent=r.grade?`「${r.name}」目前：${gText(r.grade)}。調整後將覆蓋原評等。`:`為「${r.name}」的報告表現給予等第（加分用）。`;
   document.getElementById("rp_grade").value=r.grade||"";
   document.getElementById("rp_comment").value=r.gcomment||"";
   openModal("maskReport");
@@ -765,7 +766,7 @@ document.getElementById("btnReportSave").onclick=async()=>{
   const regrade=REPORT_MODE==="re";
   closeModal("maskReport");
   await apiPost({action:"reported",id:REPORT_ID,grade,comment,regrade});
-  toast(regrade?(grade?`等第已調整為「${grade}」`:"已改為不評等"):(grade?`已標記完成（等第：${grade}）`:"已標記報告完成"));apiList();
+  toast(grade==="免評"?"已結案（不評等）":regrade?(grade?`等第已調整為「${grade}」`:"已退回待評分"):(grade?`已標記完成（等第：${grade}）`:"已標記報告完成，待總經理評分"));apiList();
 };
 function openStats(){STATS_KEY="";STATS_MODE="sum";renderStats("");openModal("maskStats");}
 let STATS_KEY="",STATS_FD="",STATS_MODE="sum";
@@ -781,10 +782,10 @@ function renderStats(fd){
       const dept=deptOf(n)||"—";
       if(fd&&dept!==fd)return;
       const k=fullName(n);
-      map[k]=map[k]||{dept,n:0,"優":0,"良":0,"佳":0,"未":0};
+      map[k]=map[k]||{dept,n:0,"優":0,"良":0,"佳":0,"免":0,"未":0};
       map[k].n++;
       const g=r.grade||"";
-      if(g==="優"||g==="良"||g==="佳")map[k][g]++;else map[k]["未"]++;
+      if(g==="優"||g==="良"||g==="佳")map[k][g]++;else if(g==="免評")map[k]["免"]++;else map[k]["未"]++;
     });
   });
   const rows=Object.entries(map).sort((a,b)=>b[1].n-a[1].n);
@@ -795,14 +796,14 @@ function renderStats(fd){
     ?`<div style="display:flex;align-items:center;gap:12px;background:var(--amber-soft);border:1px solid #ecd9ad;border-radius:10px;padding:11px 16px;margin:0 4px 12px"><span style="font-size:17px;font-weight:800;color:#7d5510">📌 尚有 ${ug.length} 場報告未評分</span><button class="btn btn-primary btn-sm" style="margin-left:auto" onclick="statsUngraded()">立即評分</button></div>`
     :((!canGradeStats()&&ug.length)?`<div style="padding:4px 8px 10px;font-size:15px;color:var(--ink2)">尚有 ${ug.length} 場未評分（由總經理／管理部評定）</div>`:"");
   if(!rows.length){box.innerHTML=sel+banner+`<div style="text-align:center;padding:24px;color:var(--ink2)">${fd?`「${fd}」還沒有完成的報告紀錄`:"還沒有完成的報告紀錄"}</div>`;return;}
-  box.innerHTML=sel+banner+`<div style="display:flex;font-weight:900;font-size:15.5px;color:var(--ink2);letter-spacing:.08em;padding:8px 10px;border-bottom:2px solid var(--line)"><span style="flex:1">姓名</span><span style="width:96px">部門</span><span style="width:60px;text-align:center">次數</span><span style="width:52px;text-align:center">優</span><span style="width:52px;text-align:center">良</span><span style="width:52px;text-align:center">佳</span><span style="width:60px;text-align:center">未評</span><span style="width:70px"></span></div>`+
-  rows.map(([k,v])=>`<div onclick="statsPerson('${k}')" style="display:flex;align-items:center;padding:11px 10px;font-size:18px;border-bottom:1px solid #f0f3f6;cursor:pointer" onmouseover="this.style.background='#f6f9fc'" onmouseout="this.style.background=''"><span style="flex:1;font-weight:800">${k}</span><span style="width:96px;font-size:16px;color:var(--ink2)">${v.dept}</span><span style="width:60px;text-align:center;font-weight:900;font-size:20px;font-variant-numeric:tabular-nums">${v.n}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--flame-deep)">${v["優"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--green)">${v["良"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--amber)">${v["佳"]||"·"}</span><span style="width:60px;text-align:center">${v["未"]?`<span style="background:var(--red-soft);color:var(--red);font-weight:800;font-size:16px;padding:2px 10px;border-radius:10px">${v["未"]}</span>`:`<span style="color:var(--faint)">·</span>`}</span><span style="width:70px;text-align:right;color:var(--flame);font-size:15.5px;font-weight:700">明細 ›</span></div>`).join("");
+  box.innerHTML=sel+banner+`<div style="display:flex;font-weight:900;font-size:15.5px;color:var(--ink2);letter-spacing:.08em;padding:8px 10px;border-bottom:2px solid var(--line)"><span style="flex:1">姓名</span><span style="width:96px">部門</span><span style="width:60px;text-align:center">次數</span><span style="width:52px;text-align:center">優</span><span style="width:52px;text-align:center">良</span><span style="width:52px;text-align:center">佳</span><span style="width:60px;text-align:center">不評</span><span style="width:60px;text-align:center">未評</span><span style="width:70px"></span></div>`+
+  rows.map(([k,v])=>`<div onclick="statsPerson('${k}')" style="display:flex;align-items:center;padding:11px 10px;font-size:18px;border-bottom:1px solid #f0f3f6;cursor:pointer" onmouseover="this.style.background='#f6f9fc'" onmouseout="this.style.background=''"><span style="flex:1;font-weight:800">${k}</span><span style="width:96px;font-size:16px;color:var(--ink2)">${v.dept}</span><span style="width:60px;text-align:center;font-weight:900;font-size:20px;font-variant-numeric:tabular-nums">${v.n}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--flame-deep)">${v["優"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--green)">${v["良"]||"·"}</span><span style="width:52px;text-align:center;font-size:18px;font-weight:700;color:var(--amber)">${v["佳"]||"·"}</span><span style="width:60px;text-align:center;font-size:17px;color:var(--ink2)">${v["免"]||"·"}</span><span style="width:60px;text-align:center">${v["未"]?`<span style="background:var(--red-soft);color:var(--red);font-weight:800;font-size:16px;padding:2px 10px;border-radius:10px">${v["未"]}</span>`:`<span style="color:var(--faint)">·</span>`}</span><span style="width:70px;text-align:right;color:var(--flame);font-size:15.5px;font-weight:700">明細 ›</span></div>`).join("");
 }
 function gradeRow_(r,can,showWho){
   const who=showWho?`<span style="flex-shrink:0;background:#f1f4f8;border:1px solid #e2e8ef;border-radius:6px;padding:2px 9px;font-size:15.5px;font-weight:700">${(r.reporters||[]).map(fullName).join("、")}</span>`:"";
   const gsel=can
-    ?`<select onchange="quickGrade('${r.id}',this.value)" onclick="event.stopPropagation()" style="width:118px;padding:7px 9px;font-size:16.5px"><option value=""${!r.grade?" selected":""}>未評等</option><option${r.grade==="優"?" selected":""}>優</option><option${r.grade==="良"?" selected":""}>良</option><option${r.grade==="佳"?" selected":""}>佳</option></select>`
-    :(r.grade?`<span class="tag tag-assigned" style="padding:3px 12px;font-size:16px">${r.grade}</span>`:`<span class="muted">未評</span>`);
+    ?`<select onchange="quickGrade('${r.id}',this.value)" onclick="event.stopPropagation()" style="width:118px;padding:7px 9px;font-size:16.5px"><option value=""${!r.grade?" selected":""}>未評等</option><option${r.grade==="優"?" selected":""}>優</option><option${r.grade==="良"?" selected":""}>良</option><option${r.grade==="佳"?" selected":""}>佳</option><option value="免評"${r.grade==="免評"?" selected":""}>不評等</option></select>`
+    :(r.grade?`<span class="tag tag-assigned" style="padding:3px 12px;font-size:16px">${gText(r.grade)}</span>`:`<span class="muted">未評</span>`);
   return `<div style="display:flex;align-items:center;gap:12px;padding:11px 10px;font-size:17px;border-bottom:1px solid #f0f3f6">
     <span style="width:92px;flex-shrink:0;font-variant-numeric:tabular-nums;color:var(--flame-deep);font-weight:700">${r.reportDate?r.reportDate.replace(/-/g,"/"):"—"}</span>
     ${who}
@@ -835,7 +836,7 @@ function statsPerson(k){
 async function quickGrade(id,g){
   const r=DATA.find(x=>x.id===id);
   await apiPost({action:"reported",id,grade:g,comment:r.gcomment||"",regrade:true});
-  toast(g?`已評「${g}」`:"已改為未評等");
+  toast(g?`已評「${gText(g)}」`:"已改為未評等");
   await apiList();
   if(STATS_MODE==="ug")statsUngraded();
   else if(STATS_KEY)statsPerson(STATS_KEY);
