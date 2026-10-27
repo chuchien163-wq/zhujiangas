@@ -186,7 +186,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.1</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.2</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -210,6 +210,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 </div>
 
 <div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="mask" id="mask2" style="z-index:60"><div class="modal small" id="modal2"></div></div>
 <div id="topbar"></div>
 <div id="loading"><div class="ldcard"><div class="spin"></div><div id="loadingMsg">讀取中…</div><div class="ldbar"><i id="ldFill"></i></div><div id="ldTime">已經過 0 秒</div><div id="ldSlow">Google 試算表回應比較慢，資料還在跑，請勿關閉或重複按。</div></div></div>
 <div id="toast"></div>
@@ -353,7 +354,7 @@ function post(action, data, okMsg) {
   return req("POST", payload).then(function (j) {
     hideLoading();
     if (!j.ok) {
-      if (/密碼/.test(j.msg || "")) { PW = ""; ssSet(SS_PW, null); updLock(); }
+      if (/密碼/.test(j.msg || "")) { PW = ""; lsSet(SS_PW, ""); updLock(); }
       toast("❌ " + (j.msg || "存檔失敗"), 4000); return false;
     }
     if (j.data) setData(j.data);
@@ -819,7 +820,7 @@ function saveParams() {
     $$("#content input[data-k]").forEach(function (i) { o[i.dataset.k] = i.value.trim(); });
     if (!o["編輯密碼"]) delete o["編輯密碼"];
     var newPw = o["編輯密碼"];
-    post("saveParams", { params: o }, "✅ 參數已儲存").then(function (ok) { if (ok && newPw) { PW = newPw; ssSet(SS_PW, PW); } });
+    post("saveParams", { params: o }, "✅ 參數已儲存").then(function (ok) { if (ok && newPw) { PW = newPw; lsSet(SS_PW, PW); } });
   });
 }
 function pingApi() {
@@ -845,13 +846,13 @@ function saveApi() {
 function updLock() { var b = $("#btnLock"); b.textContent = PW ? "🔓 編輯中" : "🔒 唯讀"; }
 function needLogin(cb) {
   if (PW) { cb(); return; }
-  modal('<div class="mh">🔒 輸入編輯密碼</div><div class="mb"><div class="f w6"><input id="pwIn" type="password" placeholder="密碼" autocomplete="current-password"></div><div class="hint" style="margin-top:6px">查看不用密碼；新增／修改／刪除才需要。</div></div><div class="mf"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="pwOk">確定</button></div>', true);
+  modal2('<div class="mh">🔒 輸入編輯密碼</div><div class="mb"><div class="f w6"><input id="pwIn" type="password" placeholder="密碼" autocomplete="current-password"></div><div class="hint" style="margin-top:6px">查看不用密碼；新增／修改／刪除才需要。輸入一次後這台電腦會記住，不用每次輸入。<br>你剛填的內容都還在，輸入密碼後會自動存檔。</div></div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="pwOk">確定</button></div>');
   var go = function () {
     var v = $("#pwIn").value; if (!v) return;
     showLoading("驗證中…");
     req("POST", { action: "login", pw: v }).then(function (j) {
       hideLoading();
-      if (j.ok) { PW = v; ssSet(SS_PW, v); updLock(); closeModal(); toast("🔓 已進入編輯模式"); cb(); }
+      if (j.ok) { PW = v; lsSet(SS_PW, v); updLock(); closeModal2(); toast("🔓 已進入編輯模式"); cb(); }
       else toast("❌ 密碼錯誤", 3000);
     }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
   };
@@ -866,9 +867,11 @@ function modal(html, small) {
   $("#mask").classList.add("show");
 }
 function closeModal() { $("#mask").classList.remove("show"); $("#modal").innerHTML = ""; }
+function modal2(html) { $("#modal2").innerHTML = html; $("#mask2").classList.add("show"); }
+function closeModal2() { $("#mask2").classList.remove("show"); $("#modal2").innerHTML = ""; }
 function confirmBox(msg, okText, cb) {
-  modal('<div class="mh">確認</div><div class="mb">' + msg + '</div><div class="mf"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="cfOk">' + (okText || "確定") + "</button></div>", true);
-  $("#cfOk").onclick = function () { closeModal(); cb(); };
+  modal2('<div class="mh">確認</div><div class="mb">' + msg + '</div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="cfOk">' + (okText || "確定") + "</button></div>");
+  $("#cfOk").onclick = function () { closeModal2(); cb(); };
 }
 
 /* ---------- 案件編輯 ---------- */
@@ -969,10 +972,8 @@ function saveCase() {
   if (dup.length) warn.push("工程編號 <b>" + esc(it["工程編號"]) + "</b> 已有：" + dup.map(function (d) { return esc(d["工程名稱"]) + "（" + esc(d["狀態"]) + "）"; }).join("、"));
   if (it["狀態"] === "已竣工" && !pipes.some(function (p) { return num(p["敷設長度"]); })) warn.push("已竣工但沒有填管線長度，報告不會出現這件。");
   if (warn.length) {
-    var keep = { item: it, pipes: EDIT.pipes, clsTouched: EDIT.clsTouched, mode: EDIT.mode };
-    modal('<div class="mh">⚠ 請確認</div><div class="mb">' + warn.join("<br><br>") + '<br><br>仍要儲存嗎？</div><div class="mf"><button class="btn" id="cfBack">回去修改</button><button class="btn pri" id="cfOk">仍要儲存</button></div>', true);
-    $("#cfBack").onclick = function () { EDIT = keep; drawCase(); };
-    $("#cfOk").onclick = function () { EDIT = keep; go(); };
+    modal2('<div class="mh">⚠ 請確認</div><div class="mb">' + warn.join("<br><br>") + '<br><br>仍要儲存嗎？</div><div class="mf"><button class="btn" onclick="closeModal2()">回去修改</button><button class="btn pri" id="cfOk">仍要儲存</button></div>');
+    $("#cfOk").onclick = function () { closeModal2(); go(); };
     return;
   }
   go();
@@ -980,7 +981,7 @@ function saveCase() {
 function delCase() {
   var it = EDIT.item;
   confirmBox("確定刪除 <b>" + esc(it["工程編號"] + " " + it["工程名稱"]) + "</b>？<br>連同管線明細一起刪除，無法復原。", "刪除", function () {
-    needLogin(function () { post("deleteCase", { uid: it.UID }, "🗑 已刪除"); });
+    needLogin(function () { post("deleteCase", { uid: it.UID }, "🗑 已刪除").then(function (ok) { if (ok) closeModal(); }); });
   });
 }
 
@@ -995,7 +996,7 @@ function openLeak(uid) {
     if (!isISO(it["日期"])) { toast("請選日期", 3000); return; }
     needLogin(function () { post("saveLeak", { item: it }, "✅ 探漏紀錄已儲存").then(function (ok) { if (ok) closeModal(); }); });
   };
-  if (l) $("#lkDel").onclick = function () { confirmBox("確定刪除 " + roc(l["日期"]) + " " + esc(l["探漏供氣區域"]) + "？", "刪除", function () { needLogin(function () { post("deleteLeak", { uid: l.UID }, "🗑 已刪除"); }); }); };
+  if (l) $("#lkDel").onclick = function () { confirmBox("確定刪除 " + roc(l["日期"]) + " " + esc(l["探漏供氣區域"]) + "？", "刪除", function () { needLogin(function () { post("deleteLeak", { uid: l.UID }, "🗑 已刪除").then(function (ok) { if (ok) closeModal(); }); }); }); };
 }
 
 /* ---------- Excel 匯出（xlsx-js-style，按下才載入） ---------- */
@@ -1098,7 +1099,7 @@ function exportRepXlsx() {
 (function init() {
   try { var u = JSON.parse(lsGet(LS_UI) || "{}"); Object.keys(u).forEach(function (k) { if (u[k] !== undefined && u[k] !== null) UI[k] = u[k]; }); } catch (e) {}
   if (!UI.y) { UI.y = rocYearNow(); UI.m1 = 1; UI.m2 = new Date().getMonth() + 1; }
-  PW = ssGet(SS_PW) || ""; updLock();
+  PW = lsGet(SS_PW) || ""; updLock();
   $$("#nav button").forEach(function (b) { b.addEventListener("click", function () { UI.page = b.dataset.p; if (!apiUrl()) { renderSetup(); return; } render(); $("#content").scrollTop = 0; }); });
   ["pY", "pM1", "pM2"].forEach(function (id) {
     $("#" + id).addEventListener("change", function () {
@@ -1109,11 +1110,14 @@ function exportRepXlsx() {
   });
   $("#btnReload").addEventListener("click", load);
   $("#btnLock").addEventListener("click", function () {
-    if (PW) { PW = ""; ssSet(SS_PW, null); updLock(); toast("🔒 已登出，回到唯讀"); }
+    if (PW) { PW = ""; lsSet(SS_PW, ""); updLock(); toast("🔒 已登出，回到唯讀"); }
     else needLogin(function () {});
   });
-  $("#mask").addEventListener("click", function (e) { if (e.target.id === "mask") closeModal(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("#mask").classList.contains("show")) closeModal(); });
+  // 編輯視窗不因點到背景或按 Esc 而關閉（避免填到一半消失）；只有 ✕／取消／存檔成功才關
+  var downOn2 = null;
+  $("#mask2").addEventListener("mousedown", function (e) { downOn2 = e.target; });
+  $("#mask2").addEventListener("click", function (e) { if (e.target.id === "mask2" && downOn2 === e.target) closeModal2(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("#mask2").classList.contains("show")) closeModal2(); });
   load();
 })();
 </script>
