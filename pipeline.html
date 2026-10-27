@@ -196,7 +196,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.5</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.6</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -475,11 +475,24 @@ function issuesList() {
     if (c["狀態"] === "已竣工" && !caseLen(c)) out.push([c.UID, "已竣工但沒有管線長度：" + tag]);
     if (c["類別"] === "汰換" && (!c["汰換性質"] || !c["計畫年度"])) out.push([c.UID, "汰換工程缺計畫性／計畫年度：" + tag]);
     if (c["狀態"] === "完工待驗收") out.push([c.UID, "完工待驗收（驗收後改『已竣工』並填完工日才會進報告）：" + tag]);
-    var segs = noteSegs(c, byCode);
-    if (segs.length) out.push([c.UID, tag + "｜備註：" + segs.join("；"), "note"]);
   });
   var seen = {};
   return out.filter(function (x) { var k = x[0] + x[1]; if (seen[k]) return false; seen[k] = 1; return true; });
+}
+function dashSearch(q) {
+  q = q.toLowerCase();
+  var list = DB.cases.filter(function (c) {
+    var hay = [c["工程編號"], c["工程名稱"], c["工程位置"], c["現況"], c["備註"], c["類別"], c["狀態"], c["汰換性質"]].concat(pipesOf(c).map(function (p) { return p["敷設管種"] + " " + p["廢除管種"]; })).join(" ").toLowerCase();
+    return hay.indexOf(q) > -1;
+  }).sort(function (a, b) { return STATUS.indexOf(a["狀態"]) - STATUS.indexOf(b["狀態"]) || String(b["完工日"]).localeCompare(String(a["完工日"])); });
+  var h = '<div class="card"><h3>🔍 搜尋結果：' + list.length + ' 筆 <button class="btn sm" onclick="UI.dq=\'\';renderDash()">清除搜尋</button></h3>';
+  if (!list.length) return h + '<div class="empty">找不到符合「' + esc(q) + '」的工程</div></div>';
+  h += '<div class="tblwrap"><table class="t cardify"><thead><tr><th>類別</th><th>工程編號</th><th>工程名稱</th><th>工程位置</th><th>狀態</th><th>管線明細</th><th class="num">長度(M)</th><th>完工日</th><th></th></tr></thead><tbody>';
+  list.forEach(function (c) {
+    var det = pipesOf(c).filter(function (p) { return p["敷設管種"] || num(p["敷設長度"]); }).map(function (p) { return esc((p["壓力"] || "低壓") + "｜" + p["敷設管種"] + (num(p["敷設長度"]) ? " " + fmt(p["敷設長度"]) + "M" : "")); }).join("<br>");
+    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(c["類別"]) + (c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="工程位置">' + esc(c["工程位置"]) + '</td><td data-l="狀態">' + stBadge(c["狀態"]) + '</td><td data-l="管線明細">' + det + '</td><td class="num" data-l="長度(M)">' + (caseLen(c) ? fmt(caseLen(c)) : "") + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button></td></tr>';
+  });
+  return h + "</tbody></table></div></div>";
 }
 function renderDash() {
   var s = statsFor(UI.y, UI.m1, UI.m2);
@@ -489,6 +502,8 @@ function renderDash() {
   var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
   var plannedLen = active.reduce(function (t, c) { return t + caseLen(c); }, 0);
   var h = '<h2 class="pg">📊 總覽<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '（以完工日計）</span></h2>';
+  h += '<div class="toolbar"><input type="search" id="dq" placeholder="🔍 搜尋全部工程：工程編號／名稱／位置／管種／現況（不分狀態、不分期間）" value="' + esc(UI.dq || "") + '"></div>';
+  if ((UI.dq || "").trim()) h += dashSearch(UI.dq.trim());
   var dl = function (spec, txt) { return '<a onclick="event.stopPropagation();drill(' + esc(JSON.stringify(spec)) + ')">' + txt + "</a>"; };
   h += '<div class="kpis">' +
     '<div class="kpi click" onclick="drill({})"><div class="lb">本期管線施設總長<span class="go">看明細 ›</span></div><div class="v">' + fmt(nw + rp) + '<small>M</small></div><div class="d">完工 ' + s.done.length + ' 案</div></div>' +
@@ -518,8 +533,13 @@ function renderDash() {
   var iss = issuesList();
   h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
     '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
-  h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。備註類的處理完按「✔ 已處理」。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
+  h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
   $("#content").innerHTML = h;
+  var dq = $("#dq");
+  dq.addEventListener("input", function () {
+    UI.dq = dq.value; var pos = dq.selectionStart; renderDash();
+    var n = $("#dq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {}
+  });
 }
 /* ===== 總覽 → 明細 ===== */
 function drill(spec) { UI.drill = spec || {}; UI.page = "drill"; render(); $("#content").scrollTop = 0; }
