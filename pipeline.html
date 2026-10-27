@@ -99,8 +99,10 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .bars .seg{height:100%}
 .legend{display:flex;gap:16px;font-size:14.5px;color:var(--sub);margin-bottom:6px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
-.issues li{margin:6px 0;cursor:pointer}
-.issues li:hover{color:var(--brand2)}
+.issues li{margin:8px 0}
+.issues li span{cursor:pointer}
+.issues li span:hover{color:var(--brand2);text-decoration:underline}
+.issues li .btn{margin-left:6px;vertical-align:1px}
 /* report preview */
 .paper{background:#fff;max-width:900px;margin:0 auto;padding:30px 36px;box-shadow:var(--shadow);border-radius:6px;font-family:"DFKai-SB","BiauKai","標楷體","Noto Sans TC",serif;font-size:16px}
 .paper h2{font-size:20px;margin:0 0 12px}
@@ -194,7 +196,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.4</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.5</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -442,6 +444,26 @@ function stBadge(s) {
 }
 
 /* ===== 總覽 ===== */
+// 備註裡仍需處理的句子：已經自動解決的（編號已不重複、編號格式已正確）不再列出
+function noteSegs(c, byCode) {
+  return String(c["備註"] || "").split(/[；;]/).map(function (x) { return x.trim(); }).filter(function (seg) {
+    if (!/待確認|待補|僅8碼/.test(seg)) return false;
+    if (/工程編號與.*相同/.test(seg) && byCode[c["工程編號"]].length < 2) return false;
+    if (/編號僅8碼/.test(seg) && /^\d{6}[A-Z]\d{3}$/.test(c["工程編號"])) return false;
+    return true;
+  });
+}
+function clearNote(uid) {
+  var c = caseByUid(uid); if (!c) return;
+  var byCode = {}; DB.cases.forEach(function (x) { (byCode[x["工程編號"]] = byCode[x["工程編號"]] || []).push(x); });
+  confirmBox("把 <b>" + esc(c["工程編號"] + " " + c["工程名稱"]) + "</b> 備註裡的「待確認／待補」字句刪掉，標記為已處理？", "標記已處理", function () {
+    needLogin(function () {
+      var keep = String(c["備註"] || "").split(/[；;]/).map(function (x) { return x.trim(); }).filter(function (seg) { return seg && !/待確認|待補|僅8碼|工程編號與.*相同/.test(seg); });
+      var it = Object.assign({}, c, { 備註: keep.join("；") });
+      post("saveCase", { item: it, pipes: pipesOf(c).map(function (p) { return Object.assign({}, p); }) }, "✅ 已標記處理：" + c["工程編號"]);
+    });
+  });
+}
 function issuesList() {
   var out = [], byCode = {};
   DB.cases.forEach(function (c) { (byCode[c["工程編號"]] = byCode[c["工程編號"]] || []).push(c); });
@@ -453,7 +475,8 @@ function issuesList() {
     if (c["狀態"] === "已竣工" && !caseLen(c)) out.push([c.UID, "已竣工但沒有管線長度：" + tag]);
     if (c["類別"] === "汰換" && (!c["汰換性質"] || !c["計畫年度"])) out.push([c.UID, "汰換工程缺計畫性／計畫年度：" + tag]);
     if (c["狀態"] === "完工待驗收") out.push([c.UID, "完工待驗收（驗收後改『已竣工』並填完工日才會進報告）：" + tag]);
-    if (/待確認|待補/.test(c["備註"])) out.push([c.UID, tag + "｜" + c["備註"]]);
+    var segs = noteSegs(c, byCode);
+    if (segs.length) out.push([c.UID, tag + "｜備註：" + segs.join("；"), "note"]);
   });
   var seen = {};
   return out.filter(function (x) { var k = x[0] + x[1]; if (seen[k]) return false; seen[k] = 1; return true; });
@@ -495,7 +518,7 @@ function renderDash() {
   var iss = issuesList();
   h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
     '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
-  h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
+  h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。備註類的處理完按「✔ 已處理」。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
   $("#content").innerHTML = h;
 }
 /* ===== 總覽 → 明細 ===== */
