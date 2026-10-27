@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工程管線管理系統｜竹建瓦斯</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f6; --panel:#ffffff; --ink:#1c2733; --sub:#5b6b7c; --line:#d6dee7;
+  --brand:#1d4e89; --brand2:#2f6db5; --brand-soft:#e3edf9;
+  --new:#1f6fd1; --new-soft:#e1edfc; --rep:#d96b0b; --rep-soft:#fdebd9;
+  --ok:#1e8a4c; --ok-soft:#dff3e7; --warn:#b7791f; --warn-soft:#fdf3d8; --bad:#c53030; --bad-soft:#fde2e2;
+  --shadow:0 1px 3px rgba(20,40,70,.08),0 4px 14px rgba(20,40,70,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;font-size:17px;line-height:1.55;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+header{display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--brand);color:#fff;flex-wrap:wrap}
+header h1{font-size:21px;margin:0;font-weight:700;letter-spacing:.5px}
+header .ver{font-size:13px;opacity:.75}
+.period{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap;font-size:16px}
+.period select{background:#fff;color:var(--ink);border:0;border-radius:6px;padding:4px 8px}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;padding:5px 12px;cursor:pointer;white-space:nowrap}
+.hbtn:hover{background:rgba(255,255,255,.28)}
+.main{flex:1;display:flex;min-height:0}
+nav{width:220px;flex:none;background:var(--panel);border-right:1px solid var(--line);padding:12px 10px;overflow-y:auto}
+nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:10px;padding:12px 14px;margin-bottom:4px;cursor:pointer;font-size:17px;color:var(--ink)}
+nav button:hover{background:var(--brand-soft)}
+nav button.on{background:var(--brand);color:#fff;font-weight:700}
+nav .ico{width:24px;text-align:center}
+nav .foot{margin-top:18px;padding:10px 12px;font-size:14px;color:var(--sub);border-top:1px solid var(--line)}
+#content{flex:1;overflow-y:auto;padding:18px 22px 40px;min-width:0}
+h2.pg{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+h2.pg .sp{flex:1}
+.card{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+.card h3{margin:0 0 10px;font-size:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.kpi{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;border-top:5px solid var(--brand)}
+.kpi.new{border-top-color:var(--new)} .kpi.rep{border-top-color:var(--rep)} .kpi.ok{border-top-color:var(--ok)}
+.kpi .lb{font-size:15px;color:var(--sub)}
+.kpi .v{font-size:30px;font-weight:700;line-height:1.2}
+.kpi .v small{font-size:16px;font-weight:500;color:var(--sub);margin-left:4px}
+.kpi .d{font-size:15px;color:var(--sub);margin-top:4px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.badge{display:inline-block;border-radius:999px;padding:1px 10px;font-size:14px;font-weight:700;white-space:nowrap}
+.b-new{background:var(--new-soft);color:var(--new)} .b-rep{background:var(--rep-soft);color:var(--rep)}
+.b-st{background:#eef1f5;color:#44505c} .b-ok{background:var(--ok-soft);color:var(--ok)} .b-warn{background:var(--warn-soft);color:var(--warn)} .b-bad{background:var(--bad-soft);color:var(--bad)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--brand2)}
+.btn.pri{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.pri:hover{background:var(--brand2)}
+.btn.danger{color:var(--bad);border-color:#f0b4b4}
+.btn.sm{padding:3px 10px;font-size:15px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer}
+.tab.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+.tab .n{display:inline-block;min-width:22px;margin-left:6px;padding:0 6px;border-radius:999px;background:rgba(0,0,0,.08);font-size:14px;text-align:center}
+.tab.on .n{background:rgba(255,255,255,.25)}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar input[type=search]{flex:1;min-width:200px;border:1px solid var(--line);border-radius:9px;padding:7px 12px;background:#fff}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 14px;cursor:pointer}
+.chip.on.c-all{background:#44505c;color:#fff;border-color:#44505c}
+.chip.on.c-new{background:var(--new);color:#fff;border-color:var(--new)}
+.chip.on.c-rep{background:var(--rep);color:#fff;border-color:var(--rep)}
+.tblwrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:15.5px}
+table.t th{background:#f3f6fa;color:#34414e;text-align:left;font-weight:700;padding:8px 9px;border-bottom:2px solid var(--line);white-space:nowrap;position:sticky;top:0}
+table.t th.sortable{cursor:pointer}
+table.t th.sortable:hover{color:var(--brand2)}
+table.t td{padding:8px 9px;border-bottom:1px solid #e8edf2;vertical-align:top}
+table.t tr.row:hover td{background:#f7faff;cursor:pointer}
+table.t td.nw{white-space:nowrap}
+table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
+table.t tr.sub td{background:#f6f8fb;font-weight:700}
+table.t tr.tot td{background:#e9eef5;font-weight:700}
+.sec-h{display:flex;align-items:center;gap:10px;margin:18px 0 8px;font-size:18px;font-weight:700}
+.sec-h:first-child{margin-top:0}
+.sec-h .bar{width:6px;height:22px;border-radius:3px}
+.sec-h .meta{font-size:15px;color:var(--sub);font-weight:500}
+.red{color:var(--bad);font-weight:700}
+.muted{color:var(--sub)}
+.empty{padding:22px;text-align:center;color:var(--sub)}
+.bars .r{display:grid;grid-template-columns:150px 1fr 90px;gap:10px;align-items:center;margin:7px 0;font-size:15.5px}
+.bars .track{height:16px;background:#edf1f6;border-radius:8px;overflow:hidden;display:flex}
+.bars .seg{height:100%}
+.legend{display:flex;gap:16px;font-size:14.5px;color:var(--sub);margin-bottom:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.issues li{margin:6px 0;cursor:pointer}
+.issues li:hover{color:var(--brand2)}
+/* report preview */
+.paper{background:#fff;max-width:900px;margin:0 auto;padding:30px 36px;box-shadow:var(--shadow);border-radius:6px;font-family:"DFKai-SB","BiauKai","標楷體","Noto Sans TC",serif;font-size:16px}
+.paper h2{font-size:20px;margin:0 0 12px}
+.paper h3{font-size:18px;margin:18px 0 8px}
+.paper h4{font-size:16.5px;margin:10px 0 6px}
+.paper table{border-collapse:collapse;width:100%;margin-bottom:8px}
+.paper th,.paper td{border:1px solid #333;padding:4px 6px;text-align:center;font-size:15px}
+.paper td.l{text-align:left}
+.paper .unit{text-align:right;font-size:14px;margin:0 0 3px}
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(15,25,40,.45);display:none;align-items:flex-start;justify-content:center;z-index:50;overflow-y:auto;padding:30px 12px}
+.mask.show{display:flex}
+.modal{background:#fff;border-radius:14px;width:min(980px,100%);box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.modal.small{width:min(440px,100%)}
+.modal .mh{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--line);font-size:19px;font-weight:700}
+.modal .mb{padding:16px 20px}
+.modal .mf{display:flex;gap:10px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.form{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 14px}
+.f{display:flex;flex-direction:column;gap:4px;grid-column:span 2}
+.f.w3{grid-column:span 3} .f.w6{grid-column:span 6} .f.w1{grid-column:span 1}
+.f label{font-size:15px;color:var(--sub);font-weight:500}
+.f input,.f select,.f textarea{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--brand2);border-color:transparent}
+.seg2{display:flex;gap:8px}
+.seg2 label{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:7px 8px;cursor:pointer;color:var(--ink);font-size:16px}
+.seg2 input{display:none}
+.seg2 label.on-new{background:var(--new);color:#fff;border-color:var(--new)}
+.seg2 label.on-rep{background:var(--rep);color:#fff;border-color:var(--rep)}
+.seg2 label.on-gen{background:var(--brand);color:#fff;border-color:var(--brand)}
+.hint{font-size:14.5px;color:var(--sub)}
+.hint.warn{color:var(--warn)}
+.ptable{width:100%;border-collapse:collapse;font-size:15.5px}
+.ptable th{font-size:14.5px;color:var(--sub);text-align:left;padding:4px 6px}
+.ptable td{padding:4px 6px}
+.ptable input,.ptable select{border:1px solid var(--line);border-radius:7px;padding:6px 8px;width:100%;background:#fff}
+.req{color:var(--bad)}
+/* loading */
+#loading{position:fixed;inset:0;background:rgba(238,242,246,.86);display:none;align-items:center;justify-content:center;z-index:80;flex-direction:column;gap:14px;font-size:18px}
+#loading.show{display:flex}
+.spin{width:52px;height:52px;border-radius:50%;border:5px solid #c9d6e6;border-top-color:var(--brand);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#22303d;color:#fff;padding:10px 20px;border-radius:10px;z-index:90;display:none;font-size:16px;max-width:90vw}
+#toast.show{display:block}
+.errbox{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.setup{max-width:720px;margin:30px auto}
+.setup input{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:8px 0 12px}
+.lockpill{font-size:14px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media (max-width:760px){
+  body{font-size:16.5px}
+  header{padding:8px 12px;gap:8px}
+  header h1{font-size:18px}
+  .period{margin-left:0;width:100%}
+  .main{flex-direction:column}
+  nav{width:auto;display:flex;gap:4px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:6px 8px;flex:none}
+  nav button{width:auto;flex:none;padding:8px 12px;margin:0;font-size:16px}
+  nav .foot{display:none}
+  #content{padding:12px 12px 40px}
+  .kpis{grid-template-columns:1fr 1fr;gap:10px}
+  .kpi .v{font-size:24px}
+  .form{grid-template-columns:1fr 1fr}
+  .f,.f.w3,.f.w6{grid-column:span 2}
+  .f.w1{grid-column:span 1}
+  table.t.cardify thead{display:none}
+  table.t.cardify,table.t.cardify tbody,table.t.cardify tr,table.t.cardify td{display:block;width:100%}
+  table.t.cardify tr{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;padding:6px 10px}
+  table.t.cardify td{border:0;padding:3px 0;display:flex;gap:10px;text-align:left!important}
+  table.t.cardify td::before{content:attr(data-l);flex:none;width:86px;color:var(--sub);font-size:14.5px}
+  table.t.cardify td[data-l=""]::before{display:none}
+  table.t.cardify tr.sub,table.t.cardify tr.tot{background:#f2f5f9}
+  .bars .r{grid-template-columns:96px 1fr 70px}
+  .paper{padding:16px 12px}
+  .ptable thead{display:none}
+  .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:100%}
+  .ptable tr{border:1px solid var(--line);border-radius:10px;padding:6px;margin-bottom:8px}
+  .ptable td::before{content:attr(data-l);display:block;font-size:13.5px;color:var(--sub)}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.0</span>
+    <div class="period">
+      <span>統計期間</span>
+      <select id="pY"></select><span>年</span>
+      <select id="pM1"></select><span>～</span><select id="pM2"></select><span>月</span>
+      <button class="hbtn" id="btnReload" title="重新讀取雲端資料">🔄 更新</button>
+      <button class="hbtn lockpill" id="btnLock">🔒 唯讀</button>
+    </div>
+  </header>
+  <div class="main">
+    <nav id="nav">
+      <button data-p="dash"><span class="ico">📊</span>總覽</button>
+      <button data-p="prog"><span class="ico">📋</span>工程進度</button>
+      <button data-p="rep"><span class="ico">🔁</span>汰換彙總</button>
+      <button data-p="leak"><span class="ico">🔎</span>探漏搶修</button>
+      <button data-p="report"><span class="ico">📄</span>產生報告</button>
+      <button data-p="set"><span class="ico">⚙️</span>參數設定</button>
+      <div class="foot" id="navFoot">尚未載入</div>
+    </nav>
+    <section id="content"></section>
+  </div>
+</div>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div id="loading"><div class="spin"></div><div id="loadingMsg">讀取中…</div></div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
+var API_URL = "PASTE_YOUR_GAS_EXEC_URL_HERE";
+var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_pw_v1";
+var TIMEOUT_MS = 25000;
+
+var STATUS = ["待施工", "施工中", "待掛表", "完工待驗收", "已竣工"];
+var ACTIVE = ["待施工", "施工中", "待掛表", "完工待驗收"];
+var PIPE_TYPES = ["110mm PE管", "63mm PE管", "160mm PE管", "200mm PE管", "6\" PE被覆無縫鋼管", "4\" PE被覆無縫鋼管"];
+var RM_TYPES = ["2\" PVC管", "3\" PVC管", "4\" PVC管", "2\" 鋼管", "3\" 鋼管"];
+
+var DB = { cases: [], pipes: [], leaks: [], params: {} };
+var PB = {};
+var UI = { page: "dash", y: 0, m1: 1, m2: 12, st: "進行中", cls: "全部", q: "", sortK: "", sortD: 1 };
+var PW = "";
+
+/* ---------- 工具 ---------- */
+function $(s, r) { return (r || document).querySelector(s); }
+function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+function esc(s) { return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]; }); }
+function num(v) { var n = parseFloat(String(v).replace(/,/g, "")); return isFinite(n) ? n : 0; }
+function fmt(n) { n = Math.round(num(n) * 100) / 100; return n.toLocaleString("en-US"); }
+function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+function ssGet(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+function ssSet(k, v) { try { if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) {} }
+function isISO(s) { return /^\d{4}-\d{2}-\d{2}$/.test(String(s)); }
+function normDate(s) {
+  s = String(s || "").trim();
+  var m = s.match(/^(\d{2,3})[\/.\-](\d{1,2})[\/.\-](\d{1,2})$/);
+  if (m) return (parseInt(m[1], 10) + 1911) + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+  m = s.match(/^(\d{4})[\/.\-](\d{1,2})[\/.\-](\d{1,2})/);
+  if (m) return m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2);
+  return s;
+}
+function roc(s) {
+  if (!isISO(s)) return s || "";
+  var p = s.split("-");
+  return (parseInt(p[0], 10) - 1911) + "/" + p[1] + "/" + p[2];
+}
+function rocYearNow() { return new Date().getFullYear() - 1911; }
+function classByCode(code) { return /^\d{6}[EF]/i.test(String(code || "").trim()) ? "汰換" : "新設"; }
+function inPeriod(iso, y, m1, m2) {
+  if (!isISO(iso)) return false;
+  var yy = parseInt(iso.slice(0, 4), 10) - 1911, mm = parseInt(iso.slice(5, 7), 10);
+  return yy === y && mm >= m1 && mm <= m2;
+}
+function toast(msg, ms) {
+  var t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove("show"); }, ms || 2600);
+}
+function apiUrl() {
+  if (API_URL && API_URL.indexOf("PASTE_") !== 0) return API_URL;
+  return lsGet(LS_API) || "";
+}
+var loadingCount = 0, loadingWatch = null;
+function showLoading(msg) {
+  loadingCount++;
+  $("#loadingMsg").textContent = msg || "讀取中…";
+  $("#loading").classList.add("show");
+  clearTimeout(loadingWatch);
+  loadingWatch = setTimeout(function () { loadingCount = 0; $("#loading").classList.remove("show"); }, TIMEOUT_MS + 3000);
+}
+function hideLoading() {
+  loadingCount = Math.max(0, loadingCount - 1);
+  if (!loadingCount) { clearTimeout(loadingWatch); $("#loading").classList.remove("show"); }
+}
+
+/* ---------- API（含逾時看門狗） ---------- */
+function req(method, payload) {
+  var url = apiUrl();
+  if (!url) return Promise.reject(new Error("尚未設定後端網址"));
+  var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var timer;
+  var timeout = new Promise(function (_, rej) {
+    timer = setTimeout(function () { if (ctrl) ctrl.abort(); rej(new Error("連線逾時（超過 " + (TIMEOUT_MS / 1000) + " 秒），請按「🔄 更新」重試")); }, TIMEOUT_MS);
+  });
+  var opt = { method: method, redirect: "follow" };
+  if (ctrl) opt.signal = ctrl.signal;
+  var full = url;
+  if (method === "GET") full = url + (url.indexOf("?") > -1 ? "&" : "?") + "action=getAll&t=" + Date.now();
+  else opt.body = JSON.stringify(payload);
+  var f = fetch(full, opt).then(function (r) {
+    if (!r.ok) throw new Error("後端回應錯誤 HTTP " + r.status);
+    return r.text();
+  }).then(function (t) {
+    var j;
+    try { j = JSON.parse(t); } catch (e) { throw new Error("後端回傳的不是資料（請確認部署權限為「任何人」、網址是 /exec 結尾）"); }
+    return j;
+  });
+  return Promise.race([f, timeout]).then(function (j) { clearTimeout(timer); return j; }, function (e) {
+    clearTimeout(timer);
+    if (e && e.name === "AbortError") throw new Error("連線逾時，請按「🔄 更新」重試");
+    if (e && /Failed to fetch|NetworkError|Load failed/i.test(e.message)) throw new Error("連不到後端（網路中斷或網址錯誤）");
+    throw e;
+  });
+}
+function setData(d) {
+  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {};
+  PB = {};
+  DB.pipes.forEach(function (p) { (PB[p["案件UID"]] = PB[p["案件UID"]] || []).push(p); });
+  $("#navFoot").innerHTML = "案件 " + DB.cases.length + " 筆<br>讀取於 " + new Date().toLocaleTimeString("zh-TW", { hour12: false });
+}
+function load() {
+  if (!apiUrl()) { renderSetup(); return Promise.resolve(); }
+  showLoading("讀取雲端資料中…");
+  return req("GET").then(function (d) {
+    hideLoading();
+    if (!d.ok) throw new Error(d.msg || "讀取失敗");
+    setData(d); fillPeriod(); render();
+  }).catch(function (e) {
+    hideLoading();
+    $("#content").innerHTML = '<div class="errbox">⚠ ' + esc(e.message) + '</div><button class="btn pri" onclick="load()">重試</button> <button class="btn" onclick="renderSetup(true)">重新設定後端網址</button>';
+  });
+}
+function post(action, data, okMsg) {
+  showLoading("存檔中…");
+  var payload = Object.assign({ action: action, pw: PW }, data || {});
+  return req("POST", payload).then(function (j) {
+    hideLoading();
+    if (!j.ok) {
+      if (/密碼/.test(j.msg || "")) { PW = ""; ssSet(SS_PW, null); updLock(); }
+      toast("❌ " + (j.msg || "存檔失敗"), 4000); return false;
+    }
+    if (j.data) setData(j.data);
+    toast(okMsg || "✅ 已存檔"); render(); return true;
+  }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); return false; });
+}
+
+/* ---------- 期間 ---------- */
+function fillPeriod() {
+  var ys = {}; ys[rocYearNow()] = 1;
+  DB.cases.forEach(function (c) { if (isISO(c["完工日"])) ys[parseInt(c["完工日"].slice(0, 4), 10) - 1911] = 1; });
+  DB.leaks.forEach(function (l) { if (isISO(l["日期"])) ys[parseInt(l["日期"].slice(0, 4), 10) - 1911] = 1; });
+  var list = Object.keys(ys).map(Number).sort(function (a, b) { return b - a; });
+  if (list.indexOf(UI.y) < 0) UI.y = list[0];
+  $("#pY").innerHTML = list.map(function (y) { return '<option value="' + y + '"' + (y === UI.y ? " selected" : "") + ">" + y + "</option>"; }).join("");
+  var mo = function (sel) { var h = ""; for (var i = 1; i <= 12; i++) h += '<option value="' + i + '"' + (i === sel ? " selected" : "") + ">" + i + "</option>"; return h; };
+  $("#pM1").innerHTML = mo(UI.m1); $("#pM2").innerHTML = mo(UI.m2);
+}
+function periodText() { return UI.y + "年" + (UI.m1 === UI.m2 ? UI.m1 + "月" : UI.m1 + "-" + UI.m2 + "月"); }
+function saveUI() { lsSet(LS_UI, JSON.stringify({ page: UI.page, y: UI.y, m1: UI.m1, m2: UI.m2, st: UI.st, cls: UI.cls })); }
+
+/* ---------- 計算核心 ---------- */
+function caseByUid(u) { for (var i = 0; i < DB.cases.length; i++) if (DB.cases[i].UID === u) return DB.cases[i]; return null; }
+function pipesOf(c) { return PB[c.UID] || []; }
+function caseLen(c) { return pipesOf(c).reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0); }
+function doneInPeriod(y, m1, m2) {
+  return DB.cases.filter(function (c) { return c["狀態"] === "已竣工" && inPeriod(c["完工日"], y, m1, m2); });
+}
+function sortDone(list) {
+  return list.slice().sort(function (a, b) { return String(a["完工日"]).localeCompare(String(b["完工日"])) || String(a.UID).localeCompare(String(b.UID)); });
+}
+function pipeKey(t) {
+  t = String(t || "").replace(/\s+/g, " ").trim();
+  var size = (t.match(/^\s*([\d.]+\s*(mm|"|吋|”))/i) || [])[1] || "";
+  size = size.replace(/\s/g, "").replace(/”|吋/, "\"");
+  var rest = t.replace(/^\s*[\d.]+\s*(mm|"|吋|”)/i, "").replace(/\s+/g, "").trim();
+  var grp = /被覆/.test(rest) ? "PE被覆無縫鋼管" : (/^PE管?$/i.test(rest) ? "PE管" : (rest || "其他"));
+  return { grp: grp, size: size || "－" };
+}
+function sizeNum(s) { var n = parseFloat(s); if (/"/.test(s)) n = n * 25.4; return isFinite(n) ? n : 0; }
+function statsFor(y, m1, m2) {
+  var done = doneInPeriod(y, m1, m2);
+  var cols = {}, rows = { "新設|中壓": {}, "新設|低壓": {}, "汰換|中壓": {}, "汰換|低壓": {} };
+  done.forEach(function (c) {
+    pipesOf(c).forEach(function (p) {
+      var L = num(p["敷設長度"]); if (!L && !p["敷設管種"]) return;
+      var k = pipeKey(p["敷設管種"]), ck = k.grp + "|" + k.size;
+      cols[ck] = k;
+      var rk = c["類別"] + "|" + (p["壓力"] === "中壓" ? "中壓" : "低壓");
+      rows[rk][ck] = (rows[rk][ck] || 0) + L;
+    });
+  });
+  var order = Object.keys(cols).sort(function (a, b) {
+    var A = cols[a], B = cols[b];
+    var ga = A.grp === "PE管" ? 0 : (A.grp === "PE被覆無縫鋼管" ? 1 : 2), gb = B.grp === "PE管" ? 0 : (B.grp === "PE被覆無縫鋼管" ? 1 : 2);
+    if (ga !== gb) return ga - gb;
+    if (A.grp !== B.grp) return A.grp.localeCompare(B.grp);
+    return sizeNum(B.size) - sizeNum(A.size);
+  });
+  var sum = function (rk) { return order.reduce(function (s, ck) { return s + (rows[rk][ck] || 0); }, 0); };
+  return {
+    done: done, cols: cols, order: order, rows: rows,
+    newMid: sum("新設|中壓"), newLow: sum("新設|低壓"), repMid: sum("汰換|中壓"), repLow: sum("汰換|低壓")
+  };
+}
+
+/* ---------- 版面 ---------- */
+function render() {
+  $$("#nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.p === UI.page); });
+  var fn = { dash: renderDash, prog: renderProg, rep: renderRep, leak: renderLeak, report: renderReport, set: renderSet }[UI.page] || renderDash;
+  fn(); saveUI();
+}
+function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : '<span class="badge b-new">新設</span>'; }
+function stBadge(s) {
+  var m = { "已竣工": "b-ok", "完工待驗收": "b-warn", "施工中": "b-bad" };
+  return '<span class="badge ' + (m[s] || "b-st") + '">' + esc(s || "未設定") + "</span>";
+}
+
+/* ===== 總覽 ===== */
+function issuesList() {
+  var out = [], byCode = {};
+  DB.cases.forEach(function (c) { (byCode[c["工程編號"]] = byCode[c["工程編號"]] || []).push(c); });
+  DB.cases.forEach(function (c) {
+    var tag = c["工程編號"] + " " + c["工程名稱"];
+    if (!/^\d{6}[A-Z]\d{3}$/.test(c["工程編號"])) out.push([c.UID, "工程編號格式異常：" + tag]);
+    if (byCode[c["工程編號"]].length > 1 && byCode[c["工程編號"]].some(function (o) { return o["工程名稱"] !== c["工程名稱"]; })) out.push([c.UID, "工程編號重複（案名不同）：" + tag]);
+    if (c["狀態"] === "已竣工" && !isISO(c["完工日"])) out.push([c.UID, "已竣工但沒有完工日（報告抓不到）：" + tag]);
+    if (c["狀態"] === "已竣工" && !caseLen(c)) out.push([c.UID, "已竣工但沒有管線長度：" + tag]);
+    if (c["類別"] === "汰換" && (!c["汰換性質"] || !c["計畫年度"])) out.push([c.UID, "汰換工程缺計畫性／計畫年度：" + tag]);
+    if (c["狀態"] === "完工待驗收") out.push([c.UID, "完工待驗收（驗收後改『已竣工』並填完工日才會進報告）：" + tag]);
+    if (/待確認|待補/.test(c["備註"])) out.push([c.UID, tag + "｜" + c["備註"]]);
+  });
+  var seen = {};
+  return out.filter(function (x) { var k = x[0] + x[1]; if (seen[k]) return false; seen[k] = 1; return true; });
+}
+function renderDash() {
+  var s = statsFor(UI.y, UI.m1, UI.m2);
+  var nw = s.newMid + s.newLow, rp = s.repMid + s.repLow;
+  var plan = 0, unplan = 0;
+  s.done.forEach(function (c) { if (c["類別"] === "汰換") { if (c["汰換性質"] === "計畫性") plan += caseLen(c); else unplan += caseLen(c); } });
+  var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
+  var plannedLen = active.reduce(function (t, c) { return t + caseLen(c); }, 0);
+  var h = '<h2 class="pg">📊 總覽<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '（以完工日計）</span></h2>';
+  h += '<div class="kpis">' +
+    '<div class="kpi"><div class="lb">本期管線施設總長</div><div class="v">' + fmt(nw + rp) + '<small>M</small></div><div class="d">完工 ' + s.done.length + ' 案</div></div>' +
+    '<div class="kpi new"><div class="lb">新設管線</div><div class="v">' + fmt(nw) + '<small>M</small></div><div class="d">中壓 ' + fmt(s.newMid) + '｜低壓 ' + fmt(s.newLow) + '</div></div>' +
+    '<div class="kpi rep"><div class="lb">汰換管線</div><div class="v">' + fmt(rp) + '<small>M</small></div><div class="d">計畫性 ' + fmt(plan) + '｜非計畫性 ' + fmt(unplan) + '</div></div>' +
+    '<div class="kpi ok"><div class="lb">進行中案件</div><div class="v">' + active.length + '<small>案</small></div><div class="d">已登錄預計管線 ' + fmt(plannedLen) + ' M</div></div>' +
+    "</div>";
+  // 管種長條
+  var max = 0, rowsH = "";
+  s.order.forEach(function (ck) {
+    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0);
+    max = Math.max(max, a + b);
+  });
+  s.order.forEach(function (ck) {
+    var k = s.cols[ck];
+    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0);
+    rowsH += '<div class="r"><div>' + esc(k.size + " " + k.grp) + '</div><div class="track"><div class="seg" style="width:' + (max ? a / max * 100 : 0) + '%;background:var(--new)"></div><div class="seg" style="width:' + (max ? b / max * 100 : 0) + '%;background:var(--rep)"></div></div><div class="num" style="text-align:right">' + fmt(a + b) + ' M</div></div>';
+  });
+  var prog = '<table class="t"><thead><tr><th>狀態</th><th class="num">新設（案／戶）</th><th class="num">汰換（案）</th></tr></thead><tbody>';
+  ACTIVE.forEach(function (st) {
+    var n = active.filter(function (c) { return c["狀態"] === st && c["類別"] !== "汰換"; });
+    var r = active.filter(function (c) { return c["狀態"] === st && c["類別"] === "汰換"; });
+    var hh = n.reduce(function (t, c) { return t + num(c["戶數"]); }, 0);
+    prog += '<tr class="row" onclick="goProg(\'' + st + '\')"><td>' + stBadge(st) + '</td><td class="num">' + n.length + " ／ " + fmt(hh) + '</td><td class="num">' + r.length + "</td></tr>";
+  });
+  prog += "</tbody></table>";
+  var iss = issuesList();
+  h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
+    '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
+  h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
+  $("#content").innerHTML = h;
+}
+function goProg(st) { UI.page = "prog"; UI.st = st; UI.cls = "全部"; render(); }
+
+/* ===== 工程進度 ===== */
+var PCOLS = [
+  ["類別", "類別"], ["工程編號", "工程編號"], ["工程名稱", "工程名稱"], ["工程位置", "工程位置"], ["狀態", "狀態"],
+  ["繳費日", "繳費日"], ["戶數", "戶數", 1], ["預計工期", "工期(天)", 1], ["已施工天數", "已施工(天)", 1],
+  ["長度", "管線(M)", 1], ["現況", "現況"], ["會勘日期", "會勘日期"], ["完工日", "完工日"], ["備註", "備註"]
+];
+function progList() {
+  var q = UI.q.trim().toLowerCase();
+  return DB.cases.filter(function (c) {
+    if (UI.st === "進行中" && ACTIVE.indexOf(c["狀態"]) < 0) return false;
+    if (UI.st !== "進行中" && UI.st !== "全部" && c["狀態"] !== UI.st) return false;
+    if (q) {
+      var hay = [c["工程編號"], c["工程名稱"], c["工程位置"], c["現況"], c["備註"]].join(" ").toLowerCase();
+      if (hay.indexOf(q) < 0) return false;
+    }
+    return true;
+  });
+}
+function sortCases(list) {
+  var k = UI.sortK, d = UI.sortD;
+  return list.slice().sort(function (a, b) {
+    if (k) {
+      var va = k === "長度" ? caseLen(a) : a[k], vb = k === "長度" ? caseLen(b) : b[k];
+      var nA = parseFloat(va), nB = parseFloat(vb);
+      if (isFinite(nA) && isFinite(nB) && !isISO(va)) return (nA - nB) * d;
+      return String(va).localeCompare(String(vb), "zh-Hant") * d;
+    }
+    var sa = STATUS.indexOf(a["狀態"]), sb = STATUS.indexOf(b["狀態"]);
+    if (sa !== sb) return sa - sb;
+    return String(a["繳費日"]).localeCompare(String(b["繳費日"]));
+  });
+}
+function cellVal(c, k) {
+  if (k === "類別") return clsBadge(c["類別"]) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
+  if (k === "狀態") return stBadge(c["狀態"]);
+  if (k === "長度") { var L = caseLen(c); return L ? fmt(L) : ""; }
+  if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
+  if (k === "工程編號" && c["類別"] === "汰換") return esc(c[k]) + '<div><span class="badge b-rep" style="font-size:12.5px">' + esc(c["汰換性質"] || "未分") + (c["計畫年度"] ? "・" + esc(c["計畫年度"]) + "年" : "") + "</span></div>";
+  return esc(c[k]);
+}
+function visCols() {
+  return PCOLS.filter(function (col) {
+    var k = col[0];
+    if (k === "類別") return false;
+    if (k === "已施工天數") return ["進行中", "施工中", "全部"].indexOf(UI.st) > -1;
+    if (k === "完工日") return ["已竣工", "完工待驗收", "全部"].indexOf(UI.st) > -1;
+    if (k === "會勘日期" || k === "繳費日") return UI.st !== "已竣工";
+    if (k === "狀態") return ["進行中", "全部"].indexOf(UI.st) > -1;
+    return true;
+  });
+}
+function caseTable(list, cls) {
+  if (!list.length) return '<div class="empty">沒有' + cls + "工程</div>";
+  var cols = visCols();
+  var h = '<div class="tblwrap"><table class="t cardify"><thead><tr><th>#</th>';
+  cols.forEach(function (col) {
+    var arrow = UI.sortK === col[0] ? (UI.sortD > 0 ? " ▲" : " ▼") : "";
+    h += '<th class="sortable' + (col[2] ? " num" : "") + '" onclick="sortBy(\'' + col[0] + '\')">' + col[1] + arrow + "</th>";
+  });
+  h += "<th></th></tr></thead><tbody>";
+  var hh = 0, dd = 0, LL = 0;
+  list.forEach(function (c, i) {
+    hh += num(c["戶數"]); dd += num(c["預計工期"]); LL += caseLen(c);
+    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="項次">' + (i + 1) + "</td>";
+    cols.forEach(function (col) {
+      var nw = ["工程編號", "狀態", "繳費日", "會勘日期", "完工日"].indexOf(col[0]) > -1;
+      h += '<td data-l="' + col[1] + '"' + (col[2] ? ' class="num"' : (nw ? ' class="nw"' : "")) + ">" + cellVal(c, col[0]) + "</td>";
+    });
+    var act = c["狀態"] !== "已竣工" ? '<button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\',\'done\')">✅ 完工</button>' : "";
+    h += '<td data-l="">' + act + "</td></tr>";
+  });
+  h += '<tr class="sub"><td data-l="">小計</td>';
+  cols.forEach(function (col) {
+    var k = col[0], v = "";
+    if (k === "工程編號") v = list.length + " 件";
+    else if (k === "戶數") v = fmt(hh);
+    else if (k === "預計工期") v = fmt(dd);
+    else if (k === "長度") v = LL ? fmt(LL) : "";
+    h += "<td" + (col[2] ? ' class="num"' : "") + ' data-l="' + (v ? (k === "工程編號" ? "件數" : col[1]) : "") + '">' + v + "</td>";
+  });
+  h += '<td data-l=""></td></tr>';
+  h += "</tbody></table></div>";
+  return h;
+}
+function sortBy(k) { if (UI.sortK === k) { if (UI.sortD > 0) UI.sortD = -1; else { UI.sortK = ""; UI.sortD = 1; } } else { UI.sortK = k; UI.sortD = 1; } renderProg(); }
+function renderProg() {
+  var cnt = function (st) { return DB.cases.filter(function (c) { return st === "全部" ? true : st === "進行中" ? ACTIVE.indexOf(c["狀態"]) > -1 : c["狀態"] === st; }).length; };
+  var tabs = ["進行中"].concat(STATUS).concat(["全部"]);
+  var list = sortCases(progList());
+  var nList = list.filter(function (c) { return c["類別"] !== "汰換"; }), rList = list.filter(function (c) { return c["類別"] === "汰換"; });
+  var h = '<h2 class="pg">📋 工程進度<span class="sp"></span><button class="btn" onclick="exportProgXlsx()">⬇ 匯出進度表 Excel</button><button class="btn pri" onclick="openCase()">＋ 新增工程</button></h2>';
+  h += '<div class="tabs">' + tabs.map(function (t) { return '<button class="tab' + (UI.st === t ? " on" : "") + '" onclick="UI.st=\'' + t + '\';renderProg()">' + t + '<span class="n">' + cnt(t) + "</span></button>"; }).join("") + "</div>";
+  h += '<div class="toolbar"><input type="search" id="q" placeholder="搜尋 工程編號／名稱／位置／現況" value="' + esc(UI.q) + '">' +
+    ["全部", "新設", "汰換"].map(function (c) {
+      var n = c === "全部" ? list.length : c === "新設" ? nList.length : rList.length;
+      return '<button class="chip c-' + ({ "全部": "all", "新設": "new", "汰換": "rep" }[c]) + (UI.cls === c ? " on" : "") + '" onclick="UI.cls=\'' + c + '\';renderProg()">' + c + "（" + n + "）</button>";
+    }).join("") + "</div>";
+  h += '<div class="card">';
+  if (UI.cls !== "汰換") h += '<div class="sec-h"><span class="bar" style="background:var(--new)"></span>新設工程<span class="meta">' + nList.length + " 件</span></div>" + caseTable(nList, "新設");
+  if (UI.cls !== "新設") h += '<div class="sec-h"><span class="bar" style="background:var(--rep)"></span>汰換工程<span class="meta">' + rList.length + " 件</span></div>" + caseTable(rList, "汰換");
+  h += "</div>";
+  $("#content").innerHTML = h;
+  var q = $("#q");
+  q.addEventListener("input", function () {
+    UI.q = q.value; var pos = q.selectionStart; renderProg();
+    var nq = $("#q"); nq.focus(); try { nq.setSelectionRange(pos, pos); } catch (e) {}
+  });
+}
+
+/* ===== 汰換彙總 ===== */
+function repData() {
+  var reps = DB.cases.filter(function (c) { return c["類別"] === "汰換"; });
+  var years = {};
+  reps.forEach(function (c) { years[c["計畫年度"] || "未設定"] = 1; });
+  return Object.keys(years).sort().map(function (y) {
+    var groups = ["計畫性", "非計畫性"].map(function (g) {
+      var cs = reps.filter(function (c) { return (c["計畫年度"] || "未設定") === y && (c["汰換性質"] || "非計畫性") === g; });
+      cs.sort(function (a, b) { return String(a["完工日"] || "9").localeCompare(String(b["完工日"] || "9")); });
+      var rows = [];
+      cs.forEach(function (c) {
+        var ps = pipesOf(c);
+        if (!ps.length) ps = [{}];
+        ps.forEach(function (p) { rows.push({ c: c, p: p }); });
+      });
+      var sub = rows.reduce(function (t, r) { return t + num(r.p["敷設長度"]); }, 0);
+      return { g: g, rows: rows, sub: sub, cases: cs.length };
+    });
+    return { y: y, groups: groups, total: groups[0].sub + groups[1].sub };
+  });
+}
+function renderRep() {
+  var data = repData(), grand = 0;
+  var h = '<h2 class="pg">🔁 汰換計畫案件彙總<span class="sp"></span><button class="btn" onclick="exportRepXlsx()">⬇ 匯出彙總表 Excel</button><button class="btn pri" onclick="openCase(null,null,\'汰換\')">＋ 新增汰換工程</button></h2>';
+  h += '<div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>年度</th><th>類別</th><th>#</th><th>工程編號</th><th>工程名稱</th><th>工程位置</th><th>管材</th><th class="num">米數</th><th>竣工時間</th></tr></thead><tbody>';
+  data.forEach(function (Y) {
+    Y.groups.forEach(function (G) {
+      G.rows.forEach(function (r, i) {
+        var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
+        var cls = done ? "" : ' class="red"';
+        h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="年度">' + esc(Y.y) + '年</td><td data-l="類別">' + G.g + '</td><td data-l="項次">' + (i + 1) + '</td><td data-l="工程編號"' + cls + ">" + esc(c["工程編號"]) + '</td><td data-l="工程名稱"' + cls + ">" + esc(c["工程名稱"]) + '</td><td data-l="工程位置"' + cls + ">" + esc(c["工程位置"]) + '</td><td data-l="管材"' + cls + ">" + esc(r.p["敷設管種"] || "") + '</td><td class="num' + (done ? "" : " red") + '" data-l="米數">' + (r.p["敷設長度"] !== undefined && r.p["敷設長度"] !== "" ? fmt(r.p["敷設長度"]) : "") + '</td><td data-l="竣工時間">' + (done ? roc(c["完工日"]) : '<span class="red">' + esc(c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工") + "</span>") + "</td></tr>";
+      });
+      h += '<tr class="sub"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">' + G.g + ' 小計</td><td colspan="5" data-l="">' + G.cases + ' 案</td><td class="num" data-l="米數">' + fmt(G.sub) + '</td><td data-l=""></td></tr>';
+    });
+    grand += Y.total;
+    h += '<tr class="tot"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">合計</td><td colspan="5" data-l=""></td><td class="num" data-l="米數">' + fmt(Y.total) + '</td><td data-l=""></td></tr>';
+  });
+  h += '<tr class="tot"><td colspan="7" data-l="">總計</td><td class="num" data-l="米數">' + fmt(grand) + '</td><td data-l=""></td></tr></tbody></table></div>';
+  h += '<p class="muted" style="margin:10px 0 0">1. 紅色＝尚未竣工（含完工待驗收）　2. 計畫性汰換需呈報能源署備查；其餘為非計畫性　3. 米數為敷設長度</p></div>';
+  $("#content").innerHTML = h;
+}
+
+/* ===== 探漏搶修 ===== */
+function renderLeak() {
+  var list = DB.leaks.filter(function (l) { return inPeriod(l["日期"], UI.y, UI.m1, UI.m2); }).sort(function (a, b) { return String(a["日期"]).localeCompare(String(b["日期"])); });
+  var a = 0, b = 0;
+  var h = '<h2 class="pg">🔎 管線探漏搶修<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span><button class="btn pri" onclick="openLeak()">＋ 新增探漏紀錄</button></h2><div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>日期</th><th>起訖時間</th><th>探漏供氣區域</th><th class="num">立即修護件數</th><th class="num">轉工務部件數</th><th class="num">合計</th><th>備註</th></tr></thead><tbody>';
+  list.forEach(function (l) {
+    var x = num(l["立即修護件數"]), y = num(l["轉工務部件數"]); a += x; b += y;
+    h += '<tr class="row" onclick="openLeak(\'' + l.UID + '\')"><td data-l="日期">' + roc(l["日期"]) + '</td><td data-l="起訖時間">' + esc(l["起訖時間"]) + '</td><td data-l="區域">' + esc(l["探漏供氣區域"]) + '</td><td class="num" data-l="立即修護">' + x + '</td><td class="num" data-l="轉工務部">' + y + '</td><td class="num" data-l="合計">' + (x + y) + '</td><td data-l="備註">' + esc(l["備註"]) + "</td></tr>";
+  });
+  if (!list.length) h += '<tr><td colspan="7" class="empty" data-l="">本期沒有探漏紀錄</td></tr>';
+  else h += '<tr class="tot"><td colspan="3" data-l="">合計</td><td class="num" data-l="立即修護">' + a + '</td><td class="num" data-l="轉工務部">' + b + '</td><td class="num" data-l="合計">' + (a + b) + '</td><td data-l=""></td></tr>';
+  h += "</tbody></table></div></div>";
+  $("#content").innerHTML = h;
+}
+
+/* ===== 報告 ===== */
+function reportHTML() {
+  var y = UI.y, m1 = UI.m1, m2 = UI.m2;
+  var s = statsFor(y, m1, m2);
+  var done = sortDone(s.done);
+  var h = "<h2>二、工程報告</h2><h3>(一)施設輸氣管線工程</h3>";
+  var newRows = function (press) {
+    var rows = [];
+    done.forEach(function (c) {
+      if (c["類別"] !== "新設") return;
+      pipesOf(c).forEach(function (p) { if ((p["壓力"] === "中壓" ? "中壓" : "低壓") === press && num(p["敷設長度"])) rows.push({ c: c, p: p }); });
+    });
+    return rows;
+  };
+  [["中壓", "1.新設中壓管"], ["低壓", "2.新設低壓管"]].forEach(function (x) {
+    var rows = newRows(x[0]);
+    if (!rows.length) { h += "<h4>" + x[1] + "：無</h4>"; return; }
+    h += "<h4>" + x[1] + "：</h4><table><tr><th>項次</th><th>工程編號及案名</th><th>管線種類</th><th>長度</th><th>施工日</th><th>完工日</th></tr>";
+    rows.forEach(function (r, i) {
+      h += "<tr><td>" + (i + 1) + '</td><td class="l">' + esc(r.c["工程編號"]) + " (" + esc(r.c["工程名稱"]) + ")</td><td>" + esc(r.p["敷設管種"]) + "</td><td>" + fmt(r.p["敷設長度"]) + " M</td><td>" + roc(r.c["施工日"]) + "</td><td>" + roc(r.c["完工日"]) + "</td></tr>";
+    });
+    h += "</table>";
+  });
+  h += "<h3>(二)汰換管線工程</h3>";
+  [["中壓", "1.中壓管線"], ["低壓", "2.低壓管線"]].forEach(function (x) {
+    var rows = [];
+    done.forEach(function (c) {
+      if (c["類別"] !== "汰換") return;
+      pipesOf(c).forEach(function (p) { if ((p["壓力"] === "中壓" ? "中壓" : "低壓") === x[0] && (num(p["敷設長度"]) || num(p["廢除長度"]))) rows.push({ c: c, p: p }); });
+    });
+    if (!rows.length) { h += "<h4>" + x[1] + "：無</h4>"; return; }
+    h += "<h4>" + x[1] + "：</h4><table><tr><th rowspan=\"2\">工程編號及案名</th><th colspan=\"2\">敷設</th><th colspan=\"2\">廢除</th><th rowspan=\"2\">施工日</th><th rowspan=\"2\">完工日</th></tr><tr><th>管線種類</th><th>長度</th><th>管線種類</th><th>長度</th></tr>";
+    rows.forEach(function (r) {
+      h += '<tr><td class="l">' + esc(r.c["工程編號"]) + "<br>(" + esc(r.c["工程名稱"]) + ")</td><td>" + esc(r.p["敷設管種"]) + "</td><td>" + (num(r.p["敷設長度"]) ? fmt(r.p["敷設長度"]) + " M" : "") + "</td><td>" + esc(r.p["廢除管種"]) + "</td><td>" + (num(r.p["廢除長度"]) ? fmt(r.p["廢除長度"]) + " M" : "") + "</td><td>" + roc(r.c["施工日"]) + "</td><td>" + roc(r.c["完工日"]) + "</td></tr>";
+    });
+    h += "</table>";
+  });
+  // (三) 統計
+  h += "<h3>(三)各類管線施設統計</h3><p class=\"unit\">單位：M</p>";
+  var grpSpan = {}, grpOrder = [];
+  s.order.forEach(function (ck) { var g = s.cols[ck].grp; if (!grpSpan[g]) { grpSpan[g] = 0; grpOrder.push(g); } grpSpan[g]++; });
+  if (!s.order.length) {
+    h += "<p>本期無已竣工管線。</p>";
+  } else {
+    h += '<table><tr><th rowspan="2">性質</th><th rowspan="2">類別</th>' + grpOrder.map(function (g) { return '<th colspan="' + grpSpan[g] + '">' + esc(g) + "</th>"; }).join("") + '<th rowspan="2">合計</th></tr><tr>' + s.order.map(function (ck) { return "<th>" + esc(s.cols[ck].size) + "</th>"; }).join("") + "</tr>";
+    var colTot = {};
+    [["新設", "新設管線"], ["汰換", "汰換管線"]].forEach(function (x) {
+      ["中壓", "低壓"].forEach(function (pr, i) {
+        var rk = x[0] + "|" + pr, rt = 0;
+        h += "<tr>" + (i === 0 ? '<td rowspan="2">' + x[1] + "</td>" : "") + "<td>" + pr + "管</td>";
+        s.order.forEach(function (ck) { var v = s.rows[rk][ck] || 0; rt += v; colTot[ck] = (colTot[ck] || 0) + v; h += "<td>" + fmt(v) + "</td>"; });
+        h += "<td>" + fmt(rt) + "</td></tr>";
+      });
+    });
+    var all = 0;
+    h += '<tr><td colspan="2">合計</td>' + s.order.map(function (ck) { all += colTot[ck] || 0; return "<td>" + fmt(colTot[ck] || 0) + "</td>"; }).join("") + "<td>" + fmt(all) + "</td></tr></table>";
+  }
+  // (四) 探漏
+  var leaks = DB.leaks.filter(function (l) { return inPeriod(l["日期"], y, m1, m2); }).sort(function (a, b) { return String(a["日期"]).localeCompare(String(b["日期"])); });
+  h += "<h3>(四)管線探漏搶修</h3>";
+  if (!leaks.length) h += "<p>本期無探漏紀錄。</p>";
+  else {
+    var A = 0, B = 0;
+    h += '<p class="unit">單位：戶(件)</p><table><tr><th>日期</th><th>起訖時間</th><th>探漏供氣區域</th><th>立即修護件數</th><th>轉工務部件數</th><th>合計</th></tr>';
+    leaks.forEach(function (l) {
+      var a = num(l["立即修護件數"]), b = num(l["轉工務部件數"]); A += a; B += b;
+      h += "<tr><td>" + l["日期"].slice(5, 7) + "/" + l["日期"].slice(8, 10) + "</td><td>" + esc(l["起訖時間"]) + '</td><td class="l">' + esc(l["探漏供氣區域"]) + "</td><td>" + a + "</td><td>" + b + "</td><td>" + (a + b) + "</td></tr>";
+    });
+    h += '<tr><td colspan="3">合計</td><td>' + A + "</td><td>" + B + "</td><td>" + (A + B) + "</td></tr></table>";
+  }
+  // (五)(六)
+  var P = DB.params, inst = num(P["鉛封_裝置戶數"]), rm = num(P["鉛封_拆表戶數"]), sealed = num(P["鉛封_已鉛封戶數"]), base = inst - rm, cut = P["鉛封_統計截止"] || "";
+  h += '<h3>(五)用戶計量表鉛封</h3><p class="unit">單位：戶(件)</p><p>備註：' + esc(cut) + "鉛封戶數" + fmt(base) + "戶［註: " + fmt(base) + "=" + fmt(inst) + " (裝置戶數)-" + fmt(rm) + " (拆表戶數)］，鉛封至" + esc(cut) + "共" + fmt(sealed) + "戶，剩餘" + fmt(base - sealed) + "戶。</p>";
+  h += "<h3>(六)地下閥箱安全檢查</h3><p>備註：" + esc(P["閥箱備註"] || "") + "</p>";
+  return h;
+}
+function renderReport() {
+  var h = '<h2 class="pg">📄 產生報告<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span>' +
+    '<button class="btn" onclick="copyReport()">📋 複製（貼到 Word）</button><button class="btn pri" onclick="downloadDoc()">⬇ 下載 Word 檔</button></h2>' +
+    '<p class="muted" style="margin:-4px 0 12px">期間在右上角「統計期間」切換。只抓「狀態＝已竣工」且完工日落在期間內的工程；鉛封、閥箱文字在「參數設定」改。</p>' +
+    '<div class="paper" id="paper">' + reportHTML() + "</div>";
+  $("#content").innerHTML = h;
+}
+function docWrap(inner) {
+  return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>' + periodText() + '工程報告</title>' +
+    '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->' +
+    '<style>@page{size:21cm 29.7cm;margin:2cm 2cm 2cm 2cm}body{font-family:"標楷體","DFKai-SB";font-size:12pt}h2{font-size:14pt;margin:0 0 8pt}h3{font-size:14pt;margin:12pt 0 6pt}h4{font-size:12pt;margin:8pt 0 4pt;font-weight:normal}' +
+    'table{border-collapse:collapse;width:100%;margin-bottom:6pt}th,td{border:1px solid #000;padding:2pt 4pt;text-align:center;font-size:11pt;font-family:"標楷體","DFKai-SB"}th{font-weight:normal}td.l{text-align:left}p{margin:3pt 0}p.unit{text-align:right;font-size:11pt}</style></head><body>' + inner + "</body></html>";
+}
+function downloadDoc() {
+  var blob = new Blob(["﻿", docWrap(reportHTML())], { type: "application/msword" });
+  saveBlob(blob, periodText() + "工程報告.doc");
+}
+function saveBlob(blob, name) {
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function copyReport() {
+  var html = docWrap(reportHTML()), text = $("#paper").innerText;
+  if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+    navigator.clipboard.write([new ClipboardItem({ "text/html": new Blob([html], { type: "text/html" }), "text/plain": new Blob([text], { type: "text/plain" }) })])
+      .then(function () { toast("✅ 已複製，到 Word 按 Ctrl+V 貼上"); }, fallbackCopy);
+  } else fallbackCopy();
+}
+function fallbackCopy() {
+  var el = $("#paper"), r = document.createRange(); r.selectNodeContents(el);
+  var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+  try { document.execCommand("copy"); toast("✅ 已複製，到 Word 按 Ctrl+V 貼上"); } catch (e) { toast("請手動選取報告內容後按 Ctrl+C"); }
+  sel.removeAllRanges();
+}
+
+/* ===== 參數 ===== */
+function renderSet() {
+  var P = DB.params;
+  var f = function (k, lb, hint) { return '<div class="f w3"><label>' + lb + '</label><input data-k="' + k + '" value="' + esc(P[k] || "") + '">' + (hint ? '<span class="hint">' + hint + "</span>" : "") + "</div>"; };
+  var h = '<h2 class="pg">⚙️ 參數設定</h2><div class="card"><h3>報告(五)用戶計量表鉛封</h3><div class="form">' +
+    f("鉛封_統計截止", "統計截止（文字）", "例：115年9月底") + f("鉛封_裝置戶數", "裝置戶數") + f("鉛封_拆表戶數", "拆表戶數") + f("鉛封_已鉛封戶數", "已鉛封戶數") +
+    '</div><h3 style="margin-top:18px">報告(六)地下閥箱安全檢查</h3><div class="form">' + '<div class="f w6"><label>備註文字</label><input data-k="閥箱備註" value="' + esc(P["閥箱備註"] || "") + '"></div></div>' +
+    '<h3 style="margin-top:18px">編輯密碼</h3><div class="form"><div class="f w3"><label>新密碼（不改請留空）</label><input data-k="編輯密碼" type="password" autocomplete="new-password"></div></div>' +
+    '<div style="margin-top:16px;display:flex;gap:10px"><button class="btn pri" onclick="saveParams()">💾 儲存參數</button></div></div>';
+  h += '<div class="card"><h3>後端連線</h3><p class="muted" style="margin:0 0 8px;word-break:break-all">目前網址：' + esc(apiUrl() || "未設定") + '</p><button class="btn" onclick="pingApi()">測試連線</button> <button class="btn" onclick="renderSetup(true)">更換網址</button><div id="pingOut" class="muted" style="margin-top:8px"></div></div>';
+  $("#content").innerHTML = h;
+}
+function saveParams() {
+  needLogin(function () {
+    var o = {};
+    $$("#content input[data-k]").forEach(function (i) { o[i.dataset.k] = i.value.trim(); });
+    if (!o["編輯密碼"]) delete o["編輯密碼"];
+    var newPw = o["編輯密碼"];
+    post("saveParams", { params: o }, "✅ 參數已儲存").then(function (ok) { if (ok && newPw) { PW = newPw; ssSet(SS_PW, PW); } });
+  });
+}
+function pingApi() {
+  var url = apiUrl(); if (!url) return;
+  $("#pingOut").textContent = "測試中…";
+  var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var t = setTimeout(function () { if (ctrl) ctrl.abort(); }, 15000);
+  fetch(url + (url.indexOf("?") > -1 ? "&" : "?") + "action=ping&t=" + Date.now(), ctrl ? { signal: ctrl.signal } : {}).then(function (r) { return r.json(); }).then(function (j) {
+    clearTimeout(t); $("#pingOut").textContent = j.ok ? "✅ 連線正常｜後端 v" + j.ver + "｜試算表：" + j.sheet + "｜案件 " + j.cases + " 筆" : "❌ " + j.msg;
+  }).catch(function (e) { clearTimeout(t); $("#pingOut").textContent = "❌ 連線失敗：" + (e.name === "AbortError" ? "逾時" : e.message); });
+}
+function renderSetup(force) {
+  $$("#nav button").forEach(function (b) { b.classList.remove("on"); });
+  $("#content").innerHTML = '<div class="card setup"><h3>🔌 第一次使用：設定後端網址</h3><p>貼上 Google Apps Script 部署後的網址（<b>/exec</b> 結尾，不要貼 /library）。</p><input id="apiIn" placeholder="https://script.google.com/macros/s/……/exec" value="' + esc(lsGet(LS_API) || "") + '"><button class="btn pri" onclick="saveApi()">儲存並連線</button>' + (force ? ' <button class="btn" onclick="render()">取消</button>' : "") + '<p class="hint" style="margin-top:12px">這個設定只存在這台電腦的瀏覽器。正式上線時會把網址直接寫進網頁，大家就不用各自設定。</p></div>';
+}
+function saveApi() {
+  var v = $("#apiIn").value.trim();
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(v)) { toast("網址格式不對：要 https://script.google.com/macros/s/…/exec", 4000); return; }
+  lsSet(LS_API, v); load();
+}
+
+/* ---------- 登入 ---------- */
+function updLock() { var b = $("#btnLock"); b.textContent = PW ? "🔓 編輯中" : "🔒 唯讀"; }
+function needLogin(cb) {
+  if (PW) { cb(); return; }
+  modal('<div class="mh">🔒 輸入編輯密碼</div><div class="mb"><div class="f w6"><input id="pwIn" type="password" placeholder="密碼" autocomplete="current-password"></div><div class="hint" style="margin-top:6px">查看不用密碼；新增／修改／刪除才需要。</div></div><div class="mf"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="pwOk">確定</button></div>', true);
+  var go = function () {
+    var v = $("#pwIn").value; if (!v) return;
+    showLoading("驗證中…");
+    req("POST", { action: "login", pw: v }).then(function (j) {
+      hideLoading();
+      if (j.ok) { PW = v; ssSet(SS_PW, v); updLock(); closeModal(); toast("🔓 已進入編輯模式"); cb(); }
+      else toast("❌ 密碼錯誤", 3000);
+    }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
+  };
+  $("#pwOk").onclick = go;
+  $("#pwIn").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+  setTimeout(function () { $("#pwIn").focus(); }, 50);
+}
+
+/* ---------- Modal ---------- */
+function modal(html, small) {
+  var m = $("#modal"); m.className = "modal" + (small ? " small" : ""); m.innerHTML = html;
+  $("#mask").classList.add("show");
+}
+function closeModal() { $("#mask").classList.remove("show"); $("#modal").innerHTML = ""; }
+function confirmBox(msg, okText, cb) {
+  modal('<div class="mh">確認</div><div class="mb">' + msg + '</div><div class="mf"><button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="cfOk">' + (okText || "確定") + "</button></div>", true);
+  $("#cfOk").onclick = function () { closeModal(); cb(); };
+}
+
+/* ---------- 案件編輯 ---------- */
+var EDIT = null;
+function openCase(uid, mode, presetCls) {
+  var c = uid ? caseByUid(uid) : null;
+  var item = c ? Object.assign({}, c) : { UID: "", 類別: presetCls || "新設", 狀態: "待施工", 計畫年度: String(rocYearNow()) };
+  var pipes = c ? pipesOf(c).map(function (p) { return Object.assign({}, p); }) : [];
+  if (mode === "done") { item["狀態"] = "已竣工"; if (!item["完工日"]) item["完工日"] = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); }
+  if (!pipes.length) pipes.push({ 壓力: "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" });
+  EDIT = { item: item, pipes: pipes, clsTouched: !!c || !!presetCls, mode: mode };
+  drawCase();
+}
+function drawCase() {
+  var it = EDIT.item, isRep = it["類別"] === "汰換";
+  var inp = function (k, lb, w, type, ph) { return '<div class="f ' + (w || "") + '"><label>' + lb + '</label><input data-f="' + k + '" type="' + (type || "text") + '" value="' + esc(type === "date" ? normDate(it[k]) : it[k]) + '"' + (ph ? ' placeholder="' + ph + '"' : "") + "></div>"; };
+  var h = '<div class="mh">' + (it.UID ? "✏️ 編輯工程" : "＋ 新增工程") + " " + clsBadge(it["類別"]) + (EDIT.mode === "done" ? ' <span class="badge b-ok">完工登錄</span>' : "") + '<span style="flex:1"></span><button class="btn sm" onclick="closeModal()">✕</button></div><div class="mb"><div class="form">';
+  h += '<div class="f"><label>工程編號 <span class="req">*</span></label><input data-f="工程編號" value="' + esc(it["工程編號"]) + '" placeholder="例：261027N060"><span class="hint" id="clsHint"></span></div>';
+  h += '<div class="f"><label>類別</label><div class="seg2"><label class="' + (!isRep ? "on-new" : "") + '"><input type="radio" name="cls" value="新設"' + (!isRep ? " checked" : "") + '>新設</label><label class="' + (isRep ? "on-rep" : "") + '"><input type="radio" name="cls" value="汰換"' + (isRep ? " checked" : "") + ">汰換</label></div></div>";
+  h += '<div class="f"><label>狀態</label><select data-f="狀態">' + STATUS.map(function (s) { return "<option" + (s === it["狀態"] ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></div>";
+  h += inp("工程名稱", "工程名稱", "w3") + inp("工程位置", "工程位置", "w3");
+  if (isRep) {
+    h += '<div class="f"><label>汰換性質 <span class="req">*</span></label><div class="seg2">' + ["計畫性", "非計畫性"].map(function (g) { return '<label class="' + (it["汰換性質"] === g ? "on-gen" : "") + '"><input type="radio" name="rtype" value="' + g + '"' + (it["汰換性質"] === g ? " checked" : "") + ">" + g + "</label>"; }).join("") + '</div><span class="hint">計畫性＝呈報能源署備查</span></div>';
+    h += inp("計畫年度", "計畫年度（民國）", "", "text", "例：115");
+  }
+  h += inp("繳費日", "繳費日", "", "text", "115/10/27 或 內部工程") + inp("戶數", "戶數", "w1", "number") + inp("預計工期", "預計工期(天)", "w1", "number") + inp("已施工天數", "已施工(天)", "w1", "number");
+  h += inp("預定施工日", "預定施工日", "", "date") + inp("施工日", "施工日（報告用）", "", "date") + '<div class="f"><label>完工日（報告用）' + (it["狀態"] === "已竣工" ? ' <span class="req">*</span>' : "") + '</label><input data-f="完工日" type="date" value="' + esc(normDate(it["完工日"])) + '"></div>';
+  h += inp("現況", "現況", "w3") + inp("會勘日期", "會勘日期", "w3", "text", "115/10/06 或文字");
+  h += '<div class="f w6"><label>備註</label><textarea data-f="備註" rows="2">' + esc(it["備註"]) + "</textarea></div></div>";
+  // 管線
+  h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準</span></div>';
+  h += '<datalist id="dlPipe">' + PIPE_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + '</datalist><datalist id="dlRm">' + RM_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + "</datalist>";
+  h += '<table class="ptable"><thead><tr><th style="width:96px">壓力</th><th>敷設管種</th><th style="width:110px">敷設長度(M)</th>' + (isRep ? "<th>廢除管種</th><th style=\"width:110px\">廢除長度(M)</th>" : "") + '<th style="width:50px"></th></tr></thead><tbody id="pbody">';
+  EDIT.pipes.forEach(function (p, i) {
+    h += '<tr data-i="' + i + '"><td data-l="壓力"><select data-p="壓力">' + ["低壓", "中壓"].map(function (x) { return "<option" + ((p["壓力"] || "低壓") === x ? " selected" : "") + ">" + x + "</option>"; }).join("") + '</select></td><td data-l="敷設管種"><input data-p="敷設管種" list="dlPipe" value="' + esc(p["敷設管種"]) + '" placeholder="110mm PE管"></td><td data-l="敷設長度(M)"><input data-p="敷設長度" type="number" step="any" value="' + esc(p["敷設長度"]) + '"></td>' +
+      (isRep ? '<td data-l="廢除管種"><input data-p="廢除管種" list="dlRm" value="' + esc(p["廢除管種"]) + '" placeholder="2&quot; PVC管"></td><td data-l="廢除長度(M)"><input data-p="廢除長度" type="number" step="any" value="' + esc(p["廢除長度"]) + '"></td>' : "") +
+      '<td data-l=""><button class="btn sm danger" onclick="delPipe(' + i + ')" title="刪除這列">✕</button></td></tr>';
+  });
+  h += '</tbody></table><button class="btn sm" style="margin-top:8px" onclick="addPipe()">＋ 加一列管線</button><div class="hint" id="pipeSum" style="margin-top:6px"></div>';
+  h += '</div><div class="mf">' + (it.UID ? '<button class="btn danger" onclick="delCase()" style="margin-right:auto">🗑 刪除工程</button>' : "") + '<button class="btn" onclick="closeModal()">取消</button><button class="btn pri" onclick="saveCase()">💾 儲存</button></div>';
+  modal(h);
+  bindCase();
+}
+function readCaseForm() {
+  $$("#modal [data-f]").forEach(function (el) { EDIT.item[el.dataset.f] = el.value.trim(); });
+  var r = $("#modal input[name=cls]:checked"); if (r) EDIT.item["類別"] = r.value;
+  var t = $("#modal input[name=rtype]:checked"); if (t) EDIT.item["汰換性質"] = t.value;
+  $$("#pbody tr").forEach(function (tr) {
+    var p = EDIT.pipes[+tr.dataset.i];
+    $$("[data-p]", tr).forEach(function (el) { p[el.dataset.p] = el.value.trim(); });
+  });
+}
+function bindCase() {
+  var code = $('#modal [data-f="工程編號"]');
+  var hint = function () {
+    var v = code.value.trim(), g = classByCode(v);
+    $("#clsHint").innerHTML = v ? "依編號判斷：" + (g === "汰換" ? '<b style="color:var(--rep)">汰換</b>（第7碼 E/F）' : '<b style="color:var(--new)">新設</b>') + (EDIT.item["類別"] !== g ? '　<span class="hint warn">⚠ 與所選類別不同</span>' : "") : "第7碼 E/F＝汰換，其餘＝新設（可手動改）";
+  };
+  code.addEventListener("input", function () {
+    if (!EDIT.clsTouched) {
+      var g = classByCode(code.value);
+      if (g !== EDIT.item["類別"] && code.value.trim().length >= 7) { readCaseForm(); EDIT.item["類別"] = g; drawCase(); var c2 = $('#modal [data-f="工程編號"]'); c2.focus(); c2.setSelectionRange(c2.value.length, c2.value.length); return; }
+    }
+    hint();
+  });
+  hint();
+  $$('#modal input[name=cls]').forEach(function (r) { r.addEventListener("change", function () { readCaseForm(); EDIT.clsTouched = true; EDIT.item["類別"] = r.value; drawCase(); }); });
+  $$('#modal input[name=rtype]').forEach(function (r) { r.addEventListener("change", function () { readCaseForm(); drawCase(); }); });
+  $('#modal [data-f="狀態"]').addEventListener("change", function () { readCaseForm(); drawCase(); });
+  var upd = function () {
+    readCaseForm();
+    var t = EDIT.pipes.reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0);
+    $("#pipeSum").textContent = "敷設合計 " + fmt(t) + " M";
+  };
+  $$("#pbody input").forEach(function (el) { el.addEventListener("input", upd); });
+  upd();
+}
+function addPipe() { readCaseForm(); var last = EDIT.pipes[EDIT.pipes.length - 1] || {}; EDIT.pipes.push({ 壓力: last["壓力"] || "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" }); drawCase(); }
+function delPipe(i) { readCaseForm(); EDIT.pipes.splice(i, 1); if (!EDIT.pipes.length) EDIT.pipes.push({ 壓力: "低壓" }); drawCase(); }
+function saveCase() {
+  readCaseForm();
+  var it = EDIT.item;
+  ["繳費日", "會勘日期", "預定施工日", "施工日", "完工日"].forEach(function (k) { it[k] = normDate(it[k]); });
+  if (!it["工程編號"]) { toast("請填工程編號", 3000); return; }
+  if (it["類別"] === "汰換" && !it["汰換性質"]) { toast("汰換工程請選「計畫性／非計畫性」", 3500); return; }
+  if (it["類別"] !== "汰換") { it["汰換性質"] = ""; it["計畫年度"] = ""; }
+  if (it["狀態"] === "已竣工" && !isISO(it["完工日"])) { toast("已竣工要填完工日，報告才抓得到", 3500); return; }
+  var pipes = EDIT.pipes.filter(function (p) { return String(p["敷設管種"] || "").trim() || String(p["廢除管種"] || "").trim() || num(p["敷設長度"]); });
+  var bad = pipes.filter(function (p) { return !String(p["敷設管種"] || "").trim() && num(p["敷設長度"]); });
+  if (bad.length) { toast("有填長度但沒填管種，請補上", 3500); return; }
+  var dup = DB.cases.filter(function (c) { return c["工程編號"] === it["工程編號"] && c.UID !== it.UID; });
+  var go = function () {
+    needLogin(function () {
+      post("saveCase", { item: it, pipes: pipes }, "✅ 已儲存：" + it["工程編號"]).then(function (ok) { if (ok) closeModal(); });
+    });
+  };
+  var warn = [];
+  if (dup.length) warn.push("工程編號 <b>" + esc(it["工程編號"]) + "</b> 已有：" + dup.map(function (d) { return esc(d["工程名稱"]) + "（" + esc(d["狀態"]) + "）"; }).join("、"));
+  if (it["狀態"] === "已竣工" && !pipes.some(function (p) { return num(p["敷設長度"]); })) warn.push("已竣工但沒有填管線長度，報告不會出現這件。");
+  if (warn.length) {
+    var keep = { item: it, pipes: EDIT.pipes, clsTouched: EDIT.clsTouched, mode: EDIT.mode };
+    modal('<div class="mh">⚠ 請確認</div><div class="mb">' + warn.join("<br><br>") + '<br><br>仍要儲存嗎？</div><div class="mf"><button class="btn" id="cfBack">回去修改</button><button class="btn pri" id="cfOk">仍要儲存</button></div>', true);
+    $("#cfBack").onclick = function () { EDIT = keep; drawCase(); };
+    $("#cfOk").onclick = function () { EDIT = keep; go(); };
+    return;
+  }
+  go();
+}
+function delCase() {
+  var it = EDIT.item;
+  confirmBox("確定刪除 <b>" + esc(it["工程編號"] + " " + it["工程名稱"]) + "</b>？<br>連同管線明細一起刪除，無法復原。", "刪除", function () {
+    needLogin(function () { post("deleteCase", { uid: it.UID }, "🗑 已刪除"); });
+  });
+}
+
+/* ---------- 探漏編輯 ---------- */
+function openLeak(uid) {
+  var l = null; DB.leaks.forEach(function (x) { if (x.UID === uid) l = x; });
+  var it = l ? Object.assign({}, l) : { UID: "", 日期: "", 起訖時間: "05:00 ~ 12:00", 探漏供氣區域: "", 立即修護件數: 0, 轉工務部件數: 0, 備註: "" };
+  var inp = function (k, lb, w, type) { return '<div class="f ' + (w || "") + '"><label>' + lb + '</label><input data-l="' + k + '" type="' + (type || "text") + '" value="' + esc(it[k]) + '"></div>'; };
+  modal('<div class="mh">' + (l ? "✏️ 編輯探漏紀錄" : "＋ 新增探漏紀錄") + '</div><div class="mb"><div class="form">' + inp("日期", "日期", "", "date") + inp("起訖時間", "起訖時間") + inp("探漏供氣區域", "探漏供氣區域", "") + inp("立即修護件數", "立即修護件數", "w3", "number") + inp("轉工務部件數", "轉工務部件數", "w3", "number") + inp("備註", "備註", "w6") + '</div></div><div class="mf">' + (l ? '<button class="btn danger" id="lkDel" style="margin-right:auto">🗑 刪除</button>' : "") + '<button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="lkOk">💾 儲存</button></div>');
+  $("#lkOk").onclick = function () {
+    $$("#modal [data-l]").forEach(function (el) { it[el.dataset.l] = el.value.trim(); });
+    if (!isISO(it["日期"])) { toast("請選日期", 3000); return; }
+    needLogin(function () { post("saveLeak", { item: it }, "✅ 探漏紀錄已儲存").then(function (ok) { if (ok) closeModal(); }); });
+  };
+  if (l) $("#lkDel").onclick = function () { confirmBox("確定刪除 " + roc(l["日期"]) + " " + esc(l["探漏供氣區域"]) + "？", "刪除", function () { needLogin(function () { post("deleteLeak", { uid: l.UID }, "🗑 已刪除"); }); }); };
+}
+
+/* ---------- Excel 匯出（xlsx-js-style，按下才載入） ---------- */
+var XLSX_URL = "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js";
+function withXlsx(cb) {
+  if (window.XLSX && window.XLSX.utils) { cb(); return; }
+  showLoading("準備 Excel 元件…");
+  var s = document.createElement("script"), done = false;
+  var t = setTimeout(function () { if (!done) { done = true; hideLoading(); toast("❌ Excel 元件載入逾時，請檢查網路", 4000); } }, 15000);
+  s.src = XLSX_URL;
+  s.onload = function () { if (done) return; done = true; clearTimeout(t); hideLoading(); cb(); };
+  s.onerror = function () { if (done) return; done = true; clearTimeout(t); hideLoading(); toast("❌ Excel 元件載入失敗", 4000); };
+  document.head.appendChild(s);
+}
+var XS = {
+  b: { top: { style: "thin", color: { rgb: "B7C3D0" } }, bottom: { style: "thin", color: { rgb: "B7C3D0" } }, left: { style: "thin", color: { rgb: "B7C3D0" } }, right: { style: "thin", color: { rgb: "B7C3D0" } } },
+  font: { name: "微軟正黑體", sz: 11 }
+};
+function styled(aoa, kinds, widths) {
+  var ws = XLSX.utils.aoa_to_sheet(aoa);
+  var ncol = Math.max.apply(null, aoa.map(function (r) { return r.length; }));
+  for (var r = 0; r < aoa.length; r++) {
+    var kind = kinds[r] || "row";
+    for (var c = 0; c < ncol; c++) {
+      var ref = XLSX.utils.encode_cell({ r: r, c: c });
+      if (!ws[ref]) ws[ref] = { t: "s", v: "" };
+      var st = { font: Object.assign({}, XS.font), alignment: { vertical: "center", wrapText: true } };
+      if (kind === "title") { st.font = { name: "微軟正黑體", sz: 14, bold: true }; }
+      else if (kind === "head") { st.font = { name: "微軟正黑體", sz: 11, bold: true, color: { rgb: "FFFFFF" } }; st.fill = { fgColor: { rgb: "1D4E89" } }; st.border = XS.b; st.alignment.horizontal = "center"; }
+      else if (kind === "secN") { st.font = { name: "微軟正黑體", sz: 12, bold: true, color: { rgb: "1F6FD1" } }; st.fill = { fgColor: { rgb: "E1EDFC" } }; }
+      else if (kind === "secR") { st.font = { name: "微軟正黑體", sz: 12, bold: true, color: { rgb: "D96B0B" } }; st.fill = { fgColor: { rgb: "FDEBD9" } }; }
+      else if (kind === "sub") { st.font.bold = true; st.fill = { fgColor: { rgb: "EEF2F6" } }; st.border = XS.b; }
+      else if (kind === "tot") { st.font.bold = true; st.fill = { fgColor: { rgb: "D9E2EC" } }; st.border = XS.b; }
+      else if (kind === "red") { st.font.color = { rgb: "C00000" }; st.border = XS.b; }
+      else if (kind === "note") { st.font = { name: "微軟正黑體", sz: 10, color: { rgb: "5B6B7C" } }; }
+      else { st.border = XS.b; }
+      if (typeof ws[ref].v === "number") { st.alignment.horizontal = "right"; ws[ref].z = "#,##0.##"; }
+      ws[ref].s = st;
+    }
+  }
+  ws["!cols"] = widths.map(function (w) { return { wch: w }; });
+  return ws;
+}
+function todayRoc() { var d = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); return roc(d); }
+function exportProgXlsx() {
+  withXlsx(function () {
+    var wb = XLSX.utils.book_new();
+    var head = ["項次", "工程編號", "工程名稱", "工程位置", "類別", "繳費日", "戶數", "預計工期(天)", "已施工(天)", "管線(M)", "現況", "會勘日期", "完工日", "備註"];
+    var W = [6, 13, 22, 30, 10, 11, 7, 10, 9, 9, 18, 12, 11, 30];
+    // 總表
+    var sum = [["工程進度總表（填表日期：" + todayRoc() + "）"], ["狀態", "新設件數", "新設戶數", "新設工期合計", "汰換件數", "汰換工期合計", "合計件數"]], sk = ["title", "head"];
+    STATUS.forEach(function (st) {
+      var n = DB.cases.filter(function (c) { return c["狀態"] === st && c["類別"] !== "汰換"; }), r = DB.cases.filter(function (c) { return c["狀態"] === st && c["類別"] === "汰換"; });
+      sum.push([st, n.length, n.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), n.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), r.length, r.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), n.length + r.length]); sk.push("row");
+    });
+    XLSX.utils.book_append_sheet(wb, styled(sum, sk, [14, 10, 10, 13, 10, 13, 10]), "總表");
+    STATUS.forEach(function (st) {
+      var aoa = [[st + "（填表日期：" + todayRoc() + "）"], head], kinds = ["title", "head"];
+      ["新設", "汰換"].forEach(function (g) {
+        var list = sortCases(DB.cases.filter(function (c) { return c["狀態"] === st && (g === "汰換" ? c["類別"] === "汰換" : c["類別"] !== "汰換"); }));
+        aoa.push(["【" + g + "工程】" + list.length + " 件"]); kinds.push(g === "新設" ? "secN" : "secR");
+        list.forEach(function (c, i) {
+          aoa.push([i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], c["類別"] + (c["汰換性質"] ? "／" + c["汰換性質"] : ""), roc(c["繳費日"]), c["戶數"] === "" ? "" : num(c["戶數"]), c["預計工期"] === "" ? "" : num(c["預計工期"]), c["已施工天數"] === "" ? "" : num(c["已施工天數"]), caseLen(c) || "", c["現況"], roc(c["會勘日期"]), roc(c["完工日"]), c["備註"]]);
+          kinds.push("row");
+        });
+        aoa.push(["小計", list.length + " 件", "", "", "", "", list.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), list.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), "", list.reduce(function (t, c) { return t + caseLen(c); }, 0), "", "", "", ""]); kinds.push("sub");
+      });
+      XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, W), st);
+    });
+    XLSX.writeFile(wb, "工程進度表_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
+}
+function exportRepXlsx() {
+  withXlsx(function () {
+    var data = repData(), grand = 0;
+    var aoa = [["汰換計畫案件彙總表（區分年度／計畫性・非計畫性）　製表：" + todayRoc()], ["年度", "類別", "項次", "工程編號", "工程名稱", "工程位置", "管材", "米數", "竣工時間"]], kinds = ["title", "head"];
+    data.forEach(function (Y) {
+      Y.groups.forEach(function (G) {
+        G.rows.forEach(function (r, i) {
+          var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
+          aoa.push([Y.y + "年", G.g, i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], r.p["敷設管種"] || "", r.p["敷設長度"] === undefined || r.p["敷設長度"] === "" ? "" : num(r.p["敷設長度"]), done ? roc(c["完工日"]) : (c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工")]);
+          kinds.push(done ? "row" : "red");
+        });
+        aoa.push([Y.y + "年", G.g + " 小計", "", "", "", "", "", G.sub, ""]); kinds.push("sub");
+      });
+      grand += Y.total;
+      aoa.push([Y.y + "年", "合計", "", "", "", "", "", Y.total, ""]); kinds.push("tot");
+    });
+    aoa.push(["總計", "", "", "", "", "", "", grand, ""]); kinds.push("tot");
+    aoa.push([""]); kinds.push("note");
+    aoa.push(["1. 紅色尚未施作／尚未竣工"]); kinds.push("note");
+    aoa.push(["2. 計畫性汰換是呈報能源署備查；其餘均是非計畫性"]); kinds.push("note");
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, [8, 12, 6, 13, 28, 30, 14, 9, 12]), "汰換計畫彙總");
+    XLSX.writeFile(wb, "汰換計畫彙總_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
+}
+
+/* ---------- 啟動 ---------- */
+(function init() {
+  try { var u = JSON.parse(lsGet(LS_UI) || "{}"); Object.keys(u).forEach(function (k) { if (u[k] !== undefined && u[k] !== null) UI[k] = u[k]; }); } catch (e) {}
+  if (!UI.y) { UI.y = rocYearNow(); UI.m1 = 1; UI.m2 = new Date().getMonth() + 1; }
+  PW = ssGet(SS_PW) || ""; updLock();
+  $$("#nav button").forEach(function (b) { b.addEventListener("click", function () { UI.page = b.dataset.p; if (!apiUrl()) { renderSetup(); return; } render(); $("#content").scrollTop = 0; }); });
+  ["pY", "pM1", "pM2"].forEach(function (id) {
+    $("#" + id).addEventListener("change", function () {
+      UI.y = +$("#pY").value; UI.m1 = +$("#pM1").value; UI.m2 = +$("#pM2").value;
+      if (UI.m1 > UI.m2) { var t = UI.m1; UI.m1 = UI.m2; UI.m2 = t; fillPeriod(); }
+      render();
+    });
+  });
+  $("#btnReload").addEventListener("click", load);
+  $("#btnLock").addEventListener("click", function () {
+    if (PW) { PW = ""; ssSet(SS_PW, null); updLock(); toast("🔒 已登出，回到唯讀"); }
+    else needLogin(function () {});
+  });
+  $("#mask").addEventListener("click", function (e) { if (e.target.id === "mask") closeModal(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("#mask").classList.contains("show")) closeModal(); });
+  load();
+})();
+</script>
+</body>
+</html>
