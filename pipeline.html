@@ -94,8 +94,15 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .red{color:var(--bad);font-weight:700}
 .muted{color:var(--sub)}
 .empty{padding:22px;text-align:center;color:var(--sub)}
-.bars .r{display:grid;grid-template-columns:150px 1fr 90px;gap:10px;align-items:center;margin:7px 0;font-size:15.5px}
-.bars .track{height:16px;background:#edf1f6;border-radius:8px;overflow:hidden;display:flex}
+.bars .r{margin:12px 0;font-size:16px}
+.bars .bh{display:flex;justify-content:space-between;gap:10px;margin-bottom:4px;font-weight:700}
+.bars .track{height:18px;background:#edf1f6;border-radius:9px;overflow:hidden;display:flex}
+.bars .seg.click{cursor:pointer;transition:filter .12s}
+.bars .seg.click:hover{filter:brightness(1.18)}
+.bars .bsub{font-size:14.5px;margin-top:3px}
+.bars .bsub a{text-decoration:underline dotted;cursor:pointer;font-weight:700}
+.bars .bsub a.cn{color:var(--new)} .bars .bsub a.cr{color:var(--rep)}
+
 .bars .seg{height:100%}
 .legend{display:flex;gap:16px;font-size:14.5px;color:var(--sub);margin-bottom:6px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
@@ -184,7 +191,6 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
   table.t.cardify td::before{content:attr(data-l);flex:none;width:86px;color:var(--sub);font-size:14.5px}
   table.t.cardify td[data-l=""]::before{display:none}
   table.t.cardify tr.sub,table.t.cardify tr.tot{background:#f2f5f9}
-  .bars .r{grid-template-columns:96px 1fr 70px}
   .paper{padding:16px 12px}
   .ptable thead{display:none}
   .ptable,.ptable tbody,.ptable tr,.ptable td{display:block;width:100%}
@@ -196,7 +202,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.6</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.7</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -520,7 +526,10 @@ function renderDash() {
   s.order.forEach(function (ck) {
     var k = s.cols[ck];
     var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0);
-    rowsH += '<div class="r"><div>' + dl({ ck: ck }, esc(k.size + " " + k.grp)) + '</div><div class="track"><div class="seg" style="width:' + (max ? a / max * 100 : 0) + '%;background:var(--new)"></div><div class="seg" style="width:' + (max ? b / max * 100 : 0) + '%;background:var(--rep)"></div></div><div class="num" style="text-align:right">' + fmt(a + b) + ' M</div></div>';
+    var segA = a ? '<div class="seg click" title="新設 ' + fmt(a) + ' M，點我看明細" onclick="drill(' + esc(JSON.stringify({ cls: "新設", ck: ck })) + ')" style="width:' + (max ? a / max * 100 : 0) + '%;background:var(--new)"></div>' : "";
+    var segB = b ? '<div class="seg click" title="汰換 ' + fmt(b) + ' M，點我看明細" onclick="drill(' + esc(JSON.stringify({ cls: "汰換", ck: ck })) + ')" style="width:' + (max ? b / max * 100 : 0) + '%;background:var(--rep)"></div>' : "";
+    var sub = '<div class="bsub">' + (a ? '<a class="cn" onclick="drill(' + esc(JSON.stringify({ cls: "新設", ck: ck })) + ')">新設 ' + fmt(a) + " M</a>" : '<span class="muted">新設 0</span>') + "　" + (b ? '<a class="cr" onclick="drill(' + esc(JSON.stringify({ cls: "汰換", ck: ck })) + ')">汰換 ' + fmt(b) + " M</a>" : '<span class="muted">汰換 0</span>') + "</div>";
+    rowsH += '<div class="r"><div class="bh"><span>' + dl({ ck: ck }, esc(k.size + " " + k.grp)) + '</span><span class="num">' + dl({ ck: ck }, "合計 " + fmt(a + b) + " M") + '</span></div><div class="track">' + segA + segB + '</div>' + sub + '</div>';
   });
   var prog = '<table class="t"><thead><tr><th>狀態</th><th class="num">新設（案／戶）</th><th class="num">汰換（案）</th></tr></thead><tbody>';
   ACTIVE.forEach(function (st) {
@@ -531,7 +540,7 @@ function renderDash() {
   });
   prog += "</tbody></table>";
   var iss = issuesList();
-  h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
+  h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span><span>（色塊、數字都可點，分開看明細）</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
     '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
   h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
   $("#content").innerHTML = h;
