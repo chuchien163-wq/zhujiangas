@@ -83,7 +83,7 @@ table.t td.act{text-align:right;width:1%}
 table.t td.act .btn{display:block;width:100%;margin:0 0 4px}
 table.t td{word-break:break-word}
 @media (max-width:1350px){table.t{font-size:15px}table.t th,table.t td{padding:7px 6px}}
-@media (min-width:761px) and (max-width:1250px){table.t [data-k="預計工期"],table.t [data-k="已施工天數"],table.t [data-k="會勘日期"]{display:none}}
+@media (min-width:761px) and (max-width:1250px){table.t [data-k="預計工期"],table.t [data-k="已施工天數"],table.t [data-k="會勘日期"],table.t [data-k="備註"]{display:none}}
 table.t td.num,table.t th.num{text-align:right;font-variant-numeric:tabular-nums}
 table.t tr.sub td{background:#f6f8fb;font-weight:700}
 table.t tr.tot td{background:#e9eef5;font-weight:700}
@@ -106,7 +106,20 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .bars .seg{height:100%}
 .legend{display:flex;gap:16px;font-size:14.5px;color:var(--sub);margin-bottom:6px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.todo{display:inline-block;background:var(--bad-soft);color:var(--bad);border-radius:6px;padding:0 6px;margin:1px 3px 1px 0;font-size:13.5px;font-weight:700;white-space:nowrap}
+.tv{display:inline-block;border-radius:6px;padding:1px 7px;font-size:14px;white-space:nowrap}
+.tv-ok{background:var(--ok-soft);color:var(--ok)} .tv-bad{background:var(--bad-soft);color:var(--bad);font-weight:700} .tv-na{background:#eef1f5;color:#6b7785} .tv-empty{color:#b0bac5}
+.tsel{border:1px solid var(--line);border-radius:7px;padding:2px 2px;font-size:14px;background:#fff;max-width:100%}
+@media (min-width:761px) and (max-width:1450px){table.ttrack [data-k="狀態"],table.ttrack [data-k="結算"],table.ttrack [data-k="備註"]{display:none}table.ttrack th,table.ttrack td{padding:6px 3px}table.ttrack .tsel{font-size:13.5px}table.ttrack th{font-size:14px;white-space:normal}}
+.tsel.tv-bad{border-color:#f0b4b4} .tsel.tv-ok{border-color:#a8dcbc}
+.tsum{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tsum button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:15.5px}
+.tsum button b{font-size:20px;color:var(--bad);margin-right:6px}
+.tsum button.on{outline:3px solid var(--brand2)}
+.tsum button.zero b{color:var(--ok)}
 .issues li{margin:8px 0}
+a.lnk{color:var(--brand2);cursor:pointer;text-decoration:underline dotted}
+table.ttrack td{vertical-align:middle}
 .issues li span{cursor:pointer}
 .issues li span:hover{color:var(--brand2);text-decoration:underline}
 .issues li .btn{margin-left:6px;vertical-align:1px}
@@ -202,7 +215,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.7</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.9</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -216,6 +229,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
       <button data-p="dash"><span class="ico">📊</span>總覽</button>
       <button data-p="prog"><span class="ico">📋</span>工程進度</button>
       <button data-p="rep"><span class="ico">🔁</span>汰換彙總</button>
+      <button data-p="track"><span class="ico">📌</span>施工追蹤</button>
       <button data-p="leak"><span class="ico">🔎</span>探漏搶修</button>
       <button data-p="report"><span class="ico">📄</span>產生報告</button>
       <button data-p="set"><span class="ico">⚙️</span>參數設定</button>
@@ -234,7 +248,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 <script>
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
-var API_URL = "https://script.google.com/macros/s/AKfycbzeMoyp6WATJk5cRyn9pOtoSbsJ2TImJJac2RF7tyGqkdxqejOzb8yc1mCPyBhqTMUqHw/exec";
+var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_pw_v1";
 var TIMEOUT_MS = 25000;
 
@@ -440,7 +454,7 @@ function statsFor(y, m1, m2) {
 /* ---------- 版面 ---------- */
 function render() {
   $$("#nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.p === (UI.page === "drill" ? "dash" : UI.page)); });
-  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, rep: renderRep, leak: renderLeak, report: renderReport, set: renderSet }[UI.page] || renderDash;
+  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, report: renderReport, set: renderSet }[UI.page] || renderDash;
   fn(); saveUI();
 }
 function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : '<span class="badge b-new">新設</span>'; }
@@ -542,6 +556,7 @@ function renderDash() {
   var iss = issuesList();
   h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span><span>（色塊、數字都可點，分開看明細）</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
     '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
+  h += trackDashCard();
   h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
   $("#content").innerHTML = h;
   var dq = $("#dq");
@@ -584,10 +599,24 @@ function renderDrill() {
 function goProg(st) { UI.page = "prog"; UI.st = st; UI.cls = "全部"; render(); }
 
 /* ===== 工程進度 ===== */
+/* ===== 施工追蹤欄位（選項照「案件追蹤管理表」原文）===== */
+var TRACK = [
+  { k: "已繳許可費", s: "許可費", o: ["有繳", "未繳", "無須繳"], bad: ["未繳"], tag: "許可費未繳" },
+  { k: "整壓器", s: "整壓器", o: ["已裝", "未裝", "無須裝"], bad: ["未裝"], tag: "整壓器未裝" },
+  { k: "ESV", s: "ESV", o: ["已裝", "未裝", "無須裝"], bad: ["未裝"], tag: "ESV未裝" },
+  { k: "掛表", s: "掛表", o: ["已掛錶", "待掛表"], bad: ["待掛表"], tag: "待掛表" },
+  { k: "鐵箱／護網", s: "鐵箱／護網", o: ["已安裝", "未安裝", "無須裝"], bad: ["未安裝"], tag: "鐵箱護網未裝" },
+  { k: "水泥基座", s: "水泥基座", o: ["已施作", "未施作", "無須施作"], bad: ["未施作"], tag: "基座未施作" },
+  { k: "二刨", s: "二刨", o: ["未完成(半)", "未完成(全)", "已完成", "無須二刨"], bad: ["未完成(半)", "未完成(全)"], tag: "二刨未完成" },
+  { k: "路權繳回", s: "路權繳回", o: ["已繳回", "未繳回", "無須繳回"], bad: ["未繳回"], tag: "路權未繳回" }
+];
+function trackBad(c) { return TRACK.filter(function (t) { return t.bad.indexOf(c[t.k]) > -1; }); }
+function trackCls(t, v) { if (!v) return "tv-empty"; if (t.bad.indexOf(v) > -1) return "tv-bad"; if (/^無須/.test(v)) return "tv-na"; return "tv-ok"; }
+function todoChips(c) { return trackBad(c).map(function (t) { return '<span class="todo">' + t.tag + "</span>"; }).join(""); }
 var PCOLS = [
   ["類別", "類別"], ["工程編號", "工程編號"], ["工程名稱", "工程名稱"], ["工程位置", "工程位置"], ["狀態", "狀態"],
   ["繳費日", "繳費日"], ["戶數", "戶數", 1], ["預計工期", "工期(天)", 1], ["已施工天數", "已施工(天)", 1],
-  ["長度", "管線(M)", 1], ["現況", "現況"], ["會勘日期", "會勘日期"], ["完工日", "完工日"], ["備註", "備註"]
+  ["長度", "管線(M)", 1], ["現況", "現況"], ["待辦", "施工待辦"], ["會勘日期", "會勘日期"], ["完工日", "完工日"], ["備註", "備註"]
 ];
 function progList() {
   var q = UI.q.trim().toLowerCase();
@@ -619,6 +648,7 @@ function cellVal(c, k) {
   if (k === "類別") return clsBadge(c["類別"]) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
   if (k === "狀態") return stBadge(c["狀態"]);
   if (k === "長度") { var L = caseLen(c); return L ? fmt(L) : ""; }
+  if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
   if (k === "工程編號" && c["類別"] === "汰換") return esc(c[k]) + '<div><span class="badge b-rep" style="font-size:12.5px">' + esc(c["汰換性質"] || "未分") + (c["計畫年度"] ? "・" + esc(c["計畫年度"]) + "年" : "") + "</span></div>";
   return esc(c[k]);
@@ -735,6 +765,77 @@ function renderRep() {
 }
 
 /* ===== 探漏搶修 ===== */
+/* ===== 施工追蹤頁 ===== */
+function trackDashCard() {
+  var h = '<div class="card"><h3>📌 施工追蹤未完成（點數字看是哪些案子）</h3><div class="tsum">';
+  TRACK.forEach(function (t) {
+    var n = DB.cases.filter(function (c) { return t.bad.indexOf(c[t.k]) > -1; }).length;
+    h += '<button class="' + (n ? "" : "zero") + '" onclick="UI.page=\'track\';UI.tf=\'' + t.k + '\';UI.ts=\'全部\';render()"><b>' + n + "</b>" + t.tag + "</button>";
+  });
+  return h + "</div></div>";
+}
+function trackList() {
+  var q = (UI.tq || "").trim().toLowerCase(), f = UI.tf || "", st = UI.ts || "進行中";
+  return DB.cases.filter(function (c) {
+    if (st === "進行中" && c["狀態"] === "已竣工") return false;
+    if (st === "已竣工" && c["狀態"] !== "已竣工") return false;
+    if (f === "__any") { if (!trackBad(c).length) return false; }
+    else if (f === "__none") { if (TRACK.some(function (t) { return c[t.k]; })) return false; }
+    else if (f) { var t = TRACK.filter(function (x) { return x.k === f; })[0]; if (t && t.bad.indexOf(c[f]) < 0) return false; }
+    if (q && [c["工程編號"], c["工程名稱"], c["工程位置"], c["備註"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  }).sort(function (a, b) { return STATUS.indexOf(a["狀態"]) - STATUS.indexOf(b["狀態"]) || String(a["工程編號"]).localeCompare(String(b["工程編號"])); });
+}
+function renderTrack() {
+  var base = DB.cases.filter(function (c) { return (UI.ts || "進行中") === "全部" ? true : (UI.ts || "進行中") === "已竣工" ? c["狀態"] === "已竣工" : c["狀態"] !== "已竣工"; });
+  var h = '<h2 class="pg">📌 施工追蹤<span class="muted" style="font-size:16px;font-weight:500">許可費、整壓器、ESV、掛表、鐵箱／護網、水泥基座、二刨、路權繳回</span><span class="sp"></span><button class="btn" onclick="exportTrackXlsx()">⬇ 匯出追蹤表 Excel</button></h2>';
+  h += '<div class="tsum">';
+  var anyN = base.filter(function (c) { return trackBad(c).length; }).length;
+  h += '<button class="' + (UI.tf === "__any" ? "on " : "") + (anyN ? "" : "zero") + '" onclick="UI.tf=UI.tf===\'__any\'?\'\':\'__any\';renderTrack()"><b>' + anyN + "</b>有任一未完成</button>";
+  TRACK.forEach(function (t) {
+    var n = base.filter(function (c) { return t.bad.indexOf(c[t.k]) > -1; }).length;
+    h += '<button class="' + (UI.tf === t.k ? "on " : "") + (n ? "" : "zero") + '" onclick="UI.tf=UI.tf===\'' + t.k + '\'?\'\':\'' + t.k + '\';renderTrack()"><b>' + n + "</b>" + t.tag + "</button>";
+  });
+  h += "</div>";
+  h += '<div class="toolbar"><input type="search" id="tq" placeholder="搜尋 工程編號／名稱／位置／備註" value="' + esc(UI.tq || "") + '">' + ["進行中", "已竣工", "全部"].map(function (x) { return '<button class="chip c-all' + ((UI.ts || "進行中") === x ? " on" : "") + '" onclick="UI.ts=\'' + x + '\';renderTrack()">' + x + "</button>"; }).join("") + (UI.tf ? '<button class="btn sm" onclick="UI.tf=\'\';renderTrack()">✕ 取消篩選</button>' : "") + "</div>";
+  var list = trackList();
+  h += '<div class="card"><div class="muted" style="margin-bottom:8px">共 ' + list.length + ' 件。下拉選單直接改，改完自動存檔；點工程名稱可打開完整編輯。</div><div class="tblwrap"><table class="t cardify ttrack"><thead><tr><th>工程編號</th><th>工程名稱</th><th data-k="狀態">狀態</th>' + TRACK.map(function (t) { return "<th>" + t.s + "</th>"; }).join("") + '<th data-k="結算">已結算日期</th><th data-k="備註">備註</th></tr></thead><tbody>';
+  list.forEach(function (c) {
+    h += '<tr><td class="nw" data-l="工程編號">' + esc(c["工程編號"] || "（未填）") + '</td><td data-l="工程名稱"><a class="lnk" onclick="openCase(\'' + c.UID + '\')">' + esc(c["工程名稱"]) + '</a>' + (c["類別"] === "汰換" ? " " + clsBadge("汰換") : "") + '</td><td data-k="狀態" data-l="狀態">' + stBadge(c["狀態"]) + "</td>";
+    TRACK.forEach(function (t) {
+      var v = c[t.k] || "", opts = t.o.slice(); if (v && opts.indexOf(v) < 0) opts.push(v);
+      h += '<td data-l="' + t.s + '"><select class="tsel ' + trackCls(t, v) + '" onchange="quickTrack(\'' + c.UID + '\',\'' + t.k + '\',this)"><option value="">—</option>' + opts.map(function (o) { return "<option" + (o === v ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select></td>";
+    });
+    h += '<td class="nw" data-k="結算" data-l="已結算日期">' + esc(roc(c["已結算日期"])) + '</td><td data-k="備註" data-l="備註">' + esc(c["備註"]) + "</td></tr>";
+  });
+  if (!list.length) h += '<tr><td colspan="13" class="empty" data-l="">沒有符合的案件</td></tr>';
+  h += "</tbody></table></div></div>";
+  $("#content").innerHTML = h;
+  var tq = $("#tq");
+  tq.addEventListener("input", function () { UI.tq = tq.value; var pos = tq.selectionStart; renderTrack(); var n = $("#tq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} });
+}
+function quickTrack(uid, k, sel) {
+  var c = caseByUid(uid); if (!c) return;
+  var old = c[k] || "", v = sel.value;
+  if (!PW) sel.value = old; // 還沒輸入密碼前先還原，登入成功才真正存檔
+  needLogin(function () {
+    var it = Object.assign({}, c); it[k] = v;
+    post("saveCase", { item: it, pipes: pipesOf(c).map(function (p) { return Object.assign({}, p); }) }, "✅ 已更新：" + (c["工程名稱"] || c["工程編號"]) + "｜" + k + " → " + (v || "—")).then(function (ok) { if (!ok) renderTrack(); });
+  });
+}
+function exportTrackXlsx() {
+  withXlsx(function () {
+    var list = trackList();
+    var aoa = [["案件追蹤管理表（" + todayRoc() + " 匯出，" + (UI.ts || "進行中") + (UI.tf ? "，篩選：" + (UI.tf === "__any" ? "有任一未完成" : UI.tf) : "") + "）"], ["案件編號", "案件名稱", "類別", "施工狀態"].concat(TRACK.map(function (t) { return t.k; })).concat(["已結算日期", "備註"])], kinds = ["title", "head"];
+    list.forEach(function (c) {
+      aoa.push([c["工程編號"], c["工程名稱"], c["類別"], c["狀態"]].concat(TRACK.map(function (t) { return c[t.k] || ""; })).concat([roc(c["已結算日期"]), c["備註"]]));
+      kinds.push(trackBad(c).length ? "red" : "row");
+    });
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, [13, 22, 7, 10, 10, 9, 9, 9, 11, 10, 11, 11, 12, 30]), "案件追蹤表");
+    XLSX.writeFile(wb, "案件追蹤表_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
+}
 function renderLeak() {
   var list = DB.leaks.filter(function (l) { return inPeriod(l["日期"], UI.y, UI.m1, UI.m2); }).sort(function (a, b) { return String(a["日期"]).localeCompare(String(b["日期"])); });
   var a = 0, b = 0;
@@ -974,6 +1075,13 @@ function drawCase() {
   h += inp("預定施工日", "預定施工日", "", "date") + inp("施工日", "施工日（報告用）", "", "date") + '<div class="f"><label>完工日（報告用）' + (it["狀態"] === "已竣工" ? ' <span class="req">*</span>' : "") + '</label><input data-f="完工日" type="date" value="' + esc(normDate(it["完工日"])) + '"></div>';
   h += inp("現況", "現況", "w3") + inp("會勘日期", "會勘日期", "w3", "text", "115/10/06 或文字");
   h += '<div class="f w6"><label>備註</label><textarea data-f="備註" rows="2">' + esc(it["備註"]) + "</textarea></div></div>";
+  h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:#7a5af5"></span>📌 施工追蹤<span class="meta">紅色＝未完成，會出現在「施工待辦」</span></div><div class="form">';
+  TRACK.forEach(function (t) {
+    var v = it[t.k] || "";
+    var opts = t.o.slice(); if (v && opts.indexOf(v) < 0) opts.push(v);
+    h += '<div class="f"><label>' + t.k + '</label><select data-f="' + t.k + '"><option value="">—</option>' + opts.map(function (o) { return "<option" + (o === v ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select></div>";
+  });
+  h += '<div class="f"><label>已結算日期</label><input data-f="已結算日期" type="date" value="' + esc(normDate(it["已結算日期"])) + '"></div></div>';
   // 管線
   h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準</span></div>';
   h += '<datalist id="dlPipe">' + PIPE_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + '</datalist><datalist id="dlRm">' + RM_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + "</datalist>";
@@ -1027,7 +1135,7 @@ function delPipe(i) { readCaseForm(); EDIT.pipes.splice(i, 1); if (!EDIT.pipes.l
 function saveCase() {
   readCaseForm();
   var it = EDIT.item;
-  ["繳費日", "會勘日期", "預定施工日", "施工日", "完工日"].forEach(function (k) { it[k] = normDate(it[k]); });
+  ["繳費日", "會勘日期", "預定施工日", "施工日", "完工日", "已結算日期"].forEach(function (k) { it[k] = normDate(it[k]); });
   if (!it["工程編號"]) { toast("請填工程編號", 3000); return; }
   if (it["類別"] === "汰換" && !it["汰換性質"]) { toast("汰換工程請選「計畫性／非計畫性」", 3500); return; }
   if (it["類別"] !== "汰換") { it["汰換性質"] = ""; it["計畫年度"] = ""; }
