@@ -268,7 +268,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.6</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.7</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -284,7 +284,6 @@ table.ttrack td{vertical-align:middle}
       <button data-p="prog"><span class="ico">📋</span>工程進度</button>
       <button data-p="rep"><span class="ico">🔁</span>汰換彙總</button>
       <button data-p="track"><span class="ico">📌</span>施工追蹤</button>
-      <button data-p="mmap"><span class="ico">🔗</span>換表對照</button>
       <button data-p="leak"><span class="ico">🔎</span>探漏搶修</button>
       <button data-p="report"><span class="ico">📄</span>產生報告</button>
       <button data-p="log"><span class="ico">🕘</span>修改紀錄</button>
@@ -418,7 +417,7 @@ function req(method, payload) {
   });
 }
 function setData(d) {
-  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {}; DB.logs = d.logs || []; DB.mmap = d.mmap || []; DB.meter = d.meter || null;
+  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {}; DB.logs = d.logs || []; DB.mmap = d.mmap || []; DB.meter = d.meter || null; AUTOMAP = null;
   PB = {};
   DB.pipes.forEach(function (p) { (PB[p["案件UID"]] = PB[p["案件UID"]] || []).push(p); });
   $("#navFoot").innerHTML = "案件 " + DB.cases.length + " 筆<br>讀取於 " + new Date().toLocaleTimeString("zh-TW", { hour12: false });
@@ -521,7 +520,7 @@ function statsFor(y, m1, m2, withMod) {
 /* ---------- 版面 ---------- */
 function render() {
   $$("#nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.p === (UI.page === "drill" ? "dash" : UI.page)); });
-  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, mmap: renderMmap, rep: renderRep, leak: renderLeak, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
+  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
   fn(); saveUI();
 }
 function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : c === "改裝" ? '<span class="badge b-mod" title="工程編號第7碼R，不列入董監事統計">改裝</span>' : '<span class="badge b-new">新設</span>'; }
@@ -579,14 +578,9 @@ function issuesList() {
     if (byCode[c["工程編號"]].length > 1 && byCode[c["工程編號"]].some(function (o) { return o["工程名稱"] !== c["工程名稱"]; })) out.push([c.UID, "工程編號重複（案名不同）：" + tag]);
     if (c["狀態"] === "已竣工" && !isIndiv(c) && !isISO(c["完工日"])) out.push([c.UID, "已竣工但沒有完工日（報告抓不到）：" + tag]);
     if (c["狀態"] === "已竣工" && !isIndiv(c) && !caseLen(c)) out.push([c.UID, "已竣工但沒有管線長度：" + tag]);
-    var mt = meterFor(c);
-    if (mt && mt.act > 0 && mt.owe <= 0 && c["掛表"] === "待掛表") out.push([c.UID, "換表系統顯示錶已領齊（" + mt.act + " 只），施工追蹤「掛表」還是待掛表：" + tag, "meter"]);
     if (c["類別"] === "汰換" && (!c["汰換性質"] || !c["計畫年度"])) out.push([c.UID, "汰換工程缺計畫性／計畫年度：" + tag]);
     if (c["狀態"] === "完工待驗收") out.push([c.UID, "完工待驗收（驗收後改『已竣工』並填完工日才會進報告）：" + tag]);
   });
-  var nq = (DB.mmap || []).filter(function (m) { return m["確認"] === "?"; }).length;
-  if (nq) out.push(["__mmap", "換表對照有 " + nq + " 筆待確認（點這裡到「🔗 換表對照」確認）", "mmap"]);
-  if (DB.meter && DB.meter.ok === false) out.push(["__mmap", "⚠ " + (DB.meter.msg || "讀不到換表系統"), "mmap"]);
   var seen = {};
   return out.filter(function (x) { var k = x[0] + x[1]; if (seen[k]) return false; seen[k] = 1; return true; });
 }
@@ -707,7 +701,7 @@ function todoChips(c) { return trackBad(c).map(function (t) { return '<span clas
 var PCOLS = [
   ["類別", "類別"], ["工程編號", "工程編號"], ["工程名稱", "工程名稱"], ["工程位置", "工程位置"], ["狀態", "狀態"],
   ["繳費日", "繳費日"], ["戶數", "戶數", 1], ["預計工期", "工期(天)", 1], ["已施工天數", "已施工(天)", 1],
-  ["長度", "管線(M)", 1], ["現況", "現況"], ["待辦", "施工待辦"], ["換表", "換表(只)"], ["會勘日期", "會勘日期"], ["完工日", "完工日"], ["備註", "備註"]
+  ["長度", "管線(M)", 1], ["現況", "現況"], ["待辦", "施工待辦"], ["換表", "換表"], ["會勘日期", "會勘日期"], ["完工日", "完工日"], ["備註", "備註"]
 ];
 function progList() {
   var q = UI.q.trim().toLowerCase();
@@ -742,7 +736,7 @@ function cellVal(c, k) {
   if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
   if (k === "工程名稱") return esc(c[k]) + (c["廠商"] ? "<div>" + (c["廠商"] ? '<span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span> " : "") + "" + "</div>" : "");
-  if (k === "換表") { var m = meterFor(c); return m ? '<span class="mtr ' + (m.owe > 0 ? "owe" : "ok") + '" title="' + esc(m.names) + '">需 ' + m.est + "／領 " + (m.act - m.ret) + (m.owe > 0 ? "<br><b>欠 " + m.owe + "</b>" : "<br>✓ 已領齊") + "</span>" : ""; }
+  if (k === "換表") { var m = meterFor(c); return !m ? "" : m.owe <= 0 && m.est > 0 ? '<span class="mtr ok" title="換表系統：' + esc(m.names) + "，需 " + m.est + "／領 " + (m.act - m.ret) + '">✓ 已領齊</span>' : m.est > 0 ? '<span class="mtr owe" title="換表系統：' + esc(m.names) + '">需 ' + m.est + "／領 " + (m.act - m.ret) + "</span>" : ""; }
   if (k === "工程編號" && c["類別"] === "汰換") return esc(c[k]) + '<div><span class="badge b-rep" style="font-size:12.5px">' + esc(c["汰換性質"] || "未分") + (c["計畫年度"] ? "・" + esc(c["計畫年度"]) + "年" : "") + "</span></div>";
   return esc(c[k]);
 }
@@ -860,9 +854,21 @@ function renderRep() {
 function meterList() { return DB.meter && DB.meter.ok ? DB.meter.list : []; }
 function meterByName(n) { var l = meterList(); for (var i = 0; i < l.length; i++) if (l[i].name === n) return l[i]; return null; }
 // 某工程對應到的換表建案（預設只算已確認；withPending＝連待確認一起）
-function meterFor(c, withPending) {
+// 自動對應：已存的對照＋（換表需求 > 0 且名稱配得到的）系統自動配；配不到就空白
+var AUTOMAP = null;
+function autoMaps() {
+  if (AUTOMAP) return AUTOMAP;
+  var out = (DB.mmap || []).filter(function (m) { return m["案件UID"] && m["確認"] !== "N"; }).map(function (m) { return { name: m["換表建案"], uid: m["案件UID"] }; });
+  var known = {}; out.forEach(function (m) { known[m.name] = 1; });
+  meterList().forEach(function (mt) {
+    if (known[mt.name] || !(Number(mt.est) > 0)) return;
+    var g = guessCase(mt); if (g) out.push({ name: mt.name, uid: g.UID });
+  });
+  return (AUTOMAP = out);
+}
+function meterFor(c) {
   if (!c || !c.UID) return null;
-  var maps = (DB.mmap || []).filter(function (m) { return m["案件UID"] === c.UID && (m["確認"] === "Y" || (withPending && m["確認"] === "?")); });
+  var maps = autoMaps().filter(function (m) { return m.uid === c.UID; }).map(function (m) { return { "換表建案": m.name, "確認": "Y" }; });
   if (!maps.length) return null;
   var o = { names: [], est: 0, act: 0, ret: 0, hang: "", pay: "", specs: [], pending: maps.some(function (m) { return m["確認"] !== "Y"; }) };
   maps.forEach(function (m) {
@@ -900,15 +906,19 @@ function renderMmap() {
   var q = (UI.mq2 || "").trim().toLowerCase();
   if (q) list = list.filter(function (m) { return m.name.toLowerCase().indexOf(q) > -1; });
   var mapOf = function (n) { return (DB.mmap || []).filter(function (m) { return m["換表建案"] === n; })[0]; };
+  // 需求 0＝倉管直接領出（沒有預估），不需要對應工程，預設收起來
+  var isZero = function (m) { return !(Number(m.est) > 0) && !mapOf(m.name); };
+  var nZero = list.filter(isZero).length;
+  if (!UI.mzero) list = list.filter(function (m) { return !isZero(m); });
   var cnt = { Y: 0, "?": 0, none: 0 };
   list.forEach(function (m) { var mp = mapOf(m.name); cnt[mp ? (mp["確認"] === "Y" ? "Y" : "?") : "none"]++; });
-  h += '<div class="toolbar"><input type="search" id="mq2" name="srch_mq2" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋換表建案名稱" value="' + esc(UI.mq2 || "") + '">' + '<span class="muted">已確認 ' + cnt.Y + "｜待確認 " + cnt["?"] + "｜未對應 " + cnt.none + "</span></div>";
-  h += '<div class="card"><div class="muted" style="margin-bottom:8px">只列換表系統「工務部」的建案。「系統建議」的確認一下按 ✔；「未對應」＝工程系統沒有這個案子，不用理它。</div><div class="tblwrap"><table class="t cardify"><thead><tr><th>換表建案</th><th>規格</th><th class="num">需求</th><th class="num">已領</th><th class="num">尚欠</th><th>預計掛表</th><th>繳費</th><th>對應工程</th><th>狀態</th><th></th></tr></thead><tbody>';
+  h += '<div class="toolbar"><input type="search" id="mq2" name="srch_mq2" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋換表建案名稱" value="' + esc(UI.mq2 || "") + '">' + '<span class="muted">已確認 ' + cnt.Y + "｜待確認 " + cnt["?"] + "｜未對應 " + cnt.none + "</span>" + (nZero ? '<button class="btn sm" onclick="UI.mzero=!UI.mzero;renderMmap()">' + (UI.mzero ? "－ 收起" : "＋ 顯示") + "倉管直接領出（需求 0）" + nZero + " 筆</button>" : "") + "</div>";
+  h += '<div class="card"><div class="muted" style="margin-bottom:8px">只列換表系統「工務部」的建案。「系統建議」的確認一下按 ✔；「未對應」＝工程系統沒有這個案子，不用理它。需求 0 的是倉管直接領出、沒有預估，不用對應，已先收起來。</div><div class="tblwrap"><table class="t cardify"><thead><tr><th>換表建案</th><th>規格</th><th class="num">需求</th><th class="num">已領</th><th class="num">尚欠</th><th>預計掛表</th><th>繳費</th><th>對應工程</th><th>狀態</th><th></th></tr></thead><tbody>';
   var opts = DB.cases.slice().sort(function (a, b) { return String(a["工程名稱"]).localeCompare(String(b["工程名稱"]), "zh-Hant"); });
   list.sort(function (a, b) { var ma = mapOf(a.name), mb = mapOf(b.name); var ra = ma ? (ma["確認"] === "Y" ? 2 : 0) : 1, rb = mb ? (mb["確認"] === "Y" ? 2 : 0) : 1; return ra - rb || a.name.localeCompare(b.name, "zh-Hant"); });
   list.forEach(function (m, i) {
-    var mp = mapOf(m.name), g = mp ? null : guessCase(m), cur = mp ? mp["案件UID"] : (g ? g.UID : ""), owe = m.est - (m.act - m.ret);
-    var st = mp ? (mp["確認"] === "Y" ? '<span class="badge b-ok">已確認</span>' : '<span class="badge b-warn">待確認</span>') : (g ? '<span class="badge b-st">系統建議</span>' : '<span class="muted">未對應</span>');
+    var mp = mapOf(m.name), g = (mp || isZero(m)) ? null : guessCase(m), cur = mp ? mp["案件UID"] : (g ? g.UID : ""), owe = m.est - (m.act - m.ret);
+    var st = mp ? (mp["確認"] === "Y" ? '<span class="badge b-ok">已確認</span>' : '<span class="badge b-warn">待確認</span>') : (g ? '<span class="badge b-st">系統建議</span>' : isZero(m) ? '<span class="muted">倉管直接領出</span>' : '<span class="muted">未對應</span>');
     h += '<tr><td data-l="換表建案"><b>' + esc(m.name) + '</b><div class="muted" style="font-size:13.5px">' + esc(m.dept) + "</div></td><td data-l=\"規格\">" + esc(m.specs) + '</td><td class="num" data-l="需求">' + m.est + '</td><td class="num" data-l="已領">' + (m.act - m.ret) + '</td><td class="num' + (owe > 0 ? " red" : "") + '" data-l="尚欠">' + owe + '</td><td class="nw" data-l="預計掛表">' + esc(m.hang) + '</td><td data-l="繳費">' + esc(m.pay) + '</td><td data-l="對應工程"><select class="tsel" id="mm' + i + '" style="max-width:260px"><option value="">（不對應）</option>' + opts.map(function (c) { return '<option value="' + c.UID + '"' + (c.UID === cur ? " selected" : "") + ">" + esc((c["工程編號"] || "未填") + " " + c["工程名稱"] + "（" + c["狀態"] + "）") + "</option>"; }).join("") + '</select></td><td data-l="狀態">' + st + '</td><td class="act" data-l=""><button class="btn sm' + (mp && mp["確認"] === "Y" ? "" : " pri") + '" onclick="confirmMmap(\'' + esc(m.name).replace(/'/g, "\\'") + '\',' + i + ')">✔ 確認</button></td></tr>';
   });
   if (!list.length) h += '<tr><td colspan="10" class="empty" data-l="">沒有資料</td></tr>';
@@ -980,7 +990,6 @@ function renderTrack() {
     TRACK.forEach(function (t) {
       var pv = pendGet(c.UID, t.k), v = pv !== undefined ? pv : (c[t.k] || ""), opts = t.o.slice(); if (v && opts.indexOf(v) < 0) opts.push(v); if (c[t.k] && opts.indexOf(c[t.k]) < 0) opts.push(c[t.k]);
       var hint = "";
-      if (t.k === "掛表") { var mm = meterFor(c); if (mm && mm.act > 0 && mm.owe <= 0 && v !== "已掛錶") hint = '<button class="mini" title="換表系統：需求 ' + mm.est + "、已領 " + mm.act + '，錶已領齊" onclick="stageMeterHang(\'' + c.UID + '\',this)">🔧錶已領齊</button>'; else if (mm) hint = '<div class="mtr-s">需' + mm.est + "／欠" + Math.max(0, mm.owe) + "</div>"; }
       h += '<td data-l="' + t.s + '"><select class="tsel ' + trackCls(t, v) + (pv !== undefined ? " chg" : "") + '" title="' + (pv !== undefined ? "原本：" + esc(c[t.k] || "—") : "") + '" onchange="stageTrack(\'' + c.UID + '\',\'' + t.k + '\',this)"><option value="">—</option>' + opts.map(function (o) { return "<option" + (o === v ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select>" + hint + "</td>";
     });
     h += '<td class="nw" data-k="結算" data-l="已結算日期">' + esc(roc(c["已結算日期"])) + '</td><td data-k="備註" data-l="備註">' + esc(c["備註"]) + "</td></tr>";
@@ -1494,8 +1503,8 @@ function drawCase() {
   });
   h += '<div class="f"><label>已結算日期</label><input data-f="已結算日期" type="date" value="' + esc(normDate(it["已結算日期"])) + '"></div></div>';
   if (it.UID) {
-    var mf = meterFor(it, true);
-    h += '<div class="mbox">🔧 <b>換表系統</b>：' + (mf ? esc(mf.names) + (mf.pending ? '（<span class="red">對照待確認</span>）' : "") + "｜需求 <b>" + mf.est + "</b> 只" + (mf.specs ? "（" + esc(mf.specs) + "）" : "") + "｜已領 <b>" + mf.act + "</b>" + (mf.ret ? "｜退回 " + mf.ret : "") + "｜尚欠 <b class=\"" + (mf.owe > 0 ? "red" : "") + "\">" + mf.owe + "</b>｜預計掛表 " + esc(mf.hang || "—") + "｜繳費 " + esc(mf.pay || "—") : '尚未對應換表系統的建案（到左邊「🔗 換表對照」設定）') + "</div>";
+    var mf = meterFor(it);
+    h += '<div class="mbox">🔧 <b>換表系統</b>：' + (mf ? esc(mf.names) + "" + "｜需求 <b>" + mf.est + "</b> 只" + (mf.specs ? "（" + esc(mf.specs) + "）" : "") + "｜已領 <b>" + mf.act + "</b>" + (mf.ret ? "｜退回 " + mf.ret : "") + "｜尚欠 <b class=\"" + (mf.owe > 0 ? "red" : "") + "\">" + mf.owe + "</b>｜預計掛表 " + esc(mf.hang || "—") + "｜繳費 " + esc(mf.pay || "—") : '—（換表系統沒有對應的建案）') + "</div>";
   }
   // 管線
   h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準</span></div>';
@@ -1744,7 +1753,6 @@ var TOUR = [
   { p: "track", s: ".tgrid", t: "📌 施工追蹤：點狀態篩選", d: "每個項目都列出「已裝／未裝／無須裝」的件數，點了就只看那些，再點一次取消。" },
   { p: "track", s: "table.ttrack select", t: "⬇ 用下拉修改", d: "直接在表格裡選，改過的格子會變<b>黃色</b>。可以一次改很多格。" },
   { p: "track", s: "#content", t: "💾 最後一起儲存", d: "改完後畫面底部會出現黃色提示列，列出改了哪些，每一項都能「↩ 改回」。<br>按「💾 儲存修改」→ 確認框 →「確定修改」才會存。忘了存就換頁，會跳提醒。" },
-  { p: "mmap", s: "h2.pg", t: "🔗 換表對照（串接換表系統）", d: "把換表系統的建案對應到工程後，工程進度會顯示「需幾只／領幾只／欠幾只」；錶領齊時，施工追蹤的掛表旁會出現「🔧錶已領齊」，按一下就能改成已掛錶。換表系統本身不會被修改。" },
   { p: "rep", s: "table.t", t: "🔁 汰換彙總", d: "依年度、計畫性／非計畫性自動整理。<b>紅字</b>＝尚未竣工。計畫性汰換要呈報能源署。右上角可以匯出 Excel。" },
   { p: "leak", s: "h2.pg", t: "🔎 探漏搶修", d: "每次探漏的區域、立即修護件數、轉工務部件數，會自動進董監事會報告。" },
   { p: "report", s: ".tabs", t: "📄 產生報告（兩種）", d: "<b>董監事會</b>：依統計期間產生「二、工程報告」，下載 Word 或複製貼上。<br><b>主管會議</b>：勾選狀態／類別／廠商，下載跟簡報一樣格式的 Excel。" },
