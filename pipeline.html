@@ -268,7 +268,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.7</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.9</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -452,7 +452,7 @@ function post(action, data, okMsg) {
 /* ---------- 期間 ---------- */
 function fillPeriod() {
   var ys = {}; ys[rocYearNow()] = 1;
-  DB.cases.forEach(function (c) { if (isISO(c["完工日"])) ys[parseInt(c["完工日"].slice(0, 4), 10) - 1911] = 1; });
+  DB.cases.forEach(function (c) { ["完工日", "繳費日"].forEach(function (k) { if (isISO(c[k])) ys[parseInt(c[k].slice(0, 4), 10) - 1911] = 1; }); });
   DB.leaks.forEach(function (l) { if (isISO(l["日期"])) ys[parseInt(l["日期"].slice(0, 4), 10) - 1911] = 1; });
   var list = Object.keys(ys).map(Number).sort(function (a, b) { return b - a; });
   if (list.indexOf(UI.y) < 0) UI.y = list[0];
@@ -768,7 +768,7 @@ function caseTable(list, cls) {
       var nw = ["工程編號", "狀態", "繳費日", "會勘日期", "完工日"].indexOf(col[0]) > -1;
       h += '<td data-k="' + col[0] + '" data-l="' + col[1] + '"' + (col[2] ? ' class="num"' : (nw ? ' class="nw"' : "")) + ">" + cellVal(c, col[0]) + "</td>";
     });
-    var act = '<button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button>' + (c["狀態"] !== "已竣工" ? ' <button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\',\'done\')">✅ 完工</button>' : "");
+    var act = '<button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button>';
     h += '<td class="act" data-l="">' + act + "</td></tr>";
   });
   h += '<tr class="sub"><td data-l="">小計</td>';
@@ -1201,9 +1201,17 @@ function renderReport() {
 var MGR_ST = ["待掛表", "施工中", "待施工", "完工待驗收"];
 var VENDORS = ["元誠", "欣宬"];
 function mgrF() {
-  if (!UI.mf) UI.mf = { st: { "待掛表": 1, "施工中": 1, "待施工": 1, "完工待驗收": 0 }, cls: { "新設": 1, "汰換": 1, "改裝": 1 }, vd: { "元誠": 1, "欣宬": 1, "未指定": 1 }, q: "" };
+  if (!UI.mf) UI.mf = { st: { "待掛表": 1, "施工中": 1, "待施工": 1, "完工待驗收": 0 }, cls: { "新設": 1, "汰換": 1, "改裝": 1 }, vd: { "元誠": 1, "欣宬": 1, "未指定": 1 }, per: "period", inner: 1, q: "" };
+  if (!UI.mf.per) { UI.mf.per = "period"; UI.mf.inner = 1; }
   return UI.mf;
 }
+// 主管會議：依右上「統計期間」篩繳費日；沒有繳費日（內部工程）可勾選是否列入
+function mgrInPer(c, f) {
+  if (f.per !== "period") return true;
+  if (isISO(c["繳費日"])) return inPeriod(c["繳費日"], UI.y, UI.m1, UI.m2);
+  return !!f.inner;
+}
+function mgrPerText() { var f = mgrF(); return f.per === "period" ? "繳費日 " + periodText() + (f.inner ? "＋內部工程" : "") : "全部期間"; }
 function rocS(v) { if (!isISO(v)) return v || ""; var p = v.split("-"); return (parseInt(p[0], 10) - 1911) + "/" + parseInt(p[1], 10) + "/" + parseInt(p[2], 10); }
 function mdS(v) { if (!isISO(v)) return v || ""; var p = v.split("-"); return parseInt(p[1], 10) + "月" + parseInt(p[2], 10) + "日"; }
 function mgrCols(st) {
@@ -1230,6 +1238,7 @@ function mgrSections() {
       if (c["狀態"] !== st) return false;
       if (!f.cls[clsOf(c)] && f.cls[clsOf(c)] !== undefined) return false;
       if (!f.vd[c["廠商"] || "未指定"]) return false;
+      if (!mgrInPer(c, f)) return false;
       if (q && [c["工程編號"], c["工程名稱"], c["工程位置"], c["現況"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
       return true;
     });
@@ -1242,8 +1251,9 @@ function mgrSections() {
 function renderMgr(tabs) {
   var f = mgrF();
   var cb = function (grp, k, lab) { return '<label class="ck"><input type="checkbox"' + (f[grp][k] ? " checked" : "") + ' onchange="UI.mf.' + grp + '[\'' + k + '\']=this.checked?1:0;renderReport()"> ' + (lab || k) + "</label>"; };
-  var h = tabs + '<h2 class="pg">📊 主管會議｜施工案件<span class="muted" style="font-size:16px;font-weight:500">資料日期 ' + todayRoc() + '</span><span class="sp"></span><button class="btn pri" onclick="exportMgrXlsx()">⬇ 下載 Excel</button></h2>';
-  h += '<div class="card mgrf"><div><b>狀態</b>' + MGR_ST.map(function (x) { return cb("st", x); }).join("") + '</div><div><b>類別</b>' + cb("cls", "新設") + cb("cls", "汰換") + cb("cls", "改裝") + '</div><div><b>廠商</b>' + cb("vd", "元誠") + cb("vd", "欣宬") + cb("vd", "未指定") + '</div><div class="toolbar" style="margin:6px 0 0"><input type="search" id="mq" name="srch_mq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="再用關鍵字篩選：工程編號／名稱／位置／現況（可留空）" value="' + esc(f.q || "") + '"></div></div>';
+  var h = tabs + '<h2 class="pg">📊 主管會議｜施工案件<span class="muted" style="font-size:16px;font-weight:500">' + esc(mgrPerText()) + "｜資料日期 " + todayRoc() + '</span><span class="sp"></span><button class="btn pri" onclick="exportMgrXlsx()">⬇ 下載 Excel</button></h2>';
+  var rb = function (v, lab) { return '<label class="ck"><input type="radio" name="mper"' + (f.per === v ? " checked" : "") + ' onchange="UI.mf.per=\'' + v + '\';renderReport()"> ' + lab + "</label>"; };
+  h += '<div class="card mgrf"><div><b>期間</b>' + rb("period", "依右上「統計期間」（繳費日 " + periodText() + "）") + rb("all", "全部（不分期間）") + (f.per === "period" ? '<label class="ck"><input type="checkbox"' + (f.inner ? " checked" : "") + ' onchange="UI.mf.inner=this.checked?1:0;renderReport()"> 含內部工程（沒有繳費日）</label>' : "") + '</div><div><b>狀態</b>' + MGR_ST.map(function (x) { return cb("st", x); }).join("") + '</div><div><b>類別</b>' + cb("cls", "新設") + cb("cls", "汰換") + cb("cls", "改裝") + '</div><div><b>廠商</b>' + cb("vd", "元誠") + cb("vd", "欣宬") + cb("vd", "未指定") + '</div><div class="toolbar" style="margin:6px 0 0"><input type="search" id="mq" name="srch_mq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="再用關鍵字篩選：工程編號／名稱／位置／現況（可留空）" value="' + esc(f.q || "") + '"></div></div>';
   var S = mgrSections();
   if (!S.length) h += '<div class="card"><div class="empty">沒有符合條件的案件</div></div>';
   var TH = 0, TD = 0;
@@ -1281,7 +1291,7 @@ function exportMgrXlsx() {
       var cols = mgrCols(sec.st), off = sec.hasV ? 2 : 1, ncol = off + cols.length;
       var aoa = [], kinds = [], merges = [], blue = [];
       var put = function (row, kind) { while (row.length < ncol) row.push(""); aoa.push(row); kinds.push(kind); return aoa.length - 1; };
-      put(["二.施工案件－" + sec.st + "（資料日期：" + todayRoc() + "）"], "mtitle");
+      put(["二.施工案件－" + sec.st + "（" + mgrPerText() + "｜資料日期：" + todayRoc() + "）"], "mtitle");
       merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: ncol - 1 } });
       var heads = ["項目"].concat(sec.hasV ? ["廠商"] : []).concat(cols.map(function (c) { return c[0]; }));
       put(heads.slice(), "mhead");
@@ -1749,7 +1759,7 @@ var TOUR = [
   { p: "dash", s: ".issues,.card:has(h3)", f: function () { var c = $$(".card").filter(function (x) { return /待確認事項/.test(x.innerText); })[0]; return c; }, t: "⚠ 待確認事項", d: "系統自動檢查資料問題（編號重複、已竣工沒填完工日…）。點文字打開那筆修改，改正後會自動消失。" },
   { p: "prog", s: ".tabs", t: "📋 工程進度：狀態分頁", d: "進行中／待施工／施工中／待掛表／完工待驗收／已竣工，數字是件數。每一頁都會<b>分新設、汰換兩張表</b>。" },
   { p: "prog", s: "h2.pg .btn.pri", t: "＋ 新增工程", d: "輸入工程編號後，系統會自動判斷<b>新設或汰換</b>（第 7 碼 E/F＝汰換），也可以手動改。" },
-  { p: "prog", s: "table.t td.act", t: "✏️ 編輯／✅ 完工", d: "「編輯」改任何資料；「完工」會把狀態改成已竣工，填<b>完工日和管線長度</b>才會進報告。<br>存檔前會跳確認框列出改了哪些；改了沒存就關掉也會提醒你。" },
+  { p: "prog", s: "table.t td.act", t: "✏️ 編輯", d: "所有修改都從「編輯」進去，包括改狀態。<b>結案</b>＝狀態選「已竣工」並填<b>完工日和管線長度</b>，才會進董監事報告。<br>存檔前會跳確認框列出改了哪些；改了沒存就關掉也會提醒你。" },
   { p: "track", s: ".tgrid", t: "📌 施工追蹤：點狀態篩選", d: "每個項目都列出「已裝／未裝／無須裝」的件數，點了就只看那些，再點一次取消。" },
   { p: "track", s: "table.ttrack select", t: "⬇ 用下拉修改", d: "直接在表格裡選，改過的格子會變<b>黃色</b>。可以一次改很多格。" },
   { p: "track", s: "#content", t: "💾 最後一起儲存", d: "改完後畫面底部會出現黃色提示列，列出改了哪些，每一項都能「↩ 改回」。<br>按「💾 儲存修改」→ 確認框 →「確定修改」才會存。忘了存就換頁，會跳提醒。" },
