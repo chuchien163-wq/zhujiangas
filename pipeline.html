@@ -112,6 +112,15 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .tsel{border:1px solid var(--line);border-radius:7px;padding:2px 2px;font-size:14px;background:#fff;max-width:100%}
 @media (min-width:761px) and (max-width:1450px){table.ttrack [data-k="狀態"],table.ttrack [data-k="結算"],table.ttrack [data-k="備註"]{display:none}table.ttrack th,table.ttrack td{padding:6px 3px}table.ttrack .tsel{font-size:13.5px}table.ttrack th{font-size:14px;white-space:normal}}
 .tsel.tv-bad{border-color:#f0b4b4} .tsel.tv-ok{border-color:#a8dcbc}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:12px}
+.tcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.tcard .tt{font-weight:700;font-size:15.5px;margin-bottom:5px}
+.tch{display:flex;flex-wrap:wrap;gap:5px}
+.tchip{border:1px solid transparent;border-radius:8px;padding:3px 9px;font-size:14.5px;cursor:pointer;font-family:inherit}
+.tchip b{font-size:15.5px;margin-left:2px}
+.tchip.on{outline:3px solid var(--brand2);outline-offset:1px}
+.tchip.dim{opacity:.45}
+.tchip.tv-empty{background:#fff;border-color:#d6dee7;color:#7b8794}
 .tsum{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .tsum button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:15.5px}
 .tsum button b{font-size:20px;color:var(--bad);margin-right:6px}
@@ -215,7 +224,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.9</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v1.9.3</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -463,6 +472,24 @@ function stBadge(s) {
   return '<span class="badge ' + (m[s] || "b-st") + '">' + esc(s || "未設定") + "</span>";
 }
 
+/* ===== 搜尋框：支援注音／倉頡等輸入法（選字完成才搜尋），並稍等 0.3 秒再重畫 ===== */
+var searchTimer = null;
+function bindSearch(id, key, renderFn) {
+  var el = $("#" + id); if (!el) return;
+  var composing = false;
+  var go = function () {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () {
+      var cur = $("#" + id); if (!cur || composing) return;
+      UI[key] = cur.value; var pos = cur.selectionStart;
+      renderFn();
+      var n = $("#" + id); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} }
+    }, 300);
+  };
+  el.addEventListener("compositionstart", function () { composing = true; clearTimeout(searchTimer); });
+  el.addEventListener("compositionend", function () { composing = false; go(); });
+  el.addEventListener("input", function (e) { if (composing || e.isComposing) return; go(); });
+}
 /* ===== 總覽 ===== */
 // 備註裡仍需處理的句子：已經自動解決的（編號已不重複、編號格式已正確）不再列出
 function noteSegs(c, byCode) {
@@ -522,7 +549,7 @@ function renderDash() {
   var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
   var plannedLen = active.reduce(function (t, c) { return t + caseLen(c); }, 0);
   var h = '<h2 class="pg">📊 總覽<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '（以完工日計）</span></h2>';
-  h += '<div class="toolbar"><input type="search" id="dq" placeholder="🔍 搜尋全部工程：工程編號／名稱／位置／管種／現況（不分狀態、不分期間）" value="' + esc(UI.dq || "") + '"></div>';
+  h += '<div class="toolbar"><input type="search" id="dq" name="srch_dq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="🔍 搜尋全部工程：工程編號／名稱／位置／管種／現況（不分狀態、不分期間）" value="' + esc(UI.dq || "") + '"></div>';
   if ((UI.dq || "").trim()) h += dashSearch(UI.dq.trim());
   var dl = function (spec, txt) { return '<a onclick="event.stopPropagation();drill(' + esc(JSON.stringify(spec)) + ')">' + txt + "</a>"; };
   h += '<div class="kpis">' +
@@ -559,11 +586,7 @@ function renderDash() {
   h += trackDashCard();
   h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="openCase(\'' + x[0] + '\')">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
   $("#content").innerHTML = h;
-  var dq = $("#dq");
-  dq.addEventListener("input", function () {
-    UI.dq = dq.value; var pos = dq.selectionStart; renderDash();
-    var n = $("#dq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {}
-  });
+  bindSearch("dq", "dq", renderDash);
 }
 /* ===== 總覽 → 明細 ===== */
 function drill(spec) { UI.drill = spec || {}; UI.page = "drill"; render(); $("#content").scrollTop = 0; }
@@ -705,7 +728,7 @@ function renderProg() {
   var nList = list.filter(function (c) { return c["類別"] !== "汰換"; }), rList = list.filter(function (c) { return c["類別"] === "汰換"; });
   var h = '<h2 class="pg">📋 工程進度<span class="sp"></span><button class="btn" onclick="exportProgXlsx()">⬇ 匯出進度表 Excel</button><button class="btn pri" onclick="openCase()">＋ 新增工程</button></h2>';
   h += '<div class="tabs">' + tabs.map(function (t) { return '<button class="tab' + (UI.st === t ? " on" : "") + '" onclick="UI.st=\'' + t + '\';renderProg()">' + t + '<span class="n">' + cnt(t) + "</span></button>"; }).join("") + "</div>";
-  h += '<div class="toolbar"><input type="search" id="q" placeholder="搜尋 工程編號／名稱／位置／現況（點任一列即可修改）" value="' + esc(UI.q) + '">' +
+  h += '<div class="toolbar"><input type="search" id="q" name="srch_q" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋 工程編號／名稱／位置／現況（點任一列即可修改）" value="' + esc(UI.q) + '">' +
     ["全部", "新設", "汰換"].map(function (c) {
       var n = c === "全部" ? list.length : c === "新設" ? nList.length : rList.length;
       return '<button class="chip c-' + ({ "全部": "all", "新設": "new", "汰換": "rep" }[c]) + (UI.cls === c ? " on" : "") + '" onclick="UI.cls=\'' + c + '\';renderProg()">' + c + "（" + n + "）</button>";
@@ -715,11 +738,7 @@ function renderProg() {
   if (UI.cls !== "新設") h += '<div class="sec-h"><span class="bar" style="background:var(--rep)"></span>汰換工程<span class="meta">' + rList.length + " 件</span></div>" + caseTable(rList, "汰換");
   h += "</div>";
   $("#content").innerHTML = h;
-  var q = $("#q");
-  q.addEventListener("input", function () {
-    UI.q = q.value; var pos = q.selectionStart; renderProg();
-    var nq = $("#q"); nq.focus(); try { nq.setSelectionRange(pos, pos); } catch (e) {}
-  });
+  bindSearch("q", "q", renderProg);
 }
 
 /* ===== 汰換彙總 ===== */
@@ -770,10 +789,12 @@ function trackDashCard() {
   var h = '<div class="card"><h3>📌 施工追蹤未完成（點數字看是哪些案子）</h3><div class="tsum">';
   TRACK.forEach(function (t) {
     var n = DB.cases.filter(function (c) { return t.bad.indexOf(c[t.k]) > -1; }).length;
-    h += '<button class="' + (n ? "" : "zero") + '" onclick="UI.page=\'track\';UI.tf=\'' + t.k + '\';UI.ts=\'全部\';render()"><b>' + n + "</b>" + t.tag + "</button>";
+    h += '<button class="' + (n ? "" : "zero") + '" onclick="UI.page=\'track\';UI.tf=\'' + t.k + '\';UI.tv=\'\';UI.ts=\'全部\';render()"><b>' + n + "</b>" + t.tag + "</button>";
   });
   return h + "</div></div>";
 }
+function setTF(f, v) { if (UI.tf === f && (UI.tv || "") === v) { UI.tf = ""; UI.tv = ""; } else { UI.tf = f; UI.tv = v; } renderTrack(); }
+function tfLabel() { if (!UI.tf) return ""; if (UI.tf === "__any") return "有任一未完成"; return UI.tf + "＝" + (UI.tv === "__blank" ? "未填" : UI.tv || "未完成"); }
 function trackList() {
   var q = (UI.tq || "").trim().toLowerCase(), f = UI.tf || "", st = UI.ts || "進行中";
   return DB.cases.filter(function (c) {
@@ -781,7 +802,12 @@ function trackList() {
     if (st === "已竣工" && c["狀態"] !== "已竣工") return false;
     if (f === "__any") { if (!trackBad(c).length) return false; }
     else if (f === "__none") { if (TRACK.some(function (t) { return c[t.k]; })) return false; }
-    else if (f) { var t = TRACK.filter(function (x) { return x.k === f; })[0]; if (t && t.bad.indexOf(c[f]) < 0) return false; }
+    else if (f) {
+      var t = TRACK.filter(function (x) { return x.k === f; })[0], tv = UI.tv || "";
+      if (tv === "__blank") { if (c[f]) return false; }
+      else if (tv) { if (c[f] !== tv) return false; }
+      else if (t && t.bad.indexOf(c[f]) < 0) return false;
+    }
     if (q && [c["工程編號"], c["工程名稱"], c["工程位置"], c["備註"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
     return true;
   }).sort(function (a, b) { return STATUS.indexOf(a["狀態"]) - STATUS.indexOf(b["狀態"]) || String(a["工程編號"]).localeCompare(String(b["工程編號"])); });
@@ -789,15 +815,24 @@ function trackList() {
 function renderTrack() {
   var base = DB.cases.filter(function (c) { return (UI.ts || "進行中") === "全部" ? true : (UI.ts || "進行中") === "已竣工" ? c["狀態"] === "已竣工" : c["狀態"] !== "已竣工"; });
   var h = '<h2 class="pg">📌 施工追蹤<span class="muted" style="font-size:16px;font-weight:500">許可費、整壓器、ESV、掛表、鐵箱／護網、水泥基座、二刨、路權繳回</span><span class="sp"></span><button class="btn" onclick="exportTrackXlsx()">⬇ 匯出追蹤表 Excel</button></h2>';
-  h += '<div class="tsum">';
   var anyN = base.filter(function (c) { return trackBad(c).length; }).length;
-  h += '<button class="' + (UI.tf === "__any" ? "on " : "") + (anyN ? "" : "zero") + '" onclick="UI.tf=UI.tf===\'__any\'?\'\':\'__any\';renderTrack()"><b>' + anyN + "</b>有任一未完成</button>";
+  h += '<div class="toolbar" style="margin-bottom:8px"><button class="tchip ' + (anyN ? "tv-bad" : "tv-ok") + (UI.tf === "__any" ? " on" : "") + '" onclick="setTF(\'__any\',\'\')"><b>' + anyN + '</b> 件有任一未完成</button><span class="muted" style="font-size:15px">下方每一格都能點：點「已裝」看已裝的、點「未裝」看未裝的，再點一次取消</span></div>';
+  h += '<div class="tgrid">';
   TRACK.forEach(function (t) {
-    var n = base.filter(function (c) { return t.bad.indexOf(c[t.k]) > -1; }).length;
-    h += '<button class="' + (UI.tf === t.k ? "on " : "") + (n ? "" : "zero") + '" onclick="UI.tf=UI.tf===\'' + t.k + '\'?\'\':\'' + t.k + '\';renderTrack()"><b>' + n + "</b>" + t.tag + "</button>";
+    var vals = t.o.slice();
+    base.forEach(function (c) { if (c[t.k] && vals.indexOf(c[t.k]) < 0) vals.push(c[t.k]); });
+    h += '<div class="tcard"><div class="tt">' + t.k + '</div><div class="tch">';
+    vals.forEach(function (v) {
+      var n = base.filter(function (c) { return c[t.k] === v; }).length;
+      var on = UI.tf === t.k && UI.tv === v;
+      h += '<button class="tchip ' + trackCls(t, v) + (on ? " on" : "") + (n ? "" : " dim") + '" onclick="setTF(\'' + t.k + '\',\'' + esc(v) + '\')">' + esc(v) + " <b>" + n + "</b></button>";
+    });
+    var nb = base.filter(function (c) { return !c[t.k]; }).length;
+    if (nb) h += '<button class="tchip tv-empty' + (UI.tf === t.k && UI.tv === "__blank" ? " on" : "") + '" onclick="setTF(\'' + t.k + '\',\'__blank\')">未填 <b>' + nb + "</b></button>";
+    h += "</div></div>";
   });
   h += "</div>";
-  h += '<div class="toolbar"><input type="search" id="tq" placeholder="搜尋 工程編號／名稱／位置／備註" value="' + esc(UI.tq || "") + '">' + ["進行中", "已竣工", "全部"].map(function (x) { return '<button class="chip c-all' + ((UI.ts || "進行中") === x ? " on" : "") + '" onclick="UI.ts=\'' + x + '\';renderTrack()">' + x + "</button>"; }).join("") + (UI.tf ? '<button class="btn sm" onclick="UI.tf=\'\';renderTrack()">✕ 取消篩選</button>' : "") + "</div>";
+  h += '<div class="toolbar"><input type="search" id="tq" name="srch_tq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋 工程編號／名稱／位置／備註" value="' + esc(UI.tq || "") + '">' + ["進行中", "已竣工", "全部"].map(function (x) { return '<button class="chip c-all' + ((UI.ts || "進行中") === x ? " on" : "") + '" onclick="UI.ts=\'' + x + '\';renderTrack()">' + x + "</button>"; }).join("") + (UI.tf ? '<button class="btn sm" onclick="UI.tf=\'\';UI.tv=\'\';renderTrack()">✕ 取消篩選：' + esc(tfLabel()) + "</button>" : "") + "</div>";
   var list = trackList();
   h += '<div class="card"><div class="muted" style="margin-bottom:8px">共 ' + list.length + ' 件。下拉選單直接改，改完自動存檔；點工程名稱可打開完整編輯。</div><div class="tblwrap"><table class="t cardify ttrack"><thead><tr><th>工程編號</th><th>工程名稱</th><th data-k="狀態">狀態</th>' + TRACK.map(function (t) { return "<th>" + t.s + "</th>"; }).join("") + '<th data-k="結算">已結算日期</th><th data-k="備註">備註</th></tr></thead><tbody>';
   list.forEach(function (c) {
@@ -811,8 +846,7 @@ function renderTrack() {
   if (!list.length) h += '<tr><td colspan="13" class="empty" data-l="">沒有符合的案件</td></tr>';
   h += "</tbody></table></div></div>";
   $("#content").innerHTML = h;
-  var tq = $("#tq");
-  tq.addEventListener("input", function () { UI.tq = tq.value; var pos = tq.selectionStart; renderTrack(); var n = $("#tq"); n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} });
+  bindSearch("tq", "tq", renderTrack);
 }
 function quickTrack(uid, k, sel) {
   var c = caseByUid(uid); if (!c) return;
@@ -826,7 +860,7 @@ function quickTrack(uid, k, sel) {
 function exportTrackXlsx() {
   withXlsx(function () {
     var list = trackList();
-    var aoa = [["案件追蹤管理表（" + todayRoc() + " 匯出，" + (UI.ts || "進行中") + (UI.tf ? "，篩選：" + (UI.tf === "__any" ? "有任一未完成" : UI.tf) : "") + "）"], ["案件編號", "案件名稱", "類別", "施工狀態"].concat(TRACK.map(function (t) { return t.k; })).concat(["已結算日期", "備註"])], kinds = ["title", "head"];
+    var aoa = [["案件追蹤管理表（" + todayRoc() + " 匯出，" + (UI.ts || "進行中") + (UI.tf ? "，篩選：" + tfLabel() : "") + "）"], ["案件編號", "案件名稱", "類別", "施工狀態"].concat(TRACK.map(function (t) { return t.k; })).concat(["已結算日期", "備註"])], kinds = ["title", "head"];
     list.forEach(function (c) {
       aoa.push([c["工程編號"], c["工程名稱"], c["類別"], c["狀態"]].concat(TRACK.map(function (t) { return c[t.k] || ""; })).concat([roc(c["已結算日期"]), c["備註"]]));
       kinds.push(trackBad(c).length ? "red" : "row");
