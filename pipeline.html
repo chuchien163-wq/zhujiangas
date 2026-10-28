@@ -10,7 +10,7 @@
 :root{
   --bg:#eef2f6; --panel:#ffffff; --ink:#1c2733; --sub:#5b6b7c; --line:#d6dee7;
   --brand:#1d4e89; --brand2:#2f6db5; --brand-soft:#e3edf9;
-  --new:#1f6fd1; --new-soft:#e1edfc; --rep:#d96b0b; --rep-soft:#fdebd9;
+  --new:#1f6fd1; --new-soft:#e1edfc; --rep:#d96b0b; --rep-soft:#fdebd9; --mod:#7a3fc6; --mod-soft:#efe5fb;
   --ok:#1e8a4c; --ok-soft:#dff3e7; --warn:#b7791f; --warn-soft:#fdf3d8; --bad:#c53030; --bad-soft:#fde2e2;
   --shadow:0 1px 3px rgba(20,40,70,.08),0 4px 14px rgba(20,40,70,.06);
 }
@@ -38,9 +38,10 @@ h2.pg{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px;fl
 h2.pg .sp{flex:1}
 .card{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
 .card h3{margin:0 0 10px;font-size:18px}
-.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.grid2>*{min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px}
 .kpi{background:var(--panel);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;border-top:5px solid var(--brand)}
-.kpi.new{border-top-color:var(--new)} .kpi.rep{border-top-color:var(--rep)} .kpi.ok{border-top-color:var(--ok)}
+.kpi.new{border-top-color:var(--new)} .kpi.rep{border-top-color:var(--rep)} .kpi.mod{border-top-color:var(--mod)} .kpi.ok{border-top-color:var(--ok)}
 .kpi .lb{font-size:15px;color:var(--sub)}
 .kpi.click{cursor:pointer;transition:transform .12s,box-shadow .12s}
 .kpi.click:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(20,40,70,.16)}
@@ -52,7 +53,7 @@ h2.pg .sp{flex:1}
 .kpi .d{font-size:15px;color:var(--sub);margin-top:4px}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 .badge{display:inline-block;border-radius:999px;padding:1px 10px;font-size:14px;font-weight:700;white-space:nowrap}
-.b-new{background:var(--new-soft);color:var(--new)} .b-rep{background:var(--rep-soft);color:var(--rep)}
+.b-new{background:var(--new-soft);color:var(--new)} .b-rep{background:var(--rep-soft);color:var(--rep)} .b-mod{background:var(--mod-soft);color:var(--mod)}
 .b-st{background:#eef1f5;color:#44505c} .b-ok{background:var(--ok-soft);color:var(--ok)} .b-warn{background:var(--warn-soft);color:var(--warn)} .b-bad{background:var(--bad-soft);color:var(--bad)}
 .btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--brand2)}
@@ -71,6 +72,7 @@ h2.pg .sp{flex:1}
 .chip.on.c-all{background:#44505c;color:#fff;border-color:#44505c}
 .chip.on.c-new{background:var(--new);color:#fff;border-color:var(--new)}
 .chip.on.c-rep{background:var(--rep);color:#fff;border-color:var(--rep)}
+.chip.on.c-mod{background:var(--mod);color:#fff;border-color:var(--mod)}
 .tblwrap{overflow-x:auto}
 table.t{width:100%;border-collapse:collapse;font-size:15.5px}
 table.t th{background:#f3f6fa;color:#34414e;text-align:left;font-weight:700;padding:8px 9px;border-bottom:2px solid var(--line);white-space:nowrap;position:sticky;top:0}
@@ -102,7 +104,7 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .bars .seg.click:hover{filter:brightness(1.18)}
 .bars .bsub{font-size:14.5px;margin-top:3px}
 .bars .bsub a{text-decoration:underline dotted;cursor:pointer;font-weight:700}
-.bars .bsub a.cn{color:var(--new)} .bars .bsub a.cr{color:var(--rep)}
+.bars .bsub a.cn{color:var(--new)} .bars .bsub a.cr{color:var(--rep)} .bars .bsub a.cm{color:var(--mod)}
 
 .bars .seg{height:100%}
 .legend{display:flex;gap:16px;font-size:14.5px;color:var(--sub);margin-bottom:6px}
@@ -194,6 +196,7 @@ table.ttrack td{vertical-align:middle}
 .seg2 input{display:none}
 .seg2 label.on-new{background:var(--new);color:#fff;border-color:var(--new)}
 .seg2 label.on-rep{background:var(--rep);color:#fff;border-color:var(--rep)}
+.seg2 label.on-mod{background:var(--mod);color:#fff;border-color:var(--mod)}
 .seg2 label.on-gen{background:var(--brand);color:#fff;border-color:var(--brand)}
 .hint{font-size:14.5px;color:var(--sub)}
 .hint.warn{color:var(--warn)}
@@ -230,7 +233,7 @@ table.ttrack td{vertical-align:middle}
 .setup{max-width:720px;margin:30px auto}
 .setup input{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin:8px 0 12px}
 .lockpill{font-size:14px}
-@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid2{grid-template-columns:1fr}}
 @media (max-width:760px){
   body{font-size:16.5px}
   header{padding:8px 12px;gap:8px}
@@ -264,7 +267,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.5</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.6</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -340,7 +343,7 @@ function roc(s) {
   return (parseInt(p[0], 10) - 1911) + "/" + p[1] + "/" + p[2];
 }
 function rocYearNow() { return new Date().getFullYear() - 1911; }
-function classByCode(code) { return /^\d{6}[EF]/i.test(String(code || "").trim()) ? "汰換" : "新設"; }
+function classByCode(code) { var v = String(code || "").trim(); return /^\d{6}R/i.test(v) ? "改裝" : (/^\d{6}[EF]/i.test(v) ? "汰換" : "新設"); }
 function inPeriod(iso, y, m1, m2) {
   if (!isISO(iso)) return false;
   var yy = parseInt(iso.slice(0, 4), 10) - 1911, mm = parseInt(iso.slice(5, 7), 10);
@@ -464,10 +467,16 @@ function saveUI() { lsSet(LS_UI, JSON.stringify({ page: UI.page, y: UI.y, m1: UI
 function caseByUid(u) { for (var i = 0; i < DB.cases.length; i++) if (DB.cases[i].UID === u) return DB.cases[i]; return null; }
 function pipesOf(c) { return PB[c.UID] || []; }
 function caseLen(c) { return pipesOf(c).reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0); }
-// 工程編號第 7 碼 R＝個別戶，不列入董監事會統計
-function isIndiv(c) { return /^\d{6}R/i.test(String(c["工程編號"] || "")); }
+// 類別：工程編號第 7 碼 R＝改裝（不列入董監事統計）、E/F＝汰換、其餘＝新設（P＝推廣，屬新設）
+function isIndiv(c) { return c["類別"] === "改裝" || /^\d{6}R/i.test(String(c["工程編號"] || "")); }
+function clsOf(c) { return isIndiv(c) ? "改裝" : (c["類別"] === "汰換" ? "汰換" : "新設"); }
+// 董監事統計用（不含改裝）
 function doneInPeriod(y, m1, m2) {
   return DB.cases.filter(function (c) { return c["狀態"] === "已竣工" && !isIndiv(c) && inPeriod(c["完工日"], y, m1, m2); });
+}
+// 總覽用（含改裝）
+function doneAll(y, m1, m2) {
+  return DB.cases.filter(function (c) { return c["狀態"] === "已竣工" && inPeriod(c["完工日"], y, m1, m2); });
 }
 function sortDone(list) {
   return list.slice().sort(function (a, b) { return String(a["完工日"]).localeCompare(String(b["完工日"])) || String(a.UID).localeCompare(String(b.UID)); });
@@ -481,15 +490,16 @@ function pipeKey(t) {
   return { grp: grp, size: size || "－" };
 }
 function sizeNum(s) { var n = parseFloat(s); if (/"/.test(s)) n = n * 25.4; return isFinite(n) ? n : 0; }
-function statsFor(y, m1, m2) {
-  var done = doneInPeriod(y, m1, m2);
-  var cols = {}, rows = { "新設|中壓": {}, "新設|低壓": {}, "汰換|中壓": {}, "汰換|低壓": {} };
-  done.forEach(function (c) {
+function statsFor(y, m1, m2, withMod) {
+  var all = withMod ? doneAll(y, m1, m2) : doneInPeriod(y, m1, m2);
+  var done = all.filter(function (c) { return !isIndiv(c); }), mods = all.filter(isIndiv);
+  var cols = {}, rows = { "新設|中壓": {}, "新設|低壓": {}, "汰換|中壓": {}, "汰換|低壓": {}, "改裝|中壓": {}, "改裝|低壓": {} };
+  all.forEach(function (c) {
     pipesOf(c).forEach(function (p) {
       var L = num(p["敷設長度"]); if (!L && !p["敷設管種"]) return;
       var k = pipeKey(p["敷設管種"]), ck = k.grp + "|" + k.size;
       cols[ck] = k;
-      var rk = c["類別"] + "|" + (p["壓力"] === "中壓" ? "中壓" : "低壓");
+      var rk = clsOf(c) + "|" + (p["壓力"] === "中壓" ? "中壓" : "低壓");
       rows[rk][ck] = (rows[rk][ck] || 0) + L;
     });
   });
@@ -502,8 +512,8 @@ function statsFor(y, m1, m2) {
   });
   var sum = function (rk) { return order.reduce(function (s, ck) { return s + (rows[rk][ck] || 0); }, 0); };
   return {
-    done: done, cols: cols, order: order, rows: rows,
-    newMid: sum("新設|中壓"), newLow: sum("新設|低壓"), repMid: sum("汰換|中壓"), repLow: sum("汰換|低壓")
+    done: done, mods: mods, cols: cols, order: order, rows: rows,
+    newMid: sum("新設|中壓"), newLow: sum("新設|低壓"), repMid: sum("汰換|中壓"), repLow: sum("汰換|低壓"), modMid: sum("改裝|中壓"), modLow: sum("改裝|低壓")
   };
 }
 
@@ -513,7 +523,7 @@ function render() {
   var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, mmap: renderMmap, rep: renderRep, leak: renderLeak, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
   fn(); saveUI();
 }
-function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : '<span class="badge b-new">新設</span>'; }
+function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : c === "改裝" ? '<span class="badge b-mod" title="工程編號第7碼R，不列入董監事統計">改裝</span>' : '<span class="badge b-new">新設</span>'; }
 function stBadge(s) {
   var m = { "已竣工": "b-ok", "完工待驗收": "b-warn", "施工中": "b-bad" };
   return '<span class="badge ' + (m[s] || "b-st") + '">' + esc(s || "未設定") + "</span>";
@@ -590,13 +600,13 @@ function dashSearch(q) {
   h += '<div class="tblwrap"><table class="t cardify"><thead><tr><th>類別</th><th>工程編號</th><th>工程名稱</th><th>工程位置</th><th>狀態</th><th>管線明細</th><th class="num">長度(M)</th><th>完工日</th><th></th></tr></thead><tbody>';
   list.forEach(function (c) {
     var det = pipesOf(c).filter(function (p) { return p["敷設管種"] || num(p["敷設長度"]); }).map(function (p) { return esc((p["壓力"] || "低壓") + "｜" + p["敷設管種"] + (num(p["敷設長度"]) ? " " + fmt(p["敷設長度"]) + "M" : "")); }).join("<br>");
-    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(c["類別"]) + (c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="工程位置">' + esc(c["工程位置"]) + '</td><td data-l="狀態">' + stBadge(c["狀態"]) + '</td><td data-l="管線明細">' + det + '</td><td class="num" data-l="長度(M)">' + (caseLen(c) ? fmt(caseLen(c)) : "") + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button></td></tr>';
+    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(clsOf(c)) + (c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="工程位置">' + esc(c["工程位置"]) + '</td><td data-l="狀態">' + stBadge(c["狀態"]) + '</td><td data-l="管線明細">' + det + '</td><td class="num" data-l="長度(M)">' + (caseLen(c) ? fmt(caseLen(c)) : "") + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button></td></tr>';
   });
   return h + "</tbody></table></div></div>";
 }
 function renderDash() {
-  var s = statsFor(UI.y, UI.m1, UI.m2);
-  var nw = s.newMid + s.newLow, rp = s.repMid + s.repLow;
+  var s = statsFor(UI.y, UI.m1, UI.m2, true);
+  var nw = s.newMid + s.newLow, rp = s.repMid + s.repLow, md = s.modMid + s.modLow;
   var plan = 0, unplan = 0;
   s.done.forEach(function (c) { if (c["類別"] === "汰換") { if (c["汰換性質"] === "計畫性") plan += caseLen(c); else unplan += caseLen(c); } });
   var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
@@ -606,35 +616,38 @@ function renderDash() {
   if ((UI.dq || "").trim()) h += dashSearch(UI.dq.trim());
   var dl = function (spec, txt) { return '<a onclick="event.stopPropagation();drill(' + esc(JSON.stringify(spec)) + ')">' + txt + "</a>"; };
   h += '<div class="kpis">' +
-    '<div class="kpi click" onclick="drill({})"><div class="lb">本期管線施設總長<span class="go">看明細 ›</span></div><div class="v">' + fmt(nw + rp) + '<small>M</small></div><div class="d">完工 ' + s.done.length + ' 案</div></div>' +
+    '<div class="kpi click" onclick="drill({})"><div class="lb">本期管線施設總長<span class="go">看明細 ›</span></div><div class="v">' + fmt(nw + rp) + '<small>M</small></div><div class="d">新設＋汰換，完工 ' + s.done.length + ' 案（不含改裝）</div></div>' +
     '<div class="kpi new click" onclick="drill({cls:\'新設\'})"><div class="lb">新設管線<span class="go">看明細 ›</span></div><div class="v">' + fmt(nw) + '<small>M</small></div><div class="d">' + dl({ cls: "新設", press: "中壓" }, "中壓 " + fmt(s.newMid)) + "｜" + dl({ cls: "新設", press: "低壓" }, "低壓 " + fmt(s.newLow)) + '</div></div>' +
     '<div class="kpi rep click" onclick="drill({cls:\'汰換\'})"><div class="lb">汰換管線<span class="go">看明細 ›</span></div><div class="v">' + fmt(rp) + '<small>M</small></div><div class="d">' + dl({ cls: "汰換", rtype: "計畫性" }, "計畫性 " + fmt(plan)) + "｜" + dl({ cls: "汰換", rtype: "非計畫性" }, "非計畫性 " + fmt(unplan)) + '</div></div>' +
+    '<div class="kpi mod click" onclick="drill({cls:\'改裝\'})"><div class="lb">改裝管線<span class="go">看明細 ›</span></div><div class="v">' + fmt(md) + '<small>M</small></div><div class="d">完工 ' + s.mods.length + ' 案｜不列入董監事統計</div></div>' +
     '<div class="kpi ok click" onclick="goProg(\'進行中\')"><div class="lb">進行中案件<span class="go">看明細 ›</span></div><div class="v">' + active.length + '<small>案</small></div><div class="d">已登錄預計管線 ' + fmt(plannedLen) + ' M</div></div>' +
     "</div>";
   // 管種長條
   var max = 0, rowsH = "";
   s.order.forEach(function (ck) {
-    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0);
-    max = Math.max(max, a + b);
+    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0), m = (s.rows["改裝|中壓"][ck] || 0) + (s.rows["改裝|低壓"][ck] || 0);
+    max = Math.max(max, a + b + m);
   });
   s.order.forEach(function (ck) {
     var k = s.cols[ck];
-    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0);
+    var a = (s.rows["新設|中壓"][ck] || 0) + (s.rows["新設|低壓"][ck] || 0), b = (s.rows["汰換|中壓"][ck] || 0) + (s.rows["汰換|低壓"][ck] || 0), m = (s.rows["改裝|中壓"][ck] || 0) + (s.rows["改裝|低壓"][ck] || 0);
+    var segM = m ? '<div class="seg click" title="改裝 ' + fmt(m) + ' M，點我看明細" onclick="drill(' + esc(JSON.stringify({ cls: "改裝", ck: ck })) + ')" style="width:' + (max ? m / max * 100 : 0) + '%;background:var(--mod)"></div>' : "";
     var segA = a ? '<div class="seg click" title="新設 ' + fmt(a) + ' M，點我看明細" onclick="drill(' + esc(JSON.stringify({ cls: "新設", ck: ck })) + ')" style="width:' + (max ? a / max * 100 : 0) + '%;background:var(--new)"></div>' : "";
     var segB = b ? '<div class="seg click" title="汰換 ' + fmt(b) + ' M，點我看明細" onclick="drill(' + esc(JSON.stringify({ cls: "汰換", ck: ck })) + ')" style="width:' + (max ? b / max * 100 : 0) + '%;background:var(--rep)"></div>' : "";
-    var sub = '<div class="bsub">' + (a ? '<a class="cn" onclick="drill(' + esc(JSON.stringify({ cls: "新設", ck: ck })) + ')">新設 ' + fmt(a) + " M</a>" : '<span class="muted">新設 0</span>') + "　" + (b ? '<a class="cr" onclick="drill(' + esc(JSON.stringify({ cls: "汰換", ck: ck })) + ')">汰換 ' + fmt(b) + " M</a>" : '<span class="muted">汰換 0</span>') + "</div>";
-    rowsH += '<div class="r"><div class="bh"><span>' + dl({ ck: ck }, esc(k.size + " " + k.grp)) + '</span><span class="num">' + dl({ ck: ck }, "合計 " + fmt(a + b) + " M") + '</span></div><div class="track">' + segA + segB + '</div>' + sub + '</div>';
+    var sub = '<div class="bsub">' + (a ? '<a class="cn" onclick="drill(' + esc(JSON.stringify({ cls: "新設", ck: ck })) + ')">新設 ' + fmt(a) + " M</a>" : '<span class="muted">新設 0</span>') + "　" + (b ? '<a class="cr" onclick="drill(' + esc(JSON.stringify({ cls: "汰換", ck: ck })) + ')">汰換 ' + fmt(b) + " M</a>" : '<span class="muted">汰換 0</span>') + (m ? '　<a class="cm" onclick="drill(' + esc(JSON.stringify({ cls: "改裝", ck: ck })) + ')">改裝 ' + fmt(m) + " M</a>" : "") + "</div>";
+    rowsH += '<div class="r"><div class="bh"><span>' + dl({ ck: ck }, esc(k.size + " " + k.grp)) + '</span><span class="num">' + dl({ ck: ck }, "合計 " + fmt(a + b + m) + " M") + '</span></div><div class="track">' + segA + segB + segM + '</div>' + sub + '</div>';
   });
-  var prog = '<table class="t"><thead><tr><th>狀態</th><th class="num">新設（案／戶）</th><th class="num">汰換（案）</th></tr></thead><tbody>';
+  var prog = '<div class="tblwrap"><table class="t"><thead><tr><th>狀態</th><th class="num">新設（案／戶）</th><th class="num">汰換（案）</th><th class="num">改裝（案）</th></tr></thead><tbody>';
   ACTIVE.forEach(function (st) {
-    var n = active.filter(function (c) { return c["狀態"] === st && c["類別"] !== "汰換"; });
-    var r = active.filter(function (c) { return c["狀態"] === st && c["類別"] === "汰換"; });
+    var n = active.filter(function (c) { return c["狀態"] === st && clsOf(c) === "新設"; });
+    var r = active.filter(function (c) { return c["狀態"] === st && clsOf(c) === "汰換"; });
+    var mm = active.filter(function (c) { return c["狀態"] === st && clsOf(c) === "改裝"; });
     var hh = n.reduce(function (t, c) { return t + num(c["戶數"]); }, 0);
-    prog += '<tr class="row" onclick="goProg(\'' + st + '\')"><td>' + stBadge(st) + '</td><td class="num">' + n.length + " ／ " + fmt(hh) + '</td><td class="num">' + r.length + "</td></tr>";
+    prog += '<tr class="row" onclick="goProg(\'' + st + '\')"><td>' + stBadge(st) + '</td><td class="num">' + n.length + " ／ " + fmt(hh) + '</td><td class="num">' + r.length + '</td><td class="num">' + mm.length + "</td></tr>";
   });
-  prog += "</tbody></table>";
+  prog += "</tbody></table></div>";
   var iss = issuesList();
-  h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span><span>（色塊、數字都可點，分開看明細）</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
+  h += '<div class="grid2"><div class="card"><h3>各管種施設長度（' + periodText() + '）</h3><div class="legend"><span><i style="background:var(--new)"></i>新設</span><span><i style="background:var(--rep)"></i>汰換</span><span><i style="background:var(--mod)"></i>改裝</span><span>（色塊、數字都可點，分開看明細）</span></div><div class="bars">' + (rowsH || '<div class="empty">本期沒有已竣工的管線</div>') + '</div></div>' +
     '<div class="card"><h3>進行中工程（點一下看明細）</h3>' + prog + "</div></div>";
   h += trackDashCard();
   h += '<div class="card"><h3>⚠ 待確認事項（' + iss.length + '）</h3><p class="muted" style="margin:-4px 0 6px;font-size:15px">點文字打開該工程修改；資料改正後會自動消失。</p>' + (iss.length ? '<ul class="issues">' + iss.map(function (x) { return '<li><span onclick="' + (x[0] === "__mmap" ? "UI.page=\'mmap\';render()" : "openCase(\'" + x[0] + "\')") + '">' + esc(x[1]) + "</span>" + (x[2] === "note" ? ' <button class="btn sm" onclick="clearNote(\'' + x[0] + '\')">✔ 已處理</button>' : "") + "</li>"; }).join("") + "</ul>" : '<div class="muted">目前沒有</div>') + "</div>";
@@ -650,25 +663,26 @@ function pipeMatch(p, d) {
 }
 function renderDrill() {
   var d = UI.drill || {};
-  var list = sortDone(doneInPeriod(UI.y, UI.m1, UI.m2)).filter(function (c) {
-    if (d.cls && c["類別"] !== d.cls) return false;
+  var base = (d.cls === "改裝" || (d.ck && !d.cls)) ? doneAll(UI.y, UI.m1, UI.m2) : doneInPeriod(UI.y, UI.m1, UI.m2);
+  var list = sortDone(base).filter(function (c) {
+    if (d.cls && clsOf(c) !== d.cls) return false;
     if (d.rtype && (c["汰換性質"] || "非計畫性") !== d.rtype) return false;
     if (d.press || d.ck) return pipesOf(c).some(function (p) { return pipeMatch(p, d) && num(p["敷設長度"]); });
     return true;
   });
-  var t = [d.cls || "全部（新設＋汰換）", d.press, d.rtype, d.ck ? d.ck.split("|")[1] + " " + d.ck.split("|")[0] : ""].filter(Boolean).join("・");
-  var tot = 0, nN = 0, nR = 0;
+  var t = [d.cls || (d.ck ? "全部（新設＋汰換＋改裝）" : "全部（新設＋汰換）"), d.press, d.rtype, d.ck ? d.ck.split("|")[1] + " " + d.ck.split("|")[0] : ""].filter(Boolean).join("・");
+  var tot = 0, nN = 0, nR = 0, nM = 0;
   var h = '<h2 class="pg"><button class="btn" onclick="UI.page=\'dash\';render()">‹ 回總覽</button>完工明細<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + "｜" + esc(t) + '</span></h2>';
   h += '<div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>#</th><th>類別</th><th>工程編號</th><th>工程名稱</th><th>管線明細</th><th class="num">長度(M)</th><th>施工日</th><th>完工日</th><th></th></tr></thead><tbody>';
   list.forEach(function (c, i) {
     var ps = pipesOf(c).filter(function (p) { return pipeMatch(p, d) && num(p["敷設長度"]); });
     var L = ps.reduce(function (a, p) { return a + num(p["敷設長度"]); }, 0);
-    tot += L; if (c["類別"] === "汰換") nR++; else nN++;
+    tot += L; var k3 = clsOf(c); if (k3 === "汰換") nR++; else if (k3 === "改裝") nM++; else nN++;
     var det = ps.map(function (p) { return esc((p["壓力"] || "低壓") + "｜" + p["敷設管種"] + " " + fmt(p["敷設長度"]) + "M") + (p["廢除管種"] ? '<span class="muted">（廢除 ' + esc(p["廢除管種"] + " " + fmt(p["廢除長度"]) + "M") + "）</span>" : ""); }).join("<br>");
-    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="項次">' + (i + 1) + '</td><td data-l="類別">' + clsBadge(c["類別"]) + (c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="管線明細">' + det + '</td><td class="num" data-l="長度(M)">' + fmt(L) + '</td><td class="nw" data-l="施工日">' + roc(c["施工日"]) + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button></td></tr>';
+    h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="項次">' + (i + 1) + '</td><td data-l="類別">' + clsBadge(clsOf(c)) + (c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="管線明細">' + det + '</td><td class="num" data-l="長度(M)">' + fmt(L) + '</td><td class="nw" data-l="施工日">' + roc(c["施工日"]) + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="event.stopPropagation();openCase(\'' + c.UID + '\')">✏️ 編輯</button></td></tr>';
   });
   if (!list.length) h += '<tr><td colspan="9" class="empty" data-l="">本期沒有符合的完工案件</td></tr>';
-  else h += '<tr class="tot"><td colspan="2" data-l="">合計</td><td colspan="3" data-l="案件數">' + list.length + " 案（新設 " + nN + "、汰換 " + nR + '）</td><td class="num" data-l="長度(M)">' + fmt(tot) + '</td><td colspan="3" data-l=""></td></tr>';
+  else h += '<tr class="tot"><td colspan="2" data-l="">合計</td><td colspan="3" data-l="案件數">' + list.length + " 案（新設 " + nN + "、汰換 " + nR + (nM ? "、改裝 " + nM : "") + '）</td><td class="num" data-l="長度(M)">' + fmt(tot) + '</td><td colspan="3" data-l=""></td></tr>';
   h += '</tbody></table></div><p class="muted" style="margin:10px 0 0">依完工日排序；點任一列可修改。</p></div>';
   $("#content").innerHTML = h;
 }
@@ -721,12 +735,12 @@ function sortCases(list) {
   });
 }
 function cellVal(c, k) {
-  if (k === "類別") return clsBadge(c["類別"]) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
+  if (k === "類別") return clsBadge(clsOf(c)) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
   if (k === "狀態") return stBadge(c["狀態"]);
   if (k === "長度") { var L = caseLen(c); return L ? fmt(L) : ""; }
   if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
-  if (k === "工程名稱") return esc(c[k]) + ((c["廠商"] || isIndiv(c)) ? "<div>" + (c["廠商"] ? '<span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span> " : "") + (isIndiv(c) ? '<span class="badge b-warn" style="font-size:12.5px" title="工程編號第7碼R，不列入董監事會統計">個別戶</span>' : "") + "</div>" : "");
+  if (k === "工程名稱") return esc(c[k]) + (c["廠商"] ? "<div>" + (c["廠商"] ? '<span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span> " : "") + "" + "</div>" : "");
   if (k === "換表") { var m = meterFor(c); return m ? '<span class="mtr ' + (m.owe > 0 ? "owe" : "ok") + '" title="' + esc(m.names) + '">需 ' + m.est + "／領 " + (m.act - m.ret) + (m.owe > 0 ? "<br><b>欠 " + m.owe + "</b>" : "<br>✓ 已領齊") + "</span>" : ""; }
   if (k === "工程編號" && c["類別"] === "汰換") return esc(c[k]) + '<div><span class="badge b-rep" style="font-size:12.5px">' + esc(c["汰換性質"] || "未分") + (c["計畫年度"] ? "・" + esc(c["計畫年度"]) + "年" : "") + "</span></div>";
   return esc(c[k]);
@@ -780,17 +794,19 @@ function renderProg() {
   var cnt = function (st) { return DB.cases.filter(function (c) { return st === "全部" ? true : st === "進行中" ? ACTIVE.indexOf(c["狀態"]) > -1 : c["狀態"] === st; }).length; };
   var tabs = ["進行中"].concat(STATUS).concat(["全部"]);
   var list = sortCases(progList());
-  var nList = list.filter(function (c) { return c["類別"] !== "汰換"; }), rList = list.filter(function (c) { return c["類別"] === "汰換"; });
+  var nList = list.filter(function (c) { return clsOf(c) === "新設"; }), rList = list.filter(function (c) { return clsOf(c) === "汰換"; }), mList = list.filter(function (c) { return clsOf(c) === "改裝"; });
   var h = '<h2 class="pg">📋 工程進度<span class="sp"></span><button class="btn" onclick="exportProgXlsx()">⬇ 匯出進度表 Excel</button><button class="btn pri" onclick="openCase()">＋ 新增工程</button></h2>';
   h += '<div class="tabs">' + tabs.map(function (t) { return '<button class="tab' + (UI.st === t ? " on" : "") + '" onclick="UI.st=\'' + t + '\';renderProg()">' + t + '<span class="n">' + cnt(t) + "</span></button>"; }).join("") + "</div>";
   h += '<div class="toolbar"><input type="search" id="q" name="srch_q" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋 工程編號／名稱／位置／現況（點任一列即可修改）" value="' + esc(UI.q) + '">' +
-    ["全部", "新設", "汰換"].map(function (c) {
-      var n = c === "全部" ? list.length : c === "新設" ? nList.length : rList.length;
-      return '<button class="chip c-' + ({ "全部": "all", "新設": "new", "汰換": "rep" }[c]) + (UI.cls === c ? " on" : "") + '" onclick="UI.cls=\'' + c + '\';renderProg()">' + c + "（" + n + "）</button>";
+    ["全部", "新設", "汰換", "改裝"].map(function (c) {
+      var n = c === "全部" ? list.length : c === "新設" ? nList.length : c === "汰換" ? rList.length : mList.length;
+      return '<button class="chip c-' + ({ "全部": "all", "新設": "new", "汰換": "rep", "改裝": "mod" }[c]) + (UI.cls === c ? " on" : "") + '" onclick="UI.cls=\'' + c + '\';renderProg()">' + c + "（" + n + "）</button>";
     }).join("") + "</div>";
   h += '<div class="card">';
-  if (UI.cls !== "汰換") h += '<div class="sec-h"><span class="bar" style="background:var(--new)"></span>新設工程<span class="meta">' + nList.length + " 件</span></div>" + caseTable(nList, "新設");
-  if (UI.cls !== "新設") h += '<div class="sec-h"><span class="bar" style="background:var(--rep)"></span>汰換工程<span class="meta">' + rList.length + " 件</span></div>" + caseTable(rList, "汰換");
+  var show = function (g) { return !UI.cls || UI.cls === "全部" || UI.cls === g; };
+  if (show("新設")) h += '<div class="sec-h"><span class="bar" style="background:var(--new)"></span>新設工程<span class="meta">' + nList.length + " 件</span></div>" + caseTable(nList, "新設");
+  if (show("汰換")) h += '<div class="sec-h"><span class="bar" style="background:var(--rep)"></span>汰換工程<span class="meta">' + rList.length + " 件</span></div>" + caseTable(rList, "汰換");
+  if (show("改裝")) h += '<div class="sec-h"><span class="bar" style="background:var(--mod)"></span>改裝工程<span class="meta">' + mList.length + " 件｜第7碼 R，不列入董監事統計</span></div>" + caseTable(mList, "改裝");
   h += "</div>";
   $("#content").innerHTML = h;
   bindSearch("q", "q", renderProg);
@@ -875,7 +891,7 @@ function guessCase(mt) {
   return bs >= 2 ? best : null;
 }
 function renderMmap() {
-  var dept = UI.md || "工務部";
+  var dept = "工務部";
   var h = '<h2 class="pg">🔗 換表對照<span class="muted" style="font-size:16px;font-weight:500">把換表系統的建案名稱，對應到工程管線的工程（換表系統不會被修改）</span></h2>';
   if (!DB.meter) h += '<div class="errbox">後端還沒更新到 v1.7，暫時讀不到換表系統。</div>';
   else if (!DB.meter.ok) h += '<div class="errbox">⚠ ' + esc(DB.meter.msg) + '<br>請確認換表系統的試算表已共用給 daine0317@gmail.com（編輯者）。</div>';
@@ -885,8 +901,8 @@ function renderMmap() {
   var mapOf = function (n) { return (DB.mmap || []).filter(function (m) { return m["換表建案"] === n; })[0]; };
   var cnt = { Y: 0, "?": 0, none: 0 };
   list.forEach(function (m) { var mp = mapOf(m.name); cnt[mp ? (mp["確認"] === "Y" ? "Y" : "?") : "none"]++; });
-  h += '<div class="toolbar"><input type="search" id="mq2" name="srch_mq2" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋換表建案名稱" value="' + esc(UI.mq2 || "") + '">' + ["工務部", "業務部", "全部"].map(function (x) { return '<button class="chip c-all' + (dept === x ? " on" : "") + '" onclick="UI.md=\'' + x + '\';renderMmap()">' + x + "</button>"; }).join("") + '<span class="muted">已確認 ' + cnt.Y + "｜待確認 " + cnt["?"] + "｜未對應 " + cnt.none + "</span></div>";
-  h += '<div class="card"><div class="muted" style="margin-bottom:8px">業務部的社區換錶不是管線工程，通常不用對應。選好對應工程後按「✔ 確認」。</div><div class="tblwrap"><table class="t cardify"><thead><tr><th>換表建案</th><th>規格</th><th class="num">需求</th><th class="num">已領</th><th class="num">尚欠</th><th>預計掛表</th><th>繳費</th><th>對應工程</th><th>狀態</th><th></th></tr></thead><tbody>';
+  h += '<div class="toolbar"><input type="search" id="mq2" name="srch_mq2" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋換表建案名稱" value="' + esc(UI.mq2 || "") + '">' + '<span class="muted">已確認 ' + cnt.Y + "｜待確認 " + cnt["?"] + "｜未對應 " + cnt.none + "</span></div>";
+  h += '<div class="card"><div class="muted" style="margin-bottom:8px">只列換表系統「工務部」的建案。「系統建議」的確認一下按 ✔；「未對應」＝工程系統沒有這個案子，不用理它。</div><div class="tblwrap"><table class="t cardify"><thead><tr><th>換表建案</th><th>規格</th><th class="num">需求</th><th class="num">已領</th><th class="num">尚欠</th><th>預計掛表</th><th>繳費</th><th>對應工程</th><th>狀態</th><th></th></tr></thead><tbody>';
   var opts = DB.cases.slice().sort(function (a, b) { return String(a["工程名稱"]).localeCompare(String(b["工程名稱"]), "zh-Hant"); });
   list.sort(function (a, b) { var ma = mapOf(a.name), mb = mapOf(b.name); var ra = ma ? (ma["確認"] === "Y" ? 2 : 0) : 1, rb = mb ? (mb["確認"] === "Y" ? 2 : 0) : 1; return ra - rb || a.name.localeCompare(b.name, "zh-Hant"); });
   list.forEach(function (m, i) {
@@ -1063,7 +1079,7 @@ function exportTrackXlsx() {
     var list = trackList();
     var aoa = [["案件追蹤管理表（" + todayRoc() + " 匯出，" + (UI.ts || "進行中") + (UI.tf ? "，篩選：" + tfLabel() : "") + "）"], ["案件編號", "案件名稱", "類別", "施工狀態"].concat(TRACK.map(function (t) { return t.k; })).concat(["已結算日期", "備註"])], kinds = ["title", "head"];
     list.forEach(function (c) {
-      aoa.push([c["工程編號"], c["工程名稱"], c["類別"], c["狀態"]].concat(TRACK.map(function (t) { return c[t.k] || ""; })).concat([roc(c["已結算日期"]), c["備註"]]));
+      aoa.push([c["工程編號"], c["工程名稱"], clsOf(c), c["狀態"]].concat(TRACK.map(function (t) { return c[t.k] || ""; })).concat([roc(c["已結算日期"]), c["備註"]]));
       kinds.push(trackBad(c).length ? "red" : "row");
     });
     var wb = XLSX.utils.book_new();
@@ -1167,7 +1183,7 @@ function renderReport() {
   if (tab === "mgr") { renderMgr(tabs); return; }
   var h = tabs + '<h2 class="pg">📄 董監事會工程報告<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span>' +
     '<button class="btn" onclick="copyReport()">📋 複製（貼到 Word）</button><button class="btn pri" onclick="downloadDoc()">⬇ 下載 Word 檔</button></h2>' +
-    '<p class="muted" style="margin:-4px 0 12px">期間在右上角「統計期間」切換。只抓「狀態＝已竣工」且完工日落在期間內的工程（工程編號第 7 碼 R＝個別戶，不列入統計）；鉛封、閥箱文字在「參數設定」改。</p>' +
+    '<p class="muted" style="margin:-4px 0 12px">期間在右上角「統計期間」切換。只抓「狀態＝已竣工」且完工日落在期間內的工程（工程編號第 7 碼 R＝改裝，不列入統計）；鉛封、閥箱文字在「參數設定」改。</p>' +
     '<div class="paper" id="paper">' + reportHTML() + "</div>";
   $("#content").innerHTML = h;
 }
@@ -1175,7 +1191,7 @@ function renderReport() {
 var MGR_ST = ["待掛表", "施工中", "待施工", "完工待驗收"];
 var VENDORS = ["元誠", "欣宬"];
 function mgrF() {
-  if (!UI.mf) UI.mf = { st: { "待掛表": 1, "施工中": 1, "待施工": 1, "完工待驗收": 0 }, cls: { "新設": 1, "汰換": 1 }, vd: { "元誠": 1, "欣宬": 1, "未指定": 1 }, q: "" };
+  if (!UI.mf) UI.mf = { st: { "待掛表": 1, "施工中": 1, "待施工": 1, "完工待驗收": 0 }, cls: { "新設": 1, "汰換": 1, "改裝": 1 }, vd: { "元誠": 1, "欣宬": 1, "未指定": 1 }, q: "" };
   return UI.mf;
 }
 function rocS(v) { if (!isISO(v)) return v || ""; var p = v.split("-"); return (parseInt(p[0], 10) - 1911) + "/" + parseInt(p[1], 10) + "/" + parseInt(p[2], 10); }
@@ -1202,7 +1218,7 @@ function mgrSections() {
   return MGR_ST.filter(function (st) { return f.st[st]; }).map(function (st) {
     var list = DB.cases.filter(function (c) {
       if (c["狀態"] !== st) return false;
-      if (!f.cls[c["類別"] === "汰換" ? "汰換" : "新設"]) return false;
+      if (!f.cls[clsOf(c)] && f.cls[clsOf(c)] !== undefined) return false;
       if (!f.vd[c["廠商"] || "未指定"]) return false;
       if (q && [c["工程編號"], c["工程名稱"], c["工程位置"], c["現況"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
       return true;
@@ -1217,7 +1233,7 @@ function renderMgr(tabs) {
   var f = mgrF();
   var cb = function (grp, k, lab) { return '<label class="ck"><input type="checkbox"' + (f[grp][k] ? " checked" : "") + ' onchange="UI.mf.' + grp + '[\'' + k + '\']=this.checked?1:0;renderReport()"> ' + (lab || k) + "</label>"; };
   var h = tabs + '<h2 class="pg">📊 主管會議｜施工案件<span class="muted" style="font-size:16px;font-weight:500">資料日期 ' + todayRoc() + '</span><span class="sp"></span><button class="btn pri" onclick="exportMgrXlsx()">⬇ 下載 Excel</button></h2>';
-  h += '<div class="card mgrf"><div><b>狀態</b>' + MGR_ST.map(function (x) { return cb("st", x); }).join("") + '</div><div><b>類別</b>' + cb("cls", "新設") + cb("cls", "汰換") + '</div><div><b>廠商</b>' + cb("vd", "元誠") + cb("vd", "欣宬") + cb("vd", "未指定") + '</div><div class="toolbar" style="margin:6px 0 0"><input type="search" id="mq" name="srch_mq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="再用關鍵字篩選：工程編號／名稱／位置／現況（可留空）" value="' + esc(f.q || "") + '"></div></div>';
+  h += '<div class="card mgrf"><div><b>狀態</b>' + MGR_ST.map(function (x) { return cb("st", x); }).join("") + '</div><div><b>類別</b>' + cb("cls", "新設") + cb("cls", "汰換") + cb("cls", "改裝") + '</div><div><b>廠商</b>' + cb("vd", "元誠") + cb("vd", "欣宬") + cb("vd", "未指定") + '</div><div class="toolbar" style="margin:6px 0 0"><input type="search" id="mq" name="srch_mq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="再用關鍵字篩選：工程編號／名稱／位置／現況（可留空）" value="' + esc(f.q || "") + '"></div></div>';
   var S = mgrSections();
   if (!S.length) h += '<div class="card"><div class="empty">沒有符合條件的案件</div></div>';
   var TH = 0, TD = 0;
@@ -1455,7 +1471,8 @@ function drawCase() {
   var inp = function (k, lb, w, type, ph) { return '<div class="f ' + (w || "") + '"><label>' + lb + '</label><input data-f="' + k + '" type="' + (type || "text") + '" value="' + esc(type === "date" ? normDate(it[k]) : it[k]) + '"' + (ph ? ' placeholder="' + ph + '"' : "") + "></div>"; };
   var h = '<div class="mh">' + (it.UID ? "✏️ 編輯工程" : "＋ 新增工程") + " " + clsBadge(it["類別"]) + (EDIT.mode === "done" ? ' <span class="badge b-ok">完工登錄</span>' : "") + '<span style="flex:1"></span><button class="btn sm" onclick="closeCase()">✕</button></div><div class="mb"><div class="form">';
   h += '<div class="f"><label>工程編號 <span class="req">*</span></label><input data-f="工程編號" value="' + esc(it["工程編號"]) + '" placeholder="例：261027N060"><span class="hint" id="clsHint"></span></div>';
-  h += '<div class="f"><label>類別</label><div class="seg2"><label class="' + (!isRep ? "on-new" : "") + '"><input type="radio" name="cls" value="新設"' + (!isRep ? " checked" : "") + '>新設</label><label class="' + (isRep ? "on-rep" : "") + '"><input type="radio" name="cls" value="汰換"' + (isRep ? " checked" : "") + ">汰換</label></div></div>";
+  var cv = it["類別"] === "汰換" ? "汰換" : it["類別"] === "改裝" ? "改裝" : "新設";
+  h += '<div class="f"><label>類別</label><div class="seg2">' + [["新設", "on-new"], ["汰換", "on-rep"], ["改裝", "on-mod"]].map(function (x) { return '<label class="' + (cv === x[0] ? x[1] : "") + '"><input type="radio" name="cls" value="' + x[0] + '"' + (cv === x[0] ? " checked" : "") + ">" + x[0] + "</label>"; }).join("") + "</div></div>";
   h += '<div class="f"><label>狀態</label><select data-f="狀態">' + STATUS.map(function (s) { return "<option" + (s === it["狀態"] ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></div>";
   h += inp("工程名稱", "工程名稱", "w3") + inp("工程位置", "工程位置", "w3");
   var vd = it["廠商"] || "", vopts = VENDORS.slice(); if (vd && vopts.indexOf(vd) < 0) vopts.push(vd);
@@ -1506,7 +1523,7 @@ function bindCase() {
   var code = $('#modal [data-f="工程編號"]');
   var hint = function () {
     var v = code.value.trim(), g = classByCode(v);
-    $("#clsHint").innerHTML = v ? "依編號判斷：" + (g === "汰換" ? '<b style="color:var(--rep)">汰換</b>（第7碼 E/F）' : '<b style="color:var(--new)">新設</b>') + (EDIT.item["類別"] !== g ? '　<span class="hint warn">⚠ 與所選類別不同</span>' : "") : "第7碼 E/F＝汰換，其餘＝新設（可手動改）";
+    $("#clsHint").innerHTML = v ? "依編號判斷：" + (g === "汰換" ? '<b style="color:var(--rep)">汰換</b>（第7碼 E/F）' : g === "改裝" ? '<b style="color:var(--mod)">改裝</b>（第7碼 R，不列入統計）' : '<b style="color:var(--new)">新設</b>') + (EDIT.item["類別"] !== g ? '　<span class="hint warn">⚠ 與所選類別不同</span>' : "") : "第7碼 E/F＝汰換、R＝改裝，其餘＝新設（可手動改）";
   };
   code.addEventListener("input", function () {
     if (!EDIT.clsTouched) {
@@ -1638,6 +1655,7 @@ function styled(aoa, kinds, widths) {
       if (kind === "title") { st.font = { name: "微軟正黑體", sz: 14, bold: true }; }
       else if (kind === "head") { st.font = { name: "微軟正黑體", sz: 11, bold: true, color: { rgb: "FFFFFF" } }; st.fill = { fgColor: { rgb: "1D4E89" } }; st.border = XS.b; st.alignment.horizontal = "center"; }
       else if (kind === "secN") { st.font = { name: "微軟正黑體", sz: 12, bold: true, color: { rgb: "1F6FD1" } }; st.fill = { fgColor: { rgb: "E1EDFC" } }; }
+      else if (kind === "secM") { st.font = { name: "微軟正黑體", sz: 12, bold: true, color: { rgb: "7A3FC6" } }; st.fill = { fgColor: { rgb: "EFE5FB" } }; }
       else if (kind === "secR") { st.font = { name: "微軟正黑體", sz: 12, bold: true, color: { rgb: "D96B0B" } }; st.fill = { fgColor: { rgb: "FDEBD9" } }; }
       else if (kind === "sub") { st.font.bold = true; st.fill = { fgColor: { rgb: "EEF2F6" } }; st.border = XS.b; }
       else if (kind === "tot") { st.font.bold = true; st.fill = { fgColor: { rgb: "D9E2EC" } }; st.border = XS.b; }
@@ -1658,19 +1676,20 @@ function exportProgXlsx() {
     var head = ["項次", "工程編號", "工程名稱", "工程位置", "類別", "繳費日", "戶數", "預計工期(天)", "已施工(天)", "管線(M)", "現況", "會勘日期", "完工日", "備註"];
     var W = [6, 13, 22, 30, 10, 11, 7, 10, 9, 9, 18, 12, 11, 30];
     // 總表
-    var sum = [["工程進度總表（填表日期：" + todayRoc() + "）"], ["狀態", "新設件數", "新設戶數", "新設工期合計", "汰換件數", "汰換工期合計", "合計件數"]], sk = ["title", "head"];
+    var sum = [["工程進度總表（填表日期：" + todayRoc() + "）"], ["狀態", "新設件數", "新設戶數", "新設工期合計", "汰換件數", "汰換工期合計", "改裝件數", "合計件數"]], sk = ["title", "head"];
     STATUS.forEach(function (st) {
-      var n = DB.cases.filter(function (c) { return c["狀態"] === st && c["類別"] !== "汰換"; }), r = DB.cases.filter(function (c) { return c["狀態"] === st && c["類別"] === "汰換"; });
-      sum.push([st, n.length, n.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), n.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), r.length, r.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), n.length + r.length]); sk.push("row");
+      var n = DB.cases.filter(function (c) { return c["狀態"] === st && clsOf(c) === "新設"; }), r = DB.cases.filter(function (c) { return c["狀態"] === st && clsOf(c) === "汰換"; }), mm = DB.cases.filter(function (c) { return c["狀態"] === st && clsOf(c) === "改裝"; });
+      sum.push([st, n.length, n.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), n.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), r.length, r.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), mm.length, n.length + r.length + mm.length]); sk.push("row");
     });
-    XLSX.utils.book_append_sheet(wb, styled(sum, sk, [14, 10, 10, 13, 10, 13, 10]), "總表");
+    XLSX.utils.book_append_sheet(wb, styled(sum, sk, [14, 10, 10, 13, 10, 13, 10, 10]), "總表");
     STATUS.forEach(function (st) {
       var aoa = [[st + "（填表日期：" + todayRoc() + "）"], head], kinds = ["title", "head"];
-      ["新設", "汰換"].forEach(function (g) {
-        var list = sortCases(DB.cases.filter(function (c) { return c["狀態"] === st && (g === "汰換" ? c["類別"] === "汰換" : c["類別"] !== "汰換"); }));
-        aoa.push(["【" + g + "工程】" + list.length + " 件"]); kinds.push(g === "新設" ? "secN" : "secR");
+      ["新設", "汰換", "改裝"].forEach(function (g) {
+        var list = sortCases(DB.cases.filter(function (c) { return c["狀態"] === st && clsOf(c) === g; }));
+        if (g === "改裝" && !list.length) return;
+        aoa.push(["【" + g + "工程】" + list.length + " 件" + (g === "改裝" ? "（不列入董監事統計）" : "")]); kinds.push(g === "新設" ? "secN" : g === "汰換" ? "secR" : "secM");
         list.forEach(function (c, i) {
-          aoa.push([i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], c["類別"] + (c["汰換性質"] ? "／" + c["汰換性質"] : ""), roc(c["繳費日"]), c["戶數"] === "" ? "" : num(c["戶數"]), c["預計工期"] === "" ? "" : num(c["預計工期"]), c["已施工天數"] === "" ? "" : num(c["已施工天數"]), caseLen(c) || "", c["現況"], roc(c["會勘日期"]), roc(c["完工日"]), c["備註"]]);
+          aoa.push([i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], clsOf(c) + (c["汰換性質"] ? "／" + c["汰換性質"] : ""), roc(c["繳費日"]), c["戶數"] === "" ? "" : num(c["戶數"]), c["預計工期"] === "" ? "" : num(c["預計工期"]), c["已施工天數"] === "" ? "" : num(c["已施工天數"]), caseLen(c) || "", c["現況"], roc(c["會勘日期"]), roc(c["完工日"]), c["備註"]]);
           kinds.push("row");
         });
         aoa.push(["小計", list.length + " 件", "", "", "", "", list.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), list.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), "", list.reduce(function (t, c) { return t + caseLen(c); }, 0), "", "", "", ""]); kinds.push("sub");
