@@ -127,8 +127,11 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 .tsum button.on{outline:3px solid var(--brand2)}
 .tsum button.zero b{color:var(--ok)}
 #pendBar{display:none}
-#pendBar.show{display:flex;align-items:center;gap:10px;position:sticky;bottom:0;background:#fff7d6;border:2px solid #f0c36d;border-radius:12px;padding:10px 14px;margin-top:12px;box-shadow:0 -4px 14px rgba(0,0,0,.08);flex-wrap:wrap;z-index:5}
+#pendBar.show{display:block;position:sticky;bottom:0;background:#fff7d6;border:2px solid #f0c36d;border-radius:12px;padding:10px 14px;margin-top:12px;box-shadow:0 -4px 14px rgba(0,0,0,.08);z-index:5}
+#pendBar .pbtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 #pendBar .sp{flex:1}
+#pendBar .pbdet{max-height:34vh;overflow:auto;margin-top:8px;background:#fff;border-radius:8px}
+#pendBar table.chgt td,#pendBar table.chgt th{padding:4px 8px}
 .tsel.chg{background:#fff3b8!important;border:2px solid #e0a800!important;font-weight:700}
 .chgwrap{max-height:50vh;overflow:auto;margin-top:8px}
 table.chgt{font-size:15px}
@@ -232,7 +235,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.1</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.2</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -886,7 +889,17 @@ function renderPendBar() {
   if (!L.length) { bar.className = ""; bar.innerHTML = ""; return; }
   var nc = Object.keys(PENDING).length;
   bar.className = "show";
-  bar.innerHTML = '<span>✏️ 已修改 <b>' + L.length + "</b> 項（" + nc + ' 案），<b>還沒儲存</b></span><span class="sp"></span><button class="btn" onclick="undoPending()">↩ 全部復原</button><button class="btn pri" onclick="confirmPending()">💾 儲存修改</button>';
+  var det = "";
+  if (UI.pbOpen !== false) {
+    det = '<div class="pbdet"><table class="t chgt"><thead><tr><th>工程</th><th>項目</th><th>原本</th><th></th><th>改成</th><th></th></tr></thead><tbody>' + L.map(function (x) {
+      return "<tr><td>" + esc((x.c["工程名稱"] || "") + "（" + (x.c["工程編號"] || "未填編號") + "）") + "</td><td>" + esc(x.k) + '</td><td class="muted">' + esc(x.from || "—") + '</td><td>→</td><td><b>' + esc(x.to || "—") + '</b></td><td><button class="btn sm" title="這一項改回原本" onclick="undoOne(\'' + x.uid + '\',\'' + esc(x.k) + '\')">↩ 改回</button></td></tr>';
+    }).join("") + "</tbody></table></div>";
+  }
+  bar.innerHTML = '<div class="pbtop"><span>✏️ 已修改 <b>' + L.length + "</b> 項（" + nc + ' 案），<b>還沒儲存</b></span><button class="btn sm" onclick="UI.pbOpen=(UI.pbOpen===false);renderPendBar()">' + (UI.pbOpen !== false ? "▲ 收起明細" : "▼ 看明細") + '</button><span class="sp"></span><button class="btn" onclick="undoPending()">↩ 全部復原</button><button class="btn pri" onclick="confirmPending()">💾 儲存修改</button></div>' + det;
+}
+function undoOne(uid, k) {
+  if (PENDING[uid]) { delete PENDING[uid][k]; if (!Object.keys(PENDING[uid]).length) delete PENDING[uid]; }
+  var sc = $("#content").scrollTop; renderTrack(); $("#content").scrollTop = sc;
 }
 function undoPending() { PENDING = {}; renderTrack(); toast("已復原，沒有任何修改"); }
 function changesTable(L) {
