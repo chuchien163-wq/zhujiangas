@@ -208,6 +208,16 @@ table.ttrack td{vertical-align:middle}
 #topbar{position:fixed;top:0;left:0;height:4px;width:0;background:#f6b93b;z-index:85;transition:width .3s}
 .spin{width:52px;height:52px;border-radius:50%;border:5px solid #c9d6e6;border-top-color:var(--brand);animation:sp 0.9s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+#tourMask{position:fixed;inset:0;z-index:95;display:none}
+#tourHole{position:fixed;z-index:96;border-radius:10px;box-shadow:0 0 0 9999px rgba(10,20,35,.62);outline:3px solid #ffd54a;transition:all .25s;display:none;pointer-events:none}
+#tourTip{position:fixed;z-index:97;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.35);width:min(400px,calc(100vw - 24px));padding:16px 18px;display:none}
+#tourTip h4{margin:0 0 6px;font-size:18px}
+#tourTip p{margin:0 0 12px;font-size:16px;line-height:1.6}
+#tourTip .tf{display:flex;align-items:center;gap:8px}
+#tourTip .tf .n{flex:1;color:var(--sub);font-size:14px}
+#tourTip .dots{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+#tourTip .dots i{width:8px;height:8px;border-radius:50%;background:#d6dee7}
+#tourTip .dots i.on{background:var(--brand2)}
 #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#22303d;color:#fff;padding:10px 20px;border-radius:10px;z-index:90;display:none;font-size:16px;max-width:90vw}
 #toast.show{display:block}
 .errbox{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:14px 16px;margin-bottom:14px}
@@ -248,13 +258,14 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.3.1</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.4</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
       <select id="pM1"></select><span>～</span><select id="pM2"></select><span>月</span>
       <button class="hbtn" id="btnReload" title="重新讀取雲端資料">🔄 更新</button>
       <button class="hbtn lockpill" id="btnLock">🔒 唯讀</button>
+      <button class="hbtn" id="btnTour" title="新手教學">❓ 教學</button>
     </div>
   </header>
   <div class="main">
@@ -278,6 +289,7 @@ table.ttrack td{vertical-align:middle}
 <div id="topbar"></div>
 <div id="loading"><div class="ldcard"><div class="spin"></div><div id="loadingMsg">讀取中…</div><div class="ldbar"><i id="ldFill"></i></div><div id="ldTime">已經過 0 秒</div><div id="ldSlow">Google 試算表回應比較慢，資料還在跑，請勿關閉或重複按。</div></div></div>
 <div id="toast"></div>
+<div id="tourMask"></div><div id="tourHole"></div><div id="tourTip"></div>
 
 <script>
 "use strict";
@@ -407,6 +419,7 @@ function load() {
     hideLoading();
     if (!d.ok) throw new Error(d.msg || "讀取失敗");
     setData(d); fillPeriod(); render();
+    if (!lsGet(TOUR_KEY)) setTimeout(startTour, 400);
   }).catch(function (e) {
     hideLoading();
     $("#content").innerHTML = '<div class="errbox">⚠ ' + esc(e.message) + '</div><button class="btn pri" onclick="load()">重試</button> <button class="btn" onclick="renderSetup(true)">重新設定後端網址</button>';
@@ -541,7 +554,8 @@ function issuesList() {
   DB.cases.forEach(function (c) { (byCode[c["工程編號"]] = byCode[c["工程編號"]] || []).push(c); });
   DB.cases.forEach(function (c) {
     var tag = c["工程編號"] + " " + c["工程名稱"];
-    if (!/^\d{6}[A-Z]\d{3}$/.test(c["工程編號"])) out.push([c.UID, "工程編號格式異常：" + tag]);
+    if (!String(c["工程編號"] || "").trim()) out.push([c.UID, "還沒有工程編號（拿到編號後點這裡補上）：" + c["工程名稱"]]);
+    else if (!/^\d{6}[A-Z]\d{3}$/.test(c["工程編號"])) out.push([c.UID, "工程編號格式異常（應為 6 碼數字＋1 英文＋3 碼數字）：" + tag]);
     if (byCode[c["工程編號"]].length > 1 && byCode[c["工程編號"]].some(function (o) { return o["工程名稱"] !== c["工程名稱"]; })) out.push([c.UID, "工程編號重複（案名不同）：" + tag]);
     if (c["狀態"] === "已竣工" && !isISO(c["完工日"])) out.push([c.UID, "已竣工但沒有完工日（報告抓不到）：" + tag]);
     if (c["狀態"] === "已竣工" && !caseLen(c)) out.push([c.UID, "已竣工但沒有管線長度：" + tag]);
@@ -1603,6 +1617,70 @@ function exportRepXlsx() {
   });
 }
 
+/* ---------- 新手教學 ---------- */
+var TOUR_KEY = "pipeline_tour_v1";
+var TOUR = [
+  { t: "👋 歡迎使用工程管線管理系統", d: "這套系統取代原本的工程進度表、汰換彙總、施工追蹤表，也能一鍵產生董監事會和主管會議的報告。<br>花 2 分鐘跟著看一遍，隨時可以按「跳過」。" },
+  { p: "dash", s: ".period", t: "📅 統計期間", d: "選年度和月份。總覽的長度、董監事會報告、探漏紀錄都依這個期間計算（以<b>完工日</b>為準）。" },
+  { p: "dash", s: "#btnReload", t: "🔄 更新", d: "同事剛改過資料、或你覺得畫面不是最新的，按這裡重新讀取雲端資料。" },
+  { p: "dash", s: "#btnLock", t: "🔒 唯讀／🔓 編輯中", d: "看資料不用密碼。第一次按「編輯」會要你輸入<b>編輯密碼</b>，輸入一次這台電腦就會記住。<br>在別人的電腦用完，點這裡登出。" },
+  { p: "dash", s: "#dq", t: "🔍 搜尋全部工程", d: "打工程編號、名稱、位置、管種都可以，<b>可以用注音打字</b>，選完字就會搜尋。" },
+  { p: "dash", s: ".kpis", t: "📊 數字都可以點", d: "點「本期管線施設總長」會列出是哪些案子；新設的「中壓／低壓」、汰換的「計畫性／非計畫性」也都能點。" },
+  { p: "dash", s: ".bars", t: "📏 各管種長度", d: "藍色＝新設、橘色＝汰換。點色塊或下面的數字，可以分開看新設或汰換的明細。" },
+  { p: "dash", s: ".tsum", t: "📌 施工追蹤未完成", d: "許可費未繳、整壓器未裝、路權未繳回…各有幾件，點數字直接跳到那些案子。" },
+  { p: "dash", s: ".issues,.card:has(h3)", f: function () { var c = $$(".card").filter(function (x) { return /待確認事項/.test(x.innerText); })[0]; return c; }, t: "⚠ 待確認事項", d: "系統自動檢查資料問題（編號重複、已竣工沒填完工日…）。點文字打開那筆修改，改正後會自動消失。" },
+  { p: "prog", s: ".tabs", t: "📋 工程進度：狀態分頁", d: "進行中／待施工／施工中／待掛表／完工待驗收／已竣工，數字是件數。每一頁都會<b>分新設、汰換兩張表</b>。" },
+  { p: "prog", s: "h2.pg .btn.pri", t: "＋ 新增工程", d: "輸入工程編號後，系統會自動判斷<b>新設或汰換</b>（第 7 碼 E/F＝汰換），也可以手動改。" },
+  { p: "prog", s: "table.t td.act", t: "✏️ 編輯／✅ 完工", d: "「編輯」改任何資料；「完工」會把狀態改成已竣工，填<b>完工日和管線長度</b>才會進報告。<br>存檔前會跳確認框列出改了哪些；改了沒存就關掉也會提醒你。" },
+  { p: "track", s: ".tgrid", t: "📌 施工追蹤：點狀態篩選", d: "每個項目都列出「已裝／未裝／無須裝」的件數，點了就只看那些，再點一次取消。" },
+  { p: "track", s: "table.ttrack select", t: "⬇ 用下拉修改", d: "直接在表格裡選，改過的格子會變<b>黃色</b>。可以一次改很多格。" },
+  { p: "track", s: "#content", t: "💾 最後一起儲存", d: "改完後畫面底部會出現黃色提示列，列出改了哪些，每一項都能「↩ 改回」。<br>按「💾 儲存修改」→ 確認框 →「確定修改」才會存。忘了存就換頁，會跳提醒。" },
+  { p: "rep", s: "table.t", t: "🔁 汰換彙總", d: "依年度、計畫性／非計畫性自動整理。<b>紅字</b>＝尚未竣工。計畫性汰換要呈報能源署。右上角可以匯出 Excel。" },
+  { p: "leak", s: "h2.pg", t: "🔎 探漏搶修", d: "每次探漏的區域、立即修護件數、轉工務部件數，會自動進董監事會報告。" },
+  { p: "report", s: ".tabs", t: "📄 產生報告（兩種）", d: "<b>董監事會</b>：依統計期間產生「二、工程報告」，下載 Word 或複製貼上。<br><b>主管會議</b>：勾選狀態／類別／廠商，下載跟簡報一樣格式的 Excel。" },
+  { p: "log", s: "h2.pg", t: "🕘 修改紀錄", d: "誰在什麼時候改了哪一筆、從什麼改成什麼，都記在這裡。不確定剛剛改了什麼時來這裡查。" },
+  { p: "set", s: "h2.pg", t: "⚙️ 參數設定", d: "鉛封戶數、閥箱備註（報告用）和編輯密碼在這裡改。" },
+  { p: "dash", s: "#btnTour", t: "🎉 完成！", d: "之後想再看一次教學，隨時按右上角「❓ 教學」。" }
+];
+var tourI = 0;
+function startTour() { guardLeave(function () { tourI = 0; $("#tourMask").style.display = "block"; showTour(); }); }
+function endTour() {
+  ["tourMask", "tourHole", "tourTip"].forEach(function (id) { $("#" + id).style.display = "none"; });
+  lsSet(TOUR_KEY, "done"); UI.page = "dash"; render(); $("#content").scrollTop = 0;
+}
+function showTour() {
+  var st = TOUR[tourI];
+  if (st.p && UI.page !== st.p) { UI.page = st.p; render(); }
+  var el = st.f ? st.f() : (st.s ? $(st.s) : null);
+  var hole = $("#tourHole"), tip = $("#tourTip");
+  if (el) {
+    el.scrollIntoView({ block: "center", behavior: "instant" });
+    var r = el.getBoundingClientRect(), pad = 6;
+    var top = Math.max(4, r.top - pad), left = Math.max(4, r.left - pad), w = Math.min(window.innerWidth - left - 4, r.width + pad * 2), h = Math.min(window.innerHeight - top - 4, r.height + pad * 2);
+    hole.style.cssText = "display:block;top:" + top + "px;left:" + left + "px;width:" + w + "px;height:" + h + "px";
+  } else {
+    hole.style.cssText = "display:block;top:50%;left:50%;width:0;height:0";
+  }
+  tip.innerHTML = '<div class="dots">' + TOUR.map(function (x, i) { return '<i class="' + (i <= tourI ? "on" : "") + '"></i>'; }).join("") + "</div><h4>" + st.t + "</h4><p>" + st.d + '</p><div class="tf"><span class="n">' + (tourI + 1) + " / " + TOUR.length + "</span>" +
+    (tourI < TOUR.length - 1 ? '<button class="btn sm" onclick="endTour()">跳過</button>' : "") +
+    (tourI ? '<button class="btn sm" onclick="tourI--;showTour()">上一步</button>' : "") +
+    '<button class="btn sm pri" onclick="' + (tourI < TOUR.length - 1 ? "tourI++;showTour()" : "endTour()") + '">' + (tourI < TOUR.length - 1 ? "下一步 →" : "開始使用") + "</button></div>";
+  tip.style.display = "block";
+  var tw = tip.offsetWidth, th = tip.offsetHeight, vw = window.innerWidth, vh = window.innerHeight, x, y;
+  if (!el) { x = (vw - tw) / 2; y = (vh - th) / 2; }
+  else {
+    var R = el.getBoundingClientRect();
+    if (vw < 760) { x = (vw - tw) / 2; y = R.bottom + 14 + th < vh ? R.bottom + 14 : Math.max(10, R.top - th - 14); if (y < 10 || y + th > vh) y = vh - th - 10; }
+    else {
+      y = R.bottom + 14; x = Math.min(Math.max(10, R.left), vw - tw - 10);
+      if (y + th > vh - 10) { y = R.top - th - 14; }
+      if (y < 10) { y = Math.min(vh - th - 10, Math.max(10, R.top + 10)); x = R.right + 16 + tw < vw ? R.right + 16 : Math.max(10, R.left - tw - 16); if (R.width > vw * 0.5) x = (vw - tw) / 2; }
+    }
+  }
+  tip.style.left = Math.round(x) + "px"; tip.style.top = Math.round(y) + "px";
+}
+window.addEventListener("resize", function () { if ($("#tourTip").style.display === "block") showTour(); });
+
 /* ---------- 啟動 ---------- */
 (function init() {
   try { var u = JSON.parse(lsGet(LS_UI) || "{}"); Object.keys(u).forEach(function (k) { if (u[k] !== undefined && u[k] !== null) UI[k] = u[k]; }); } catch (e) {}
@@ -1618,6 +1696,8 @@ function exportRepXlsx() {
     });
   });
   $("#btnReload").addEventListener("click", function () { guardLeave(load); });
+  $("#btnTour").addEventListener("click", startTour);
+  document.addEventListener("keydown", function (e) { if ($("#tourTip").style.display === "block") { if (e.key === "Escape") endTour(); if (e.key === "ArrowRight" && tourI < TOUR.length - 1) { tourI++; showTour(); } if (e.key === "ArrowLeft" && tourI) { tourI--; showTour(); } } });
   $("#btnLock").addEventListener("click", function () {
     if (PW) { PW = ""; lsSet(SS_PW, ""); updLock(); toast("🔒 已登出，回到唯讀"); }
     else needLogin(function () {});
