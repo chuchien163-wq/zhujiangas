@@ -232,7 +232,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.0</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.1</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -249,6 +249,7 @@ table.ttrack td{vertical-align:middle}
       <button data-p="track"><span class="ico">📌</span>施工追蹤</button>
       <button data-p="leak"><span class="ico">🔎</span>探漏搶修</button>
       <button data-p="report"><span class="ico">📄</span>產生報告</button>
+      <button data-p="log"><span class="ico">🕘</span>修改紀錄</button>
       <button data-p="set"><span class="ico">⚙️</span>參數設定</button>
       <div class="foot" id="navFoot">尚未載入</div>
     </nav>
@@ -274,7 +275,7 @@ var ACTIVE = ["待施工", "施工中", "待掛表", "完工待驗收"];
 var PIPE_TYPES = ["110mm PE管", "63mm PE管", "160mm PE管", "200mm PE管", "6\" PE被覆無縫鋼管", "4\" PE被覆無縫鋼管"];
 var RM_TYPES = ["2\" PVC管", "3\" PVC管", "4\" PVC管", "2\" 鋼管", "3\" 鋼管"];
 
-var DB = { cases: [], pipes: [], leaks: [], params: {} };
+var DB = { cases: [], pipes: [], leaks: [], params: {}, logs: [] };
 var PB = {};
 var UI = { page: "dash", y: 0, m1: 1, m2: 12, st: "進行中", cls: "全部", q: "", sortK: "", sortD: 1 };
 var PW = "";
@@ -378,7 +379,7 @@ function req(method, payload) {
   });
 }
 function setData(d) {
-  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {};
+  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {}; DB.logs = d.logs || [];
   PB = {};
   DB.pipes.forEach(function (p) { (PB[p["案件UID"]] = PB[p["案件UID"]] || []).push(p); });
   $("#navFoot").innerHTML = "案件 " + DB.cases.length + " 筆<br>讀取於 " + new Date().toLocaleTimeString("zh-TW", { hour12: false });
@@ -471,7 +472,7 @@ function statsFor(y, m1, m2) {
 /* ---------- 版面 ---------- */
 function render() {
   $$("#nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.p === (UI.page === "drill" ? "dash" : UI.page)); });
-  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, report: renderReport, set: renderSet }[UI.page] || renderDash;
+  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
   fn(); saveUI();
 }
 function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : '<span class="badge b-new">新設</span>'; }
@@ -1071,6 +1072,27 @@ function fallbackCopy() {
   sel.removeAllRanges();
 }
 
+/* ===== 修改紀錄 ===== */
+function renderLog() {
+  var q = (UI.lq || "").trim().toLowerCase(), day = UI.ld || "today";
+  var today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+  var list = DB.logs.slice().reverse().filter(function (l) {
+    if (day === "today" && String(l["時間"]).slice(0, 10) !== today) return false;
+    if (q && [l["動作"], l["內容"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
+    return true;
+  });
+  var h = '<h2 class="pg">🕘 修改紀錄<span class="muted" style="font-size:16px;font-weight:500">誰在什麼時候改了哪一筆、從什麼改成什麼（最近 300 筆）</span></h2>';
+  h += '<div class="toolbar"><input type="search" id="lq" name="srch_lq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋 工程名稱／編號／欄位" value="' + esc(UI.lq || "") + '">' + [["today", "只看今天"], ["all", "全部"]].map(function (x) { return '<button class="chip c-all' + (day === x[0] ? " on" : "") + '" onclick="UI.ld=\'' + x[0] + '\';renderLog()">' + x[1] + "</button>"; }).join("") + "</div>";
+  if (!DB.logs.length) h += '<div class="card"><div class="empty">後端還沒更新到 v1.4，暫時看不到紀錄。也可以直接看試算表的「操作紀錄」分頁。</div></div>';
+  else {
+    h += '<div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>時間</th><th>動作</th><th>內容</th></tr></thead><tbody>';
+    list.forEach(function (l) { h += '<tr><td class="nw" data-l="時間">' + esc(l["時間"]) + '</td><td class="nw" data-l="動作">' + esc(l["動作"]) + '</td><td data-l="內容">' + esc(l["內容"]).replace(/；/g, "<br>") + "</td></tr>"; });
+    if (!list.length) h += '<tr><td colspan="3" class="empty" data-l="">' + (day === "today" ? "今天沒有修改" : "沒有符合的紀錄") + "</td></tr>";
+    h += "</tbody></table></div></div>";
+  }
+  $("#content").innerHTML = h;
+  bindSearch("lq", "lq", renderLog);
+}
 /* ===== 參數 ===== */
 function renderSet() {
   var P = DB.params;
