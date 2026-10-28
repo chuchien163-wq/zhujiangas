@@ -137,6 +137,19 @@ table.t tr.tot td{background:#e9eef5;font-weight:700}
 table.chgt{font-size:15px}
 table.chgt td,table.chgt th{padding:5px 7px}
 .modal.small{width:min(620px,100%)}
+table.mgr{border-collapse:collapse;width:100%;font-size:15.5px;font-family:"DFKai-SB","BiauKai","標楷體","Noto Sans TC",serif}
+table.mgr th{background:#ffff00;border:1px solid #888;padding:6px 5px;white-space:nowrap}
+table.mgr td{border:1px solid #bbb;padding:5px 6px}
+table.mgr td.c{text-align:center}
+table.mgr td.vt{text-align:center;font-weight:700;writing-mode:vertical-lr;letter-spacing:4px;background:#fafafa}
+table.mgr td.vd{writing-mode:horizontal-tb;letter-spacing:0}
+table.mgr tr.xc td:not(.vt){color:#0070c0}
+table.mgr tr.xc td.vd{color:#0070c0}
+table.mgr tr.sub td{background:#f2f2f2;font-weight:700}
+.mgrf>div{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:4px 0}
+.mgrf b{min-width:44px}
+label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+label.ck input{width:18px;height:18px}
 .issues li{margin:8px 0}
 a.lnk{color:var(--brand2);cursor:pointer;text-decoration:underline dotted}
 table.ttrack td{vertical-align:middle}
@@ -235,7 +248,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.2</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.3.1</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -685,6 +698,7 @@ function cellVal(c, k) {
   if (k === "長度") { var L = caseLen(c); return L ? fmt(L) : ""; }
   if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
+  if (k === "工程名稱" && c["廠商"]) return esc(c[k]) + '<div><span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span></div>";
   if (k === "工程編號" && c["類別"] === "汰換") return esc(c[k]) + '<div><span class="badge b-rep" style="font-size:12.5px">' + esc(c["汰換性質"] || "未分") + (c["計畫年度"] ? "・" + esc(c["計畫年度"]) + "年" : "") + "</span></div>";
   return esc(c[k]);
 }
@@ -1049,11 +1063,146 @@ function reportHTML() {
   return h;
 }
 function renderReport() {
-  var h = '<h2 class="pg">📄 產生報告<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span>' +
+  var tab = UI.rtab || "board";
+  var tabs = '<div class="tabs">' + [["board", "📄 董監事會（工程報告）"], ["mgr", "📊 主管會議（施工案件）"]].map(function (x) { return '<button class="tab' + (tab === x[0] ? " on" : "") + '" onclick="UI.rtab=\'' + x[0] + '\';renderReport()">' + x[1] + "</button>"; }).join("") + "</div>";
+  if (tab === "mgr") { renderMgr(tabs); return; }
+  var h = tabs + '<h2 class="pg">📄 董監事會工程報告<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span>' +
     '<button class="btn" onclick="copyReport()">📋 複製（貼到 Word）</button><button class="btn pri" onclick="downloadDoc()">⬇ 下載 Word 檔</button></h2>' +
     '<p class="muted" style="margin:-4px 0 12px">期間在右上角「統計期間」切換。只抓「狀態＝已竣工」且完工日落在期間內的工程；鉛封、閥箱文字在「參數設定」改。</p>' +
     '<div class="paper" id="paper">' + reportHTML() + "</div>";
   $("#content").innerHTML = h;
+}
+/* ===== 主管會議：施工案件 ===== */
+var MGR_ST = ["待掛表", "施工中", "待施工", "完工待驗收"];
+var VENDORS = ["元誠", "欣宬"];
+function mgrF() {
+  if (!UI.mf) UI.mf = { st: { "待掛表": 1, "施工中": 1, "待施工": 1, "完工待驗收": 0 }, cls: { "新設": 1, "汰換": 1 }, vd: { "元誠": 1, "欣宬": 1, "未指定": 1 }, q: "" };
+  return UI.mf;
+}
+function rocS(v) { if (!isISO(v)) return v || ""; var p = v.split("-"); return (parseInt(p[0], 10) - 1911) + "/" + parseInt(p[1], 10) + "/" + parseInt(p[2], 10); }
+function mdS(v) { if (!isISO(v)) return v || ""; var p = v.split("-"); return parseInt(p[1], 10) + "月" + parseInt(p[2], 10) + "日"; }
+function mgrCols(st) {
+  var c = [["項次", 5], ["工程編號", 12], ["工程名稱", 16], ["工程位置", 26], ["繳費日", 10], ["戶數", 6, 1], ["預計工期(天)", 8, 1]];
+  if (st === "施工中" || st === "完工待驗收") c.push(["已施工(天)", 7, 1]);
+  c.push(["現況", 14]);
+  if (st === "待施工") c.push(["會勘日期", 10]);
+  return c;
+}
+function mgrVal(c, k, i) {
+  if (k === "項次") return i;
+  if (k === "繳費日") return rocS(c["繳費日"]);
+  if (k === "戶數") return c["戶數"] === "" ? "" : num(c["戶數"]);
+  if (k === "預計工期(天)") return c["預計工期"] === "" ? "" : num(c["預計工期"]);
+  if (k === "已施工(天)") return c["已施工天數"] === "" ? "" : num(c["已施工天數"]);
+  if (k === "會勘日期") return mdS(c["會勘日期"]) || (/預計|下架/.test(c["備註"]) ? c["備註"] : "");
+  return c[k] || "";
+}
+function payKey(c) { return isISO(c["繳費日"]) ? "0" + c["繳費日"] : "1" + (c["繳費日"] || "") + c["工程編號"]; }
+function mgrSections() {
+  var f = mgrF(), q = (f.q || "").trim().toLowerCase();
+  return MGR_ST.filter(function (st) { return f.st[st]; }).map(function (st) {
+    var list = DB.cases.filter(function (c) {
+      if (c["狀態"] !== st) return false;
+      if (!f.cls[c["類別"] === "汰換" ? "汰換" : "新設"]) return false;
+      if (!f.vd[c["廠商"] || "未指定"]) return false;
+      if (q && [c["工程編號"], c["工程名稱"], c["工程位置"], c["現況"]].join(" ").toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    var groups = st === "待掛表" ? [{ v: "", list: list }] : VENDORS.concat(["未指定"]).map(function (v) { return { v: v, list: list.filter(function (c) { return (c["廠商"] || "未指定") === v; }) }; }).filter(function (g) { return g.list.length; });
+    groups.forEach(function (g) { g.list.sort(function (a, b) { return payKey(a).localeCompare(payKey(b)); }); });
+    var all = [].concat.apply([], groups.map(function (g) { return g.list; }));
+    return { st: st, groups: groups, n: all.length, hh: all.reduce(function (t, c) { return t + num(c["戶數"]); }, 0), dd: all.reduce(function (t, c) { return t + num(c["預計工期"]); }, 0), hasV: st !== "待掛表" };
+  }).filter(function (S) { return S.n; });
+}
+function renderMgr(tabs) {
+  var f = mgrF();
+  var cb = function (grp, k, lab) { return '<label class="ck"><input type="checkbox"' + (f[grp][k] ? " checked" : "") + ' onchange="UI.mf.' + grp + '[\'' + k + '\']=this.checked?1:0;renderReport()"> ' + (lab || k) + "</label>"; };
+  var h = tabs + '<h2 class="pg">📊 主管會議｜施工案件<span class="muted" style="font-size:16px;font-weight:500">資料日期 ' + todayRoc() + '</span><span class="sp"></span><button class="btn pri" onclick="exportMgrXlsx()">⬇ 下載 Excel</button></h2>';
+  h += '<div class="card mgrf"><div><b>狀態</b>' + MGR_ST.map(function (x) { return cb("st", x); }).join("") + '</div><div><b>類別</b>' + cb("cls", "新設") + cb("cls", "汰換") + '</div><div><b>廠商</b>' + cb("vd", "元誠") + cb("vd", "欣宬") + cb("vd", "未指定") + '</div><div class="toolbar" style="margin:6px 0 0"><input type="search" id="mq" name="srch_mq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="再用關鍵字篩選：工程編號／名稱／位置／現況（可留空）" value="' + esc(f.q || "") + '"></div></div>';
+  var S = mgrSections();
+  if (!S.length) h += '<div class="card"><div class="empty">沒有符合條件的案件</div></div>';
+  var TH = 0, TD = 0;
+  S.forEach(function (sec) {
+    TH += sec.hh; TD += sec.dd;
+    var cols = mgrCols(sec.st);
+    h += '<div class="card"><div class="tblwrap"><table class="mgr"><thead><tr><th>項目</th>' + (sec.hasV ? "<th>廠商</th>" : "") + cols.map(function (c) { return "<th>" + c[0] + "</th>"; }).join("") + "</tr></thead><tbody>";
+    var i = 0, first = true;
+    sec.groups.forEach(function (g) {
+      g.list.forEach(function (c, gi) {
+        i++;
+        h += '<tr class="' + (g.v === "欣宬" ? "xc" : "") + '">';
+        if (first) { h += '<td class="vt" rowspan="' + sec.n + '">' + sec.st + "</td>"; first = false; }
+        if (sec.hasV && gi === 0) h += '<td class="vt vd" rowspan="' + g.list.length + '">' + esc(g.v) + "</td>";
+        cols.forEach(function (col) { var v = mgrVal(c, col[0], i); h += "<td" + (col[2] || col[0] === "項次" || col[0] === "繳費日" || col[0] === "會勘日期" ? ' class="c"' : "") + ">" + esc(col[2] && v !== "" ? fmt(v) : v) + "</td>"; });
+        h += "</tr>";
+      });
+    });
+    var span = (sec.hasV ? 2 : 1) + cols.length;
+    var hhIdx = cols.map(function (c) { return c[0]; }).indexOf("戶數");
+    h += '<tr class="sub"><td colspan="' + ((sec.hasV ? 2 : 1) + hhIdx) + '" class="c">小計（' + sec.n + ' 件）</td><td class="c">' + fmt(sec.hh) + '</td><td class="c">' + fmt(sec.dd) + '</td><td colspan="' + (cols.length - hhIdx - 2) + '"></td></tr>';
+    h += "</tbody></table></div></div>";
+  });
+  if (S.length > 1) h += '<div class="card"><b>總計：</b>' + S.reduce(function (t, x) { return t + x.n; }, 0) + " 件｜戶數 " + fmt(TH) + "｜預計工期 " + fmt(TD) + " 天</div>";
+  $("#content").innerHTML = h;
+  bindSearch("mq", "_mq", function () { UI.mf.q = UI._mq; renderReport(); });
+}
+function exportMgrXlsx() {
+  withXlsx(function () {
+    var S = mgrSections();
+    if (!S.length) { toast("沒有符合條件的案件", 3000); return; }
+    var wb = XLSX.utils.book_new(), TH = 0, TD = 0, TN = 0;
+    var bd = { style: "thin", color: { rgb: "808080" } }, B = { top: bd, bottom: bd, left: bd, right: bd };
+    S.forEach(function (sec, si) {
+      var cols = mgrCols(sec.st), off = sec.hasV ? 2 : 1, ncol = off + cols.length;
+      var aoa = [], kinds = [], merges = [], blue = [];
+      var put = function (row, kind) { while (row.length < ncol) row.push(""); aoa.push(row); kinds.push(kind); return aoa.length - 1; };
+      put(["二.施工案件－" + sec.st + "（資料日期：" + todayRoc() + "）"], "mtitle");
+      merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: ncol - 1 } });
+      var heads = ["項目"].concat(sec.hasV ? ["廠商"] : []).concat(cols.map(function (c) { return c[0]; }));
+      put(heads.slice(), "mhead");
+      var start = aoa.length, i = 0;
+      sec.groups.forEach(function (g) {
+        var gs = aoa.length;
+        g.list.forEach(function (c) {
+          i++;
+          var r = put([i === 1 ? sec.st : ""].concat(sec.hasV ? [aoa.length === gs ? g.v : ""] : []).concat(cols.map(function (col) { return mgrVal(c, col[0], i); })), "mrow");
+          if (g.v === "欣宬") blue.push(r);
+        });
+        if (sec.hasV && g.list.length > 1) merges.push({ s: { r: gs, c: 1 }, e: { r: aoa.length - 1, c: 1 } });
+      });
+      if (sec.n > 1) merges.push({ s: { r: start, c: 0 }, e: { r: aoa.length - 1, c: 0 } });
+      var hhIdx = off + cols.map(function (c) { return c[0]; }).indexOf("戶數");
+      var sub = []; sub[0] = "小計（" + sec.n + " 件）"; sub[hhIdx] = sec.hh; sub[hhIdx + 1] = sec.dd;
+      for (var k = 0; k < ncol; k++) if (sub[k] === undefined) sub[k] = "";
+      var sr = put(sub, "msub"); merges.push({ s: { r: sr, c: 0 }, e: { r: sr, c: hhIdx - 1 } });
+      TH += sec.hh; TD += sec.dd; TN += sec.n;
+      if (si === S.length - 1 && S.length > 1) {
+        var tot = []; for (k = 0; k < ncol; k++) tot.push("");
+        tot[0] = "總計（" + TN + " 件）"; tot[hhIdx] = TH; tot[hhIdx + 1] = TD;
+        var tr = put(tot, "msub"); merges.push({ s: { r: tr, c: 0 }, e: { r: tr, c: hhIdx - 1 } });
+      }
+      var ws = XLSX.utils.aoa_to_sheet(aoa);
+      for (var r = 0; r < aoa.length; r++) for (var c = 0; c < ncol; c++) {
+        var ref = XLSX.utils.encode_cell({ r: r, c: c }), kd = kinds[r];
+        if (!ws[ref]) ws[ref] = { t: "s", v: "" };
+        var st = { font: { name: "標楷體", sz: 12 }, alignment: { vertical: "center", horizontal: "center", wrapText: true }, border: B };
+        if (kd === "mtitle") st = { font: { name: "標楷體", sz: 16, bold: true }, alignment: { vertical: "center", horizontal: "left" } };
+        else if (kd === "mhead") { st.fill = { fgColor: { rgb: "FFFF00" } }; st.font.bold = true; }
+        else if (kd === "msub") { st.font.bold = true; st.fill = { fgColor: { rgb: "F2F2F2" } }; }
+        else {
+          if (blue.indexOf(r) > -1 && c > 0) st.font.color = { rgb: "0070C0" };
+          if (/工程名稱|工程位置|現況/.test(heads[c])) st.alignment.horizontal = "left";
+          if (c === 0 || heads[c] === "廠商") st.font.bold = true;
+        }
+        ws[ref].s = st;
+      }
+      ws["!merges"] = merges;
+      ws["!cols"] = heads.map(function (hd) { return { wch: ({ "項目": 7, "廠商": 7, "項次": 5, "工程編號": 13, "工程名稱": 18, "工程位置": 32, "繳費日": 11, "戶數": 7, "預計工期(天)": 9, "已施工(天)": 9, "現況": 16, "會勘日期": 11 })[hd] || 10 }; });
+      ws["!rows"] = [{ hpt: 26 }, { hpt: 30 }];
+      XLSX.utils.book_append_sheet(wb, ws, sec.st);
+    });
+    XLSX.writeFile(wb, "主管會議_施工案件_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
 }
 function docWrap(inner) {
   return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><title>' + periodText() + '工程報告</title>' +
@@ -1210,6 +1359,8 @@ function drawCase() {
   h += '<div class="f"><label>類別</label><div class="seg2"><label class="' + (!isRep ? "on-new" : "") + '"><input type="radio" name="cls" value="新設"' + (!isRep ? " checked" : "") + '>新設</label><label class="' + (isRep ? "on-rep" : "") + '"><input type="radio" name="cls" value="汰換"' + (isRep ? " checked" : "") + ">汰換</label></div></div>";
   h += '<div class="f"><label>狀態</label><select data-f="狀態">' + STATUS.map(function (s) { return "<option" + (s === it["狀態"] ? " selected" : "") + ">" + s + "</option>"; }).join("") + "</select></div>";
   h += inp("工程名稱", "工程名稱", "w3") + inp("工程位置", "工程位置", "w3");
+  var vd = it["廠商"] || "", vopts = VENDORS.slice(); if (vd && vopts.indexOf(vd) < 0) vopts.push(vd);
+  h += '<div class="f"><label>施工廠商</label><select data-f="廠商"><option value="">（未指定）</option>' + vopts.map(function (o) { return "<option" + (o === vd ? " selected" : "") + ">" + esc(o) + "</option>"; }).join("") + "</select></div>";
   if (isRep) {
     h += '<div class="f"><label>汰換性質 <span class="req">*</span></label><div class="seg2">' + ["計畫性", "非計畫性"].map(function (g) { return '<label class="' + (it["汰換性質"] === g ? "on-gen" : "") + '"><input type="radio" name="rtype" value="' + g + '"' + (it["汰換性質"] === g ? " checked" : "") + ">" + g + "</label>"; }).join("") + '</div><span class="hint">計畫性＝呈報能源署備查</span></div>';
     h += inp("計畫年度", "計畫年度（民國）", "", "text", "例：115");
@@ -1275,7 +1426,7 @@ function bindCase() {
 }
 function addPipe() { readCaseForm(); var last = EDIT.pipes[EDIT.pipes.length - 1] || {}; EDIT.pipes.push({ 壓力: last["壓力"] || "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" }); drawCase(); }
 function delPipe(i) { readCaseForm(); EDIT.pipes.splice(i, 1); if (!EDIT.pipes.length) EDIT.pipes.push({ 壓力: "低壓" }); drawCase(); }
-var CASE_FIELDS = ["工程編號", "類別", "狀態", "工程名稱", "工程位置", "汰換性質", "計畫年度", "繳費日", "戶數", "預計工期", "已施工天數", "預定施工日", "施工日", "完工日", "現況", "會勘日期", "備註", "已繳許可費", "整壓器", "ESV", "掛表", "鐵箱／護網", "水泥基座", "已結算日期", "二刨", "路權繳回"];
+var CASE_FIELDS = ["工程編號", "類別", "狀態", "廠商", "工程名稱", "工程位置", "汰換性質", "計畫年度", "繳費日", "戶數", "預計工期", "已施工天數", "預定施工日", "施工日", "完工日", "現況", "會勘日期", "備註", "已繳許可費", "整壓器", "ESV", "掛表", "鐵箱／護網", "水泥基座", "已結算日期", "二刨", "路權繳回"];
 var DATE_FIELDS = ["繳費日", "會勘日期", "預定施工日", "施工日", "完工日", "已結算日期"];
 function pipeText(ps) {
   return ps.filter(function (p) { return String(p["敷設管種"] || "").trim() || num(p["敷設長度"]) || String(p["廢除管種"] || "").trim(); }).map(function (p) {
