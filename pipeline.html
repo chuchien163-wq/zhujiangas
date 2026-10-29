@@ -152,6 +152,12 @@ table.mgr tr.xc td.vd{color:#0070c0}
 table.mgr tr.sub td{background:#f2f2f2;font-weight:700}
 .mgrf>div{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:4px 0}
 .mgrf b{min-width:44px}
+.lenh{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin-bottom:10px;font-size:17px}
+.lsel{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:16px}
+.lsel select{font-size:16px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:#fff}
+table.lent tr.sub td{background:#eef2f6;font-weight:700} table.lent tr.tot td{background:#d9e2ec;font-weight:700} table.lent tr.modr td{color:var(--mod)}
+.ldot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+details.lend{margin-top:10px} details.lend summary{cursor:pointer;color:var(--sub);font-size:15px}
 label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
 label.ck input{width:18px;height:18px}
 .mtr{font-size:14px;white-space:nowrap}
@@ -268,7 +274,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v2.9</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.0</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -1189,8 +1195,9 @@ function reportHTML() {
 }
 function renderReport() {
   var tab = UI.rtab || "board";
-  var tabs = '<div class="tabs">' + [["board", "📄 董監事會（工程報告）"], ["mgr", "📊 主管會議（施工案件）"]].map(function (x) { return '<button class="tab' + (tab === x[0] ? " on" : "") + '" onclick="UI.rtab=\'' + x[0] + '\';renderReport()">' + x[1] + "</button>"; }).join("") + "</div>";
+  var tabs = '<div class="tabs">' + [["board", "📄 董監事會（工程報告）"], ["mgr", "📊 主管會議（施工案件）"], ["len", "📏 主管會議（管線長度）"]].map(function (x) { return '<button class="tab' + (tab === x[0] ? " on" : "") + '" onclick="UI.rtab=\'' + x[0] + '\';renderReport()">' + x[1] + "</button>"; }).join("") + "</div>";
   if (tab === "mgr") { renderMgr(tabs); return; }
+  if (tab === "len") { renderLen(tabs); return; }
   var h = tabs + '<h2 class="pg">📄 董監事會工程報告<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '</span><span class="sp"></span>' +
     '<button class="btn" onclick="copyReport()">📋 複製（貼到 Word）</button><button class="btn pri" onclick="downloadDoc()">⬇ 下載 Word 檔</button></h2>' +
     '<p class="muted" style="margin:-4px 0 12px">期間在右上角「統計期間」切換。只抓「狀態＝已竣工」且完工日落在期間內的工程（工程編號第 7 碼 R＝改裝，不列入統計）；鉛封、閥箱文字在「參數設定」改。</p>' +
@@ -1198,6 +1205,102 @@ function renderReport() {
   $("#content").innerHTML = h;
 }
 /* ===== 主管會議：施工案件 ===== */
+/* ===== 主管會議（管線長度）：兩段期間各自篩選，同一個 Excel ===== */
+function lastMonthYM() { var d = new Date(Date.now() + 8 * 3600e3), y = d.getUTCFullYear() - 1911, m = d.getUTCMonth(); if (m === 0) { y--; m = 12; } return { y: y, m: m }; }
+function lenP() {
+  if (!UI.lp) { var lm = lastMonthYM(); UI.lp = [{ y: lm.y, m1: lm.m, m2: lm.m, t: "上月" }, { y: lm.y, m1: 1, m2: 12, t: "年度" }]; }
+  return UI.lp;
+}
+function lenPText(p) { return p.y + "年" + (p.m1 === p.m2 ? p.m1 + "月" : p.m1 + "-" + p.m2 + "月"); }
+var LEN_ROWS = [["新設", "中壓"], ["新設", "低壓"], ["新設", "小計"], ["汰換", "中壓"], ["汰換", "低壓"], ["汰換", "小計"], ["合計", "新設＋汰換"], ["改裝", "不列入合計"]];
+function lenData(p) {
+  var s = statsFor(p.y, p.m1, p.m2, true), all = s.done.concat(s.mods);
+  var val = function (cls, pr, ck) {
+    if (cls === "合計") return val("新設", "小計", ck) + val("汰換", "小計", ck);
+    if (pr === "小計" || pr === "不列入合計") return (s.rows[cls + "|中壓"][ck] || 0) + (s.rows[cls + "|低壓"][ck] || 0);
+    return s.rows[cls + "|" + pr][ck] || 0;
+  };
+  var cnt = function (cls, pr) {
+    return all.filter(function (c) {
+      var k = clsOf(c);
+      if (cls === "合計") { if (k === "改裝") return false; } else if (k !== cls) return false;
+      if (pr === "中壓" || pr === "低壓") return pipesOf(c).some(function (q) { return (q["壓力"] === "中壓" ? "中壓" : "低壓") === pr && num(q["敷設長度"]); });
+      return true;
+    }).length;
+  };
+  return { s: s, all: all, val: val, cnt: cnt };
+}
+function lenCols(D) {
+  var cols = {}; D.forEach(function (d) { Object.keys(d.s.cols).forEach(function (k) { cols[k] = d.s.cols[k]; }); });
+  return Object.keys(cols).sort(function (a, b) {
+    var A = cols[a], B = cols[b], g = function (x) { return x.grp === "PE管" ? 0 : (x.grp === "PE被覆無縫鋼管" ? 1 : 2); };
+    return g(A) - g(B) || A.grp.localeCompare(B.grp) || sizeNum(B.size) - sizeNum(A.size);
+  }).map(function (k) { return { k: k, lab: cols[k].size + " " + cols[k].grp }; });
+}
+function lenSel(i) {
+  var p = lenP()[i], ys = {}; ys[rocYearNow()] = 1; ys[p.y] = 1;
+  DB.cases.forEach(function (c) { if (isISO(c["完工日"])) ys[parseInt(c["完工日"].slice(0, 4), 10) - 1911] = 1; });
+  var yo = Object.keys(ys).map(Number).sort(function (a, b) { return b - a; }).map(function (y) { return "<option" + (y === p.y ? " selected" : "") + ">" + y + "</option>"; }).join("");
+  var mo = function (sel) { var h = ""; for (var m = 1; m <= 12; m++) h += "<option" + (m === sel ? " selected" : "") + ">" + m + "</option>"; return h; };
+  var on = function (k) { return ' onchange="lenSet(' + i + ",'" + k + "',this.value)\""; };
+  return '<span class="lsel"><select' + on("y") + ">" + yo + "</select> 年 <select" + on("m1") + ">" + mo(p.m1) + "</select> 月 ～ <select" + on("m2") + ">" + mo(p.m2) + '</select> 月 <button class="btn sm" onclick="lenQuick(' + i + ')">' + (i === 0 ? "回到上個月" : "回到整年") + "</button></span>";
+}
+function lenSet(i, k, v) { var p = lenP()[i]; p[k] = parseInt(v, 10); if (p.m1 > p.m2) { if (k === "m1") p.m2 = p.m1; else p.m1 = p.m2; } renderReport(); }
+function lenQuick(i) { var lm = lastMonthYM(), p = lenP()[i]; p.y = lm.y; if (i === 0) { p.m1 = lm.m; p.m2 = lm.m; } else { p.m1 = 1; p.m2 = 12; } renderReport(); }
+function renderLen(tabs) {
+  var P = lenP(), D = P.map(lenData), C = lenCols(D);
+  var h = tabs + '<h2 class="pg">📏 主管會議｜管線長度<span class="muted" style="font-size:16px;font-weight:500">只算「已竣工」且完工日在期間內；兩段期間各自選</span><span class="sp"></span><button class="btn pri" onclick="exportLenXlsx()">⬇ 下載 Excel</button></h2>';
+  P.forEach(function (p, i) {
+    var d = D[i];
+    h += '<div class="card"><div class="lenh"><b>' + (i === 0 ? "① 上月" : "② 年度累計") + "：" + lenPText(p) + "</b>" + lenSel(i) + "</div>";
+    if (!d.all.length) { h += '<div class="empty">這段期間沒有已竣工的工程</div></div>'; return; }
+    h += '<div class="tblwrap"><table class="t lent"><thead><tr><th>類別</th><th>壓力</th>' + C.map(function (c) { return '<th class="num">' + esc(c.lab) + "</th>"; }).join("") + '<th class="num">合計(M)</th><th class="num">件數</th></tr></thead><tbody>';
+    LEN_ROWS.forEach(function (r) {
+      var tot = C.reduce(function (t, c) { return t + d.val(r[0], r[1], c.k); }, 0);
+      var cls = r[1] === "小計" ? "sub" : r[0] === "合計" ? "tot" : r[0] === "改裝" ? "modr" : "";
+      var dot = { "新設": "var(--new)", "汰換": "var(--rep)", "改裝": "var(--mod)" }[r[0]];
+      h += '<tr class="' + cls + '"><td>' + (dot ? '<i class="ldot" style="background:' + dot + '"></i>' : "") + r[0] + "</td><td>" + r[1] + "</td>" + C.map(function (c) { var v = d.val(r[0], r[1], c.k); return '<td class="num">' + (v ? fmt(v) : '<span class="muted">0</span>') + "</td>"; }).join("") + '<td class="num"><b>' + fmt(tot) + '</b></td><td class="num">' + d.cnt(r[0], r[1]) + "</td></tr>";
+    });
+    h += "</tbody></table></div>";
+    h += '<details class="lend"><summary>看完工明細（' + d.all.length + " 件）</summary>" + lenDetail(d.all) + "</details></div>";
+  });
+  $("#content").innerHTML = h;
+}
+function lenDetail(list) {
+  return '<div class="tblwrap"><table class="t cardify"><thead><tr><th>類別</th><th>工程編號</th><th>工程名稱</th><th>管線</th><th class="num">長度(M)</th><th>完工日</th></tr></thead><tbody>' + sortDone(list).map(function (c) {
+    return '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(clsOf(c)) + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="管線">' + pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).map(function (q) { return esc((q["壓力"] || "低壓") + "｜" + q["敷設管種"] + " " + fmt(q["敷設長度"]) + "M"); }).join("<br>") + '</td><td class="num" data-l="長度(M)">' + fmt(caseLen(c)) + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + "</td></tr>";
+  }).join("") + "</tbody></table></div>";
+}
+function exportLenXlsx() {
+  withXlsx(function () {
+    var P = lenP(), D = P.map(lenData), C = lenCols(D), wb = XLSX.utils.book_new();
+    var aoa = [["主管會議－管線長度（資料日期：" + todayRoc() + "）"]], kinds = ["title"];
+    P.forEach(function (p, i) {
+      var d = D[i];
+      aoa.push([""]); kinds.push("note");
+      aoa.push([(i === 0 ? "① 上月：" : "② 年度累計：") + lenPText(p) + "（已竣工、依完工日）"]); kinds.push(i === 0 ? "secN" : "secR");
+      aoa.push(["類別", "壓力"].concat(C.map(function (c) { return c.lab; })).concat(["合計(M)", "件數"])); kinds.push("head");
+      LEN_ROWS.forEach(function (r) {
+        var vals = C.map(function (c) { return d.val(r[0], r[1], c.k); });
+        aoa.push([r[0], r[1]].concat(vals).concat([vals.reduce(function (t, v) { return t + v; }, 0), d.cnt(r[0], r[1])]));
+        kinds.push(r[1] === "小計" ? "sub" : r[0] === "合計" ? "tot" : r[0] === "改裝" ? "red" : "row");
+      });
+    });
+    aoa.push([""]); kinds.push("note");
+    aoa.push(["※ 改裝＝工程編號第 7 碼 R，不列入合計；P＝推廣，歸新設。"]); kinds.push("note");
+    var ws = styled(aoa, kinds, [8, 12].concat(C.map(function () { return 14; })).concat([11, 7]));
+    var ncol = 4 + C.length; ws["!merges"] = aoa.map(function (r, i) { return kinds[i] === "title" || kinds[i] === "secN" || kinds[i] === "secR" || kinds[i] === "note" ? { s: { r: i, c: 0 }, e: { r: i, c: ncol - 1 } } : null; }).filter(Boolean);
+    XLSX.utils.book_append_sheet(wb, ws, "管線長度");
+    var det = [["完工明細"], ["期間", "類別", "工程編號", "工程名稱", "壓力", "敷設管種", "長度(M)", "施工日", "完工日"]], dk = ["title", "head"];
+    P.forEach(function (p, i) {
+      sortDone(D[i].all).forEach(function (c) {
+        pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).forEach(function (q) { det.push([(i === 0 ? "上月 " : "年度 ") + lenPText(p), clsOf(c), c["工程編號"], c["工程名稱"], q["壓力"] || "低壓", q["敷設管種"], num(q["敷設長度"]), roc(c["施工日"]), roc(c["完工日"])]); dk.push("row"); });
+      });
+    });
+    XLSX.utils.book_append_sheet(wb, styled(det, dk, [16, 7, 13, 24, 7, 20, 9, 11, 11]), "完工明細");
+    XLSX.writeFile(wb, "主管會議_管線長度_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
+}
 var MGR_ST = ["待掛表", "施工中", "待施工", "完工待驗收"];
 var VENDORS = ["元誠", "欣宬"];
 function mgrF() {
