@@ -117,8 +117,69 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
 .mask.on{display:flex}
 #mScan{z-index:45}
+#mAcc{z-index:48}
+.login{position:fixed;inset:0;z-index:70;background:linear-gradient(135deg,#1f4e79,#2e6da4);display:none;align-items:center;justify-content:center;padding:16px}
+.login.on{display:flex}
+.lgcard{background:#fff;border-radius:18px;padding:26px 22px;width:min(400px,100%);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.lgcard h1{font-size:23px;color:#1f4e79;margin:8px 0 2px}
+.lgcard label{display:flex;flex-direction:column;text-align:left;font-size:15px;color:#5d6d7e;gap:4px;margin-bottom:12px}
+.lgcard select,.lgcard input[type=password]{padding:11px 12px;font-size:18px;border:1px solid #c4ced8;border-radius:10px}
+.lgcard .lgrem{flex-direction:row;align-items:center;gap:8px;font-size:15px;color:#1d2833}
+.lgmsg{margin-top:10px;color:#c0392b;font-size:15px;min-height:20px}
+.sigshow{min-height:60px;display:flex;align-items:center;margin:4px 0 8px}.sigshow img{max-height:80px;border:1px dashed #c4ced8;border-radius:8px;background:#fff;padding:4px}
+.padbox{border:2px dashed #8fb8de;border-radius:10px;background:#fbfdff;margin-top:6px;touch-action:none}
+#sigPad{display:block;touch-action:none;cursor:crosshair}
+.psign img{height:11mm;vertical-align:middle;margin-left:2mm}
+.psign>span{display:flex;flex-direction:column;align-items:center}
+.psign small{font-size:2.6mm;color:#555}
+#mInsp,#mInspView{z-index:47}
+.imodal{width:min(860px,100%)}
+.ihdr{display:flex;align-items:center;gap:8px;position:sticky;top:-18px;background:#fff;padding:6px 0;z-index:2}
+.ibar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.icat{background:#1f4e79;color:#fff;font-weight:700;padding:6px 12px;border-radius:8px;margin:14px 0 6px;font-size:17px}
+.iitem{border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fff}
+.iitem.todo{border-left:5px solid #f0b429}
+.iitem.bad{border-left:5px solid #c0392b;background:#fdf5f3}
+.iname{font-weight:700;font-size:16px;margin-bottom:6px}
+.iopts{display:flex;gap:6px;flex-wrap:wrap}
+.iopt{border:2px solid #c4ced8;background:#fff;border-radius:20px;padding:6px 14px;font-size:15px;cursor:pointer;color:#1d2833}
+.iopt.on{background:#1e8f4e;border-color:#1e8f4e;color:#fff;font-weight:700}
+.iopt.on.bad{background:#c0392b;border-color:#c0392b}
+.iextra{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;font-size:15px;align-items:center}
+.iextra input,.iextra select{padding:7px 10px;border:1px solid #c4ced8;border-radius:8px;font-size:15px;flex:1;min-width:180px}
+.inotes{background:#f6f9fc;border-radius:8px;padding:10px;font-size:14px;color:#34495e;margin-top:12px;line-height:1.6}
+.psheet{width:190mm;margin:0 auto;color:#000;background:#fff;font-family:"DFKai-SB","BiauKai","標楷體","Microsoft JhengHei",serif}
+.pt1,.pt2{text-align:center;font-size:6mm;font-weight:700}.pt2{font-size:5.5mm}
+.pdate{text-align:center;font-size:4mm;margin:1mm 0}
+.phead{display:flex;justify-content:space-between;font-size:4mm;margin:1mm 0}
+.ptb{width:100%;border-collapse:collapse;font-size:3.1mm;line-height:1.2}
+.ptb th,.ptb td{border:0.25mm solid #000;padding:0.4mm 1mm;text-align:left;vertical-align:middle}
+.ptb th{text-align:center;background:#eee}
+.ptb .pc{text-align:center;width:9mm;writing-mode:vertical-rl;letter-spacing:1mm}
+.psign{display:flex;justify-content:space-around;font-size:4mm;margin:4mm 0 2mm}
+.pfoot{display:flex;justify-content:space-between;font-size:3.5mm}
+.fs{position:fixed;inset:0;z-index:40;background:#eef2f6;display:none;flex-direction:column}
+.fs.on{display:flex}
+.fsbar{background:#1f4e79;color:#fff;padding:8px 10px;display:flex;gap:6px;align-items:center;font-size:18px}
+.fsbar .btn{padding:6px 12px;font-size:17px}
+.fsbody{flex:1;overflow:auto;touch-action:pan-x pan-y;background:linear-gradient(135deg,#dfeaf3,#f4f8fb);-webkit-overflow-scrolling:touch}
+#fsBody svg{display:block;height:auto;max-width:none}
+.fschips{display:flex;gap:8px;overflow-x:auto;padding:8px 10px;background:#fff;border-top:1px solid var(--line)}
+.fschips .tile{flex-shrink:0;padding:6px 10px}
+.fschips .tile b{font-size:15px;white-space:nowrap}
+.fshint{font-size:13px;color:#5d6d7e;text-align:center;padding:4px;background:#fff}
+.stlab{width:148mm;height:210mm;border:0.3mm dashed #999;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;background:#fff;color:#000;overflow:hidden;page-break-inside:avoid}
+.stlab .band{width:100%;background:#1f4e79;color:#fff;display:flex;align-items:center;justify-content:center;gap:3mm;padding:4mm 0;font-size:6mm;font-weight:700;letter-spacing:1mm}
+.stlab .band svg{width:9mm;height:9mm}
+.stlab .nm{font-size:16mm;font-weight:900;color:#1f4e79;margin-top:10mm;letter-spacing:2mm}
+.stlab .meta{font-size:5mm;margin-top:2mm;color:#333}
+.stlab .qq{width:112mm;height:112mm;margin-top:8mm}.stlab .qq svg{width:100%;height:100%;display:block}
+.stlab .call{font-size:6.4mm;font-weight:800;margin-top:9mm;color:#1e8f4e}
+.stlab .sub{font-size:4mm;color:#555;margin-top:2mm}
+.stcard{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:#f3f8f4;border:1px solid #cde5d4;border-radius:12px;padding:12px;margin-bottom:16px}
+.stcard .qprev{width:130px;height:130px}.stcard .qprev svg{width:100%;height:100%}
 .modal.sheet{width:min(560px,100%)}
-@media(max-width:900px){#mScan{align-items:flex-end;padding:0}.modal.sheet{border-radius:16px 16px 0 0;max-height:88vh}}
+@media(max-width:900px){#mInsp{padding:0}.imodal{max-height:100vh;height:100vh;border-radius:0}#mScan{align-items:flex-end;padding:0}.modal.sheet{border-radius:16px 16px 0 0;max-height:88vh}}
 #popBody .tl{max-height:none}
 .modal{background:#fff;border-radius:14px;width:min(760px,100%);max-height:92vh;overflow:auto;padding:18px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
@@ -168,7 +229,8 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 #printArea{display:none}
 @media print{
  @page{size:A4;margin:8mm}
- body{background:#fff}
+ html,body{background:#fff!important;height:auto}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .app,.mask,.toast,.loading{display:none!important}
  #printArea{display:flex;flex-wrap:wrap;gap:3mm}
  .lab{border:0.2mm solid #999}
@@ -184,7 +246,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <span class="hspace"></span>
  <span class="conn" id="conn">連線中…</span>
  <button class="btn sm ghost" onclick="loadAll()">↻ 重新整理</button>
- <button class="btn sm lock" id="lockBtn" onclick="toggleLock()">🔒 編輯模式</button>
+ <button class="btn sm lock" id="lockBtn" onclick="toggleLock()">🔒 登入</button>
 </header>
 <div class="banner" id="banner"></div>
 <div class="main">
@@ -193,6 +255,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="navc" data-v="equip" onclick="go('equip')"><b>📋 設備清單</b><span>全部設備・可搜尋</span></div>
  <div class="navc" data-v="rec" onclick="go('rec')"><b>🛠 維修履歷總表</b><span>篩選・排序・匯出</span></div>
  <div class="navc" data-v="stat" onclick="go('stat')"><b>📊 統計</b><span>依檢測表項目彙整</span></div>
+ <div class="navc" data-v="insp" onclick="go('insp')"><b>📋 每月安檢</b><span>QRW632601 線上填寫</span></div>
  <div class="navc" data-v="qr" onclick="go('qr')"><b>🏷 QR 標籤</b><span>產生・列印設備標籤</span></div>
  <div class="navinfo">表單對應：整壓站檢測維護表 QRW630801<br>保存期限：五年<br><span id="verInfo">v1.0</span></div>
 </nav>
@@ -202,6 +265,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="mapwrap">
   <div>
    <div class="maptools">
+    <button class="btn sm" onclick="openFs()">⛶ 全螢幕示意圖</button>
     <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱／編號</label>
     <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
    </div>
@@ -219,7 +283,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
    <input type="search" id="eqQ" placeholder="搜尋名稱／編號／規格…" oninput="renderEquip()">
    <select id="eqSec" onchange="renderEquip()"></select>
    <select id="eqGrp" onchange="renderEquip()"></select>
-   <button class="btn sm grn edit-only" onclick="openEquip()">＋ 新增設備</button>
+   <button class="btn sm grn admin-only" onclick="openEquip()">＋ 新增設備</button>
   </div>
   <div class="sumbar" id="eqSum"></div>
   <table class="tb"><thead><tr id="eqHead"></tr></thead><tbody id="eqBody"></tbody></table>
@@ -255,9 +319,20 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  </div>
 </section>
 
+<section class="view" id="v-insp">
+ <div class="card">
+  <h2>📋 每月安檢（整壓站安檢表 QRW632601）</h2>
+  <div class="filters"><span id="iStatus"></span><button class="btn grn" onclick="openInsp()">＋ 填寫安檢表</button><select id="iYear" onchange="renderInsp()"></select></div>
+  <div class="hint" style="margin:0 0 10px">巡檢流程：掃站門口的站點 QR → 按「📋 填寫安檢表」→ 逐項點選 → 送出。勾到異常的項目會自動建立「待處理」維修紀錄，示意圖上該設備會亮紅點。</div>
+  <table class="tb"><thead><tr id="iHead"></tr></thead><tbody id="iList"></tbody></table>
+ </div>
+</section>
+
 <section class="view" id="v-qr">
  <div class="card">
-  <h2>🏷 設備 QR Code 標籤</h2>
+  <h2>🏷 QR Code 標籤</h2>
+  <div class="stcard"><div class="qprev" id="stQrPrev"></div><div><h3 style="margin:0 0 4px">① 站點 QR（一站一張，A5）</h3><div class="muted" style="margin-bottom:8px">貼在站門口或 RTU 箱，掃了會打開本站全螢幕示意圖，對照現場點設備。</div><div class="muted" id="stUrl" style="word-break:break-all;margin-bottom:8px"></div><button class="btn sm grn" onclick="printStation()">🖨 列印站點標籤（A5）</button></div></div>
+  <h3>② 設備 QR（一台一張）</h3>
   <div class="filters">
    <select id="qSec" onchange="renderQR()"></select>
    <select id="qSize" onchange="renderQR()"><option value="s">小標籤 5×3 cm（閥件、儀表旁）</option><option value="l">大標籤 7×5 cm（箱體、牆面）</option></select>
@@ -315,15 +390,66 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="mfoot"><button class="btn red" id="btnDelEq" onclick="delEquip()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mEq')">取消</button><button class="btn" onclick="saveEquip()">💾 儲存</button></div>
 </div></div>
 
+<div class="fs" id="fsMap">
+ <div class="fsbar"><b id="fsTitle"></b><span class="hspace"></span><button class="btn sm ghost" onclick="fsZoom(1/1.4)">－</button><button class="btn sm ghost" onclick="fsZoom(1.4)">＋</button><button class="btn sm ghost" onclick="fsFit()">↺</button><button class="btn sm grn" onclick="openInsp()">📋 安檢</button><button class="btn sm lock" onclick="closeFs()">完整系統 ›</button></div>
+ <div class="fsbody" id="fsBody"></div>
+ <div class="fschips" id="fsChips"></div>
+ <div class="fshint">兩指可放大縮小・點設備看名稱與履歷・手機橫拿看更大</div>
+</div>
+
 <div class="mask" id="mScan" onclick="if(event.target===this)closePop()"><div class="modal sheet">
  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b style="color:#1e8f4e;font-size:16px">📍 設備資訊</b><span class="hspace"></span><button class="btn sm ghost" onclick="closePop()">關閉 ✕</button></div>
  <div id="popBody"></div>
 </div></div>
 
-<div class="mask" id="mPw"><div class="modal" style="width:min(420px,100%)">
- <h2>🔒 進入編輯模式</h2>
- <div class="fgrid"><label class="full">編輯密碼<input type="password" id="pwIn" onkeydown="if(event.key==='Enter')doLogin()"></label></div>
- <div class="mfoot"><button class="btn ghost" onclick="closeM('mPw')">取消</button><button class="btn" onclick="doLogin()">確定</button></div>
+<div class="mask" id="mInsp"><div class="modal imodal">
+ <div class="ihdr"><h2 id="iTitle" style="margin:0">📋 整壓站安檢表</h2><span class="hspace"></span><button class="btn sm ghost" onclick="if(confirm('放棄這次填寫？'))closeM('mInsp')">✕</button></div>
+ <div class="fgrid" style="margin:10px 0">
+  <label>日期 <span class="req">*</span><input type="date" id="i_date"></label>
+  <label>檢查員（登入者）<input id="i_staff" readonly style="background:#f3f6f9"></label>
+ </div>
+ <div class="ibar"><button class="btn sm" onclick="inspAllOk()">✓ 未填項目全部設為第一個選項（正常）</button><span id="iCount" class="muted"></span></div>
+ <div id="iBody"></div>
+ <div class="fgrid" style="margin-top:12px"><label class="full">其他備註<input id="i_note"></label>
+ <label class="full" style="flex-direction:row;align-items:center;gap:8px;color:#1d2833"><input type="checkbox" id="i_auto" checked style="width:20px;height:20px"> 異常項目自動建立「待處理」維修紀錄</label></div>
+ <div class="mfoot"><button class="btn ghost" onclick="if(confirm('放棄這次填寫？'))closeM('mInsp')">取消</button><button class="btn grn" onclick="submitInsp()">📤 送出安檢表</button></div>
+</div></div>
+
+<div class="mask" id="mInspView"><div class="modal" style="width:min(900px,100%)">
+ <div class="ihdr"><h2 style="margin:0">安檢表檢視</h2><span class="hspace"></span><span id="ivSign"></span><button class="btn sm ghost" id="ivWord">⬇ Word</button><button class="btn sm" id="ivPrint">🖨 列印/PDF</button><button class="btn sm ghost" onclick="closeM('mInspView')">✕</button></div>
+ <div id="ivBody" style="margin-top:10px;overflow-x:auto"></div>
+</div></div>
+
+<div class="login" id="loginBox"><div class="lgcard">
+ <svg viewBox="0 0 40 40" style="width:56px;height:56px"><path d="M20 2 29 11 20 20 11 11Z" fill="#e53935"/><path d="M11 11 20 20 11 29 2 20Z" fill="#2e7d32"/><path d="M29 11 38 20 29 29 20 20Z" fill="#2e7d32"/><path d="M20 20 29 29 20 38 11 29Z" fill="#2e7d32"/></svg>
+ <h1>整壓站設備維修履歷</h1><div class="muted" style="margin-bottom:16px">竹建瓦斯股份有限公司</div>
+ <label>姓名<select id="lgName"></select></label>
+ <label>密碼<input type="password" id="lgPw" inputmode="numeric" onkeydown="if(event.key==='Enter')doLogin()"></label>
+ <label class="lgrem"><input type="checkbox" id="lgRem" checked> 記住我（這支手機／電腦下次免登入）</label>
+ <button class="btn grn" id="lgBtn" style="width:100%;padding:12px;font-size:18px" onclick="doLogin()">登入</button>
+ <div id="lgMsg" class="lgmsg"></div>
+ <div class="muted" style="margin-top:14px;font-size:14px">沒有帳號或忘記密碼，請洽管理員</div>
+</div></div>
+
+<div class="mask" id="mAcc"><div class="modal" style="width:min(720px,100%)">
+ <div class="ihdr"><h2 style="margin:0">👤 <span id="accName"></span></h2><span class="hspace"></span><button class="btn sm red" onclick="logout()">登出</button><button class="btn sm ghost" onclick="closeM('mAcc')">✕</button></div>
+ <h3 style="margin-top:12px">✍ 我的簽名</h3>
+ <div class="muted">目前簽名：</div><div class="sigshow" id="accSig"></div>
+ <div class="muted">在下面框內用手指或滑鼠簽名，按「儲存簽名」後，送出安檢表、簽核時會自動蓋上。</div>
+ <div class="padbox"><canvas id="sigPad"></canvas></div>
+ <div style="display:flex;gap:8px;margin:6px 0 14px"><button class="btn ghost" onclick="clearPad()">清除重簽</button><button class="btn grn" onclick="saveSig()">💾 儲存簽名</button></div>
+ <h3>🔑 修改密碼</h3>
+ <div class="fgrid"><label>新密碼<input type="password" id="pwNew"></label><label>再輸入一次<input type="password" id="pwNew2"></label></div>
+ <div style="margin:8px 0 14px"><button class="btn" onclick="changePw()">修改密碼</button></div>
+ <div id="accAdmin">
+  <h3>👥 人員管理（管理員）</h3>
+  <table class="tb"><thead><tr><th>姓名</th><th>角色</th><th>簽名</th><th>狀態</th><th></th></tr></thead><tbody id="usrList"></tbody></table>
+  <div class="fgrid" id="usrForm" style="margin-top:10px">
+   <label>姓名<input id="u_name"></label><label>角色<select id="u_role"></select></label>
+   <label>密碼<input id="u_pw" placeholder="新人員必填"></label><label>狀態<select id="u_active"><option value="Y">啟用</option><option value="N">停用</option></select></label>
+  </div>
+  <div class="mfoot"><button class="btn red" id="btnDelUser" style="display:none" onclick="delUser()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="editUser('')">清空（新增）</button><button class="btn grn" onclick="saveUser()">💾 儲存人員</button></div>
+ </div>
 </div></div>
 
 <div class="loading" id="loading"><div class="spin"></div><div id="loadMsg">讀取中…</div></div>
@@ -335,8 +461,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "";
-const VERSION = "v1.3";
-const DEMO_PW = "1688";
+const VERSION = "v1.6";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -347,7 +472,7 @@ let ST_I = 0;
 function ST(){return STATIONS[ST_I];}
 const TYPES = ["定期檢測","異常維修","零件更換","保養","校驗","其他"];
 const STATUS = ["已完成","處理中","待處理"];
-const GROUPS = ["中壓","低壓","非供氣","監控"];
+const GROUPS = ["中壓","低壓","非供氣","監控","防爆"];
 
 const SEED_EQ = [
  ["HK-01","中壓入口","中壓","壓力表","高壓壓力表（入口）","入口壓力表","","入口壓力"],
@@ -390,7 +515,21 @@ const SEED_EQ = [
  ["HK-50","監控系統","監控","其他","環境溫度感測器","溫度感測","","環境溫度"],
  ["HK-51","監控系統","監控","RTU","電動驅動器","電動驅動器","",""],
  ["HK-61","非供氣設備","非供氣","環境","站區環境","環境","",""],
- ["HK-62","非供氣設備","非供氣","警告標示","警告標示","警告標示","",""]
+ ["HK-62","非供氣設備","非供氣","警告標示","警告標示","警告標示","",""],
+ ["HK-63","供氣設備","中壓","法蘭片","法蘭片（全站）","法蘭片","",""],
+ ["HK-64","供氣設備","中壓","支撐架","支撐架（全站）","支撐架","",""],
+ ["HK-65","安全設備","非供氣","閥門板手","閥門板手","閥門板手","",""],
+ ["HK-66","安全設備","非供氣","乾粉滅火器","乾粉滅火器","滅火器","",""],
+ ["HK-67","安全設備","非供氣","通風設備","通風設備","通風設備","",""],
+ ["HK-68","防爆設備","防爆","防爆燈具","防爆燈具","防爆燈具","",""],
+ ["HK-69","防爆設備","防爆","配管","防爆配管","防爆配管","",""],
+ ["HK-70","站房","非供氣","站房結構","站房結構及門鎖","站房門鎖","",""],
+ ["HK-71","站房","非供氣","排水系統","排水系統","排水系統","",""],
+ ["HK-72","站房","非供氣","隔離設備","隔離設備（護網）","護網","",""],
+ ["HK-73","標示牌","非供氣","標示牌","公司站名標示牌","站名牌","",""],
+ ["HK-74","標示牌","非供氣","標示牌","危害成分標示牌","危害成分牌","",""],
+ ["HK-75","標示牌","非供氣","標示牌","非經許可嚴禁擅入標示牌","禁止擅入牌","",""],
+ ["HK-76","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""]
 ].map((r,i)=>({id:r[0],station:STATIONS[0].name,section:r[1],group:r[2],item:r[3],name:r[4],short:r[5],spec:r[6],tag:r[7],note:"",order:i+1}));
 
 const LAYOUT_HK = {
@@ -413,7 +552,7 @@ const PIPES_HK = {
 };
 
 const MAPS = {HK:{layout:LAYOUT_HK, readouts:READOUTS_HK, pipes:PIPES_HK}};
-let S = {equips:[], records:[], sel:null, view:"map", pw:sessionStorage.getItem("sr_pw")||"", labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
+let S = {equips:[], records:[], insps:[], sel:null, view:"map", pw:"", user:null, users:[], labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
 
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 function today(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Taipei"}).format(new Date());}
@@ -452,32 +591,38 @@ async function http(method,params,body){
  }finally{clearTimeout(tm);}
 }
 
+const SEED_VER=2;
+const DEMO_USERS=[["白沛豫","管理員","1688"],["陳經理","部門主管","0007"],["彭敬文","單位主管","0013"],["邱副理","單位主管","0015"],["陳人豪","檢查員","0062"]].map(u=>({name:u[0],role:u[1],pw:u[2],sig:"",active:"Y"}));
 function loadDemo(){
- try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];return;}}catch(e){}
- S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];saveDemo();
+ try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});
+  if((d.seedVer||1)<SEED_VER){const has=new Set(S.equips.map(e=>e.id));SEED_EQ.forEach(e=>{if(!has.has(e.id))S.equips.push(JSON.parse(JSON.stringify(e)));});saveDemo();}
+  return;}}catch(e){}
+ S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];S.insps=[];S.users=JSON.parse(JSON.stringify(DEMO_USERS));saveDemo();
 }
-function saveDemo(){try{localStorage.setItem(LS_DEMO,JSON.stringify({equips:S.equips,records:S.records}));}catch(e){}}
+function saveDemo(){try{localStorage.setItem(LS_DEMO,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,seedVer:SEED_VER}));}catch(e){}}
+function parseInsps(a){return (a||[]).map(x=>{if(typeof x.items==="string"){try{x.items=JSON.parse(x.items);}catch(e){x.items=[];}}return x;});}
 
 async function loadAll(){
  if(S.mode==="demo"){
   loadDemo();setConn("demo","示範模式（資料只存本機）");
   $("banner").innerHTML="⚠ 尚未連接 Google 試算表：目前為示範模式，紀錄只存在這台電腦的瀏覽器。部署 GAS 後填入網址即正式啟用。";
-  $("banner").classList.add("on");renderAll();deepLink();return;
+  $("banner").classList.add("on");renderAll();afterLoad();return;
  }
  showLoading("讀取雲端資料…");
  try{
   const j=await http("GET",{action:"list"});
-  S.equips=j.equips;S.records=j.records;
-  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,at:nowStr()}));}catch(e){}
+  S.equips=j.equips;S.records=j.records;S.insps=parseInsps(j.insps);S.users=j.users||[];
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");$("banner").classList.remove("on");
  }catch(e){
   let c=null;try{c=JSON.parse(localStorage.getItem(LS_CACHE)||"null");}catch(x){}
-  if(c){S.equips=c.equips;S.records=c.records;$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），目前顯示 "+c.at+" 的暫存資料，無法新增修改。";}
-  else{S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），請按右上「重新整理」。";}
+  if(c){S.equips=c.equips;S.records=c.records;S.insps=c.insps||[];S.users=c.users||[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），目前顯示 "+c.at+" 的暫存資料，無法新增修改。";}
+  else{S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];S.insps=[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），請按右上「重新整理」。";}
   $("banner").classList.add("on");setConn("err","連線失敗");
  }finally{hideLoading();}
- renderAll();deepLink();
+ renderAll();afterLoad();
 }
+function afterLoad(){if(S.user){deepLink();return;}autoLogin();}
 
 function applyLocal(action,obj){
  if(action==="addRecord")S.records.push(obj);
@@ -485,37 +630,156 @@ function applyLocal(action,obj){
  else if(action==="deleteRecord")S.records=S.records.filter(r=>r.rid!==obj.rid);
  else if(action==="saveEquip"){const i=S.equips.findIndex(e=>e.id===obj.id);if(i>=0)S.equips[i]=obj;else S.equips.push(obj);}
  else if(action==="deleteEquip")S.equips=S.equips.filter(e=>e.id!==obj.id);
+ else if(action==="addInspection"){S.insps.push(obj.insp);(obj.records||[]).forEach(r=>S.records.push(r));}
+ else if(action==="deleteInspection")S.insps=S.insps.filter(x=>x.iid!==obj.iid);
+ else if(action==="signInspection"){const x=S.insps.find(i=>i.iid===obj.iid);if(x){Object.assign(x,obj);parseInsps([x]);}}
+ else if(action==="saveUser"){const i=S.users.findIndex(u=>u.name===obj.name);if(i>=0)S.users[i]=obj;else S.users.push(obj);}
+ else if(action==="deleteUser")S.users=S.users.filter(u=>u.name!==obj.name);
+ else if(action==="setMySig"){const u=S.users.find(x=>x.name===obj.name);if(u)u.hasSig=!!obj.sig;}
 }
 async function write(action,data){
  if(S.mode==="demo"){
   const o=Object.assign({},data);
+  if(["saveEquip","deleteEquip","saveUser","deleteUser","deleteInspection","deleteRecord"].includes(action)&&!isAdmin()){alert("❌ 此功能限管理員");return false;}
+  const me=S.users.find(u=>u.name===S.user.name);
+  if(action==="setMySig"){me.sig=o.sig;saveDemo();renderAll();return true;}
+  if(action==="setMyPw"){me.pw=o.newPw;saveDemo();return true;}
+  if(action==="saveUser"){const u=S.users.find(x=>x.name===o.name);if(u){u.role=o.role;u.active=o.active;if(o.pw)u.pw=o.pw;}else S.users.push({name:o.name,role:o.role,pw:o.pw,active:o.active,sig:""});saveDemo();return true;}
+  if(action==="deleteUser"){if(o.name===S.user.name){alert("不能刪除自己");return false;}S.users=S.users.filter(u=>u.name!==o.name);saveDemo();return true;}
+  if(action==="signInspection"){const x=S.insps.find(i=>i.iid===o.iid);if(!x)return false;if(!canSign(x,o.level)){alert("❌ 你的角色不能簽這一欄，或已經簽過");return false;}const n=nowStr();if(o.level==="unit"){x.unitName=me.name;x.sigUnit=me.sig;x.unitAt=n;}else{x.deptName=me.name;x.sigDept=me.sig;x.deptAt=n;}x.signState=signStateOf(x);saveDemo();renderAll();return true;}
+  if(action==="addRecord")o.createdBy=S.user.name;
   if(action==="addRecord"){o.rid="R"+today().replace(/-/g,"").slice(2)+String(Date.now()).slice(-5);o.createdAt=nowStr();o.updatedAt=o.createdAt;o.createdBy="示範";}
   if(action==="updateRecord")o.updatedAt=nowStr();
+  if(action==="addInspection"){const n=nowStr(),base=ST().key+"-"+o.date.replace(/-/g,"")+"-",seq=S.insps.filter(x=>(x.iid||"").startsWith(base)).length+1;
+   const insp={iid:base+String(seq).padStart(2,"0"),station:o.station,date:o.date,inspector:S.user.name,sigInspector:me.sig||"",note:o.note,items:o.items,abn:o.items.filter(i=>i.abn).length,createdAt:n,signState:"待單位主管簽核"};
+   const recs=o.repairs.map((r,i)=>Object.assign({},r,{rid:"R"+today().replace(/-/g,"").slice(2)+String(Date.now()).slice(-5)+i,note:"來源：安檢 "+insp.iid,createdAt:n,updatedAt:n,createdBy:S.user.name}));
+   applyLocal(action,{insp,records:recs});saveDemo();renderAll();return true;}
   applyLocal(action,o);saveDemo();renderAll();return true;
  }
  showLoading("寫入雲端中，請勿關閉…");
  try{
-  const j=await http("POST",null,{action,pw:S.pw,data});
+  const j=await http("POST",null,{action,user:S.user?S.user.name:"",pw:S.user?S.user.pw:"",data});
   applyLocal(action,j.item||data);
-  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,at:nowStr()}));}catch(e){}
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");renderAll();return true;
  }catch(e){
   alert("❌ 儲存失敗："+e.message+"\n\n資料尚未寫入，請確認網路後再按一次儲存。");
-  if(/密碼/.test(e.message)){S.pw="";sessionStorage.removeItem("sr_pw");updLock();}
+  if(/密碼錯誤|找不到使用者|已停用/.test(e.message)){S.user=null;S.pw="";updLock();showLogin(e.message);}
   return false;
  }finally{hideLoading();}
 }
 
 /* ===== lock ===== */
-function updLock(){const on=!!S.pw;$("lockBtn").textContent=on?"🔓 編輯中（點此登出）":"🔒 編輯模式";$("lockBtn").classList.toggle("on",on);document.querySelectorAll(".edit-only").forEach(b=>b.style.display=on?"":"none");}
-function toggleLock(){if(S.pw){S.pw="";sessionStorage.removeItem("sr_pw");updLock();renderAll();toast("已登出編輯模式");}else{$("pwIn").value="";openM("mPw");setTimeout(()=>$("pwIn").focus(),50);}}
-async function doLogin(){
- const p=$("pwIn").value.trim();if(!p)return;
- if(S.mode==="demo"){if(p!==DEMO_PW){alert("密碼錯誤");return;}}
- else{showLoading("驗證中…");try{await http("GET",{action:"auth",pw:p});}catch(e){hideLoading();alert("密碼錯誤或連線失敗："+e.message);return;}hideLoading();}
- S.pw=p;sessionStorage.setItem("sr_pw",p);closeM("mPw");updLock();renderAll();toast("已進入編輯模式");
+/* ===== 登入／帳號／簽名 ===== */
+const ROLES = ["檢查員","單位主管","部門主管","管理員"];
+const LS_LOGIN = "station_repair_login_v1";
+function isAdmin(){return !!(S.user&&S.user.role==="管理員");}
+function updLock(){
+ const u=S.user;$("lockBtn").textContent=u?"👤 "+u.name+"（"+u.role+"）":"🔒 登入";
+ document.querySelectorAll(".edit-only").forEach(b=>b.style.display=u?"":"none");
+ document.querySelectorAll(".admin-only").forEach(b=>b.style.display=isAdmin()?"":"none");
 }
-function needEdit(){if(!S.pw){toggleLock();return false;}return true;}
+function toggleLock(){if(S.user)openAccount();else showLogin();}
+function needEdit(){if(!S.user){showLogin();return false;}return true;}
+function showLogin(msg){
+ const us=(S.users||[]).filter(u=>String(u.active||"Y").toUpperCase()==="Y");
+ const saved=(()=>{try{return JSON.parse(localStorage.getItem(LS_LOGIN)||"null");}catch(e){return null;}})();
+ $("lgName").innerHTML='<option value="">— 請選擇姓名 —</option>'+ROLES.map(r=>{const g=us.filter(u=>u.role===r);return g.length?'<optgroup label="'+r+'">'+g.map(u=>'<option value="'+esc(u.name)+'">'+esc(u.name)+'</option>').join("")+'</optgroup>':"";}).join("");
+ if(saved&&saved.name)$("lgName").value=saved.name;
+ $("lgPw").value="";$("lgMsg").textContent=msg||"";$("loginBox").classList.add("on");
+ setTimeout(()=>($("lgName").value?$("lgPw"):$("lgName")).focus(),50);
+}
+async function authUser(name,pw){
+ if(S.mode==="demo"){const u=S.users.find(x=>x.name===name);if(!u)throw new Error("找不到使用者");if(String(u.active).toUpperCase()!=="Y")throw new Error("帳號已停用");if(String(u.pw)!==String(pw))throw new Error("密碼錯誤");return {name:u.name,role:u.role,sig:u.sig||""};}
+ const j=await http("GET",{action:"auth",user:name,pw});return j.user;
+}
+async function doLogin(){
+ const name=$("lgName").value,pw=$("lgPw").value.trim();
+ if(!name||!pw){$("lgMsg").textContent="請選擇姓名並輸入密碼";return;}
+ $("lgBtn").disabled=true;$("lgMsg").textContent="驗證中…";
+ try{
+  const u=await authUser(name,pw);
+  S.user=Object.assign({pw},u);S.pw=pw;
+  try{if($("lgRem").checked)localStorage.setItem(LS_LOGIN,JSON.stringify({name,pw}));else localStorage.setItem(LS_LOGIN,JSON.stringify({name}));}catch(e){}
+  $("loginBox").classList.remove("on");updLock();renderAll();toast("👋 "+u.name+"，歡迎使用");deepLink();
+ }catch(e){$("lgMsg").textContent="❌ "+e.message;}
+ finally{$("lgBtn").disabled=false;}
+}
+async function autoLogin(){
+ let sv=null;try{sv=JSON.parse(localStorage.getItem(LS_LOGIN)||"null");}catch(e){}
+ if(sv&&sv.name&&sv.pw){try{const u=await authUser(sv.name,sv.pw);S.user=Object.assign({pw:sv.pw},u);S.pw=sv.pw;updLock();renderAll();deepLink();return;}catch(e){showLogin("自動登入失敗："+e.message);return;}}
+ showLogin();
+}
+function logout(){
+ if(!confirm("確定登出？"))return;
+ try{const sv=JSON.parse(localStorage.getItem(LS_LOGIN)||"null");localStorage.setItem(LS_LOGIN,JSON.stringify({name:sv?sv.name:""}));}catch(e){}
+ S.user=null;S.pw="";closeM("mAcc");updLock();renderAll();showLogin();
+}
+/* 帳號視窗 */
+function openAccount(){
+ const u=S.user;if(!u)return showLogin();
+ $("accName").textContent=u.name+"（"+u.role+"）";
+ $("accSig").innerHTML=u.sig?'<img src="'+u.sig+'" alt="簽名">':'<span class="muted">尚未設定簽名</span>';
+ $("accAdmin").style.display=isAdmin()?"":"none";
+ if(isAdmin())renderUsers();
+ openM("mAcc");setTimeout(initPad,60);
+}
+let PAD=null;
+function initPad(){
+ const c=$("sigPad"),box=c.parentElement,dpr=window.devicePixelRatio||1,w=box.clientWidth,h=170;
+ c.width=w*dpr;c.height=h*dpr;c.style.width=w+"px";c.style.height=h+"px";
+ const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);x.lineWidth=3.2;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#0b1f4a";
+ PAD={c,x,dpr,drawn:false,last:null};
+ c.onpointerdown=e=>{c.setPointerCapture(e.pointerId);PAD.last=[e.offsetX,e.offsetY];PAD.drawn=true;x.beginPath();x.arc(e.offsetX,e.offsetY,1.4,0,7);x.fillStyle="#0b1f4a";x.fill();};
+ c.onpointermove=e=>{if(!PAD.last)return;x.beginPath();x.moveTo(PAD.last[0],PAD.last[1]);x.lineTo(e.offsetX,e.offsetY);x.stroke();PAD.last=[e.offsetX,e.offsetY];};
+ c.onpointerup=c.onpointercancel=()=>{PAD.last=null;};
+}
+function clearPad(){if(PAD){PAD.x.clearRect(0,0,PAD.c.width,PAD.c.height);PAD.drawn=false;}}
+function padImage(){
+ const {c}=PAD,ctx=c.getContext("2d"),d=ctx.getImageData(0,0,c.width,c.height).data;
+ let x0=c.width,y0=c.height,x1=0,y1=0;
+ for(let y=0;y<c.height;y+=2)for(let x=0;x<c.width;x+=2)if(d[(y*c.width+x)*4+3]>20){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+ if(x1<=x0||y1<=y0)return "";
+ const m=8*PAD.dpr;x0=Math.max(0,x0-m);y0=Math.max(0,y0-m);x1=Math.min(c.width,x1+m);y1=Math.min(c.height,y1+m);
+ const sw=x1-x0,sh=y1-y0,sc=Math.min(1,110/sh,320/sw),o=document.createElement("canvas");
+ o.width=Math.max(1,Math.round(sw*sc));o.height=Math.max(1,Math.round(sh*sc));
+ o.getContext("2d").drawImage(c,x0,y0,sw,sh,0,0,o.width,o.height);return o.toDataURL("image/png");
+}
+async function saveSig(){
+ if(!PAD||!PAD.drawn){alert("請先在框內簽名");return;}
+ const img=padImage();if(!img){alert("請先在框內簽名");return;}
+ if(img.length>45000){alert("簽名圖太大，請簽小一點再試");return;}
+ if(await write("setMySig",{sig:img})){S.user.sig=img;$("accSig").innerHTML='<img src="'+img+'" alt="簽名">';clearPad();toast("✅ 簽名已儲存");}
+}
+async function changePw(){
+ const a=$("pwNew").value.trim(),b=$("pwNew2").value.trim();
+ if(a.length<4){alert("新密碼至少 4 碼");return;}if(a!==b){alert("兩次輸入的新密碼不同");return;}
+ if(await write("setMyPw",{newPw:a})){S.user.pw=a;S.pw=a;try{const sv=JSON.parse(localStorage.getItem(LS_LOGIN)||"null");if(sv&&sv.pw)localStorage.setItem(LS_LOGIN,JSON.stringify({name:S.user.name,pw:a}));}catch(e){}$("pwNew").value="";$("pwNew2").value="";toast("✅ 密碼已修改");}
+}
+function renderUsers(){
+ $("usrList").innerHTML=(S.users||[]).slice().sort((a,b)=>ROLES.indexOf(a.role)-ROLES.indexOf(b.role)).map(u=>'<tr><td data-l="姓名">'+esc(u.name)+'</td><td data-l="角色">'+esc(u.role)+'</td><td data-l="簽名">'+((u.hasSig||u.sig)?"✅":"—")+'</td><td data-l="啟用">'+(String(u.active).toUpperCase()==="Y"?"啟用":"停用")+'</td><td><button class="btn sm ghost" onclick="editUser(\''+esc(u.name)+'\')">編輯</button></td></tr>').join("");
+ $("u_role").innerHTML=opts(ROLES);
+}
+function editUser(name){const u=(S.users||[]).find(x=>x.name===name)||{};$("u_name").value=u.name||"";$("u_name").disabled=!!u.name;$("u_role").value=u.role||"檢查員";$("u_active").value=String(u.active||"Y").toUpperCase();$("u_pw").value="";$("u_pw").placeholder=u.name?"不改請留空":"新人員必填";$("btnDelUser").style.display=u.name&&u.name!==S.user.name?"":"none";$("usrForm").scrollIntoView({block:"nearest"});}
+async function saveUser(){
+ const o={name:$("u_name").value.trim(),role:$("u_role").value,active:$("u_active").value,pw:$("u_pw").value.trim()};
+ if(!o.name){alert("請輸入姓名");return;}
+ const exist=(S.users||[]).find(x=>x.name===o.name);
+ if(!exist&&o.pw.length<4){alert("新人員請設定至少 4 碼密碼");return;}
+ if(o.pw&&o.pw.length<4){alert("密碼至少 4 碼");return;}
+ if(await write("saveUser",o)){editUser("");renderUsers();toast("✅ 人員已儲存");}
+}
+async function delUser(){const n=$("u_name").value;if(!n||!confirm("確定刪除人員「"+n+"」？"))return;if(await write("deleteUser",{name:n})){editUser("");renderUsers();toast("已刪除");}}
+/* 簽核 */
+function signStateOf(x){if(x.sigUnit&&x.sigDept)return "已完成簽核";if(!x.sigUnit)return "待單位主管簽核";return "待部門主管簽核";}
+function canSign(x,level){if(!S.user)return false;if(level==="unit")return S.user.role==="單位主管"&&!x.sigUnit;return S.user.role==="部門主管"&&!x.sigDept;}
+async function signInsp(iid,level){
+ if(!S.user.sig){alert("請先設定你的簽名（右上角姓名 → 我的簽名）");openAccount();return;}
+ const x=S.insps.find(i=>i.iid===iid);if(!x)return;
+ if(!confirm("以「"+S.user.name+"」身分簽核安檢表 "+iid+"（"+(level==="unit"?"單位主管":"部門主管")+"欄）？\n簽核後無法撤回。"))return;
+ if(await write("signInspection",{iid,level})){toast("✅ 已簽核");if($("mInspView").classList.contains("on"))viewInsp(iid);}
+}
+
 
 /* ===== nav ===== */
 function go(v){S.view=v;document.querySelectorAll(".navc").forEach(n=>n.classList.toggle("on",n.dataset.v===v));document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));renderView();document.querySelector(".content").scrollTop=0;}
@@ -527,12 +791,14 @@ function setUrl(id){try{const u=new URL(location.href);if(id)u.searchParams.set(
 let deepDone=false;
 function deepLink(){
  if(deepDone)return;deepDone=true;
- const id=new URLSearchParams(location.search).get("eq");if(!id)return;
+ const qs=new URLSearchParams(location.search),id=qs.get("eq"),st=qs.get("st");
+ if(!id&&st){const i=STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase());if(i<0){toast("找不到整壓站代碼 "+st,true);return;}ST_I=i;S.sel=null;go("map");renderAll();openFs();return;}
+ if(!id)return;
  const e=eqById(id);if(!e){toast("找不到設備 "+id+"，可能已被刪除或改編號",true);return;}
  const i=STATIONS.findIndex(t=>t.name===eqSt(e));if(i>=0)ST_I=i;
  S.sel=id;go("map");renderAll();openPop();
 }
-function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else renderStat();}
+function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else if(S.view==="insp")renderInsp();else renderStat();}
 
 /* ===== map ===== */
 function sym(t){
@@ -552,7 +818,7 @@ function curMap(){const M=MAPS[ST().map]||null;return {M,LAYOUT:M?M.layout:{},RE
 function eqPos(id){const {LAYOUT,READOUTS}=curMap();if(LAYOUT[id])return{x:LAYOUT[id].x,y:LAYOUT[id].y};const r=READOUTS.find(x=>x.id===id);if(r)return{x:r.x+80,y:r.y+22};return null;}
 function mapSvg(vb,mini){
  const {LAYOUT,READOUTS,PIPES}=curMap();
- let s='<svg '+(mini?'class="mini"':'id="map" class="'+(S.labels?"":"nolbl")+'"')+' viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
+ let s='<svg '+(mini===true?'class="mini"':'id="'+(mini==="fs"?"fsSvg":"map")+'" class="'+(S.labels?"":"nolbl")+'"')+' viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
  s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="748">中壓 A 線</text><text class="sec" x="1030" y="345">低壓 A 線</text><text class="sec" x="1030" y="160">低壓 B 線</text>';
  s+='<text class="sec" x="30" y="395">進氣 →</text><text class="sec" x="1590" y="645" text-anchor="end">下方出口 →</text>';
  for(const pid in PIPES){
@@ -577,7 +843,7 @@ function mapSvg(vb,mini){
   const w=Math.max(120,r.l.replace(/ /g,"").length*22+30);
   s+='<g class="eq ro'+(S.sel===r.id?" sel":"")+'" data-id="'+r.id+'"><title>'+esc(r.id+" "+e.name)+'</title><rect x="'+r.x+'" y="'+r.y+'" width="'+w+'" height="44" rx="6"/><text x="'+(r.x+w/2)+'" y="'+(r.y+30)+'" text-anchor="middle">'+esc(r.l)+'</text></g>';
  });
- if(mini){const q=eqPos(S.sel);if(q)s+='<circle class="pulse" cx="'+q.x+'" cy="'+q.y+'" r="52"/><circle class="pulse p2" cx="'+q.x+'" cy="'+q.y+'" r="52"/>';}
+ if(mini===true){const q=eqPos(S.sel);if(q)s+='<circle class="pulse" cx="'+q.x+'" cy="'+q.y+'" r="52"/><circle class="pulse p2" cx="'+q.x+'" cy="'+q.y+'" r="52"/>';}
  return s+'</svg>';
 }
 function renderMap(){
@@ -586,7 +852,7 @@ function renderMap(){
  $("svgbox").innerHTML=M?s:'<div style="padding:30px;font-size:17px;color:#5d6d7e">此站尚未建立示意圖，請點下方設備卡片。</div>';
  const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
  const rest=stEq().filter(e=>!onMap.has(e.id)).sort((a,b)=>(a.order||0)-(b.order||0));
- const grpName={"監控":"三、監控系統","非供氣":"二、非供氣設備"};
+ const grpName={"監控":"三、監控系統","非供氣":"二、非供氣設備","防爆":"防爆設備"};
  let t="",last=null;
  rest.forEach(e=>{
   const g=grpName[e.group]||"其他設備";
@@ -595,25 +861,54 @@ function renderMap(){
   t+='<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.name)+'</b><span><b style="display:inline;color:#2e6da4;font-size:13px">'+esc(e.id)+'</b>｜'+esc(e.tag||e.item||"")+'</span>'+(oc?'<span class="bdg">'+oc+'</span>':'')+'</div>';
  });
  $("tiles").innerHTML=t;
+ if($("fsMap").classList.contains("on"))renderFs();
 }
 function selectEq(id){S.sel=id;setUrl(id);if(S.view!=="map")go("map");else{renderMap();renderDrawer();}
- if(window.innerWidth<=1250)openPop();}
+ if(window.innerWidth<=1250||$("fsMap").classList.contains("on"))openPop();}
 function locHtml(id){
  const e=eqById(id);if(!e)return "";
  const {M,PIPES}=curMap();const q=eqPos(id);
  if(M&&q){const x=Math.max(0,Math.min(1640-900,q.x-450)),y=Math.max(0,Math.min(760-500,q.y-250));
   return '<div class="loc"><div class="muted">📍 在系統中的位置（紅圈處）</div>'+mapSvg(x+" "+y+" 900 500",true)+'<button class="btn sm ghost" style="margin-top:6px" onclick="showOnMap()">🗺 在整張示意圖上看</button></div>';}
  if(M&&PIPES[id])return '<div class="loc"><div class="muted">📍 在系統中的位置（藍色管線）</div>'+mapSvg("0 0 1640 760",true)+'</div>';
- const g={"監控":"三、監控系統","非供氣":"二、非供氣設備"}[e.group]||"其他設備";
+ const g={"監控":"三、監控系統","非供氣":"二、非供氣設備","防爆":"防爆設備"}[e.group]||"其他設備";
  return '<div class="loc hint">📍 此設備不在管線圖上，列在示意圖下方「'+g+'」卡片區'+(e.tag?'（監控畫面：'+esc(e.tag)+'）':'')+'。</div>';
 }
 function popHtml(){return locHtml(S.sel)+$("drawer").innerHTML;}
 function openPop(){if(!S.sel)return;$("popBody").innerHTML=popHtml();openM("mScan");}
-function showOnMap(){closePop();const q=eqPos(S.sel),box=$("svgbox"),svg=$("map");if(!q||!svg)return;
+function showOnMap(){closePop();const q=eqPos(S.sel);
+ if($("fsMap").classList.contains("on")){const b=$("fsBody"),sv=$("fsSvg");if(!q||!sv)return;if(FS.z<2){FS.z=2;applyFsZ();}const sc=sv.clientWidth/1640;b.scrollLeft=Math.max(0,q.x*sc-b.clientWidth/2);b.scrollTop=Math.max(0,q.y*sc-b.clientHeight/2);return;}
+ const box=$("svgbox"),svg=$("map");if(!q||!svg)return;
  box.scrollIntoView({block:"start"});const sc=svg.clientWidth/1640;box.scrollLeft=Math.max(0,q.x*sc-box.clientWidth/2);}
 function closePop(){closeM("mScan");}
+/* ===== full-screen map ===== */
+let FS={z:1,user:false};
+function fsBaseW(){return $("fsBody").clientWidth||window.innerWidth;}
+function fsDefaultZ(){const b=$("fsBody"),w=b.clientWidth,h=b.clientHeight;if(!w)return 1;const fitH=h/(w*760/1640);return w<700?Math.min(2.2,Math.max(1,fitH*0.85)):Math.min(1,Math.max(1,fitH));}
+function openFs(){if(!MAPS[ST().map]){toast("此站尚未建立示意圖");return;}$("fsMap").classList.add("on");$("fsTitle").textContent="📍 "+ST().name;FS.user=false;renderFs();requestAnimationFrame(()=>{FS.z=fsDefaultZ();applyFsZ();});}
+function closeFs(){$("fsMap").classList.remove("on");try{const u=new URL(location.href);u.searchParams.delete("st");history.replaceState(null,"",u.toString());}catch(e){}}
+function renderFs(){
+ const b=$("fsBody"),sl=b.scrollLeft,stp=b.scrollTop;
+ b.innerHTML=mapSvg("0 0 1640 760","fs");applyFsZ();b.scrollLeft=sl;b.scrollTop=stp;
+ const {LAYOUT,READOUTS,PIPES}=curMap();const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
+ $("fsChips").innerHTML='<b style="align-self:center;color:#1f4e79;white-space:nowrap;font-size:15px">圖外設備 ›</b>'+stEq().filter(e=>!onMap.has(e.id)).sort((a,c)=>(a.order||0)-(c.order||0)).map(e=>'<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.short||e.name)+'</b><span>'+esc(e.id)+'</span></div>').join("");
+}
+function applyFsZ(){const sv=$("fsSvg");if(sv)sv.style.width=Math.round(fsBaseW()*FS.z)+"px";}
+function fsZoom(f,mx,my){const b=$("fsBody"),sv=$("fsSvg");if(!sv)return;
+ if(mx==null){mx=b.clientWidth/2;my=b.clientHeight/2;}
+ const ow=sv.clientWidth,oh=sv.clientHeight,cx=(b.scrollLeft+mx)/ow,cy=(b.scrollTop+my)/oh;
+ FS.z=Math.min(6,Math.max(1,FS.z*f));FS.user=true;applyFsZ();
+ b.scrollLeft=cx*sv.clientWidth-mx;b.scrollTop=cy*sv.clientHeight-my;}
+function fsFit(){FS.user=false;FS.z=fsDefaultZ();applyFsZ();$("fsBody").scrollLeft=0;$("fsBody").scrollTop=0;}
+(function(){let d0=0,z0=1;const b=()=>$("fsBody");
+ document.addEventListener("touchstart",e=>{if(e.touches.length===2&&e.target.closest("#fsBody")){const t=e.touches;d0=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);z0=FS.z;}},{passive:true});
+ document.addEventListener("touchmove",e=>{if(e.touches.length===2&&d0&&e.target.closest("#fsBody")){e.preventDefault();const t=e.touches,d=Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY),r=b().getBoundingClientRect();
+  const mx=(t[0].clientX+t[1].clientX)/2-r.left,my=(t[0].clientY+t[1].clientY)/2-r.top;fsZoom((z0*d/d0)/FS.z,mx,my);}},{passive:false});
+ document.addEventListener("touchend",e=>{if(e.touches.length<2)d0=0;});
+ window.addEventListener("resize",()=>{if($("fsMap").classList.contains("on")&&!FS.user){FS.z=fsDefaultZ();applyFsZ();}else applyFsZ();});
+})();
 function clearSel(){S.sel=null;setUrl(null);closePop();renderMap();renderDrawer();}
-document.addEventListener("click",ev=>{const g=ev.target.closest("#svgbox [data-id], #tiles [data-id]");if(g)selectEq(g.dataset.id);});
+document.addEventListener("click",ev=>{const g=ev.target.closest("#svgbox [data-id], #tiles [data-id], #fsBody [data-id], #fsChips [data-id]");if(g)selectEq(g.dataset.id);});
 function toggleLabels(){S.labels=$("chkLbl").checked;renderMap();}
 
 function recItem(r,showEq){
@@ -637,7 +932,7 @@ function renderDrawer(){
  d.innerHTML='<div class="muted">'+esc(ST().name)+'｜'+esc(e.section||"")+'</div><div class="dname"><span class="idb">'+esc(e.id)+'</span>'+esc(e.name)+'</div>'
  +'<dl class="dmeta"><dt>規格</dt><dd>'+esc(e.spec||"—")+'</dd><dt>檢測表項目</dt><dd>'+esc((e.group||"")+"－"+(e.item||""))+'</dd><dt>監控點</dt><dd>'+esc(e.tag||"—")+'</dd>'+(e.note?'<dt>備註</dt><dd>'+esc(e.note)+'</dd>':'')+'</dl>'
  +'<div class="kpis"><div class="kpi"><b>'+rs.length+'</b><span>維修次數</span></div><div class="kpi"><b style="font-size:17px">'+esc(rs[0]?rs[0].date:"—")+'</b><span>最近維修</span></div><div class="kpi"><b style="color:'+(oc?"#c0392b":"#1e8f4e")+'">'+oc+'</b><span>未結案</span></div></div>'
- +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(S.pw?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="clearSel()">✕</button></div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(isAdmin()?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="clearSel()">✕</button></div>'
  +(cost?'<div class="muted" style="margin-top:6px">累計費用 $'+money(cost)+'</div>':'')
  +(rs.length?'<ul class="tl">'+rs.map(r=>recItem(r,false)).join("")+'</ul>':'<div class="hint">這個設備還沒有維修紀錄。</div>');
  if($("mScan").classList.contains("on"))$("popBody").innerHTML=popHtml();
@@ -665,8 +960,8 @@ function renderEquip(){
  let rows=stEq().map(e=>{const rs=recsOf(e.id);return Object.assign({},e,{cnt:rs.length,last:rs[0]?rs[0].date:"",open:rs.filter(r=>r.status!=="已完成").length});})
   .filter(e=>(!sec||e.section===sec)&&(!grp||e.group===grp)&&(!q||[e.id,e.name,e.spec,e.tag,e.item,e.section].join(" ").toLowerCase().includes(q)));
  const k=S.eqSort.k,d=S.eqSort.d;rows.sort((a,b)=>{const x=a[k],y=b[k];return (typeof x==="number"&&typeof y==="number"?x-y:String(x||"").localeCompare(String(y||""),"zh-Hant"))*d;});
- $("eqHead").innerHTML=EQ_COLS.map(c=>'<th onclick="sortEq(\''+c[0]+'\')">'+c[1]+(k===c[0]?(d>0?" ▲":" ▼"):"")+'</th>').join("")+(S.pw?'<th></th>':'');
- $("eqBody").innerHTML=rows.map(e=>'<tr class="clk" onclick="selectEq(\''+e.id+'\')">'+EQ_COLS.map(c=>{let v=e[c[0]];if(c[0]==="open")v=v?'<span class="bdg">'+v+'</span>':"";else v=esc(v===0?"0":v);if(c[0]==="item")v=esc(e.group+"－"+e.item);return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(S.pw?'<td><button class="btn sm ghost" onclick="event.stopPropagation();openEquip(\''+e.id+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="10">沒有符合的設備</td></tr>';
+ $("eqHead").innerHTML=EQ_COLS.map(c=>'<th onclick="sortEq(\''+c[0]+'\')">'+c[1]+(k===c[0]?(d>0?" ▲":" ▼"):"")+'</th>').join("")+(isAdmin()?'<th></th>':'');
+ $("eqBody").innerHTML=rows.map(e=>'<tr class="clk" onclick="selectEq(\''+e.id+'\')">'+EQ_COLS.map(c=>{let v=e[c[0]];if(c[0]==="open")v=v?'<span class="bdg">'+v+'</span>':"";else v=esc(v===0?"0":v);if(c[0]==="item")v=esc(e.group+"－"+e.item);return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(isAdmin()?'<td><button class="btn sm ghost" onclick="event.stopPropagation();openEquip(\''+e.id+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="10">沒有符合的設備</td></tr>';
  $("eqSum").innerHTML='共 <b>'+rows.length+'</b> 項設備（點任一列可在示意圖上定位）';
 }
 function sortEq(k){S.eqSort=S.eqSort.k===k?{k,d:-S.eqSort.d}:{k,d:1};renderEquip();}
@@ -702,7 +997,7 @@ function exportCSV(){
 function openRec(rid,eid){
  if(!needEdit())return;
  const r=rid?S.records.find(x=>x.rid===rid):null;S.editRid=r?r.rid:null;
- $("mRecT").textContent=r?"編輯維修紀錄　"+r.rid:"新增維修紀錄";$("btnDelRec").style.display=r?"":"none";
+ $("mRecT").textContent=r?"編輯維修紀錄　"+r.rid:"新增維修紀錄";$("btnDelRec").style.display=r&&isAdmin()?"":"none";
  const v=r||{eid:eid||S.sel||(stEq()[0]||{}).id,date:today(),type:"異常維修",status:"已完成"};
  ["eid","date","type","issue","action","parts","fixDate","staff","vendor","cost","status","note"].forEach(k=>$("f_"+k).value=v[k]==null?"":v[k]);
  openM("mRec");
@@ -750,6 +1045,7 @@ function qrSvg(text){const q=qrcode(0,"M");q.addData(text);q.make();return q.cre
 function qrList(){const sec=$("qSec").value;return stEq().filter(e=>!sec||e.section===sec).sort((a,b)=>(a.order||0)-(b.order||0));}
 function labelHtml(e,sz){return '<div class="lab '+sz+'"><div class="q">'+qrSvg(eqUrl(e.id))+'</div><div class="t"><div class="co">竹建瓦斯｜'+esc(ST().name)+'</div><div class="id">'+esc(e.id)+'</div><div class="nm">'+esc(e.name)+'</div><div class="sc">掃碼查看維修履歷</div></div></div>';}
 function renderQR(){
+ $("stQrPrev").innerHTML=qrSvg(stUrl());$("stUrl").textContent=stUrl();
  const list=qrList(),sz=$("qSize").value;
  $("qPick").innerHTML=list.map(e=>'<label><input type="checkbox" '+(QR_OFF.has(e.id)?"":"checked")+' onchange="qrTog(\''+e.id+'\',this.checked)"><b>'+esc(e.id)+'</b>'+esc(e.name)+'</label>').join("")||'<div class="muted">此站沒有設備</div>';
  const on=list.filter(e=>!QR_OFF.has(e.id));
@@ -759,11 +1055,199 @@ function renderQR(){
 }
 function qrTog(id,on){if(on)QR_OFF.delete(id);else QR_OFF.add(id);renderQR();}
 function qrAll(on){qrList().forEach(e=>on?QR_OFF.delete(e.id):QR_OFF.add(e.id));renderQR();}
+function stUrl(){const base=/^https?:/.test(location.protocol)?location.origin+location.pathname:PUBLIC_URL;return base+"?st="+encodeURIComponent(ST().key);}
+const LOGO_SVG='<svg viewBox="0 0 40 40"><path d="M20 2 29 11 20 20 11 11Z" fill="#e53935"/><path d="M11 11 20 20 11 29 2 20Z" fill="#2e7d32"/><path d="M29 11 38 20 29 29 20 20Z" fill="#2e7d32"/><path d="M20 20 29 29 20 38 11 29Z" fill="#2e7d32"/></svg>';
+function stLabelHtml(){const t=ST();return '<div class="stlab"><div class="band">'+LOGO_SVG+'竹建瓦斯股份有限公司</div><div class="nm">'+esc(t.name)+'</div><div class="meta">設備編號 '+esc(t.code)+'　｜　'+esc(t.addr)+'</div><div class="qq">'+qrSvg(stUrl())+'</div><div class="call">📱 掃碼查看設備示意圖・填寫每月安檢</div><div class="sub">點設備可看名稱、編號與維修履歷；巡檢請按「📋 安檢」</div></div>';}
+function printStation(){$("printArea").innerHTML=stLabelHtml();setTimeout(()=>window.print(),100);}
 function printQR(){
  const sz=$("qSize").value,on=qrList().filter(e=>!QR_OFF.has(e.id));
  if(!on.length){alert("請至少勾選一項設備");return;}
  $("printArea").innerHTML=on.map(e=>labelHtml(e,sz)).join("");
  setTimeout(()=>window.print(),100);
+}
+
+/* ===== 每月安檢 QRW632601 ===== */
+const INSP_FORM = [
+ {cat:"外部環境", items:[
+  ["周邊環境",["打掃及除草","異常","其他"],{items:["環境"]}],
+  ["周圍道路",["良好","不平整","其他"],{items:["環境"]}],
+  ["排水系統",["正常","清除雜物","其他"],{items:["排水系統"]}],
+  ["站房結構及門鎖",["正常","破損","其他"],{items:["站房結構"]}],
+  ["隔離設備",["適當","太近","其他"],{items:["隔離設備"]}],
+  ["附近障礙物",["無","雜物","其他"],{items:["環境"]}]]},
+ {cat:"警告標示", items:[
+  ["公司站名標示牌",["良好","不良","須更新"],{names:["公司站名標示牌"]}],
+  ["危害成分標示牌",["良好","不良","須更新"],{names:["危害成分標示牌"]}],
+  ["非經許可嚴禁擅入標示牌",["良好","不良","須更新"],{names:["非經許可嚴禁擅入標示牌"]}],
+  ["嚴禁煙火標示牌",["良好","不良","須更新"],{names:["嚴禁煙火標示牌"]}]]},
+ {cat:"內部供應設備", items:[
+  ["內部環境",["打掃","異常","其他"],{items:["環境"]}],
+  ["通風設備",["自然通風良好","通風不良有補助通風設施","通風不良有偵漏設備"],{items:["通風設備"]}],
+  ["通道",["暢通","障礙物","其他"],{items:["環境"]}],
+  ["乾粉滅火器",["位置適當","障礙物","其他"],{items:["乾粉滅火器"]}],
+  ["油漆",["良好","鏽蝕補漆","其他"],{items:["管體","支撐架"]}],
+  ["閥門板手",["齊全","不足","須更新"],{items:["閥門板手"]}],
+  ["開及關標示",["標示正確","標示錯誤","無標示"],{items:["開關閥","警告標示"]}],
+  ["氣體流向標示",["良好","不清楚","其他"],{items:["管體","警告標示"]}],
+  ["管體",["正常","漏氣＞30ppm","其他"],{items:["管體"]}],
+  ["開關閥門",["正常","漏氣＞30ppm","其他"],{items:["開關閥"]}],
+  ["法蘭片",["正常","漏氣＞30ppm","其他"],{items:["法蘭片"]}],
+  ["計量表",["正常","異常","其他"],{items:["計量表"]}],
+  ["遮斷閥",["正常","漏氣＞30ppm","其他"],{items:["遮斷閥"]}],
+  ["整壓器",["正常","漏氣＞30ppm","其他"],{items:["整壓器"]}],
+  ["壓力",["正常","異常","過低"],{items:["壓力表"]}],
+  ["過濾器",["正常","漏氣＞30ppm","差壓值>5psi"],{items:["過濾器"]}],
+  ["瓦斯表前之壓力壓力表（1.5倍壓力遮斷標示）",["正常","異常","其他"],{items:["壓力表"]},"pressure"],
+  ["支撐架",["穩固","鬆脫","鏽蝕"],{items:["支撐架"]}]]},
+ {cat:"防爆設備", items:[
+  ["防爆燈具",["正常","異常","其他"],{items:["防爆燈具"]}],
+  ["火焰偵測器",["正常","異常","其他"],{items:["火警感知器"]}],
+  ["瓦斯偵測器",["正常","異常","其他"],{items:["瓦斯偵測器"]}],
+  ["門禁感測器",["正常","異常","其他"],{names:["門禁感測器"]}],
+  ["配管",["正常","異常","其他"],{items:["配管"]}]]}
+];
+const INSP_NOTES = ["1.壓力正常範圍：依本站所標示壓力表上下限為基準。","2.檢查發現有漏氣時請填「設備品質異常反應單」、「管線漏氣修護表」轉修建課修護；護網損壞請通知管理部處理，並拍照備查。","3.整壓站檢查作業於每月實施定期檢查一次。","4.檢查方式：氣體偵測器XP-702型檢測，蜂嗚器開始響的位置大約是等於氣體濃度30ppm；測出訊號代表漏氣現象，請於漏氣欄位打∨。"];
+let IF = {ans:{}, memo:{}, eq:{}, pressure:""};
+function inspKey(ci,ii){return ci+"-"+ii;}
+function inspCands(m){const L=stEq();return L.filter(e=>(m.items&&m.items.includes(e.item))||(m.names&&m.names.some(n=>(e.name||"").includes(n)))).sort((a,b)=>(a.order||0)-(b.order||0));}
+function stInsps(){return (S.insps||[]).filter(x=>x.station===ST().name).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.iid||"").localeCompare(a.iid||""));}
+function monthDone(){const m=today().slice(0,7);return stInsps().filter(x=>(x.date||"").startsWith(m));}
+function openInsp(){
+ if(!needEdit())return;
+ IF={ans:{},memo:{},eq:{},pressure:""};
+ $("i_date").value=today();$("i_staff").value=S.user.name;$("i_note").value="";$("i_auto").checked=true;
+ $("iTitle").textContent="📋 整壓站安檢表｜"+ST().name;
+ renderInspForm();openM("mInsp");$("mInsp").querySelector(".modal").scrollTop=0;
+}
+function renderInspForm(){
+ let h="";
+ INSP_FORM.forEach((c,ci)=>{
+  h+='<div class="icat">'+esc(c.cat)+'</div>';
+  c.items.forEach((it,ii)=>{
+   const k=inspKey(ci,ii),a=IF.ans[k],bad=a!=null&&a>0;
+   h+='<div class="iitem'+(a==null?" todo":bad?" bad":"")+'" id="ii-'+k+'"><div class="iname">'+(ii+1)+'.'+esc(it[0])+'</div><div class="iopts">'
+    +it[1].map((o,oi)=>'<button type="button" class="iopt'+(a===oi?(oi?" on bad":" on"):"")+'" onclick="inspSet(\''+k+'\','+oi+')">'+esc(o)+'</button>').join("")+'</div>';
+   if(it[3]==="pressure")h+='<label class="iextra">壓力：<input id="i_pres" value="'+esc(IF.pressure)+'" oninput="IF.pressure=this.value" placeholder="填寫壓力值"></label>';
+   if(bad){
+    const cs=inspCands(it[2]);
+    h+='<div class="iextra"><input placeholder="異常說明（位置、狀況）" value="'+esc(IF.memo[k]||"")+'" oninput="IF.memo[\''+k+'\']=this.value">'
+     +(cs.length?'<select onchange="IF.eq[\''+k+'\']=this.value">'+cs.map(e=>'<option value="'+esc(e.id)+'"'+(IF.eq[k]===e.id?" selected":"")+'>'+esc(e.id+" "+e.name)+'</option>').join("")+'</select>':'')+'</div>';
+    if(cs.length&&!IF.eq[k])IF.eq[k]=cs[0].id;
+   }
+   h+='</div>';
+  });
+ });
+ h+='<div class="inotes"><b>說明</b>'+INSP_NOTES.map(n=>'<div>'+esc(n)+'</div>').join("")+'</div>';
+ $("iBody").innerHTML=h;inspCount();
+}
+function inspSet(k,oi){IF.ans[k]=oi;const y=$("iBody").parentElement.scrollTop;renderInspForm();$("iBody").parentElement.scrollTop=y;}
+function inspAllOk(){INSP_FORM.forEach((c,ci)=>c.items.forEach((it,ii)=>{const k=inspKey(ci,ii);if(IF.ans[k]==null)IF.ans[k]=0;}));renderInspForm();}
+function inspCount(){let n=0,t=0,b=0;INSP_FORM.forEach((c,ci)=>c.items.forEach((it,ii)=>{t++;const a=IF.ans[inspKey(ci,ii)];if(a!=null){n++;if(a>0)b++;}}));$("iCount").innerHTML='已填 <b>'+n+'</b> / '+t+' 項'+(b?'｜<b style="color:#c0392b">異常 '+b+' 項</b>':'');}
+async function submitInsp(){
+ const date=$("i_date").value,staff=S.user.name;
+ if(!date){alert("請填寫日期");return;}
+ if(!S.user.sig){alert("送出前請先設定你的簽名：右上角姓名 → 我的簽名。\n（填寫內容會保留，設定完再按送出）");openAccount();return;}
+ let miss=null;const items=[],repairs=[];
+ INSP_FORM.forEach((c,ci)=>c.items.forEach((it,ii)=>{
+  const k=inspKey(ci,ii),a=IF.ans[k];if(a==null){if(!miss)miss=k;return;}
+  const e=a>0&&IF.eq[k]?eqById(IF.eq[k]):null;
+  const row={cat:c.cat,no:ii+1,name:it[0],opt:it[1][a],abn:a>0?"異常":"",memo:a>0?(IF.memo[k]||""):"",eid:e?e.id:"",ename:e?e.name:""};
+  if(it[3]==="pressure")row.memo=(IF.pressure?"壓力："+IF.pressure:"")+(row.memo?"；"+row.memo:"");
+  items.push(row);
+  if(a>0&&e&&$("i_auto").checked)repairs.push({eid:e.id,ename:e.name,station:ST().name,date,type:"定期檢測",issue:"安檢「"+it[0]+"」："+it[1][a]+(IF.memo[k]?"（"+IF.memo[k]+"）":""),action:"每月安檢發現異常，待處理",parts:"",fixDate:"",staff,vendor:"",cost:"",status:"待處理",note:""});
+ }));
+ if(miss){alert("還有項目沒填，已幫你捲到該項目。");const el=$("ii-"+miss);if(el)el.scrollIntoView({behavior:"smooth",block:"center"});return;}
+ const abn=items.filter(x=>x.abn).length;
+ const noEq=items.filter(x=>x.abn&&!x.eid).length;
+ if(!confirm("確定送出安檢表？\n\n日期："+date+"\n檢查員："+staff+"\n異常："+abn+" 項"+(repairs.length?"\n將自動建立 "+repairs.length+" 筆「待處理」維修紀錄":"")+(noEq?"\n（"+noEq+" 項異常沒有對應設備，只記在安檢表）":"")))return;
+ const ok=await write("addInspection",{station:ST().name,date,inspector:staff,note:$("i_note").value.trim(),items,repairs});
+ if(ok){closeM("mInsp");if(!$("fsMap").classList.contains("on"))go("insp");toast("✅ 安檢表已送出"+(repairs.length?"，已建立 "+repairs.length+" 筆待處理維修":""));}
+}
+function renderInsp(){
+ const list=stInsps(),md=monthDone(),ym=today().slice(0,7);
+ $("iStatus").innerHTML=md.length?'<span class="tag s-done" style="font-size:16px;padding:4px 12px">✅ '+ym+' 本月已安檢 '+md.length+' 次</span>':'<span class="tag s-todo" style="font-size:16px;padding:4px 12px">⚠ '+ym+' 本月尚未安檢</span>';
+ const yr=$("iYear").value;
+ const years=[...new Set(list.map(x=>(x.date||"").slice(0,4)).filter(Boolean))];keepSel("iYear",opts(years,"全部年度"));
+ const rows=list.filter(x=>!yr||(x.date||"").startsWith(yr));
+ $("iHead").innerHTML='<th>日期</th><th>安檢編號</th><th>檢查員</th><th>異常</th><th>異常項目</th><th>簽核狀態</th><th></th>';
+ $("iList").innerHTML=rows.map(x=>{const ab=(x.items||[]).filter(i=>i.abn);return '<tr><td data-l="日期">'+esc(x.date)+'</td><td data-l="編號">'+esc(x.iid)+'</td><td data-l="檢查員">'+esc(x.inspector)+'</td><td data-l="異常">'+(ab.length?'<span class="bdg">'+ab.length+'</span>':'<span class="tag s-done">全部正常</span>')+'</td><td data-l="異常項目">'+esc(ab.map(i=>i.name+"："+i.opt).join("、"))+'</td><td data-l="簽核">'+(()=>{const st=signStateOf(x);return '<span class="tag '+(st==="已完成簽核"?"s-done":"s-doing")+'">'+st+'</span>';})()+'</td><td><button class="btn sm ghost" onclick="viewInsp(\''+x.iid+'\')">檢視</button> <button class="btn sm ghost" onclick="inspDocx(\''+x.iid+'\')">⬇ Word</button> <button class="btn sm ghost" onclick="printInsp(\''+x.iid+'\')">🖨 列印/PDF</button>'+(canSign(x,"unit")?' <button class="btn sm grn" onclick="signInsp(\''+x.iid+'\',\'unit\')">✍ 單位主管簽核</button>':'')+(canSign(x,"dept")?' <button class="btn sm grn" onclick="signInsp(\''+x.iid+'\',\'dept\')">✍ 部門主管簽核</button>':'')+(isAdmin()?' <button class="btn sm red" onclick="delInsp(\''+x.iid+'\')">刪除</button>':'')+'</td></tr>';}).join("")||'<tr><td colspan="7">尚無安檢紀錄</td></tr>';
+}
+function inspSheetHtml(x){
+ const roc=d=>{if(!d)return"　年　月　日";const p=d.split("-");return (p[0]-1911)+" 年 "+(+p[1])+" 月 "+(+p[2])+" 日";};
+ let rows="";
+ INSP_FORM.forEach(c=>{c.items.forEach((it,ii)=>{
+  const r=(x.items||[]).find(i=>i.cat===c.cat&&i.name===it[0])||{};
+  rows+='<tr>'+(ii===0?'<td class="pc" rowspan="'+c.items.length+'">'+esc(c.cat)+'</td>':'')+'<td>'+(ii+1)+'.'+esc(it[0])+'</td>'+it[1].map(o=>'<td>'+(r.opt===o?"☑":"☐")+esc(o)+'</td>').join("")+'<td>'+esc([r.memo,r.eid?r.eid:""].filter(Boolean).join(" "))+'</td></tr>';
+ });});
+ return '<div class="psheet"><div class="pt1">竹建瓦斯股份有限公司</div><div class="pt2">整壓站安檢表</div><div class="pdate">'+roc(x.date)+'</div>'
+ +'<div class="phead"><span>編號：'+esc(x.iid||"")+'</span><span>站名：'+esc(x.station||"")+'</span></div>'
+ +'<table class="ptb"><tr><th>類別</th><th>檢查項目</th><th colspan="3">檢查結果</th><th>備註</th></tr>'+rows
+ +'<tr><td class="pc">說明</td><td colspan="5" style="text-align:left">'+INSP_NOTES.map(esc).join("<br>")+(x.note?'<br>其他備註：'+esc(x.note):'')+'</td></tr></table>'
+ +'<div class="psign">'+[["部門主管",x.deptName,x.sigDept,x.deptAt],["單位主管",x.unitName,x.sigUnit,x.unitAt],["檢查員",x.inspector,x.sigInspector,x.createdAt]].map(a=>'<span><span>'+a[0]+(a[2]?'<img src="'+a[2]+'" alt="簽名">':'　＿＿＿＿＿')+'</span>'+(a[1]?'<small>'+esc(a[1])+(a[3]?'　'+esc(String(a[3]).slice(0,16)):'')+'</small>':'')+'</span>').join("")+'</div>'
+ +'<div class="pfoot"><span>保存期限：五年</span><span>表單編號：QRW632601</span></div></div>';
+}
+function viewInsp(iid){const x=stInsps().find(i=>i.iid===iid);if(!x)return;$("ivBody").innerHTML=inspSheetHtml(x);$("ivPrint").onclick=()=>printInsp(iid);$("ivWord").onclick=()=>inspDocx(iid);
+ $("ivSign").innerHTML=(canSign(x,"unit")?'<button class="btn sm grn" onclick="signInsp(\''+iid+'\',\'unit\')">✍ 單位主管簽核</button> ':'')+(canSign(x,"dept")?'<button class="btn sm grn" onclick="signInsp(\''+iid+'\',\'dept\')">✍ 部門主管簽核</button> ':'');openM("mInspView");}
+function printInsp(iid){const x=stInsps().find(i=>i.iid===iid);if(!x)return;$("printArea").innerHTML=inspSheetHtml(x);setTimeout(()=>window.print(),100);}
+async function delInsp(iid){if(!confirm("確定刪除安檢表 "+iid+"？\n（已自動建立的維修紀錄不會被刪除）"))return;if(await write("deleteInspection",{iid}))toast("已刪除");}
+
+/* ===== Word 下載（自製 docx，內含電子簽名） ===== */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC_T[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zipStore(files){
+ const enc=new TextEncoder(),parts=[],cen=[];let off=0;
+ files.forEach(f=>{
+  const name=enc.encode(f.name),data=typeof f.data==="string"?enc.encode(f.data):f.data,crc=crc32(data);
+  const h=new DataView(new ArrayBuffer(30));h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(8,0,true);h.setUint32(14,crc,true);h.setUint32(18,data.length,true);h.setUint32(22,data.length,true);h.setUint16(26,name.length,true);
+  parts.push(new Uint8Array(h.buffer),name,data);
+  const c=new DataView(new ArrayBuffer(46));c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint32(16,crc,true);c.setUint32(20,data.length,true);c.setUint32(24,data.length,true);c.setUint16(28,name.length,true);c.setUint32(42,off,true);
+  cen.push(new Uint8Array(c.buffer),name);off+=30+name.length+data.length;
+ });
+ const cs=cen.reduce((a,b)=>a+b.length,0),e=new DataView(new ArrayBuffer(22));
+ e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+ return new Blob([...parts,...cen,new Uint8Array(e.buffer)],{type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+function b64bytes(u){const s=atob(u.split(",")[1]);const a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a;}
+function imgSize(u){return new Promise(r=>{const i=new Image();i.onload=()=>r([i.naturalWidth,i.naturalHeight]);i.onerror=()=>r([300,100]);i.src=u;});}
+function xe(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+async function inspDocx(iid){
+ const x=(S.insps||[]).find(i=>i.iid===iid);if(!x)return;
+ const F='<w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體"/>';
+ const run=(t,o)=>{o=o||{};return '<w:r><w:rPr>'+F+(o.b?'<w:b/>':'')+'<w:sz w:val="'+(o.sz||20)+'"/><w:szCs w:val="'+(o.sz||20)+'"/>'+(o.color?'<w:color w:val="'+o.color+'"/>':'')+'</w:rPr><w:t xml:space="preserve">'+xe(t)+'</w:t></w:r>';};
+ const para=(c,o)=>{o=o||{};return '<w:p><w:pPr><w:spacing w:before="0" w:after="'+(o.after||0)+'" w:line="'+(o.line||240)+'" w:lineRule="auto"/>'+(o.jc?'<w:jc w:val="'+o.jc+'"/>':'')+'</w:pPr>'+c+'</w:p>';};
+ const imgs=[];let docPr=1;
+ async function pic(u,hmm){if(!u)return "";const [w,h]=await imgSize(u);const cy=Math.round(hmm*36000),cx=Math.round(cy*w/h);const id=imgs.length+1;imgs.push({name:"sig"+id+".png",data:b64bytes(u)});const n=docPr++;
+  return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+n+'" name="簽名'+n+'"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+n+'" name="sig'+id+'.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rImg'+id+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';}
+ const W=[620,3260,1800,1800,1800,1492];
+ const cell=(w,content,o)=>{o=o||{};return '<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(o.span?'<w:gridSpan w:val="'+o.span+'"/>':'')+(o.vm==="r"?'<w:vMerge w:val="restart"/>':o.vm?'<w:vMerge/>':'')+(o.shade?'<w:shd w:val="clear" w:color="auto" w:fill="'+o.shade+'"/>':'')+'<w:vAlign w:val="center"/>'+(o.vert?'<w:textDirection w:val="tbRlV"/>':'')+'</w:tcPr>'+content+'</w:tc>';};
+ const P=(t,o)=>para(run(t,o),{jc:o&&o.jc});
+ const roc=d=>{if(!d)return"　年　月　日";const p=d.split("-");return (p[0]-1911)+" 年 "+(+p[1])+" 月 "+(+p[2])+" 日";};
+ const bd='<w:tblBorders><w:top w:val="single" w:sz="6" w:color="000000"/><w:left w:val="single" w:sz="6" w:color="000000"/><w:bottom w:val="single" w:sz="6" w:color="000000"/><w:right w:val="single" w:sz="6" w:color="000000"/><w:insideH w:val="single" w:sz="4" w:color="000000"/><w:insideV w:val="single" w:sz="4" w:color="000000"/></w:tblBorders>';
+ const nob='<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
+ const tbl=(widths,rows,borders)=>'<w:tbl><w:tblPr><w:tblW w:w="'+widths.reduce((a,b)=>a+b,0)+'" w:type="dxa"/><w:jc w:val="center"/>'+borders+'<w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="57" w:type="dxa"/><w:right w:w="57" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>'+widths.map(w=>'<w:gridCol w:w="'+w+'"/>').join("")+'</w:tblGrid>'+rows.join("")+'</w:tbl>';
+ const tr=(c,h)=>'<w:tr><w:trPr>'+(h?'<w:trHeight w:val="'+h+'"/>':'')+'<w:cantSplit/></w:trPr>'+c+'</w:tr>';
+ let body=P("竹建瓦斯股份有限公司",{sz:32,b:true,jc:"center"})+P("整壓站安檢表",{sz:30,b:true,jc:"center"})+P(roc(x.date),{sz:22,jc:"center"});
+ body+=tbl([5386,5386],[tr(cell(5386,P("編號："+(x.iid||""),{sz:22}))+cell(5386,P("站名："+(x.station||""),{sz:22,jc:"right"})))],nob);
+ const rows=[tr(cell(W[0],P("類別",{b:true,jc:"center"}),{shade:"E7E6E6"})+cell(W[1],P("檢查項目",{b:true,jc:"center"}),{shade:"E7E6E6"})+cell(W[2]+W[3]+W[4],P("檢查結果",{b:true,jc:"center"}),{span:3,shade:"E7E6E6"})+cell(W[5],P("備註",{b:true,jc:"center"}),{shade:"E7E6E6"}))];
+ INSP_FORM.forEach(c=>c.items.forEach((it,ii)=>{
+  const r=(x.items||[]).find(i=>i.cat===c.cat&&i.name===it[0])||{};
+  rows.push(tr(cell(W[0],P(ii===0?c.cat:"",{jc:"center"}),{vm:ii===0?"r":"c",vert:true})+cell(W[1],P((ii+1)+"."+it[0]))+it[1].map((o,oi)=>cell(W[2+oi],para(run(r.opt===o?"☑":"☐",{sz:20,color:r.opt===o&&oi>0?"C00000":null})+run(o,{sz:18}))) ).join("")+cell(W[5],P([r.memo,r.eid].filter(Boolean).join(" "),{sz:16})),300));
+ }));
+ rows.push(tr(cell(W[0],P("說明",{jc:"center"}),{vert:true})+cell(W.slice(1).reduce((a,b)=>a+b,0),INSP_NOTES.map(n=>P(n,{sz:16})).join("")+(x.note?P("其他備註："+x.note,{sz:16}):""),{span:5})));
+ body+=tbl(W,rows,bd);
+ body+=para("",{after:120});
+ const sg=async(label,name,u,at)=>cell(3590,para(run(label+"　",{sz:22,b:true})+(u?await pic(u,11):run("　　　　　　",{sz:22})),{jc:"center"})+(name?P(name+(at?"　"+at.slice(0,16):""),{sz:16,jc:"center"}):""));
+ body+=tbl([3590,3590,3592],[tr(await sg("部門主管",x.deptName,x.sigDept,x.deptAt)+await sg("單位主管",x.unitName,x.sigUnit,x.unitAt)+await sg("檢查員",x.inspector,x.sigInspector,x.createdAt),900)],nob);
+ body+=tbl([5386,5386],[tr(cell(5386,P("保存期限：五年",{sz:20}))+cell(5386,P("表單編號：QRW632601",{sz:20,jc:"right"})))],nob);
+ const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="567" w:right="567" w:bottom="567" w:left="567" w:header="284" w:footer="284" w:gutter="0"/></w:sectPr></w:body></w:document>';
+ const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+imgs.map((m,i)=>'<Relationship Id="rImg'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/'+m.name+'"/>').join("")+'</Relationships>';
+ const files=[
+  {name:"[Content_Types].xml",data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+  {name:"_rels/.rels",data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+  {name:"word/document.xml",data:doc},
+  {name:"word/_rels/document.xml.rels",data:rels}
+ ].concat(imgs.map(m=>({name:"word/media/"+m.name,data:m.data})));
+ const a=document.createElement("a");a.href=URL.createObjectURL(zipStore(files));a.download="整壓站安檢表_"+x.iid+".docx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
 }
 
 /* ===== stats ===== */
