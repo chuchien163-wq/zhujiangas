@@ -167,6 +167,8 @@ table.lent tr.gstart td{border-top:3px solid #9fb0c3}
 table.lent td.gcell{font-weight:700;vertical-align:middle;background:#f7f9fb;border-right:1px solid var(--line)}
 table.lent tr.tot td.gcell{background:#d9e2ec}
 a.lpop{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px} a.lpop:hover{text-decoration-style:solid}
+.verbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff4c2;border-bottom:2px solid #f0c000;color:#5a4500;padding:8px 18px;font-size:16px}
+tr.cfboth td{background:#fdecec}
 .ldot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
 details.lend{margin-top:10px} details.lend summary{cursor:pointer;color:var(--sub);font-size:15px}
 label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
@@ -285,7 +287,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v4.1</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v4.4</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -295,6 +297,7 @@ table.ttrack td{vertical-align:middle}
       <button class="hbtn" id="btnTour" title="新手教學">❓ 教學</button>
     </div>
   </header>
+  <div id="verBar" class="verbar" style="display:none"></div>
   <div class="main">
     <nav id="nav">
       <button data-p="dash"><span class="ico">📊</span>總覽</button>
@@ -321,6 +324,8 @@ table.ttrack td{vertical-align:middle}
 <script>
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
+// 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
+var WEB_VER = "4.4";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_pw_v1";
 var TIMEOUT_MS = 25000;
@@ -1075,14 +1080,27 @@ function confirmPending(after) {
   modal2('<div class="mh">💾 確認修改（' + L.length + ' 項）</div><div class="mb">以下內容將會存檔：' + changesTable(L) + '</div><div class="mf"><button class="btn" onclick="closeModal2()">取消，回去檢查</button><button class="btn pri" id="cfOk">✅ 確定修改</button></div>');
   $("#cfOk").onclick = function () { closeModal2(); needLogin(function () { doSaveTrack(after); }); };
 }
+var FORCE_TRACK = false;
+function trackConflict(j, after) {
+  var rows = j.list.map(function (x) { return "<tr><td>" + esc(x.name) + "</td><td><b>" + esc(x.k) + '</b></td><td class="muted">' + esc(x.was || "—") + "</td><td><b>" + esc(x.now || "—") + "</b></td><td><b>" + esc(x.mine || "—") + "</b></td></tr>"; }).join("");
+  modal2('<div class="mh">⚠️ 有 ' + j.list.length + ' 項剛被別人改過<span style="flex:1"></span><button class="btn sm" onclick="closeModal2()">✕</button></div><div class="mb"><p style="margin:0 0 8px">你修改這些格子之前，已經有人先改了：</p>' +
+    '<div class="tblwrap"><table class="t"><thead><tr><th>工程</th><th>項目</th><th>你看到的</th><th>別人改成（現在）</th><th>你要改成</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    '<p class="muted" style="margin:10px 0 0">你的其他修改都還保留著（黃色格子），沒有存進去。</p></div>' +
+    '<div class="mf"><button class="btn" id="cfDrop">放棄這幾項，用別人的</button><button class="btn pri" id="cfForce">用我的覆蓋，全部存檔</button></div>', true);
+  if (j.data) { var keep = PENDING; setData(j.data); PENDING = keep; renderTrack(); }
+  $("#cfDrop").onclick = function () { closeModal2(); j.list.forEach(function (x) { if (PENDING[x.uid]) { delete PENDING[x.uid][x.k]; if (!Object.keys(PENDING[x.uid]).length) delete PENDING[x.uid]; } }); renderTrack(); if (pendCount()) doSaveTrack(after); else toast("已改用別人的資料，沒有其他要存的"); };
+  $("#cfForce").onclick = function () { closeModal2(); FORCE_TRACK = true; doSaveTrack(after); };
+}
 function doSaveTrack(after) {
-  var changes = Object.keys(PENDING).map(function (uid) { return { uid: uid, set: PENDING[uid] }; });
+  var changes = Object.keys(PENDING).map(function (uid) { var c = caseByUid(uid) || {}, base = {}; Object.keys(PENDING[uid]).forEach(function (k) { base[k] = c[k] === undefined ? "" : c[k]; }); return { uid: uid, set: PENDING[uid], base: base }; });
   var n = pendCount();
   var done = function (d) { if (d) setData(d); PENDING = {}; hideLoading(); toast("✅ 已儲存 " + n + " 項修改"); render(); if (after) after(); };
   var fail = function (msg) { hideLoading(); toast("❌ " + msg + "（修改還保留著，可以再按儲存）", 5000); };
   showLoading("存檔中…（" + n + " 項）");
-  req("POST", { action: "saveTrack", pw: PW, changes: changes }).then(function (j) {
+  req("POST", { action: "saveTrack", pw: PW, changes: changes, force: !!FORCE_TRACK }).then(function (j) {
+    FORCE_TRACK = false;
     if (j.ok) return done(j.data);
+    if (j.conflict) { hideLoading(); return trackConflict(j, after); }
     if (/未知動作/.test(j.msg || "")) {
       // 舊版後端沒有批次存檔：改成一筆一筆存
       var chain = Promise.resolve(null);
@@ -1328,12 +1346,7 @@ function lenPop(i, cls, pr) {
       '<td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="closeModal2();openCase(\'' + c.UID + '\')">' + (isRep && !PL ? "✏️ 補預計" : "✏️ 編輯") + "</button></td></tr>";
   });
   var sgn = function (x) { x = Math.round(x * 100) / 100; return (x > 0 ? "+" : "") + fmt(x); };
-  if (isRep && uN && fN) {
-    h += '<tr class="sub"><td colspan="3" data-l="">有填預計（' + fN + ' 件）</td><td class="num" data-l="預計(M)">' + fmt(tP) + '</td><td class="num" data-l="實際(M)">' + fmt(fA) + '</td><td class="num" data-l="差異(M)">' + sgn(tD) + '</td><td colspan="2" data-l=""></td></tr>';
-    h += '<tr class="sub"><td colspan="3" data-l=""><span class="red">未填預計（' + uN + ' 件）</span></td><td class="num" data-l="預計(M)"><span class="red">未填</span></td><td class="num" data-l="實際(M)">' + fmt(uA) + '</td><td data-l="差異(M)"></td><td colspan="2" data-l=""></td></tr>';
-  }
-  h += '<tr class="tot"><td colspan="3" data-l="">合計（' + list.length + ' 件）</td>' + (isRep ? '<td class="num" data-l="預計(M)">' + fmt(tP) + (uN ? '<div class="red" style="font-size:12.5px">缺 ' + uN + " 件</div>" : "") + "</td>" : "") + '<td class="num" data-l="實際(M)">' + fmt(tA) + "</td>" + (isRep ? '<td class="num" data-l="差異(M)">' + (tP ? sgn(tD) + (uN ? '<div class="muted" style="font-size:12.5px">只算已填的 ' + fN + " 件</div>" : "") : "") + "</td>" : "") + '<td colspan="2" data-l=""></td></tr>';
-  if (isRep && uN) h += '<tr><td colspan="8" data-l="" class="muted" style="font-size:14px">※ 預計 ' + fmt(tP) + "、實際 " + fmt(tA) + "，實際多出的部分，有 " + fmt(uA) + " M 是「未填預計」那 " + uN + " 件的長度，不是超做。補上預計後就會對得起來。</td></tr>";
+  h += '<tr class="tot"><td colspan="3" data-l="">合計（' + list.length + ' 件）</td>' + (isRep ? '<td class="num" data-l="預計(M)">' + fmt(tP) + (uN ? '<div class="red" style="font-size:12.5px">缺 ' + uN + " 件</div>" : "") + "</td>" : "") + '<td class="num" data-l="實際(M)">' + fmt(tA) + "</td>" + (isRep ? '<td class="num" data-l="差異(M)">' + (tP ? sgn(tD) : "") + "</td>" : "") + '<td colspan="2" data-l=""></td></tr>';
   h += "</tbody></table></div></div>";
   modal2(h, true);
 }
@@ -1651,6 +1664,28 @@ function modal(html, small) {
   $("#mask").classList.add("show");
 }
 function closeModal() { $("#mask").classList.remove("show"); $("#modal").innerHTML = ""; }
+/* ===== 舊版提醒：讀 GitHub 上最新的 pipeline.html，比對版本號（不用 GAS） ===== */
+function verCmp(a, b) { var x = String(a).split("."), y = String(b).split("."); for (var i = 0; i < Math.max(x.length, y.length); i++) { var d = (parseInt(x[i], 10) || 0) - (parseInt(y[i], 10) || 0); if (d) return d; } return 0; }
+var VER_CHECKING = false;
+function checkWebVer() {
+  if (VER_CHECKING || !window.fetch || location.protocol === "file:") return;
+  VER_CHECKING = true;
+  var ctl = window.AbortController ? new AbortController() : null;
+  var dog = setTimeout(function () { if (ctl) ctl.abort(); VER_CHECKING = false; }, 8000); // 看門狗：8 秒沒回應就放棄，下次再查
+  fetch(location.pathname + "?vchk=" + Date.now(), { cache: "no-store", signal: ctl ? ctl.signal : undefined })
+    .then(function (r) { return r.ok ? r.text() : ""; })
+    .then(function (t) {
+      var m = /var WEB_VER = "([\d.]+)"/.exec(t || "");
+      if (m && verCmp(m[1], WEB_VER) > 0) showVerBar(m[1]);
+    })
+    .catch(function () {})
+    .then(function () { clearTimeout(dog); VER_CHECKING = false; });
+}
+function showVerBar(v) {
+  var b = $("#verBar"); if (!b) return;
+  b.innerHTML = '⚠️ 網頁有新版本 <b>v' + esc(v) + '</b>（你現在是 v' + WEB_VER + '），請按 <b>Ctrl+Shift+R</b> 或 <button class="btn sm pri" onclick="location.replace(location.pathname + \'?v=\' + Date.now())">🔄 立即更新</button>' + '<span style="flex:1"></span><button class="btn sm" onclick="$(\'#verBar\').style.display=\'none\'" title="先關掉">✕</button>';
+  b.style.display = "flex";
+}
 function modal2(html, wide) { $("#modal2").classList.toggle("small", !wide); $("#modal2").innerHTML = html; $("#mask2").classList.add("show"); }
 function closeModal2() { $("#mask2").classList.remove("show"); $("#modal2").innerHTML = ""; }
 function confirmBox(msg, okText, cb) {
@@ -1771,6 +1806,45 @@ function pipeText(ps) {
     return (p["壓力"] || "低壓") + " " + (p["敷設管種"] || "") + " " + (num(p["敷設長度"]) ? fmt(p["敷設長度"]) + "M" : "") + (p["廢除管種"] ? "（廢除 " + p["廢除管種"] + " " + (num(p["廢除長度"]) ? fmt(p["廢除長度"]) + "M" : "") + "）" : "");
   }).join("、");
 }
+/* ===== 防蓋檔：存檔時帶上「打開時看到的資料」，後端發現被別人改過就擋下 ===== */
+function sendCase(it, pipes, force) {
+  showLoading("存檔中…");
+  req("POST", { action: "saveCase", pw: PW, item: it, pipes: pipes, orig: EDIT.orig || null, origPipes: EDIT.orig ? (EDIT.origPipes || []) : null, force: !!force }).then(function (j) {
+    hideLoading();
+    if (j.ok) { if (j.data) setData(j.data); toast("✅ 已儲存：" + it["工程編號"]); closeModal(); render(); return; }
+    if (j.conflict) { caseConflict(j, it, pipes); return; }
+    if (/密碼/.test(j.msg || "")) { PW = ""; lsSet(SS_PW, ""); updLock(); }
+    toast("❌ " + (j.msg || "存檔失敗"), 4000);
+  }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); });
+}
+function cfVal(k, v) { return DATE_FIELDS.indexOf(k) > -1 ? roc(v) : v; }
+function caseConflict(j, mine, minePipes) {
+  // 我改了哪些（跟打開時比）
+  var o = EDIT.orig || {}, myK = {};
+  CASE_FIELDS.forEach(function (k) { var a = String(o[k] === undefined ? "" : o[k]).trim(), b = String(mine[k] === undefined ? "" : mine[k]).trim(); if (DATE_FIELDS.indexOf(k) > -1) { a = normDate(a); b = normDate(b); } if (a !== b) myK[k] = 1; });
+  var myPipe = pipeText(EDIT.origPipes || []) !== pipeText(minePipes);
+  if (j.data) setData(j.data);
+  var latest = caseByUid(mine.UID);
+  var rows = j.list.map(function (x) {
+    var both = x.k === "管線明細" ? myPipe : !!myK[x.k];
+    return "<tr" + (both ? ' class="cfboth"' : "") + "><td><b>" + esc(x.k) + "</b>" + (both ? '<div class="red" style="font-size:13px">你也改了這項</div>' : "") + '</td><td class="muted">' + esc(cfVal(x.k, x.was) || "—") + "</td><td><b>" + esc(cfVal(x.k, x.now) || "—") + "</b></td><td>" + (both ? "<b>" + esc(x.k === "管線明細" ? pipeText(minePipes) : cfVal(x.k, mine[x.k]) || "—") + "</b>" : '<span class="muted">（沒動）</span>') + "</td></tr>";
+  }).join("");
+  var nBoth = j.list.filter(function (x) { return x.k === "管線明細" ? myPipe : myK[x.k]; }).length;
+  modal2('<div class="mh">⚠️ 這件工程剛被別人改過<span style="flex:1"></span><button class="btn sm" onclick="closeModal2()">✕</button></div><div class="mb">' +
+    "<p style=\"margin:0 0 8px\">你打開 <b>" + esc(mine["工程名稱"] + "（" + mine["工程編號"] + "）") + "</b> 之後，有人改了下面這些地方" + (j.last ? '<span class="muted">（最後一次：' + esc(j.last) + "）</span>" : "") + "：</p>" +
+    '<div class="tblwrap"><table class="t"><thead><tr><th>項目</th><th>你打開時</th><th>別人改成（現在）</th><th>你要改成</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    '<p class="muted" style="margin:10px 0 0">建議按「合併後存檔」：保留別人的修改，再把<b>你改的項目</b>套上去。' + (nBoth ? '<br><span class="red">紅底的項目兩邊都改了，合併時會以你的為準。</span>' : "") + "</p></div>" +
+    '<div class="mf"><button class="btn" onclick="closeModal2()">取消，我再看看</button><button class="btn pri" id="cfMerge">🔀 合併後存檔</button></div>', true);
+  $("#cfMerge").onclick = function () {
+    closeModal2();
+    if (!latest) { toast("❌ 這件工程已被刪除", 4000); return; }
+    var merged = Object.assign({}, latest); Object.keys(myK).forEach(function (k) { merged[k] = mine[k]; });
+    var mp = myPipe ? minePipes : pipesOf(latest).map(function (p) { return Object.assign({}, p); });
+    EDIT.orig = Object.assign({}, latest); EDIT.origPipes = pipesOf(latest).map(function (p) { return Object.assign({}, p); });
+    EDIT.item = merged; EDIT.pipes = mp.length ? mp : [{ 壓力: "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" }];
+    sendCase(merged, mp, false);
+  };
+}
 function caseDiffs() {
   if (!EDIT || !$("#mask").classList.contains("show") || !$('#modal [data-f="工程編號"]')) return [];
   readCaseForm();
@@ -1808,11 +1882,7 @@ function saveCase() {
   var bad = pipes.filter(function (p) { return !String(p["敷設管種"] || "").trim() && num(p["敷設長度"]); });
   if (bad.length) { toast("有填長度但沒填管種，請補上", 3500); return; }
   var dup = DB.cases.filter(function (c) { return c["工程編號"] === it["工程編號"] && c.UID !== it.UID; });
-  var go = function () {
-    needLogin(function () {
-      post("saveCase", { item: it, pipes: pipes }, "✅ 已儲存：" + it["工程編號"]).then(function (ok) { if (ok) closeModal(); });
-    });
-  };
+  var go = function () { needLogin(function () { sendCase(it, pipes, false); }); };
   var diffs = caseDiffs(); readCaseForm(); it = EDIT.item;
   DATE_FIELDS.forEach(function (k) { it[k] = normDate(it[k]); });
   if (EDIT.orig && !diffs.length) { toast("沒有任何修改"); closeModal(); return; }
@@ -2036,6 +2106,7 @@ window.addEventListener("resize", function () { if ($("#tourTip").style.display 
   $("#mask2").addEventListener("click", function (e) { if (e.target.id === "mask2" && downOn2 === e.target) closeModal2(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && $("#mask2").classList.contains("show")) closeModal2(); });
   load();
+  checkWebVer(); setInterval(checkWebVer, 10 * 60 * 1000);
 })();
 </script>
 </body>
