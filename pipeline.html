@@ -157,6 +157,12 @@ table.mgr tr.sub td{background:#f2f2f2;font-weight:700}
 .lsel select{font-size:16px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:#fff}
 table.lent tr.sub td{background:#eef2f6;font-weight:700} table.lent tr.tot td{background:#d9e2ec;font-weight:700} table.lent tr.modr td{color:var(--mod)}
 @media (min-width:761px){table.rept td:nth-child(1),table.rept td:nth-child(2),table.rept td:nth-child(4),table.rept td:nth-child(8),table.rept td:nth-child(11){white-space:nowrap}}
+.lenbox{background:var(--rep-soft);border:1px solid #f3c79c;border-radius:12px;padding:10px 14px}
+.lenbox .lb2{font-weight:700;color:var(--rep);margin-bottom:6px}
+.lenrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.lenrow .lc{display:flex;flex-direction:column;gap:4px}
+.lenrow .actv{font-size:18px;font-weight:700;padding:8px 2px}
+@media (max-width:760px){.lenrow{grid-template-columns:1fr}}
 table.lent tr.gstart td{border-top:3px solid #9fb0c3}
 table.lent td.gcell{font-weight:700;vertical-align:middle;background:#f7f9fb;border-right:1px solid var(--line)}
 table.lent tr.tot td.gcell{background:#d9e2ec}
@@ -278,7 +284,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.3</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.4</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -1626,7 +1632,16 @@ function drawCase() {
   if (isRep) {
     h += '<div class="f"><label>汰換性質 <span class="req">*</span></label><div class="seg2">' + ["計畫性", "非計畫性"].map(function (g) { return '<label class="' + (it["汰換性質"] === g ? "on-gen" : "") + '"><input type="radio" name="rtype" value="' + g + '"' + (it["汰換性質"] === g ? " checked" : "") + ">" + g + "</label>"; }).join("") + '</div><span class="hint">計畫性＝呈報能源署備查</span></div>';
     h += inp("計畫年度", "計畫年度（民國）", "", "text", "例：115");
-    h += inp("預計管線長度", "預計管線長度(M)", "", "number", "計畫值，例：603");
+    // 選了計畫性／非計畫性後，才出現「預計 vs 實際」長度
+    if (it["汰換性質"]) {
+      h += '<div class="f w6 lenbox"><div class="lb2">📏 ' + esc(it["汰換性質"]) + '汰換・管線長度</div><div class="lenrow">' +
+        '<div class="lc"><label>預計管線長度(M)</label><input data-f="預計管線長度" type="number" step="any" value="' + esc(it["預計管線長度"]) + '" placeholder="計畫值，例：603"><span class="hint">計畫／彙總表上的數字</span></div>' +
+        '<div class="lc"><label>實際管線長度(M)</label><div class="actv" id="actLen">—</div><span class="hint">＝下方「管線明細」的敷設長度合計（報告用）</span></div>' +
+        '<div class="lc"><label>差異（實際－預計）</label><div class="actv" id="lenDiff">—</div><button type="button" class="btn sm" onclick="var e=$(\'#pipeSec\');if(e)e.scrollIntoView({behavior:\'smooth\'})">✏️ 填實際長度（管線明細）↓</button></div>' +
+        "</div></div>";
+    } else {
+      h += '<div class="f w6"><span class="hint warn">先選「計畫性」或「非計畫性」，就會出現預計／實際管線長度</span></div>';
+    }
   }
   h += inp("繳費日", "繳費日", "", "text", "115/10/27 或 內部工程") + inp("戶數", "戶數", "w1", "number") + inp("預計工期", "預計工期(天)", "w1", "number") + inp("已施工天數", "已施工(天)", "w1", "number");
   h += inp("預定施工日", "預定施工日", "", "date") + inp("施工日", "施工日（報告用）", "", "date") + '<div class="f"><label>完工日（報告用）' + (it["狀態"] === "已竣工" ? ' <span class="req">*</span>' : "") + '</label><input data-f="完工日" type="date" value="' + esc(normDate(it["完工日"])) + '"></div>';
@@ -1644,7 +1659,7 @@ function drawCase() {
     h += '<div class="mbox">🔧 <b>換表系統</b>：' + (mf ? esc(mf.names) + "" + "｜需求 <b>" + mf.est + "</b> 只" + (mf.specs ? "（" + esc(mf.specs) + "）" : "") + "｜已領 <b>" + mf.act + "</b>" + (mf.ret ? "｜退回 " + mf.ret : "") + "｜尚欠 <b class=\"" + (mf.owe > 0 ? "red" : "") + "\">" + mf.owe + "</b>｜預計掛表 " + esc(mf.hang || "—") + "｜繳費 " + esc(mf.pay || "—") : '—（換表系統沒有對應的建案）') + "</div>";
   }
   // 管線
-  h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細' + (isRep ? "＝實際管線長度" : "") + '<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準' + (isRep ? "；完工後填實際施作長度，預計值填在上面「預計管線長度」" : "") + '</span></div>';
+  h += '<div class="sec-h" id="pipeSec" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細' + (isRep ? "＝實際管線長度" : "") + '<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準' + (isRep ? "；完工後填實際施作長度，預計值填在上面「預計管線長度」" : "") + '</span></div>';
   h += '<datalist id="dlPipe">' + PIPE_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + '</datalist><datalist id="dlRm">' + RM_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + "</datalist>";
   h += '<table class="ptable"><thead><tr><th style="width:96px">壓力</th><th>敷設管種</th><th style="width:110px">敷設長度(M)</th>' + (isRep ? "<th>廢除管種</th><th style=\"width:110px\">廢除長度(M)</th>" : "") + '<th style="width:50px"></th></tr></thead><tbody id="pbody">';
   EDIT.pipes.forEach(function (p, i) {
@@ -1687,8 +1702,12 @@ function bindCase() {
     readCaseForm();
     var t = EDIT.pipes.reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0);
     $("#pipeSum").textContent = "敷設合計 " + fmt(t) + " M";
+    var al = $("#actLen"), ld = $("#lenDiff");
+    if (al) al.textContent = t ? fmt(t) + " M" : "尚未填（完工後填管線明細）";
+    if (ld) { var pv = num(($('#modal [data-f="預計管線長度"]') || {}).value); var d = Math.round((t - pv) * 100) / 100; ld.innerHTML = t && pv ? '<span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "inherit") + '">' + (d > 0 ? "+" : "") + fmt(d) + " M</span>" : "—"; }
   };
   $$("#pbody input").forEach(function (el) { el.addEventListener("input", upd); });
+  var pl = $('#modal [data-f="預計管線長度"]'); if (pl) pl.addEventListener("input", upd);
   upd();
 }
 function addPipe() { readCaseForm(); var last = EDIT.pipes[EDIT.pipes.length - 1] || {}; EDIT.pipes.push({ 壓力: last["壓力"] || "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" }); drawCase(); }
