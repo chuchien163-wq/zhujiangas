@@ -49,6 +49,15 @@ svg#map{display:block;width:100%;min-width:900px;height:auto}
 .eq.sel .halo{opacity:1}
 .eq .lbl{font-size:22px;fill:#1d2833;paint-order:stroke;stroke:#fff;stroke-width:4px;font-weight:600}
 .eq.sel .lbl{fill:#0b5ed7}
+.eq .lid{font-size:17px;fill:#2e6da4;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.nolbl .eq .lid{display:none}.nolbl .eq.sel .lid{display:inline}
+.eq.sel .lid{fill:#fff;stroke:#0b5ed7;stroke-width:8px}
+svg.mini{display:block;width:100%;height:auto;background:linear-gradient(135deg,#dfeaf3,#f4f8fb);border-radius:10px;border:1px solid var(--line)}
+.pulse{fill:none;stroke:#e74c3c;stroke-width:6;animation:pl 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.p2{animation-delay:.8s}
+@keyframes pl{0%{transform:scale(.55);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.idb{display:inline-block;background:#1f4e79;color:#fff;border-radius:8px;padding:2px 10px;font-size:18px;vertical-align:4px;margin-right:6px}
+.loc{margin:4px 0 10px}.loc .muted{margin-bottom:4px}
 .nolbl .eq .lbl{display:none}
 .nolbl .eq.sel .lbl{display:inline}
 .pipe .po{stroke:#6c7a88;stroke-width:18;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -107,6 +116,10 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 /* modal */
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
 .mask.on{display:flex}
+#mScan{z-index:45}
+.modal.sheet{width:min(560px,100%)}
+@media(max-width:900px){#mScan{align-items:flex-end;padding:0}.modal.sheet{border-radius:16px 16px 0 0;max-height:88vh}}
+#popBody .tl{max-height:none}
 .modal{background:#fff;border-radius:14px;width:min(760px,100%);max-height:92vh;overflow:auto;padding:18px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
 .fgrid label{display:flex;flex-direction:column;font-size:15px;color:var(--sub);gap:4px}
@@ -189,7 +202,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="mapwrap">
   <div>
    <div class="maptools">
-    <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱</label>
+    <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱／編號</label>
     <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
    </div>
    <div class="svgbox" id="svgbox"></div>
@@ -302,6 +315,11 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="mfoot"><button class="btn red" id="btnDelEq" onclick="delEquip()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mEq')">取消</button><button class="btn" onclick="saveEquip()">💾 儲存</button></div>
 </div></div>
 
+<div class="mask" id="mScan" onclick="if(event.target===this)closePop()"><div class="modal sheet">
+ <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b style="color:#1e8f4e;font-size:16px">📍 設備資訊</b><span class="hspace"></span><button class="btn sm ghost" onclick="closePop()">關閉 ✕</button></div>
+ <div id="popBody"></div>
+</div></div>
+
 <div class="mask" id="mPw"><div class="modal" style="width:min(420px,100%)">
  <h2>🔒 進入編輯模式</h2>
  <div class="fgrid"><label class="full">編輯密碼<input type="password" id="pwIn" onkeydown="if(event.key==='Enter')doLogin()"></label></div>
@@ -317,7 +335,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "";
-const VERSION = "v1.1";
+const VERSION = "v1.3";
 const DEMO_PW = "1688";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
@@ -386,7 +404,7 @@ const LAYOUT_HK = {
 };
 const READOUTS_HK = [
  {id:"HK-50",l:"環境溫度",x:180,y:20},{id:"HK-01",l:"入口壓力",x:20,y:470},{id:"HK-14",l:"出口壓力",x:700,y:92},
- {id:"HK-43",l:"洩漏偵測 1",x:580,y:330},{id:"HK-44",l:"洩漏偵測 2",x:1110,y:490},{id:"HK-09",l:"中間壓力",x:445,y:670},
+ {id:"HK-43",l:"洩漏偵測 1",x:580,y:330},{id:"HK-44",l:"洩漏偵測 2",x:1110,y:490},{id:"HK-09",l:"中間壓力",x:445,y:690},
  {id:"HK-19",l:"B線低壓出口",x:1270,y:92},{id:"HK-24",l:"A線低壓出口",x:1400,y:490}
 ];
 const PIPES_HK = {
@@ -512,8 +530,7 @@ function deepLink(){
  const id=new URLSearchParams(location.search).get("eq");if(!id)return;
  const e=eqById(id);if(!e){toast("找不到設備 "+id+"，可能已被刪除或改編號",true);return;}
  const i=STATIONS.findIndex(t=>t.name===eqSt(e));if(i>=0)ST_I=i;
- S.sel=id;go("map");renderAll();
- setTimeout(()=>{if(window.innerWidth<=1250)$("drawer").scrollIntoView({block:"start"});},150);
+ S.sel=id;go("map");renderAll();openPop();
 }
 function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else renderStat();}
 
@@ -531,33 +548,41 @@ function sym(t){
  return "";
 }
 function lblPos(t,L){if(L.r)return{x:L.x-30,y:L.y+8,a:"end"};if(t==="gauge")return{x:L.x,y:L.y-70,a:"middle"};if(t==="meter")return{x:L.x,y:L.y+56,a:"middle"};return{x:L.x,y:L.y+48,a:"middle"};}
-function renderMap(){
- const M=MAPS[ST().map]||null;const LAYOUT=M?M.layout:{},READOUTS=M?M.readouts:[],PIPES=M?M.pipes:{};
- let s='<svg id="map" viewBox="0 0 1640 730" xmlns="http://www.w3.org/2000/svg" class="'+(S.labels?"":"nolbl")+'"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
- s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="715">中壓 A 線</text><text class="sec" x="1030" y="345">低壓 A 線</text><text class="sec" x="1030" y="160">低壓 B 線</text>';
+function curMap(){const M=MAPS[ST().map]||null;return {M,LAYOUT:M?M.layout:{},READOUTS:M?M.readouts:[],PIPES:M?M.pipes:{}};}
+function eqPos(id){const {LAYOUT,READOUTS}=curMap();if(LAYOUT[id])return{x:LAYOUT[id].x,y:LAYOUT[id].y};const r=READOUTS.find(x=>x.id===id);if(r)return{x:r.x+80,y:r.y+22};return null;}
+function mapSvg(vb,mini){
+ const {LAYOUT,READOUTS,PIPES}=curMap();
+ let s='<svg '+(mini?'class="mini"':'id="map" class="'+(S.labels?"":"nolbl")+'"')+' viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
+ s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="748">中壓 A 線</text><text class="sec" x="1030" y="345">低壓 A 線</text><text class="sec" x="1030" y="160">低壓 B 線</text>';
  s+='<text class="sec" x="30" y="395">進氣 →</text><text class="sec" x="1590" y="645" text-anchor="end">下方出口 →</text>';
  for(const pid in PIPES){
   const e=eqById(pid);const nm=e?e.name:pid;
-  s+='<g class="eq pipe'+(S.sel===pid?" sel":"")+'" data-id="'+pid+'"><title>'+esc(nm)+'</title>';
+  s+='<g class="eq pipe'+(S.sel===pid?" sel":"")+'" data-id="'+pid+'"><title>'+esc(pid+" "+nm)+'</title>';
   PIPES[pid].forEach(d=>s+='<path class="po" d="'+d+'"/>');PIPES[pid].forEach(d=>s+='<path class="pi" d="'+d+'"/>');
   PIPES[pid].forEach(d=>s+='<path d="'+d+'" stroke="transparent" stroke-width="30" fill="none"/>');
   s+='</g>';
  }
  for(const id in LAYOUT){
   const L=LAYOUT[id],e=eqById(id);if(!e)continue;
-  const p=lblPos(L.t,L),oc=openCnt(id);
-  s+='<g class="eq'+(S.sel===id?" sel":"")+'" data-id="'+id+'"><title>'+esc(e.name)+'</title>';
+  const p=lblPos(L.t,L),oc=openCnt(id),up=L.t==="gauge";
+  s+='<g class="eq'+(S.sel===id?" sel":"")+'" data-id="'+id+'"><title>'+esc(id+" "+e.name)+'</title>';
   s+='<g transform="translate('+L.x+','+L.y+')'+(L.r?' rotate('+L.r+')':'')+'"><rect x="-32" y="-60" width="64" height="94" fill="transparent"/><circle class="halo" r="38"/>'+sym(L.t)+'</g>';
   s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(e.short||e.name)+'</text>';
+  s+='<text class="lid" x="'+p.x+'" y="'+(up?p.y-24:p.y+22)+'" text-anchor="'+p.a+'">'+esc(id)+'</text>';
   if(oc)s+='<circle cx="'+(L.x+24)+'" cy="'+(L.y-34)+'" r="12" fill="#c0392b"/><text x="'+(L.x+24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">'+oc+'</text>';
   s+='</g>';
  }
  READOUTS.forEach(r=>{
   const e=eqById(r.id);if(!e)return;
   const w=Math.max(120,r.l.replace(/ /g,"").length*22+30);
-  s+='<g class="eq ro'+(S.sel===r.id?" sel":"")+'" data-id="'+r.id+'"><title>'+esc(e.name)+'</title><rect x="'+r.x+'" y="'+r.y+'" width="'+w+'" height="44" rx="6"/><text x="'+(r.x+w/2)+'" y="'+(r.y+30)+'" text-anchor="middle">'+esc(r.l)+'</text></g>';
+  s+='<g class="eq ro'+(S.sel===r.id?" sel":"")+'" data-id="'+r.id+'"><title>'+esc(r.id+" "+e.name)+'</title><rect x="'+r.x+'" y="'+r.y+'" width="'+w+'" height="44" rx="6"/><text x="'+(r.x+w/2)+'" y="'+(r.y+30)+'" text-anchor="middle">'+esc(r.l)+'</text></g>';
  });
- s+='</svg>';
+ if(mini){const q=eqPos(S.sel);if(q)s+='<circle class="pulse" cx="'+q.x+'" cy="'+q.y+'" r="52"/><circle class="pulse p2" cx="'+q.x+'" cy="'+q.y+'" r="52"/>';}
+ return s+'</svg>';
+}
+function renderMap(){
+ const {M,LAYOUT,READOUTS,PIPES}=curMap();
+ const s=mapSvg("0 0 1640 760",false);
  $("svgbox").innerHTML=M?s:'<div style="padding:30px;font-size:17px;color:#5d6d7e">此站尚未建立示意圖，請點下方設備卡片。</div>';
  const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
  const rest=stEq().filter(e=>!onMap.has(e.id)).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -567,12 +592,27 @@ function renderMap(){
   const g=grpName[e.group]||"其他設備";
   if(g!==last){t+='<div class="tilegrp">'+g+'</div>';last=g;}
   const oc=openCnt(e.id);
-  t+='<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.name)+'</b><span>'+esc(e.tag||e.item||"")+'</span>'+(oc?'<span class="bdg">'+oc+'</span>':'')+'</div>';
+  t+='<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.name)+'</b><span><b style="display:inline;color:#2e6da4;font-size:13px">'+esc(e.id)+'</b>｜'+esc(e.tag||e.item||"")+'</span>'+(oc?'<span class="bdg">'+oc+'</span>':'')+'</div>';
  });
  $("tiles").innerHTML=t;
 }
 function selectEq(id){S.sel=id;setUrl(id);if(S.view!=="map")go("map");else{renderMap();renderDrawer();}
- if(window.innerWidth<=1250)setTimeout(()=>$("drawer").scrollIntoView({behavior:"smooth",block:"start"}),60);}
+ if(window.innerWidth<=1250)openPop();}
+function locHtml(id){
+ const e=eqById(id);if(!e)return "";
+ const {M,PIPES}=curMap();const q=eqPos(id);
+ if(M&&q){const x=Math.max(0,Math.min(1640-900,q.x-450)),y=Math.max(0,Math.min(760-500,q.y-250));
+  return '<div class="loc"><div class="muted">📍 在系統中的位置（紅圈處）</div>'+mapSvg(x+" "+y+" 900 500",true)+'<button class="btn sm ghost" style="margin-top:6px" onclick="showOnMap()">🗺 在整張示意圖上看</button></div>';}
+ if(M&&PIPES[id])return '<div class="loc"><div class="muted">📍 在系統中的位置（藍色管線）</div>'+mapSvg("0 0 1640 760",true)+'</div>';
+ const g={"監控":"三、監控系統","非供氣":"二、非供氣設備"}[e.group]||"其他設備";
+ return '<div class="loc hint">📍 此設備不在管線圖上，列在示意圖下方「'+g+'」卡片區'+(e.tag?'（監控畫面：'+esc(e.tag)+'）':'')+'。</div>';
+}
+function popHtml(){return locHtml(S.sel)+$("drawer").innerHTML;}
+function openPop(){if(!S.sel)return;$("popBody").innerHTML=popHtml();openM("mScan");}
+function showOnMap(){closePop();const q=eqPos(S.sel),box=$("svgbox"),svg=$("map");if(!q||!svg)return;
+ box.scrollIntoView({block:"start"});const sc=svg.clientWidth/1640;box.scrollLeft=Math.max(0,q.x*sc-box.clientWidth/2);}
+function closePop(){closeM("mScan");}
+function clearSel(){S.sel=null;setUrl(null);closePop();renderMap();renderDrawer();}
 document.addEventListener("click",ev=>{const g=ev.target.closest("#svgbox [data-id], #tiles [data-id]");if(g)selectEq(g.dataset.id);});
 function toggleLabels(){S.labels=$("chkLbl").checked;renderMap();}
 
@@ -591,15 +631,16 @@ function renderDrawer(){
   +'<div class="kpis"><div class="kpi"><b>'+stEq().length+'</b><span>設備數</span></div><div class="kpi"><b>'+stRec().length+'</b><span>維修紀錄</span></div><div class="kpi"><b style="color:'+(open.length?"#c0392b":"#1e8f4e")+'">'+open.length+'</b><span>未結案</span></div></div>'
   +(open.length?'<h3>🔴 未結案</h3><ul class="tl">'+open.map(r=>recItem(r,true)).join("")+'</ul>':'')
   +(recent.length?'<h3>🕘 最近紀錄</h3><ul class="tl">'+recent.map(r=>recItem(r,true)).join("")+'</ul>':'<div class="hint">目前尚無維修紀錄。進入編輯模式後，點設備即可新增。</div>');
-  return;
+  closePop();return;
  }
  const rs=recsOf(e.id),oc=rs.filter(r=>r.status!=="已完成").length,cost=rs.reduce((a,r)=>a+(Number(r.cost)||0),0);
- d.innerHTML='<div class="muted">'+esc(e.id)+'｜'+esc(e.section||"")+'</div><div class="dname">'+esc(e.name)+'</div>'
+ d.innerHTML='<div class="muted">'+esc(ST().name)+'｜'+esc(e.section||"")+'</div><div class="dname"><span class="idb">'+esc(e.id)+'</span>'+esc(e.name)+'</div>'
  +'<dl class="dmeta"><dt>規格</dt><dd>'+esc(e.spec||"—")+'</dd><dt>檢測表項目</dt><dd>'+esc((e.group||"")+"－"+(e.item||""))+'</dd><dt>監控點</dt><dd>'+esc(e.tag||"—")+'</dd>'+(e.note?'<dt>備註</dt><dd>'+esc(e.note)+'</dd>':'')+'</dl>'
  +'<div class="kpis"><div class="kpi"><b>'+rs.length+'</b><span>維修次數</span></div><div class="kpi"><b style="font-size:17px">'+esc(rs[0]?rs[0].date:"—")+'</b><span>最近維修</span></div><div class="kpi"><b style="color:'+(oc?"#c0392b":"#1e8f4e")+'">'+oc+'</b><span>未結案</span></div></div>'
- +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(S.pw?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="S.sel=null;setUrl(null);renderMap();renderDrawer()">✕</button></div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(S.pw?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="clearSel()">✕</button></div>'
  +(cost?'<div class="muted" style="margin-top:6px">累計費用 $'+money(cost)+'</div>':'')
  +(rs.length?'<ul class="tl">'+rs.map(r=>recItem(r,false)).join("")+'</ul>':'<div class="hint">這個設備還沒有維修紀錄。</div>');
+ if($("mScan").classList.contains("on"))$("popBody").innerHTML=popHtml();
 }
 
 /* ===== selects ===== */
