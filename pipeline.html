@@ -156,6 +156,7 @@ table.mgr tr.sub td{background:#f2f2f2;font-weight:700}
 .lsel{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:16px}
 .lsel select{font-size:16px;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:#fff}
 table.lent tr.sub td{background:#eef2f6;font-weight:700} table.lent tr.tot td{background:#d9e2ec;font-weight:700} table.lent tr.modr td{color:var(--mod)}
+@media (min-width:761px){table.rept td:nth-child(1),table.rept td:nth-child(2),table.rept td:nth-child(4),table.rept td:nth-child(8),table.rept td:nth-child(11){white-space:nowrap}}
 table.lent tr.gstart td{border-top:3px solid #9fb0c3}
 table.lent td.gcell{font-weight:700;vertical-align:middle;background:#f7f9fb;border-right:1px solid var(--line)}
 table.lent tr.tot td.gcell{background:#d9e2ec}
@@ -277,7 +278,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.2</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.3</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -475,6 +476,7 @@ function saveUI() { lsSet(LS_UI, JSON.stringify({ page: UI.page, y: UI.y, m1: UI
 /* ---------- 計算核心 ---------- */
 function caseByUid(u) { for (var i = 0; i < DB.cases.length; i++) if (DB.cases[i].UID === u) return DB.cases[i]; return null; }
 function pipesOf(c) { return PB[c.UID] || []; }
+function planLen(c) { return num(c["預計管線長度"]); }
 function caseLen(c) { return pipesOf(c).reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0); }
 // 類別：工程編號第 7 碼 R＝改裝（不列入董監事統計）、E/F＝汰換、其餘＝新設（P＝推廣，屬新設）
 function isIndiv(c) { return c["類別"] === "改裝" || /^\d{6}R/i.test(String(c["工程編號"] || "")); }
@@ -614,7 +616,7 @@ function renderDash() {
   var plan = 0, unplan = 0;
   s.done.forEach(function (c) { if (c["類別"] === "汰換") { if (c["汰換性質"] === "計畫性") plan += caseLen(c); else unplan += caseLen(c); } });
   var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
-  var plannedLen = active.reduce(function (t, c) { return t + caseLen(c); }, 0);
+  var plannedLen = active.reduce(function (t, c) { return t + (caseLen(c) || planLen(c)); }, 0);
   var h = '<h2 class="pg">📊 總覽<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '（以完工日計）</span></h2>';
   h += '<div class="toolbar"><input type="search" id="dq" name="srch_dq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="🔍 搜尋全部工程：工程編號／名稱／位置／管種／現況（不分狀態、不分期間）" value="' + esc(UI.dq || "") + '"></div>';
   if ((UI.dq || "").trim()) h += dashSearch(UI.dq.trim());
@@ -741,7 +743,7 @@ function sortCases(list) {
 function cellVal(c, k) {
   if (k === "類別") return clsBadge(clsOf(c)) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
   if (k === "狀態") return stBadge(c["狀態"]);
-  if (k === "長度") { var L = caseLen(c); return L ? fmt(L) : ""; }
+  if (k === "長度") { var L = caseLen(c), PL = planLen(c); return L ? fmt(L) + (PL ? '<div class="muted" style="font-size:13px">預計 ' + fmt(PL) + "</div>" : "") : (PL ? '<span class="muted" title="尚未填實際長度">預計 ' + fmt(PL) + "</span>" : ""); }
   if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
   if (k === "工程名稱") return esc(c[k]) + (c["廠商"] ? "<div>" + (c["廠商"] ? '<span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span> " : "") + "" + "</div>" : "");
@@ -827,34 +829,39 @@ function repData() {
       cs.sort(function (a, b) { return String(a["完工日"] || "9").localeCompare(String(b["完工日"] || "9")); });
       var rows = [];
       cs.forEach(function (c) {
-        var ps = pipesOf(c);
+        var ps = pipesOf(c).filter(function (p) { return p["敷設管種"] || num(p["敷設長度"]); });
         if (!ps.length) ps = [{}];
-        ps.forEach(function (p) { rows.push({ c: c, p: p }); });
+        ps.forEach(function (p, k) { rows.push({ c: c, p: p, first: k === 0, n: ps.length }); });
       });
       var sub = rows.reduce(function (t, r) { return t + num(r.p["敷設長度"]); }, 0);
-      return { g: g, rows: rows, sub: sub, cases: cs.length };
+      var pre = cs.reduce(function (t, c) { return t + planLen(c); }, 0);
+      return { g: g, rows: rows, sub: sub, pre: pre, cases: cs.length };
     });
-    return { y: y, groups: groups, total: groups[0].sub + groups[1].sub };
+    return { y: y, groups: groups, total: groups[0].sub + groups[1].sub, pre: groups[0].pre + groups[1].pre };
   });
 }
+function repDiff(c) { var a = caseLen(c), p = planLen(c); if (!a || !p) return ""; var d = Math.round((a - p) * 100) / 100; return d === 0 ? '<span class="muted">0</span>' : '<span style="color:' + (d > 0 ? "var(--bad)" : "var(--ok)") + '">' + (d > 0 ? "+" : "") + fmt(d) + "</span>"; }
+function repDiffN(c) { var a = caseLen(c), p = planLen(c); return a && p ? Math.round((a - p) * 100) / 100 : ""; }
 function renderRep() {
   var data = repData(), grand = 0;
   var h = '<h2 class="pg">🔁 汰換計畫案件彙總<span class="sp"></span><button class="btn" onclick="exportRepXlsx()">⬇ 匯出彙總表 Excel</button><button class="btn pri" onclick="openCase(null,null,\'汰換\')">＋ 新增汰換工程</button></h2>';
-  h += '<div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>年度</th><th>類別</th><th>#</th><th>工程編號</th><th>工程名稱</th><th>工程位置</th><th>管材</th><th class="num">米數</th><th>竣工時間</th></tr></thead><tbody>';
+  h += '<div class="card"><div class="tblwrap"><table class="t cardify rept"><thead><tr><th>年度</th><th>類別</th><th>#</th><th>工程編號</th><th>工程名稱</th><th>工程位置</th><th class="num">預計(M)</th><th>管材</th><th class="num">實際(M)</th><th class="num">差異(M)</th><th>竣工時間</th></tr></thead><tbody>';
+  var gpre = 0;
   data.forEach(function (Y) {
+    gpre += Y.pre;
     Y.groups.forEach(function (G) {
       G.rows.forEach(function (r, i) {
         var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
         var cls = done ? "" : ' class="red"';
-        h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="年度">' + esc(Y.y) + '年</td><td data-l="類別">' + G.g + '</td><td data-l="項次">' + (i + 1) + '</td><td data-l="工程編號"' + cls + ">" + esc(c["工程編號"]) + '</td><td data-l="工程名稱"' + cls + ">" + esc(c["工程名稱"]) + '</td><td data-l="工程位置"' + cls + ">" + esc(c["工程位置"]) + '</td><td data-l="管材"' + cls + ">" + esc(r.p["敷設管種"] || "") + '</td><td class="num' + (done ? "" : " red") + '" data-l="米數">' + (r.p["敷設長度"] !== undefined && r.p["敷設長度"] !== "" ? fmt(r.p["敷設長度"]) : "") + '</td><td data-l="竣工時間">' + (done ? roc(c["完工日"]) : '<span class="red">' + esc(c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工") + "</span>") + "</td></tr>";
+        h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="年度">' + esc(Y.y) + '年</td><td data-l="類別">' + G.g + '</td><td data-l="項次">' + (i + 1) + '</td><td data-l="工程編號"' + cls + ">" + esc(c["工程編號"]) + '</td><td data-l="工程名稱"' + cls + ">" + esc(c["工程名稱"]) + '</td><td data-l="工程位置"' + cls + ">" + esc(c["工程位置"]) + '</td><td class="num" data-l="預計(M)">' + (r.first && planLen(c) ? fmt(planLen(c)) : "") + '</td><td data-l="管材"' + cls + ">" + esc(r.p["敷設管種"] || "") + '</td><td class="num' + (done ? "" : " red") + '" data-l="實際(M)">' + (r.p["敷設長度"] !== undefined && r.p["敷設長度"] !== "" ? fmt(r.p["敷設長度"]) : "") + '</td><td class="num" data-l="差異(M)">' + (r.first ? repDiff(c) : "") + '</td><td data-l="竣工時間">' + (done ? roc(c["完工日"]) : '<span class="red">' + esc(c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工") + "</span>") + "</td></tr>";
       });
-      h += '<tr class="sub"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">' + G.g + ' 小計</td><td colspan="5" data-l="">' + G.cases + ' 案</td><td class="num" data-l="米數">' + fmt(G.sub) + '</td><td data-l=""></td></tr>';
+      h += '<tr class="sub"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">' + G.g + ' 小計</td><td colspan="4" data-l="">' + G.cases + ' 案</td><td class="num" data-l="預計(M)">' + fmt(G.pre) + '</td><td data-l=""></td><td class="num" data-l="實際(M)">' + fmt(G.sub) + '</td><td colspan="2" data-l=""></td></tr>';
     });
     grand += Y.total;
-    h += '<tr class="tot"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">合計</td><td colspan="5" data-l=""></td><td class="num" data-l="米數">' + fmt(Y.total) + '</td><td data-l=""></td></tr>';
+    h += '<tr class="tot"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">合計</td><td colspan="4" data-l=""></td><td class="num" data-l="預計(M)">' + fmt(Y.pre) + '</td><td data-l=""></td><td class="num" data-l="實際(M)">' + fmt(Y.total) + '</td><td colspan="2" data-l=""></td></tr>';
   });
-  h += '<tr class="tot"><td colspan="7" data-l="">總計</td><td class="num" data-l="米數">' + fmt(grand) + '</td><td data-l=""></td></tr></tbody></table></div>';
-  h += '<p class="muted" style="margin:10px 0 0">點任一列即可修改（工程編號、長度、完工日…）。1. 紅色＝尚未竣工（含完工待驗收）　2. 計畫性汰換需呈報能源署備查；其餘為非計畫性　3. 米數為敷設長度</p></div>';
+  h += '<tr class="tot"><td colspan="6" data-l="">總計</td><td class="num" data-l="預計(M)">' + fmt(gpre) + '</td><td data-l=""></td><td class="num" data-l="實際(M)">' + fmt(grand) + '</td><td colspan="2" data-l=""></td></tr></tbody></table></div>';
+  h += '<p class="muted" style="margin:10px 0 0">點任一列即可修改（工程編號、長度、完工日…）。1. 紅色＝尚未竣工（含完工待驗收）　2. 計畫性汰換需呈報能源署備查；其餘為非計畫性　3. 預計＝計畫值（編輯工程時填）；實際＝管線明細的敷設長度，報告只算實際　4. 差異＝實際－預計（兩個都有才算）</p></div>';
   $("#content").innerHTML = h;
 }
 
@@ -1619,6 +1626,7 @@ function drawCase() {
   if (isRep) {
     h += '<div class="f"><label>汰換性質 <span class="req">*</span></label><div class="seg2">' + ["計畫性", "非計畫性"].map(function (g) { return '<label class="' + (it["汰換性質"] === g ? "on-gen" : "") + '"><input type="radio" name="rtype" value="' + g + '"' + (it["汰換性質"] === g ? " checked" : "") + ">" + g + "</label>"; }).join("") + '</div><span class="hint">計畫性＝呈報能源署備查</span></div>';
     h += inp("計畫年度", "計畫年度（民國）", "", "text", "例：115");
+    h += inp("預計管線長度", "預計管線長度(M)", "", "number", "計畫值，例：603");
   }
   h += inp("繳費日", "繳費日", "", "text", "115/10/27 或 內部工程") + inp("戶數", "戶數", "w1", "number") + inp("預計工期", "預計工期(天)", "w1", "number") + inp("已施工天數", "已施工(天)", "w1", "number");
   h += inp("預定施工日", "預定施工日", "", "date") + inp("施工日", "施工日（報告用）", "", "date") + '<div class="f"><label>完工日（報告用）' + (it["狀態"] === "已竣工" ? ' <span class="req">*</span>' : "") + '</label><input data-f="完工日" type="date" value="' + esc(normDate(it["完工日"])) + '"></div>';
@@ -1636,7 +1644,7 @@ function drawCase() {
     h += '<div class="mbox">🔧 <b>換表系統</b>：' + (mf ? esc(mf.names) + "" + "｜需求 <b>" + mf.est + "</b> 只" + (mf.specs ? "（" + esc(mf.specs) + "）" : "") + "｜已領 <b>" + mf.act + "</b>" + (mf.ret ? "｜退回 " + mf.ret : "") + "｜尚欠 <b class=\"" + (mf.owe > 0 ? "red" : "") + "\">" + mf.owe + "</b>｜預計掛表 " + esc(mf.hang || "—") + "｜繳費 " + esc(mf.pay || "—") : '—（換表系統沒有對應的建案）') + "</div>";
   }
   // 管線
-  h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準</span></div>';
+  h += '<div class="sec-h" style="margin-top:18px"><span class="bar" style="background:' + (isRep ? "var(--rep)" : "var(--new)") + '"></span>管線明細' + (isRep ? "＝實際管線長度" : "") + '<span class="meta">一個工程可多列（例如 110mm 和 63mm 各一列）；報告長度以這裡為準' + (isRep ? "；完工後填實際施作長度，預計值填在上面「預計管線長度」" : "") + '</span></div>';
   h += '<datalist id="dlPipe">' + PIPE_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + '</datalist><datalist id="dlRm">' + RM_TYPES.map(function (t) { return '<option value="' + esc(t) + '">'; }).join("") + "</datalist>";
   h += '<table class="ptable"><thead><tr><th style="width:96px">壓力</th><th>敷設管種</th><th style="width:110px">敷設長度(M)</th>' + (isRep ? "<th>廢除管種</th><th style=\"width:110px\">廢除長度(M)</th>" : "") + '<th style="width:50px"></th></tr></thead><tbody id="pbody">';
   EDIT.pipes.forEach(function (p, i) {
@@ -1685,7 +1693,7 @@ function bindCase() {
 }
 function addPipe() { readCaseForm(); var last = EDIT.pipes[EDIT.pipes.length - 1] || {}; EDIT.pipes.push({ 壓力: last["壓力"] || "低壓", 敷設管種: "", 敷設長度: "", 廢除管種: "", 廢除長度: "" }); drawCase(); }
 function delPipe(i) { readCaseForm(); EDIT.pipes.splice(i, 1); if (!EDIT.pipes.length) EDIT.pipes.push({ 壓力: "低壓" }); drawCase(); }
-var CASE_FIELDS = ["工程編號", "類別", "狀態", "廠商", "工程名稱", "工程位置", "汰換性質", "計畫年度", "繳費日", "戶數", "預計工期", "已施工天數", "預定施工日", "施工日", "完工日", "現況", "會勘日期", "備註", "已繳許可費", "整壓器", "ESV", "掛表", "鐵箱／護網", "水泥基座", "已結算日期", "二刨", "路權繳回"];
+var CASE_FIELDS = ["工程編號", "類別", "狀態", "廠商", "工程名稱", "工程位置", "汰換性質", "計畫年度", "預計管線長度", "繳費日", "戶數", "預計工期", "已施工天數", "預定施工日", "施工日", "完工日", "現況", "會勘日期", "備註", "已繳許可費", "整壓器", "ESV", "掛表", "鐵箱／護網", "水泥基座", "已結算日期", "二刨", "路權繳回"];
 var DATE_FIELDS = ["繳費日", "會勘日期", "預定施工日", "施工日", "完工日", "已結算日期"];
 function pipeText(ps) {
   return ps.filter(function (p) { return String(p["敷設管種"] || "").trim() || num(p["敷設長度"]) || String(p["廢除管種"] || "").trim(); }).map(function (p) {
@@ -1840,26 +1848,27 @@ function exportProgXlsx() {
 }
 function exportRepXlsx() {
   withXlsx(function () {
-    var data = repData(), grand = 0;
-    var aoa = [["汰換計畫案件彙總表（區分年度／計畫性・非計畫性）　製表：" + todayRoc()], ["年度", "類別", "項次", "工程編號", "工程名稱", "工程位置", "管材", "米數", "竣工時間"]], kinds = ["title", "head"];
+    var data = repData(), grand = 0, gp = 0;
+    var aoa = [["汰換計畫案件彙總表（區分年度／計畫性・非計畫性）　製表：" + todayRoc()], ["年度", "類別", "項次", "工程編號", "工程名稱", "工程位置", "預計(M)", "管材", "實際(M)", "差異(M)", "竣工時間"]], kinds = ["title", "head"];
     data.forEach(function (Y) {
       Y.groups.forEach(function (G) {
         G.rows.forEach(function (r, i) {
           var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
-          aoa.push([Y.y + "年", G.g, i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], r.p["敷設管種"] || "", r.p["敷設長度"] === undefined || r.p["敷設長度"] === "" ? "" : num(r.p["敷設長度"]), done ? roc(c["完工日"]) : (c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工")]);
+          aoa.push([Y.y + "年", G.g, i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], r.first && planLen(c) ? planLen(c) : "", r.p["敷設管種"] || "", r.p["敷設長度"] === undefined || r.p["敷設長度"] === "" ? "" : num(r.p["敷設長度"]), r.first ? repDiffN(c) : "", done ? roc(c["完工日"]) : (c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工")]);
           kinds.push(done ? "row" : "red");
         });
-        aoa.push([Y.y + "年", G.g + " 小計", "", "", "", "", "", G.sub, ""]); kinds.push("sub");
+        aoa.push([Y.y + "年", G.g + " 小計", "", "", "", "", G.pre, "", G.sub, "", ""]); kinds.push("sub");
       });
-      grand += Y.total;
-      aoa.push([Y.y + "年", "合計", "", "", "", "", "", Y.total, ""]); kinds.push("tot");
+      grand += Y.total; gp += Y.pre;
+      aoa.push([Y.y + "年", "合計", "", "", "", "", Y.pre, "", Y.total, "", ""]); kinds.push("tot");
     });
-    aoa.push(["總計", "", "", "", "", "", "", grand, ""]); kinds.push("tot");
+    aoa.push(["總計", "", "", "", "", "", gp, "", grand, "", ""]); kinds.push("tot");
     aoa.push([""]); kinds.push("note");
     aoa.push(["1. 紅色尚未施作／尚未竣工"]); kinds.push("note");
     aoa.push(["2. 計畫性汰換是呈報能源署備查；其餘均是非計畫性"]); kinds.push("note");
+    aoa.push(["3. 預計＝計畫值；實際＝敷設長度；差異＝實際－預計"]); kinds.push("note");
     var wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, [8, 12, 6, 13, 28, 30, 14, 9, 12]), "汰換計畫彙總");
+    XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, [8, 12, 6, 13, 28, 30, 9, 14, 9, 9, 12]), "汰換計畫彙總");
     XLSX.writeFile(wb, "汰換計畫彙總_" + todayRoc().replace(/\//g, "") + ".xlsx");
   });
 }
