@@ -166,6 +166,7 @@ table.lent tr.sub td{background:#eef2f6;font-weight:700} table.lent tr.tot td{ba
 table.lent tr.gstart td{border-top:3px solid #9fb0c3}
 table.lent td.gcell{font-weight:700;vertical-align:middle;background:#f7f9fb;border-right:1px solid var(--line)}
 table.lent tr.tot td.gcell{background:#d9e2ec}
+a.lpop{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px} a.lpop:hover{text-decoration-style:solid}
 .ldot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
 details.lend{margin-top:10px} details.lend summary{cursor:pointer;color:var(--sub);font-size:15px}
 label.ck{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
@@ -284,7 +285,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.6</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver">竹建瓦斯｜v3.9</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -1256,7 +1257,16 @@ function lenData(p) {
     all.forEach(function (c) { if (clsOf(c) !== "汰換" || (pr !== "小計" && rt(c) !== pr)) return; o.n++; if (planLen(c)) { o.p += planLen(c); o.d += caseLen(c) - planLen(c); o.m++; } });
     o.d = Math.round(o.d * 100) / 100; return o;
   };
-  return { s: s, all: all, val: val, cnt: cnt, pre: pre };
+  var list = function (cls, pr) {
+    return all.filter(function (c) {
+      var k = clsOf(c);
+      if (cls === "合計") { if (k === "改裝") return false; } else if (k !== cls) return false;
+      if (pr === "計畫性" || pr === "非計畫性") return rt(c) === pr;
+      if (pr === "中壓" || pr === "低壓") return pipesOf(c).some(function (q) { return (q["壓力"] === "中壓" ? "中壓" : "低壓") === pr && num(q["敷設長度"]); });
+      return true;
+    });
+  };
+  return { s: s, all: all, val: val, cnt: cnt, pre: pre, list: list };
 }
 function lenCols(D) {
   var cols = {}; D.forEach(function (d) { Object.keys(d.s.cols).forEach(function (k) { cols[k] = d.s.cols[k]; }); });
@@ -1282,25 +1292,44 @@ function renderLen(tabs) {
     var d = D[i];
     h += '<div class="card"><div class="lenh"><b>' + (i === 0 ? "① 上月" : "② 年度累計") + "：" + lenPText(p) + "</b>" + lenSel(i) + "</div>";
     if (!d.all.length) { h += '<div class="empty">這段期間沒有已竣工的工程</div></div>'; return; }
-    h += '<div class="tblwrap"><table class="t lent"><thead><tr><th>類別</th><th>項目</th>' + C.map(function (c) { return '<th class="num">' + esc(c.lab) + "</th>"; }).join("") + '<th class="num">實際合計(M)</th><th class="num">預計(M)</th><th class="num">差異(M)</th><th class="num">件數</th></tr></thead><tbody>';
+    h += '<div class="tblwrap"><table class="t lent"><thead><tr><th>類別</th><th>項目</th>' + C.map(function (c) { return '<th class="num">' + esc(c.lab) + "</th>"; }).join("") + '<th class="num">預計(M)</th><th class="num">實際合計(M)</th><th class="num">差異(M)</th><th class="num">件數</th></tr></thead><tbody>';
     LEN_ROWS.forEach(function (r) {
       var tot = C.reduce(function (t, c) { return t + d.val(r[0], r[1], c.k); }, 0);
       var cls = r[1] === "小計" ? "sub" : r[0] === "合計" ? "tot" : r[0] === "改裝" ? "modr" : "";
       var dot = { "新設": "var(--new)", "汰換": "var(--rep)", "改裝": "var(--mod)" }[r[0]];
       var gs = lenGrpStart(r), span = LEN_ROWS.filter(function (x) { return x[0] === r[0]; }).length;
-      h += '<tr class="' + cls + (gs ? " gstart" : "") + '">' + (gs ? '<td class="gcell" rowspan="' + span + '">' + (dot ? '<i class="ldot" style="background:' + dot + '"></i>' : "") + r[0] + "</td>" : "") + "<td>" + r[1] + "</td>" + C.map(function (c) { var v = d.val(r[0], r[1], c.k); return '<td class="num">' + (v ? fmt(v) : '<span class="muted">0</span>') + "</td>"; }).join("") + '<td class="num"><b>' + fmt(tot) + '</b></td>' + lenPreCells(d.pre(r[0], r[1])) + '<td class="num">' + d.cnt(r[0], r[1]) + "</td></tr>";
+      h += '<tr class="' + cls + (gs ? " gstart" : "") + '">' + (gs ? '<td class="gcell" rowspan="' + span + '">' + (dot ? '<i class="ldot" style="background:' + dot + '"></i>' : "") + r[0] + "</td>" : "") + "<td>" + r[1] + "</td>" + C.map(function (c) { var v = d.val(r[0], r[1], c.k); return '<td class="num">' + (v ? fmt(v) : '<span class="muted">0</span>') + "</td>"; }).join("") + (function () { var pc = lenPreCells(d.pre(r[0], r[1]), "lenPop(" + i + ",'" + r[0] + "','" + r[1] + "')"); return pc.pre + '<td class="num"><b>' + fmt(tot) + "</b></td>" + pc.diff; })() + '<td class="num">' + (d.cnt(r[0], r[1]) ? '<a class="lpop" onclick="lenPop(' + i + ",'" + r[0] + "','" + r[1] + '\')" title="點我看是哪幾件">' + d.cnt(r[0], r[1]) + "</a>" : "0") + "</td></tr>";
     });
     h += "</tbody></table></div>";
     h += '<details class="lend"><summary>看完工明細（' + d.all.length + " 件）</summary>" + lenDetail(d.all) + "</details></div>";
   });
   $("#content").innerHTML = h;
 }
-function lenPreCells(o) {
+function lenPreCells(o, go) {
   var dash = '<td class="num"><span class="muted">－</span></td>';
-  if (o === null || !o.n) return dash + dash;
-  if (!o.m) return '<td class="num"><span class="muted" title="這些完工案件都還沒填預計長度">未填</span></td>' + dash;
-  var d = o.d, part = o.m < o.n ? '<div class="muted" style="font-size:12.5px">' + o.m + "/" + o.n + " 件有填</div>" : "";
-  return '<td class="num">' + fmt(o.p) + part + '</td><td class="num"><span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "inherit") + '">' + (d > 0 ? "+" : "") + fmt(d) + "</span></td>";
+  if (o === null || !o.n) return { pre: dash, diff: dash };
+  var a = function (t) { return '<a class="lpop" onclick="' + go + '" title="點我看是哪幾件">' + t + "</a>"; };
+  if (!o.m) return { pre: '<td class="num">' + a('<span class="red">未填</span>') + "</td>", diff: dash };
+  var d = o.d, part = o.m < o.n ? '<div style="font-size:12.5px">' + a('<span class="red">' + o.n + " 件中 " + (o.n - o.m) + " 件未填 ›</span>") + "</div>" : "";
+  return { pre: '<td class="num">' + a(fmt(o.p)) + part + "</td>", diff: '<td class="num">' + a('<span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "inherit") + '">' + (d > 0 ? "+" : "") + fmt(d) + "</span>") + '<div style="font-size:12.5px">' + a('<span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "var(--sub)") + '">' + (d > 0 ? "比預計多 " + fmt(d) + " M ›" : d < 0 ? "比預計少 " + fmt(-d) + " M ›" : "與預計相同 ›") + "</span>") + "</div></td>" };
+}
+// 點預計／差異／件數 → 跳出這一列是哪些案件
+function lenPop(i, cls, pr) {
+  var P = lenP(), d = lenData(P[i]), list = sortDone(d.list(cls, pr)), isRep = cls === "汰換";
+  var tA = 0, tP = 0, tD = 0;
+  var h = '<div class="mh">📋 ' + esc(lenPText(P[i]) + "｜" + cls + "・" + pr) + "（" + list.length + ' 件）<span style="flex:1"></span><button class="btn sm" onclick="closeModal2()">✕</button></div><div class="mb">';
+  if (isRep) h += '<p class="muted" style="margin:0 0 8px">差異＝實際－預計；<span class="red">未填</span>的不算進預計和差異。點「✏️ 補預計」可直接補上。</p>';
+  h += '<div class="tblwrap"><table class="t cardify"><thead><tr><th>工程編號</th><th>工程名稱</th>' + (isRep ? "<th>性質</th>" : "<th>類別</th>") + '<th class="num">實際(M)</th>' + (isRep ? '<th class="num">預計(M)</th><th class="num">差異(M)</th>' : "") + "<th>完工日</th><th></th></tr></thead><tbody>";
+  list.forEach(function (c) {
+    var A = caseLen(c), PL = planLen(c), D = A && PL ? Math.round((A - PL) * 100) / 100 : null;
+    tA += A; if (PL) { tP += PL; tD += D || 0; }
+    h += '<tr><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="' + (isRep ? "性質" : "類別") + '">' + (isRep ? esc(c["汰換性質"] || "非計畫性") : clsBadge(clsOf(c))) + '</td><td class="num" data-l="實際(M)">' + (A ? fmt(A) : '<span class="red">未填</span>') + "</td>" +
+      (isRep ? '<td class="num" data-l="預計(M)">' + (PL ? fmt(PL) : '<span class="red">未填</span>') + '</td><td class="num" data-l="差異(M)">' + (D === null ? "" : '<span style="color:' + (D > 0 ? "var(--bad)" : D < 0 ? "var(--ok)" : "inherit") + '">' + (D > 0 ? "+" : "") + fmt(D) + "</span>") + "</td>" : "") +
+      '<td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="closeModal2();openCase(\'' + c.UID + '\')">' + (isRep && !PL ? "✏️ 補預計" : "✏️ 編輯") + "</button></td></tr>";
+  });
+  h += '<tr class="tot"><td colspan="3" data-l="">合計</td><td class="num" data-l="實際(M)">' + fmt(tA) + "</td>" + (isRep ? '<td class="num" data-l="預計(M)">' + fmt(tP) + '</td><td class="num" data-l="差異(M)">' + (tP ? (tD > 0 ? "+" : "") + fmt(Math.round(tD * 100) / 100) : "") + "</td>" : "") + '<td colspan="2" data-l=""></td></tr>';
+  h += "</tbody></table></div></div>";
+  modal2(h, true);
 }
 function lenDetail(list) {
   return '<div class="tblwrap"><table class="t cardify"><thead><tr><th>類別</th><th>工程編號</th><th>工程名稱</th><th>管線</th><th class="num">實際(M)</th><th class="num">預計(M)</th><th>完工日</th></tr></thead><tbody>' + sortDone(list).map(function (c) {
@@ -1315,18 +1344,18 @@ function exportLenXlsx() {
       var d = D[i];
       aoa.push([""]); kinds.push("note");
       aoa.push([(i === 0 ? "① 上月：" : "② 年度累計：") + lenPText(p) + "（已竣工、依完工日）"]); kinds.push(i === 0 ? "secN" : "secR");
-      aoa.push(["類別", "項目"].concat(C.map(function (c) { return c.lab; })).concat(["實際合計(M)", "預計(M)", "差異(M)", "件數"])); kinds.push("head");
+      aoa.push(["類別", "項目"].concat(C.map(function (c) { return c.lab; })).concat(["預計(M)", "實際合計(M)", "差異(M)", "件數"])); kinds.push("head");
       LEN_ROWS.forEach(function (r) {
         if (lenGrpStart(r)) gStarts.push({ r: aoa.length, n: LEN_ROWS.filter(function (x) { return x[0] === r[0]; }).length });
         var vals = C.map(function (c) { return d.val(r[0], r[1], c.k); });
         var tt = vals.reduce(function (t, v) { return t + v; }, 0), pv = d.pre(r[0], r[1]);
-        aoa.push([r[0], r[1]].concat(vals).concat([tt, pv === null || !pv.n ? "－" : (pv.m ? pv.p : "未填"), pv && pv.m ? pv.d : "", d.cnt(r[0], r[1])]));
+        aoa.push([r[0], r[1]].concat(vals).concat([pv === null || !pv.n ? "－" : (pv.m ? pv.p : "未填"), tt, pv && pv.m ? pv.d : "", d.cnt(r[0], r[1])]));
         kinds.push(r[1] === "小計" ? "sub" : r[0] === "合計" ? "tot" : r[0] === "改裝" ? "red" : "row");
       });
     });
     aoa.push([""]); kinds.push("note");
     aoa.push(["※ 新設分中壓／低壓；汰換分計畫性（呈報能源署備查）／非計畫性，並列預計長度（編輯工程時填）與差異＝實際－預計（只算有填預計的案件）；改裝＝工程編號第 7 碼 R，不列入合計；P＝推廣，歸新設。"]); kinds.push("note");
-    var ws = styled(aoa, kinds, [8, 12].concat(C.map(function () { return 14; })).concat([12, 10, 10, 7]));
+    var ws = styled(aoa, kinds, [8, 12].concat(C.map(function () { return 14; })).concat([10, 12, 10, 7]));
     var ncol = 6 + C.length; ws["!merges"] = aoa.map(function (r, i) { return kinds[i] === "title" || kinds[i] === "secN" || kinds[i] === "secR" || kinds[i] === "note" ? { s: { r: i, c: 0 }, e: { r: i, c: ncol - 1 } } : null; }).filter(Boolean);
     // 分組隔開：同類別合併儲存格＋組與組之間粗線
     var med = { style: "medium", color: { rgb: "1D4E89" } };
@@ -1616,7 +1645,7 @@ function modal(html, small) {
   $("#mask").classList.add("show");
 }
 function closeModal() { $("#mask").classList.remove("show"); $("#modal").innerHTML = ""; }
-function modal2(html) { $("#modal2").innerHTML = html; $("#mask2").classList.add("show"); }
+function modal2(html, wide) { $("#modal2").classList.toggle("small", !wide); $("#modal2").innerHTML = html; $("#mask2").classList.add("show"); }
 function closeModal2() { $("#mask2").classList.remove("show"); $("#modal2").innerHTML = ""; }
 function confirmBox(msg, okText, cb) {
   modal2('<div class="mh">確認</div><div class="mb">' + msg + '</div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="cfOk">' + (okText || "確定") + "</button></div>");
