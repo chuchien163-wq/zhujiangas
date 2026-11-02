@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>整壓站設備維修履歷｜竹建瓦斯</title>
+<style>
+:root{--bg:#eef2f6;--panel:#fff;--pri:#1f4e79;--pri2:#2e6da4;--grn:#1e8f4e;--red:#c0392b;--org:#d68910;--line:#d5dde5;--txt:#1d2833;--sub:#5d6d7e}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;font-size:17px;color:var(--txt);background:var(--bg)}
+button,input,select,textarea{font:inherit}
+.app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:center;gap:14px;padding:10px 18px;background:var(--pri);color:#fff;flex-wrap:wrap}
+.logo{width:40px;height:40px}
+header h1{font-size:22px;margin:0;letter-spacing:2px}
+.chip{background:rgba(255,255,255,.14);border-radius:20px;padding:4px 12px;font-size:15px}
+.hspace{flex:1}
+.conn{font-size:14px;padding:4px 10px;border-radius:14px;background:#2c3e50}
+.conn.ok{background:var(--grn)}.conn.demo{background:var(--org)}.conn.err{background:var(--red)}
+.btn{border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:var(--pri2);color:#fff;font-size:16px}
+.btn:hover{filter:brightness(1.1)}
+.btn.ghost{background:#fff;color:var(--pri);border:1px solid var(--line)}
+.btn.red{background:var(--red)}.btn.grn{background:var(--grn)}
+.btn.sm{padding:4px 10px;font-size:14px}
+.btn.lock{background:#fff;color:var(--pri)}
+.btn.lock.on{background:#f9e79f;color:#7d6608}
+.main{flex:1;display:flex;min-height:0}
+nav{width:220px;flex-shrink:0;padding:14px;display:flex;flex-direction:column;gap:10px;background:#e3e9ef;border-right:1px solid var(--line);overflow:auto}
+.navc{background:#fff;border:2px solid transparent;border-radius:12px;padding:14px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.navc b{display:block;font-size:18px}
+.navc span{font-size:14px;color:var(--sub)}
+.navc.on{border-color:var(--pri2);background:#eaf2fb}
+.navinfo{margin-top:auto;font-size:13px;color:var(--sub);line-height:1.6}
+.content{flex:1;min-width:0;overflow:auto;padding:16px}
+.view{display:none}.view.on{display:block}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:14px}
+/* map */
+.mapwrap{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:14px;align-items:start}
+.maptools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.maptools label{font-size:15px;cursor:pointer}
+.legend{font-size:14px;color:var(--sub);display:flex;gap:14px;flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.svgbox{overflow-x:auto;background:linear-gradient(135deg,#dfeaf3,#f4f8fb);border-radius:10px;border:1px solid var(--line)}
+svg#map{display:block;width:100%;min-width:900px;height:auto}
+.eq{cursor:pointer}
+.eq .halo{fill:none;stroke:#1e90ff;stroke-width:4;stroke-dasharray:6 4;opacity:0}
+.eq:hover .halo{opacity:.5}
+.eq.sel .halo{opacity:1}
+.eq .lbl{font-size:22px;fill:#1d2833;paint-order:stroke;stroke:#fff;stroke-width:4px;font-weight:600}
+.eq.sel .lbl{fill:#0b5ed7}
+.nolbl .eq .lbl{display:none}
+.nolbl .eq.sel .lbl{display:inline}
+.pipe .po{stroke:#6c7a88;stroke-width:18;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pipe .pi{stroke:#dfe6ec;stroke-width:8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pipe:hover .po{stroke:#4f8fc9}
+.pipe.sel .po{stroke:#1e90ff}
+.ro rect{fill:#e8f6fb;stroke:#1f4e79;stroke-width:2}
+.ro text{font-size:22px;fill:#1f4e79;font-weight:700}
+.ro:hover rect{fill:#cfeaf7}
+.ro.sel rect{fill:#fff3bf;stroke:#0b5ed7;stroke-width:3}
+.sec{font-size:21px;font-weight:700;fill:#1f4e79}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:12px}
+.tilegrp{grid-column:1/-1;font-weight:700;color:var(--pri);margin-top:6px}
+.tile{background:#fff;border:2px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;position:relative}
+.tile b{display:block;font-size:16px}
+.tile span{font-size:13px;color:var(--sub)}
+.tile:hover{border-color:#8fb8de}
+.tile.sel{border-color:#0b5ed7;background:#fff8dc}
+.tile .bdg{position:absolute;top:-8px;right:-8px}
+.bdg{background:var(--red);color:#fff;border-radius:12px;font-size:13px;padding:1px 8px;font-weight:700}
+.drawer{position:sticky;top:0}
+.dname{font-size:24px;font-weight:800;color:var(--pri);margin:2px 0 6px}
+.dmeta{display:grid;grid-template-columns:96px 1fr;gap:4px 8px;font-size:15px;margin-bottom:10px}
+.dmeta dt{color:var(--sub)}.dmeta dd{margin:0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.kpi{background:#f3f7fb;border-radius:8px;padding:8px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri)}
+.kpi span{font-size:13px;color:var(--sub)}
+.tl{list-style:none;padding:0;margin:8px 0 0;max-height:52vh;overflow:auto}
+.tl li{border-left:4px solid var(--pri2);background:#f8fafc;border-radius:6px;padding:8px 10px;margin-bottom:8px;font-size:15px}
+.tl li.open{border-left-color:var(--red);background:#fdf2f0}
+.tl .h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+.tag{display:inline-block;font-size:13px;border-radius:10px;padding:1px 8px;background:#e5ecf3;color:#34495e}
+.tag.s-done{background:#d5f5e3;color:#196f3d}.tag.s-doing{background:#fdebd0;color:#9c640c}.tag.s-todo{background:#fadbd8;color:#922b21}
+.muted{color:var(--sub);font-size:14px}
+.hint{background:#fffbe6;border:1px solid #f4e2a1;border-radius:8px;padding:8px 10px;font-size:14px;color:#7d6608;margin-top:10px}
+/* tables */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.filters input,.filters select{padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:15px;background:#fff}
+.filters input[type=search]{min-width:220px}
+table.tb{width:100%;border-collapse:collapse;font-size:15px;background:#fff}
+.tb th{background:#1f4e79;color:#fff;padding:9px 8px;text-align:left;position:sticky;top:0;cursor:pointer;white-space:nowrap;z-index:1}
+.tb td{padding:8px;border-bottom:1px solid #e5eaef;vertical-align:top}
+.tb tr:hover td{background:#f4f9ff}
+.tb tr.clk{cursor:pointer}
+.sumbar{font-size:15px;margin:6px 0 10px;color:var(--sub)}
+.sumbar b{color:var(--txt)}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.stat b{display:block;font-size:30px;color:var(--pri)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bar{display:flex;align-items:center;gap:8px;font-size:15px;margin:5px 0}
+.bar .n{width:150px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .b{height:16px;background:var(--pri2);border-radius:4px;min-width:2px}
+h2{margin:0 0 12px;font-size:21px;color:var(--pri)}
+h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
+/* modal */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
+.mask.on{display:flex}
+.modal{background:#fff;border-radius:14px;width:min(760px,100%);max-height:92vh;overflow:auto;padding:18px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.fgrid label{display:flex;flex-direction:column;font-size:15px;color:var(--sub);gap:4px}
+.fgrid .full{grid-column:1/-1}
+.fgrid input,.fgrid select,.fgrid textarea{padding:8px 10px;border:1px solid #c4ced8;border-radius:8px;font-size:16px;color:var(--txt)}
+.fgrid textarea{min-height:70px;resize:vertical}
+.mfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.req{color:var(--red)}
+.loading{position:fixed;inset:0;background:rgba(255,255,255,.7);display:none;align-items:center;justify-content:center;z-index:80;flex-direction:column;gap:10px;font-size:17px}
+.loading.on{display:flex}
+.spin{width:46px;height:46px;border:5px solid #c9d6e3;border-top-color:var(--pri2);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:10px 18px;border-radius:10px;z-index:90;display:none;font-size:16px;max-width:90vw}
+.toast.on{display:block}.toast.err{background:var(--red)}
+.banner{background:#fdebd0;color:#7e5109;padding:8px 18px;font-size:15px;display:none}
+.banner.on{display:block}
+@media(max-width:1250px){.mapwrap{grid-template-columns:minmax(0,1fr)}.drawer{position:static}}
+@media(max-width:900px){
+ .main{flex-direction:column}
+ nav{width:auto;flex-direction:row;overflow-x:auto;padding:8px;border-right:0;border-bottom:1px solid var(--line)}
+ .navc{padding:8px 12px;white-space:nowrap}.navc span,.navinfo{display:none}
+ .content{padding:10px}
+ header{padding:8px 10px;gap:8px}header h1{font-size:19px}.chip{font-size:13px}.logo{width:30px;height:30px}
+ .content{overflow-x:hidden}
+ .grid2,.fgrid{grid-template-columns:1fr}
+ .tb thead{display:none}
+ .tb,.tb tbody,.tb tr,.tb td{display:block;width:100%}
+ .tb tr{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;padding:6px}
+ .tb td{border:0;padding:4px 6px;display:flex;gap:8px}
+ .tb td::before{content:attr(data-l);color:var(--sub);min-width:84px;flex-shrink:0;font-size:14px}
+ .filters input[type=search]{min-width:0;width:100%}
+}
+@media print{nav,header .btn,.maptools,.filters{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <svg class="logo" viewBox="0 0 40 40"><path d="M20 2 29 11 20 20 11 11Z" fill="#e53935"/><path d="M11 11 20 20 11 29 2 20Z" fill="#2e7d32"/><path d="M29 11 38 20 29 29 20 20Z" fill="#2e7d32"/><path d="M20 20 29 29 20 38 11 29Z" fill="#2e7d32"/></svg>
+ <h1>整壓站設備維修履歷</h1>
+ <span class="chip" id="stChip"></span>
+ <span class="hspace"></span>
+ <span class="conn" id="conn">連線中…</span>
+ <button class="btn sm ghost" onclick="loadAll()">↻ 重新整理</button>
+ <button class="btn sm lock" id="lockBtn" onclick="toggleLock()">🔒 編輯模式</button>
+</header>
+<div class="banner" id="banner"></div>
+<div class="main">
+<nav>
+ <div class="navc on" data-v="map" onclick="go('map')"><b>🗺 設備示意圖</b><span>點設備看名稱與履歷</span></div>
+ <div class="navc" data-v="equip" onclick="go('equip')"><b>📋 設備清單</b><span>全部設備・可搜尋</span></div>
+ <div class="navc" data-v="rec" onclick="go('rec')"><b>🛠 維修履歷總表</b><span>篩選・排序・匯出</span></div>
+ <div class="navc" data-v="stat" onclick="go('stat')"><b>📊 統計</b><span>依檢測表項目彙整</span></div>
+ <div class="navinfo">表單對應：整壓站檢測維護表 QRW630801<br>保存期限：五年<br><span id="verInfo">v1.0</span></div>
+</nav>
+<div class="content">
+
+<section class="view on" id="v-map">
+ <div class="mapwrap">
+  <div>
+   <div class="maptools">
+    <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱</label>
+    <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
+   </div>
+   <div class="svgbox" id="svgbox"></div>
+   <div class="tiles" id="tiles"></div>
+  </div>
+  <aside class="drawer card" id="drawer"></aside>
+ </div>
+</section>
+
+<section class="view" id="v-equip">
+ <div class="card">
+  <h2>📋 設備清單</h2>
+  <div class="filters">
+   <input type="search" id="eqQ" placeholder="搜尋名稱／編號／規格…" oninput="renderEquip()">
+   <select id="eqSec" onchange="renderEquip()"></select>
+   <select id="eqGrp" onchange="renderEquip()"></select>
+   <button class="btn sm grn edit-only" onclick="openEquip()">＋ 新增設備</button>
+  </div>
+  <div class="sumbar" id="eqSum"></div>
+  <table class="tb"><thead><tr id="eqHead"></tr></thead><tbody id="eqBody"></tbody></table>
+ </div>
+</section>
+
+<section class="view" id="v-rec">
+ <div class="card">
+  <h2>🛠 維修履歷總表</h2>
+  <div class="filters">
+   <input type="search" id="rQ" placeholder="搜尋設備／狀況／處理說明／廠商…" oninput="renderRec()">
+   <select id="rEq" onchange="renderRec()"></select>
+   <select id="rType" onchange="renderRec()"></select>
+   <select id="rStatus" onchange="renderRec()"></select>
+   <input type="date" id="rFrom" onchange="renderRec()" title="起日">
+   <input type="date" id="rTo" onchange="renderRec()" title="迄日">
+   <button class="btn sm ghost" onclick="clearRecFilter()">清除篩選</button>
+   <button class="btn sm grn" onclick="exportCSV()">⬇ 匯出 Excel</button>
+   <button class="btn sm edit-only" onclick="openRec()">＋ 新增紀錄</button>
+  </div>
+  <div class="sumbar" id="rSum"></div>
+  <table class="tb"><thead><tr id="rHead"></tr></thead><tbody id="rBody"></tbody></table>
+ </div>
+</section>
+
+<section class="view" id="v-stat">
+ <div class="stats" id="kpiBox"></div>
+ <div class="grid2">
+  <div class="card"><h3>依檢測維護表項目</h3><div id="stItem"></div></div>
+  <div class="card"><h3>維修次數最多設備 Top 10</h3><div id="stTop"></div></div>
+  <div class="card"><h3>近 12 個月紀錄數</h3><div id="stMon"></div></div>
+  <div class="card"><h3>依類型</h3><div id="stType"></div></div>
+ </div>
+</section>
+
+</div>
+</div>
+</div>
+
+<div class="mask" id="mRec"><div class="modal">
+ <h2 id="mRecT">新增維修紀錄</h2>
+ <div class="fgrid">
+  <label class="full">設備 <span class="req">*</span><select id="f_eid"></select></label>
+  <label>日期 <span class="req">*</span><input type="date" id="f_date"></label>
+  <label>類型 <span class="req">*</span><select id="f_type"></select></label>
+  <label class="full">異常狀況／檢測發現<textarea id="f_issue"></textarea></label>
+  <label class="full">處理說明 <span class="req">*</span><textarea id="f_action"></textarea></label>
+  <label>更換零件<input id="f_parts"></label>
+  <label>改善日<input type="date" id="f_fixDate"></label>
+  <label>承辦人（技術員）<input id="f_staff"></label>
+  <label>廠商<input id="f_vendor"></label>
+  <label>費用（元）<input type="number" id="f_cost" min="0"></label>
+  <label>狀態 <span class="req">*</span><select id="f_status"></select></label>
+  <label class="full">備註<input id="f_note"></label>
+ </div>
+ <div class="mfoot"><button class="btn red" id="btnDelRec" onclick="delRec()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mRec')">取消</button><button class="btn" onclick="saveRec()">💾 儲存</button></div>
+</div></div>
+
+<div class="mask" id="mEq"><div class="modal">
+ <h2 id="mEqT">設備資料</h2>
+ <div class="fgrid">
+  <label>設備編號 <span class="req">*</span><input id="e_id"></label>
+  <label>排序<input type="number" id="e_order"></label>
+  <label class="full">設備名稱 <span class="req">*</span><input id="e_name"></label>
+  <label>圖上簡稱<input id="e_short"></label>
+  <label>規格<input id="e_spec"></label>
+  <label>區段<input id="e_section" list="dlSec"></label>
+  <label>表單類別<select id="e_group"></select></label>
+  <label>檢測表項目<input id="e_item" list="dlItem"></label>
+  <label>監控點（監控畫面名稱）<input id="e_tag"></label>
+  <label class="full">備註<input id="e_note"></label>
+ </div>
+ <datalist id="dlSec"></datalist><datalist id="dlItem"></datalist>
+ <div class="hint">設備編號是示意圖定位用（例如 HK-03 對應圖上的 OPSO-B），已在圖上的設備請勿改編號，只改名稱即可。</div>
+ <div class="mfoot"><button class="btn red" id="btnDelEq" onclick="delEquip()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mEq')">取消</button><button class="btn" onclick="saveEquip()">💾 儲存</button></div>
+</div></div>
+
+<div class="mask" id="mPw"><div class="modal" style="width:min(420px,100%)">
+ <h2>🔒 進入編輯模式</h2>
+ <div class="fgrid"><label class="full">編輯密碼<input type="password" id="pwIn" onkeydown="if(event.key==='Enter')doLogin()"></label></div>
+ <div class="mfoot"><button class="btn ghost" onclick="closeM('mPw')">取消</button><button class="btn" onclick="doLogin()">確定</button></div>
+</div></div>
+
+<div class="loading" id="loading"><div class="spin"></div><div id="loadMsg">讀取中…</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = "";
+const VERSION = "v1.0";
+const DEMO_PW = "1688";
+const LS_DEMO = "station_repair_demo_v1";
+const LS_CACHE = "station_repair_cache_v1";
+const STATION = {name:"海口整壓站", code:"5A-00001", addr:"仁德路103號"};
+const TYPES = ["定期檢測","異常維修","零件更換","保養","校驗","其他"];
+const STATUS = ["已完成","處理中","待處理"];
+const GROUPS = ["中壓","低壓","非供氣","監控"];
+
+const SEED_EQ = [
+ ["HK-01","中壓入口","中壓","壓力表","高壓壓力表（入口）","入口壓力表","","入口壓力"],
+ ["HK-02","中壓B線","中壓","開關閥","2\"球閥（B線入口）","球閥","2\"",""],
+ ["HK-03","中壓B線","中壓","遮斷閥","2\"超壓遮斷閥（B線）","OPSO-B","2\"","超壓關斷訊號B"],
+ ["HK-04","中壓B線","中壓","整壓器","2\"軸流閥整壓器（B線）","整壓器B","2\"",""],
+ ["HK-05","中壓B線","中壓","其他","2\"盲板","盲板","2\"",""],
+ ["HK-06","中壓A線","中壓","開關閥","2\"球閥（A線入口）","球閥","2\"",""],
+ ["HK-07","中壓A線","中壓","過濾器","過濾器","過濾器","",""],
+ ["HK-08","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第一段）","整壓器A1","2\"",""],
+ ["HK-09","中壓A線","中壓","壓力表","中壓壓力表","中壓表","","中間壓力"],
+ ["HK-10","中壓A線","中壓","遮斷閥","2\"超壓遮斷閥（A線）","OPSO-A","2\"","超壓關斷訊號A"],
+ ["HK-11","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第二段）","整壓器A2","2\"",""],
+ ["HK-12","中壓A線","中壓","計量表","AL5000 計量表","計量表","AL5000",""],
+ ["HK-13","中壓A線","中壓","開關閥","2\"球閥（計量表後）","球閥","2\"",""],
+ ["HK-14","中壓出口","中壓","壓力表","出口壓力傳送器","出口壓力","","出口壓力"],
+ ["HK-15","低壓B線","中壓","開關閥","4\"球閥（B線整壓器前）","4\"球閥","4\"",""],
+ ["HK-16","低壓B線","中壓","整壓器","4\"軸流閥整壓器","4\"整壓器","4\"",""],
+ ["HK-17","低壓B線","低壓","開關閥","4\"球閥（B線整壓器後）","4\"球閥","4\"",""],
+ ["HK-18","低壓B線","低壓","開關閥","6\"球閥（B線出口）","6\"球閥","6\"",""],
+ ["HK-19","低壓B線","低壓","壓力表","低壓壓力表（B線出口）","B出口表","mmH2O","B線-低壓出口"],
+ ["HK-20","低壓A線","中壓","開關閥","4\"球閥（A線整壓器前）","4\"球閥","4\"",""],
+ ["HK-21","低壓A線","中壓","整壓器","2\"DIVAL BP 直動型整壓器（中減低）","DIVAL","2\"",""],
+ ["HK-22","低壓A線","低壓","開關閥","4\"球閥（A線整壓器後）","4\"球閥","4\"",""],
+ ["HK-23","低壓A線","低壓","開關閥","6\"球閥（A線出口）","6\"球閥","6\"",""],
+ ["HK-24","低壓A線","低壓","壓力表","低壓壓力表（A線出口）","A出口表","mmH2O","A線-低壓出口"],
+ ["HK-25","低壓連通","低壓","開關閥","6\"球閥（A/B線連通）","6\"連通閥","6\"",""],
+ ["HK-26","下方管線","中壓","開關閥","6\"球閥（下方出口）","6\"球閥","6\"",""],
+ ["HK-31","中壓管線","中壓","管體","中壓管體","中壓管體","",""],
+ ["HK-32","低壓管線","低壓","管體","低壓管體","低壓管體","",""],
+ ["HK-41","監控系統","監控","RTU","RTU 遠端監控單元","RTU","","通訊狀態"],
+ ["HK-42","監控系統","監控","RTU","UPS 不斷電系統","UPS","","市電狀態"],
+ ["HK-43","監控系統","監控","瓦斯偵測器","瓦斯偵測器 1","瓦斯偵測1","","洩漏偵測1"],
+ ["HK-44","監控系統","監控","瓦斯偵測器","瓦斯偵測器 2","瓦斯偵測2","","洩漏偵測2"],
+ ["HK-45","監控系統","監控","地震感知器","地震感知器 1","地震感知1","","地震警報1"],
+ ["HK-46","監控系統","監控","地震感知器","地震感知器 2","地震感知2","","地震警報2"],
+ ["HK-47","監控系統","監控","火警感知器","火警（火焰）感知器","火警感知","","火焰警報"],
+ ["HK-48","監控系統","監控","其他","門禁感測器","門禁","","門禁狀態"],
+ ["HK-49","監控系統","監控","監視器","監視器","監視器","",""],
+ ["HK-50","監控系統","監控","其他","環境溫度感測器","溫度感測","","環境溫度"],
+ ["HK-51","監控系統","監控","RTU","電動驅動器","電動驅動器","",""],
+ ["HK-61","非供氣設備","非供氣","環境","站區環境","環境","",""],
+ ["HK-62","非供氣設備","非供氣","警告標示","警告標示","警告標示","",""]
+].map((r,i)=>({id:r[0],station:STATION.name,section:r[1],group:r[2],item:r[3],name:r[4],short:r[5],spec:r[6],tag:r[7],note:"",order:i+1}));
+
+const LAYOUT = {
+ "HK-01":{t:"gauge",x:95,y:420},
+ "HK-02":{t:"ball",x:270,y:200},"HK-03":{t:"opso",x:390,y:200},"HK-04":{t:"reg",x:510,y:200},"HK-05":{t:"blind",x:860,y:200},
+ "HK-06":{t:"ball",x:250,y:600},"HK-07":{t:"filter",x:340,y:600},"HK-08":{t:"reg",x:430,y:600},"HK-09":{t:"gauge",x:510,y:600},
+ "HK-10":{t:"opso",x:590,y:600},"HK-11":{t:"reg",x:680,y:600},"HK-12":{t:"meter",x:790,y:600},"HK-13":{t:"ball",x:880,y:600},
+ "HK-15":{t:"ball",x:1090,y:200},"HK-16":{t:"reg",x:1210,y:200},"HK-17":{t:"ball",x:1330,y:200},"HK-18":{t:"ball",x:1490,y:200},"HK-19":{t:"gauge",x:1550,y:200},
+ "HK-20":{t:"ball",x:1090,y:400},"HK-21":{t:"reg",x:1210,y:400},"HK-22":{t:"ball",x:1330,y:400},"HK-23":{t:"ball",x:1490,y:400},"HK-24":{t:"gauge",x:1550,y:400},
+ "HK-25":{t:"ball",x:1420,y:300,r:90},"HK-26":{t:"ball",x:1300,y:600}
+};
+const READOUTS = [
+ {id:"HK-50",l:"環境溫度",x:180,y:20},{id:"HK-01",l:"入口壓力",x:20,y:470},{id:"HK-14",l:"出口壓力",x:700,y:92},
+ {id:"HK-43",l:"洩漏偵測 1",x:580,y:330},{id:"HK-44",l:"洩漏偵測 2",x:1110,y:490},{id:"HK-09",l:"中間壓力",x:445,y:670},
+ {id:"HK-19",l:"B線低壓出口",x:1270,y:92},{id:"HK-24",l:"A線低壓出口",x:1400,y:490}
+];
+const PIPES = {
+ "HK-31":["M40 420 H170","M170 200 V600","M170 200 H1210","M930 200 V600","M1000 200 V400 H1210","M170 600 H1585"],
+ "HK-32":["M1210 200 H1585","M1210 400 H1585","M1420 200 V400"]
+};
+
+let S = {equips:[], records:[], sel:null, view:"map", pw:sessionStorage.getItem("sr_pw")||"", labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
+
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+function today(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Taipei"}).format(new Date());}
+function nowStr(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).format(new Date()).replace("T"," ");}
+function $(id){return document.getElementById(id);}
+function eqById(id){return S.equips.find(e=>e.id===id);}
+function recsOf(id){return S.records.filter(r=>r.eid===id).sort((a,b)=>(b.date||"").localeCompare(a.date||"")||(b.createdAt||"").localeCompare(a.createdAt||""));}
+function openCnt(id){return S.records.filter(r=>r.eid===id&&r.status!=="已完成").length;}
+function stCls(s){return s==="已完成"?"s-done":s==="處理中"?"s-doing":"s-todo";}
+function money(n){n=Number(n)||0;return n?n.toLocaleString("zh-TW"):"";}
+
+let toastT=null;
+function toast(msg,err){const t=$("toast");t.textContent=msg;t.className="toast on"+(err?" err":"");clearTimeout(toastT);toastT=setTimeout(()=>t.className="toast",err?6000:2600);}
+let loadWatch=null;
+function showLoading(msg){$("loadMsg").textContent=msg||"讀取中…";$("loading").classList.add("on");clearTimeout(loadWatch);loadWatch=setTimeout(()=>{hideLoading();toast("等待逾時，請檢查網路後按「重新整理」",true);},30000);}
+function hideLoading(){$("loading").classList.remove("on");clearTimeout(loadWatch);}
+function setConn(cls,txt){const c=$("conn");c.className="conn "+cls;c.textContent=txt;}
+
+async function http(method,params,body){
+ const ctl=new AbortController();const tm=setTimeout(()=>ctl.abort(),20000);
+ try{
+  let url=API_URL;
+  if(params)url+="?"+new URLSearchParams(params).toString();
+  const opt={method,signal:ctl.signal,redirect:"follow"};
+  if(body)opt.body=JSON.stringify(body);
+  const res=await fetch(url,opt);
+  const j=await res.json();
+  if(!j.ok)throw new Error(j.error||"伺服器回應失敗");
+  return j;
+ }catch(e){
+  if(e.name==="AbortError")throw new Error("連線逾時（20 秒）");
+  throw e;
+ }finally{clearTimeout(tm);}
+}
+
+function loadDemo(){
+ try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];return;}}catch(e){}
+ S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];saveDemo();
+}
+function saveDemo(){try{localStorage.setItem(LS_DEMO,JSON.stringify({equips:S.equips,records:S.records}));}catch(e){}}
+
+async function loadAll(){
+ if(S.mode==="demo"){
+  loadDemo();setConn("demo","示範模式（資料只存本機）");
+  $("banner").innerHTML="⚠ 尚未連接 Google 試算表：目前為示範模式，紀錄只存在這台電腦的瀏覽器。部署 GAS 後填入網址即正式啟用。";
+  $("banner").classList.add("on");renderAll();return;
+ }
+ showLoading("讀取雲端資料…");
+ try{
+  const j=await http("GET",{action:"list"});
+  S.equips=j.equips;S.records=j.records;
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,at:nowStr()}));}catch(e){}
+  setConn("ok","☁ 已連線・"+S.records.length+" 筆");$("banner").classList.remove("on");
+ }catch(e){
+  let c=null;try{c=JSON.parse(localStorage.getItem(LS_CACHE)||"null");}catch(x){}
+  if(c){S.equips=c.equips;S.records=c.records;$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），目前顯示 "+c.at+" 的暫存資料，無法新增修改。";}
+  else{S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），請按右上「重新整理」。";}
+  $("banner").classList.add("on");setConn("err","連線失敗");
+ }finally{hideLoading();}
+ renderAll();
+}
+
+function applyLocal(action,obj){
+ if(action==="addRecord")S.records.push(obj);
+ else if(action==="updateRecord"){const i=S.records.findIndex(r=>r.rid===obj.rid);if(i>=0)S.records[i]=obj;}
+ else if(action==="deleteRecord")S.records=S.records.filter(r=>r.rid!==obj.rid);
+ else if(action==="saveEquip"){const i=S.equips.findIndex(e=>e.id===obj.id);if(i>=0)S.equips[i]=obj;else S.equips.push(obj);}
+ else if(action==="deleteEquip")S.equips=S.equips.filter(e=>e.id!==obj.id);
+}
+async function write(action,data){
+ if(S.mode==="demo"){
+  const o=Object.assign({},data);
+  if(action==="addRecord"){o.rid="R"+today().replace(/-/g,"").slice(2)+String(Date.now()).slice(-5);o.createdAt=nowStr();o.updatedAt=o.createdAt;o.createdBy="示範";}
+  if(action==="updateRecord")o.updatedAt=nowStr();
+  applyLocal(action,o);saveDemo();renderAll();return true;
+ }
+ showLoading("寫入雲端中，請勿關閉…");
+ try{
+  const j=await http("POST",null,{action,pw:S.pw,data});
+  applyLocal(action,j.item||data);
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,at:nowStr()}));}catch(e){}
+  setConn("ok","☁ 已連線・"+S.records.length+" 筆");renderAll();return true;
+ }catch(e){
+  alert("❌ 儲存失敗："+e.message+"\n\n資料尚未寫入，請確認網路後再按一次儲存。");
+  if(/密碼/.test(e.message)){S.pw="";sessionStorage.removeItem("sr_pw");updLock();}
+  return false;
+ }finally{hideLoading();}
+}
+
+/* ===== lock ===== */
+function updLock(){const on=!!S.pw;$("lockBtn").textContent=on?"🔓 編輯中（點此登出）":"🔒 編輯模式";$("lockBtn").classList.toggle("on",on);document.querySelectorAll(".edit-only").forEach(b=>b.style.display=on?"":"none");}
+function toggleLock(){if(S.pw){S.pw="";sessionStorage.removeItem("sr_pw");updLock();renderAll();toast("已登出編輯模式");}else{$("pwIn").value="";openM("mPw");setTimeout(()=>$("pwIn").focus(),50);}}
+async function doLogin(){
+ const p=$("pwIn").value.trim();if(!p)return;
+ if(S.mode==="demo"){if(p!==DEMO_PW){alert("密碼錯誤");return;}}
+ else{showLoading("驗證中…");try{await http("GET",{action:"auth",pw:p});}catch(e){hideLoading();alert("密碼錯誤或連線失敗："+e.message);return;}hideLoading();}
+ S.pw=p;sessionStorage.setItem("sr_pw",p);closeM("mPw");updLock();renderAll();toast("已進入編輯模式");
+}
+function needEdit(){if(!S.pw){toggleLock();return false;}return true;}
+
+/* ===== nav ===== */
+function go(v){S.view=v;document.querySelectorAll(".navc").forEach(n=>n.classList.toggle("on",n.dataset.v===v));document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));renderView();document.querySelector(".content").scrollTop=0;}
+function openM(id){$(id).classList.add("on");}
+function closeM(id){$(id).classList.remove("on");}
+function renderAll(){updLock();fillSelects();renderView();}
+function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else renderStat();}
+
+/* ===== map ===== */
+function sym(t){
+ const fl='<rect x="-28" y="-14" width="7" height="28" rx="1" fill="#5d6873"/><rect x="21" y="-14" width="7" height="28" rx="1" fill="#5d6873"/>';
+ const bow='<path d="M-19,-12 L19,12 L19,-12 L-19,12 Z" fill="#cfd8e0" stroke="#3d4852" stroke-width="2"/>';
+ if(t==="ball")return fl+bow+'<circle r="5" fill="#3d4852"/><line x1="0" y1="-5" x2="0" y2="-20" stroke="#3d4852" stroke-width="3"/><rect x="-13" y="-25" width="26" height="6" rx="2" fill="#c0392b"/>';
+ if(t==="opso")return fl+'<circle r="18" fill="#27ae60" stroke="#145a32" stroke-width="3"/><text y="4" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">OPSO</text>';
+ if(t==="reg")return fl+bow+'<line x1="0" y1="0" x2="0" y2="-26" stroke="#3d4852" stroke-width="4"/><path d="M-22,-26 Q0,-50 22,-26 Z" fill="#9aa7b3" stroke="#3d4852" stroke-width="2"/>';
+ if(t==="filter")return fl+'<rect x="-20" y="-19" width="40" height="38" rx="9" fill="#8e9aa6" stroke="#3d4852" stroke-width="2"/><path d="M-12,-10 H12 M-12,0 H12 M-12,10 H12" stroke="#e5e8eb" stroke-width="2"/>';
+ if(t==="gauge")return '<line x1="0" y1="0" x2="0" y2="-30" stroke="#3d4852" stroke-width="4"/><circle cy="-44" r="15" fill="#fff" stroke="#c0392b" stroke-width="5"/><line x1="0" y1="-44" x2="7" y2="-51" stroke="#222" stroke-width="2.5"/>';
+ if(t==="meter")return '<rect x="-36" y="-50" width="72" height="80" rx="10" fill="url(#gM)" stroke="#4a5560" stroke-width="2"/><rect x="-22" y="-38" width="44" height="16" rx="3" fill="#eaf2f8" stroke="#4a5560"/><text y="12" text-anchor="middle" font-size="12" font-weight="700" fill="#2c3e50">AL5000</text>';
+ if(t==="blind")return '<rect x="-7" y="-24" width="14" height="48" rx="2" fill="#34495e"/><rect x="-24" y="-5" width="17" height="10" fill="#6c7a88"/>';
+ return "";
+}
+function lblPos(t,L){if(L.r)return{x:L.x-30,y:L.y+8,a:"end"};if(t==="gauge")return{x:L.x,y:L.y-70,a:"middle"};if(t==="meter")return{x:L.x,y:L.y+56,a:"middle"};return{x:L.x,y:L.y+48,a:"middle"};}
+function renderMap(){
+ let s='<svg id="map" viewBox="0 0 1640 730" xmlns="http://www.w3.org/2000/svg" class="'+(S.labels?"":"nolbl")+'"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
+ s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="715">中壓 A 線</text><text class="sec" x="1030" y="345">低壓 A 線</text><text class="sec" x="1030" y="160">低壓 B 線</text>';
+ s+='<text class="sec" x="30" y="395">進氣 →</text><text class="sec" x="1590" y="645" text-anchor="end">下方出口 →</text>';
+ for(const pid in PIPES){
+  const e=eqById(pid);const nm=e?e.name:pid;
+  s+='<g class="eq pipe'+(S.sel===pid?" sel":"")+'" data-id="'+pid+'"><title>'+esc(nm)+'</title>';
+  PIPES[pid].forEach(d=>s+='<path class="po" d="'+d+'"/>');PIPES[pid].forEach(d=>s+='<path class="pi" d="'+d+'"/>');
+  PIPES[pid].forEach(d=>s+='<path d="'+d+'" stroke="transparent" stroke-width="30" fill="none"/>');
+  s+='</g>';
+ }
+ for(const id in LAYOUT){
+  const L=LAYOUT[id],e=eqById(id);if(!e)continue;
+  const p=lblPos(L.t,L),oc=openCnt(id);
+  s+='<g class="eq'+(S.sel===id?" sel":"")+'" data-id="'+id+'"><title>'+esc(e.name)+'</title>';
+  s+='<g transform="translate('+L.x+','+L.y+')'+(L.r?' rotate('+L.r+')':'')+'"><rect x="-32" y="-60" width="64" height="94" fill="transparent"/><circle class="halo" r="38"/>'+sym(L.t)+'</g>';
+  s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(e.short||e.name)+'</text>';
+  if(oc)s+='<circle cx="'+(L.x+24)+'" cy="'+(L.y-34)+'" r="12" fill="#c0392b"/><text x="'+(L.x+24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">'+oc+'</text>';
+  s+='</g>';
+ }
+ READOUTS.forEach(r=>{
+  const e=eqById(r.id);if(!e)return;
+  const w=Math.max(120,r.l.replace(/ /g,"").length*22+30);
+  s+='<g class="eq ro'+(S.sel===r.id?" sel":"")+'" data-id="'+r.id+'"><title>'+esc(e.name)+'</title><rect x="'+r.x+'" y="'+r.y+'" width="'+w+'" height="44" rx="6"/><text x="'+(r.x+w/2)+'" y="'+(r.y+30)+'" text-anchor="middle">'+esc(r.l)+'</text></g>';
+ });
+ s+='</svg>';
+ $("svgbox").innerHTML=s;
+ const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
+ const rest=S.equips.filter(e=>!onMap.has(e.id)).sort((a,b)=>(a.order||0)-(b.order||0));
+ const grpName={"監控":"三、監控系統","非供氣":"二、非供氣設備"};
+ let t="",last=null;
+ rest.forEach(e=>{
+  const g=grpName[e.group]||"其他設備";
+  if(g!==last){t+='<div class="tilegrp">'+g+'</div>';last=g;}
+  const oc=openCnt(e.id);
+  t+='<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.name)+'</b><span>'+esc(e.tag||e.item||"")+'</span>'+(oc?'<span class="bdg">'+oc+'</span>':'')+'</div>';
+ });
+ $("tiles").innerHTML=t;
+}
+function selectEq(id){S.sel=id;if(S.view!=="map")go("map");else{renderMap();renderDrawer();}
+ if(window.innerWidth<=1250)setTimeout(()=>$("drawer").scrollIntoView({behavior:"smooth",block:"start"}),60);}
+document.addEventListener("click",ev=>{const g=ev.target.closest("#svgbox [data-id], #tiles [data-id]");if(g)selectEq(g.dataset.id);});
+function toggleLabels(){S.labels=$("chkLbl").checked;renderMap();}
+
+function recItem(r,showEq){
+ return '<li class="'+(r.status!=="已完成"?"open":"")+'"><div class="h"><b>'+esc(r.date)+'</b><span class="tag">'+esc(r.type)+'</span><span class="tag '+stCls(r.status)+'">'+esc(r.status)+'</span>'+(S.pw?'<span class="hspace"></span><button class="btn sm ghost" onclick="openRec(\''+r.rid+'\')">編輯</button>':'')+'</div>'
+ +(showEq?'<div><a href="javascript:void(0)" onclick="selectEq(\''+r.eid+'\')">'+esc(r.ename||r.eid)+'</a></div>':'')
+ +(r.issue?'<div>⚠ '+esc(r.issue)+'</div>':'')+(r.action?'<div>🔧 '+esc(r.action)+'</div>':'')
+ +'<div class="muted">'+[r.parts?"更換："+esc(r.parts):"",r.fixDate?"改善日 "+esc(r.fixDate):"",r.staff?"承辦 "+esc(r.staff):"",r.vendor?"廠商 "+esc(r.vendor):"",money(r.cost)?"$"+money(r.cost):""].filter(Boolean).join("｜")+'</div></li>';
+}
+function renderDrawer(){
+ const d=$("drawer");const e=S.sel?eqById(S.sel):null;
+ if(!e){
+  const open=S.records.filter(r=>r.status!=="已完成").sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  const recent=S.records.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);
+  d.innerHTML='<div class="muted">'+esc(STATION.name)+'</div><div class="dname">請點選設備</div><p style="font-size:15px;margin:4px 0 10px">點示意圖上的閥件、儀表、管線或下方監控設備，即可看到設備名稱與維修履歷。</p>'
+  +'<div class="kpis"><div class="kpi"><b>'+S.equips.length+'</b><span>設備數</span></div><div class="kpi"><b>'+S.records.length+'</b><span>維修紀錄</span></div><div class="kpi"><b style="color:'+(open.length?"#c0392b":"#1e8f4e")+'">'+open.length+'</b><span>未結案</span></div></div>'
+  +(open.length?'<h3>🔴 未結案</h3><ul class="tl">'+open.map(r=>recItem(r,true)).join("")+'</ul>':'')
+  +(recent.length?'<h3>🕘 最近紀錄</h3><ul class="tl">'+recent.map(r=>recItem(r,true)).join("")+'</ul>':'<div class="hint">目前尚無維修紀錄。進入編輯模式後，點設備即可新增。</div>');
+  return;
+ }
+ const rs=recsOf(e.id),oc=rs.filter(r=>r.status!=="已完成").length,cost=rs.reduce((a,r)=>a+(Number(r.cost)||0),0);
+ d.innerHTML='<div class="muted">'+esc(e.id)+'｜'+esc(e.section||"")+'</div><div class="dname">'+esc(e.name)+'</div>'
+ +'<dl class="dmeta"><dt>規格</dt><dd>'+esc(e.spec||"—")+'</dd><dt>檢測表項目</dt><dd>'+esc((e.group||"")+"－"+(e.item||""))+'</dd><dt>監控點</dt><dd>'+esc(e.tag||"—")+'</dd>'+(e.note?'<dt>備註</dt><dd>'+esc(e.note)+'</dd>':'')+'</dl>'
+ +'<div class="kpis"><div class="kpi"><b>'+rs.length+'</b><span>維修次數</span></div><div class="kpi"><b style="font-size:17px">'+esc(rs[0]?rs[0].date:"—")+'</b><span>最近維修</span></div><div class="kpi"><b style="color:'+(oc?"#c0392b":"#1e8f4e")+'">'+oc+'</b><span>未結案</span></div></div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(S.pw?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="S.sel=null;renderMap();renderDrawer()">✕</button></div>'
+ +(cost?'<div class="muted" style="margin-top:6px">累計費用 $'+money(cost)+'</div>':'')
+ +(rs.length?'<ul class="tl">'+rs.map(r=>recItem(r,false)).join("")+'</ul>':'<div class="hint">這個設備還沒有維修紀錄。</div>');
+}
+
+/* ===== selects ===== */
+function opts(arr,first){return (first?'<option value="">'+first+'</option>':'')+arr.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join("");}
+function keepSel(id,html){const el=$(id),v=el.value;el.innerHTML=html;if([...el.options].some(o=>o.value===v))el.value=v;}
+function fillSelects(){
+ const eqs=S.equips.slice().sort((a,b)=>(a.order||0)-(b.order||0));
+ const secs=[...new Set(eqs.map(e=>e.section).filter(Boolean))];
+ const items=[...new Set(eqs.map(e=>e.item).filter(Boolean))];
+ keepSel("eqSec",opts(secs,"全部區段"));keepSel("eqGrp",opts(GROUPS,"全部類別"));
+ keepSel("rEq",'<option value="">全部設備</option>'+eqs.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.id+" "+e.name)+'</option>').join(""));
+ keepSel("rType",opts(TYPES,"全部類型"));keepSel("rStatus",opts(STATUS,"全部狀態"));
+ $("f_eid").innerHTML=eqs.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.id+"　"+e.name)+'</option>').join("");
+ $("f_type").innerHTML=opts(TYPES);$("f_status").innerHTML=opts(STATUS);$("e_group").innerHTML=opts(GROUPS);
+ $("dlSec").innerHTML=secs.map(v=>'<option value="'+esc(v)+'">').join("");$("dlItem").innerHTML=items.map(v=>'<option value="'+esc(v)+'">').join("");
+}
+
+/* ===== equipment list ===== */
+const EQ_COLS=[["id","編號"],["name","設備名稱"],["section","區段"],["item","檢測表項目"],["spec","規格"],["tag","監控點"],["cnt","維修次數"],["last","最近維修"],["open","未結案"]];
+function renderEquip(){
+ const q=$("eqQ").value.trim().toLowerCase(),sec=$("eqSec").value,grp=$("eqGrp").value;
+ let rows=S.equips.map(e=>{const rs=recsOf(e.id);return Object.assign({},e,{cnt:rs.length,last:rs[0]?rs[0].date:"",open:rs.filter(r=>r.status!=="已完成").length});})
+  .filter(e=>(!sec||e.section===sec)&&(!grp||e.group===grp)&&(!q||[e.id,e.name,e.spec,e.tag,e.item,e.section].join(" ").toLowerCase().includes(q)));
+ const k=S.eqSort.k,d=S.eqSort.d;rows.sort((a,b)=>{const x=a[k],y=b[k];return (typeof x==="number"&&typeof y==="number"?x-y:String(x||"").localeCompare(String(y||""),"zh-Hant"))*d;});
+ $("eqHead").innerHTML=EQ_COLS.map(c=>'<th onclick="sortEq(\''+c[0]+'\')">'+c[1]+(k===c[0]?(d>0?" ▲":" ▼"):"")+'</th>').join("")+(S.pw?'<th></th>':'');
+ $("eqBody").innerHTML=rows.map(e=>'<tr class="clk" onclick="selectEq(\''+e.id+'\')">'+EQ_COLS.map(c=>{let v=e[c[0]];if(c[0]==="open")v=v?'<span class="bdg">'+v+'</span>':"";else v=esc(v===0?"0":v);if(c[0]==="item")v=esc(e.group+"－"+e.item);return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(S.pw?'<td><button class="btn sm ghost" onclick="event.stopPropagation();openEquip(\''+e.id+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="10">沒有符合的設備</td></tr>';
+ $("eqSum").innerHTML='共 <b>'+rows.length+'</b> 項設備（點任一列可在示意圖上定位）';
+}
+function sortEq(k){S.eqSort=S.eqSort.k===k?{k,d:-S.eqSort.d}:{k,d:1};renderEquip();}
+
+/* ===== records ===== */
+const R_COLS=[["date","日期"],["ename","設備"],["type","類型"],["issue","異常狀況"],["action","處理說明"],["parts","更換零件"],["fixDate","改善日"],["staff","承辦人"],["vendor","廠商"],["cost","費用"],["status","狀態"]];
+function filteredRecs(){
+ const q=$("rQ").value.trim().toLowerCase(),eq=$("rEq").value,ty=$("rType").value,st=$("rStatus").value,fr=$("rFrom").value,to=$("rTo").value;
+ let rows=S.records.filter(r=>(!eq||r.eid===eq)&&(!ty||r.type===ty)&&(!st||r.status===st)&&(!fr||r.date>=fr)&&(!to||r.date<=to)&&(!q||[r.ename,r.eid,r.issue,r.action,r.parts,r.vendor,r.staff,r.note].join(" ").toLowerCase().includes(q)));
+ const k=S.recSort.k,d=S.recSort.d;
+ rows.sort((a,b)=>{const x=a[k],y=b[k];return (k==="cost"?(Number(x)||0)-(Number(y)||0):String(x||"").localeCompare(String(y||""),"zh-Hant"))*d;});
+ return rows;
+}
+function renderRec(){
+ const rows=filteredRecs(),k=S.recSort.k,d=S.recSort.d;
+ $("rHead").innerHTML=R_COLS.map(c=>'<th onclick="sortRec(\''+c[0]+'\')">'+c[1]+(k===c[0]?(d>0?" ▲":" ▼"):"")+'</th>').join("")+(S.pw?'<th></th>':'');
+ $("rBody").innerHTML=rows.map(r=>'<tr>'+R_COLS.map(c=>{let v=esc(r[c[0]]);if(c[0]==="ename")v='<a href="javascript:void(0)" onclick="selectEq(\''+r.eid+'\')">'+esc(r.ename||r.eid)+'</a>';if(c[0]==="status")v='<span class="tag '+stCls(r.status)+'">'+esc(r.status)+'</span>';if(c[0]==="cost")v=money(r.cost);return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(S.pw?'<td><button class="btn sm ghost" onclick="openRec(\''+r.rid+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="12">沒有符合的紀錄</td></tr>';
+ const cost=rows.reduce((a,r)=>a+(Number(r.cost)||0),0),open=rows.filter(r=>r.status!=="已完成").length;
+ $("rSum").innerHTML='符合 <b>'+rows.length+'</b> 筆｜未結案 <b style="color:#c0392b">'+open+'</b> 筆｜費用合計 <b>$'+(money(cost)||0)+'</b>';
+}
+function sortRec(k){S.recSort=S.recSort.k===k?{k,d:-S.recSort.d}:{k,d:k==="date"?-1:1};renderRec();}
+function clearRecFilter(){["rQ","rEq","rType","rStatus","rFrom","rTo"].forEach(i=>$(i).value="");renderRec();}
+function exportCSV(){
+ const rows=filteredRecs();
+ const head=["紀錄編號","站名","設備編號","設備名稱","檢測表項目","日期","類型","異常狀況","處理說明","更換零件","改善日","承辦人","廠商","費用","狀態","備註"];
+ const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+ const lines=[head.map(q).join(",")].concat(rows.map(r=>{const e=eqById(r.eid)||{};return [r.rid,STATION.name,"=\""+r.eid+"\"",r.ename,(e.group||"")+"－"+(e.item||""),r.date,r.type,r.issue,r.action,r.parts,r.fixDate,r.staff,r.vendor,r.cost,r.status,r.note].map((v,i)=>i===2?v:q(v)).join(",");}));
+ const blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=STATION.name+"_維修履歷_"+today()+".csv";a.click();
+}
+
+/* ===== record form ===== */
+function openRec(rid,eid){
+ if(!needEdit())return;
+ const r=rid?S.records.find(x=>x.rid===rid):null;S.editRid=r?r.rid:null;
+ $("mRecT").textContent=r?"編輯維修紀錄　"+r.rid:"新增維修紀錄";$("btnDelRec").style.display=r?"":"none";
+ const v=r||{eid:eid||S.sel||(S.equips[0]||{}).id,date:today(),type:"異常維修",status:"已完成"};
+ ["eid","date","type","issue","action","parts","fixDate","staff","vendor","cost","status","note"].forEach(k=>$("f_"+k).value=v[k]==null?"":v[k]);
+ openM("mRec");
+}
+async function saveRec(){
+ const o={};["eid","date","type","issue","action","parts","fixDate","staff","vendor","cost","status","note"].forEach(k=>o[k]=$("f_"+k).value.trim());
+ if(!o.eid||!o.date||!o.type||!o.action||!o.status){alert("請填寫：設備、日期、類型、處理說明、狀態");return;}
+ if(o.status==="已完成"&&!o.fixDate)o.fixDate=o.date;
+ const e=eqById(o.eid);o.ename=e?e.name:"";o.station=STATION.name;
+ let ok;
+ if(S.editRid){const old=S.records.find(x=>x.rid===S.editRid);ok=await write("updateRecord",Object.assign({},old,o));}
+ else ok=await write("addRecord",o);
+ if(ok){closeM("mRec");toast("✅ 已儲存");}
+}
+async function delRec(){if(!S.editRid||!confirm("確定刪除這筆維修紀錄？刪除後無法復原。"))return;if(await write("deleteRecord",{rid:S.editRid})){closeM("mRec");toast("已刪除");}}
+
+/* ===== equipment form ===== */
+function openEquip(id){
+ if(!needEdit())return;
+ const e=id?eqById(id):null;S.editEid=e?e.id:null;
+ $("mEqT").textContent=e?"編輯設備　"+e.id:"新增設備";$("btnDelEq").style.display=e?"":"none";$("e_id").disabled=!!e;
+ const nxt="HK-"+String(Math.max(0,...S.equips.map(x=>parseInt(String(x.id).replace(/\D/g,""))||0))+1).padStart(2,"0");
+ const v=e||{id:nxt,order:S.equips.length+1,group:"中壓"};
+ ["id","order","name","short","spec","section","group","item","tag","note"].forEach(k=>$("e_"+k).value=v[k]==null?"":v[k]);
+ openM("mEq");
+}
+async function saveEquip(){
+ const o={station:STATION.name};["id","order","name","short","spec","section","group","item","tag","note"].forEach(k=>o[k]=$("e_"+k).value.trim());
+ o.order=Number(o.order)||0;
+ if(!o.id||!o.name){alert("請填寫設備編號與設備名稱");return;}
+ if(!S.editEid&&eqById(o.id)){alert("設備編號 "+o.id+" 已存在");return;}
+ if(await write("saveEquip",o)){closeM("mEq");toast("✅ 設備已儲存");}
+}
+async function delEquip(){
+ const id=S.editEid;if(!id)return;const n=recsOf(id).length;
+ if(n){alert("此設備已有 "+n+" 筆維修紀錄，不能刪除（履歷需保存五年）。如設備已拆除，請在名稱或備註註記「已拆除」。");return;}
+ if(!confirm("確定刪除設備 "+id+"？"))return;
+ if(await write("deleteEquip",{id})){if(S.sel===id)S.sel=null;closeM("mEq");toast("已刪除");}
+}
+
+/* ===== stats ===== */
+function bars(list,max){max=max||Math.max(1,...list.map(x=>x[1]));return list.map(x=>'<div class="bar"><span class="n" title="'+esc(x[0])+'">'+esc(x[0])+'</span><span class="b" style="width:'+(x[1]/max*60)+'%"></span><b>'+x[1]+'</b></div>').join("")||'<div class="muted">尚無資料</div>';}
+function renderStat(){
+ const y=today().slice(0,4),R=S.records;
+ const open=R.filter(r=>r.status!=="已完成").length,yr=R.filter(r=>(r.date||"").startsWith(y));
+ const cost=yr.reduce((a,r)=>a+(Number(r.cost)||0),0);
+ $("kpiBox").innerHTML=[["設備數",S.equips.length],["維修紀錄總數",R.length],[y+" 年紀錄",yr.length],["未結案",open],[y+" 年費用","$"+(money(cost)||0)]].map(k=>'<div class="card stat"><span class="muted">'+k[0]+'</span><b>'+k[1]+'</b></div>').join("");
+ const byItem={};R.forEach(r=>{const e=eqById(r.eid)||{};const k=(e.group||"?")+"－"+(e.item||"?");byItem[k]=(byItem[k]||0)+1;});
+ $("stItem").innerHTML=bars(Object.entries(byItem).sort((a,b)=>b[1]-a[1]));
+ const byEq={};R.forEach(r=>{const k=r.ename||r.eid;byEq[k]=(byEq[k]||0)+1;});
+ $("stTop").innerHTML=bars(Object.entries(byEq).sort((a,b)=>b[1]-a[1]).slice(0,10));
+ const mons=[];const t=today();let yy=+t.slice(0,4),mm=+t.slice(5,7);
+ for(let i=0;i<12;i++){mons.unshift(yy+"-"+String(mm).padStart(2,"0"));mm--;if(!mm){mm=12;yy--;}}
+ $("stMon").innerHTML=bars(mons.map(m=>[m,R.filter(r=>(r.date||"").startsWith(m)).length]));
+ $("stType").innerHTML=bars(TYPES.map(tp=>[tp,R.filter(r=>r.type===tp).length]).filter(x=>x[1]));
+}
+
+$("stChip").textContent=STATION.name+"｜"+STATION.code+"｜"+STATION.addr;
+$("verInfo").textContent=VERSION;
+window.addEventListener("beforeunload",e=>{if($("loading").classList.contains("on")){e.preventDefault();e.returnValue="";}});
+loadAll();
+</script>
+</body>
+</html>
