@@ -510,8 +510,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
-const VERSION = "v2.5";
-const WHATS_NEW = "履歷紀錄類型新增「更換皮膜」";
+const VERSION = "v2.7";
+const WHATS_NEW = "海口站管線修正：A線接到立管為止，5A-26 移到下方出口管；「洩漏偵測」改名「漏氣偵測」";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -536,6 +536,7 @@ const SEED_EQ = [
  ["5A-09","中壓A線","中壓","壓力表","中壓壓力表","中壓表","","中間壓力"],
  ["5A-10","中壓A線","中壓","遮斷閥","2\"超壓遮斷閥（A線）","OPSO-A","2\"","超壓關斷訊號A"],
  ["5A-11","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第二段）","軸流閥A2","2\"",""],
+ ["5A-56","中壓A線","中壓","壓力表","中壓表（計量表前）","中壓表","",""],
  ["5A-12","中壓A線","中壓","計量表","AL5000 計量表","計量表","AL5000",""],
  ["5A-13","中壓A線","中壓","開關閥","2\"球閥（計量表後）","球閥","2\"",""],
  ["5A-14","中壓出口","中壓","壓力表","出口壓力傳送器","出口壓力","","出口壓力"],
@@ -555,8 +556,8 @@ const SEED_EQ = [
  ["5A-28","低壓管線","低壓","管體","低壓管體","低壓管體","",""],
  ["5A-29","監控系統","監控","RTU","RTU 遠端監控單元","RTU","","通訊狀態"],
  ["5A-30","監控系統","監控","RTU","UPS 不斷電系統","UPS","","市電狀態"],
- ["5A-31","監控系統","監控","瓦斯偵測器","瓦斯偵測器 1","瓦斯偵測1","","洩漏偵測1"],
- ["5A-32","監控系統","監控","瓦斯偵測器","瓦斯偵測器 2","瓦斯偵測2","","洩漏偵測2"],
+ ["5A-31","監控系統","監控","瓦斯偵測器","瓦斯偵測器 1","瓦斯偵測1","","漏氣偵測1"],
+ ["5A-32","監控系統","監控","瓦斯偵測器","瓦斯偵測器 2","瓦斯偵測2","","漏氣偵測2"],
  ["5A-33","監控系統","監控","地震感知器","地震感知器 1","地震感知1","","地震警報1"],
  ["5A-34","監控系統","監控","地震感知器","地震感知器 2","地震感知2","","地震警報2"],
  ["5A-35","監控系統","監控","火警感知器","火警（火焰）感知器","火警感知","","火焰警報"],
@@ -582,25 +583,25 @@ const SEED_EQ = [
  ["5A-55","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""]
 ].map((r,i)=>({id:r[0],station:STATIONS[0].name,section:r[1],group:r[2],item:r[3],name:r[4],short:r[5],spec:r[6],tag:r[7],note:"",order:i+1}));
 
+const MAP_W = 2080, MAP_H = 800;
 const LAYOUT_HK = {
  "5A-01":{t:"gauge",x:95,y:420},
- "5A-02":{t:"ball",x:270,y:200},"5A-03":{t:"opso",x:390,y:200},"5A-04":{t:"reg",x:510,y:200},"5A-05":{t:"blind",x:860,y:200},
- "5A-06":{t:"ball",x:250,y:600},"5A-07":{t:"filter",x:340,y:600},"5A-08":{t:"reg",x:430,y:600},"5A-09":{t:"gauge",x:510,y:600},
- "5A-10":{t:"opso",x:590,y:600},"5A-11":{t:"reg",x:680,y:600},"5A-12":{t:"meter",x:790,y:600},"5A-13":{t:"ball",x:880,y:600},
- "5A-15":{t:"ball",x:1090,y:200},"5A-16":{t:"reg",x:1210,y:200},"5A-17":{t:"ball",x:1330,y:200},"5A-18":{t:"ball",x:1490,y:200},"5A-19":{t:"gauge",x:1550,y:200},
- "5A-20":{t:"ball",x:1090,y:400},"5A-21":{t:"reg",x:1210,y:400},"5A-22":{t:"ball",x:1330,y:400},"5A-23":{t:"ball",x:1490,y:400},"5A-24":{t:"gauge",x:1550,y:400},
- "5A-25":{t:"gauge",x:1420,y:300,r:90},"5A-26":{t:"ball",x:1300,y:600}
+ "5A-02":{t:"ball",x:270,y:200},"5A-03":{t:"opso",x:410,y:200},"5A-04":{t:"reg",x:550,y:200},"5A-05":{t:"blind",x:1230,y:200},
+ "5A-06":{t:"ball",x:250,y:600},"5A-07":{t:"filter",x:380,y:600},"5A-08":{t:"reg",x:510,y:600},"5A-09":{t:"gauge",x:620,y:600},
+ "5A-10":{t:"opso",x:730,y:600},"5A-11":{t:"reg",x:870,y:600},"5A-56":{t:"gauge",x:990,y:600},"5A-12":{t:"meter",x:1110,y:600},"5A-13":{t:"ball",x:1240,y:600},
+ "5A-15":{t:"ball",x:1490,y:200},"5A-16":{t:"reg",x:1620,y:200},"5A-17":{t:"ball",x:1750,y:200},"5A-18":{t:"ball",x:1920,y:200},"5A-19":{t:"gauge",x:1990,y:200},
+ "5A-20":{t:"ball",x:1490,y:400},"5A-21":{t:"reg",x:1620,y:400},"5A-22":{t:"ball",x:1750,y:400},"5A-23":{t:"ball",x:1920,y:400},"5A-24":{t:"gauge",x:1990,y:400},
+ "5A-25":{t:"gauge",x:1840,y:300,r:90},"5A-26":{t:"ball",x:1700,y:700}
 };
 const READOUTS_HK = [
- {id:"5A-38",l:"環境溫度",x:180,y:20},{id:"5A-01",l:"入口壓力",x:20,y:470},{id:"5A-14",l:"出口壓力",x:700,y:92},
- {id:"5A-31",l:"洩漏偵測 1",x:580,y:330},{id:"5A-32",l:"洩漏偵測 2",x:1110,y:490},{id:"5A-09",l:"中間壓力",x:445,y:690},
- {id:"5A-19",l:"B線低壓出口",x:1270,y:92},{id:"5A-24",l:"A線低壓出口",x:1400,y:490}
+ {id:"5A-38",l:"環境溫度",x:180,y:20},{id:"5A-01",l:"入口壓力",x:20,y:470},{id:"5A-14",l:"出口壓力",x:1040,y:92},
+ {id:"5A-31",l:"漏氣偵測 1",x:760,y:330},{id:"5A-32",l:"漏氣偵測 2",x:1500,y:490},{id:"5A-09",l:"中間壓力",x:560,y:700},
+ {id:"5A-19",l:"B線低壓出口",x:1690,y:92},{id:"5A-24",l:"A線低壓出口",x:1770,y:490}
 ];
 const PIPES_HK = {
- "5A-27":["M40 420 H170","M170 200 V600","M170 200 H1210","M930 200 V600","M1000 200 V400 H1210","M170 600 H1585"],
- "5A-28":["M1210 200 H1585","M1210 400 H1585","M1420 200 V400"]
+ "5A-27":["M40 420 H170","M170 200 V600","M170 200 H1620","M1320 200 V700 H2030","M1400 200 V400 H1620","M170 600 H1320"],
+ "5A-28":["M1620 200 H2030","M1620 400 H2030","M1840 200 V400"]
 };
-
 const MAPS = {HK:{layout:LAYOUT_HK, readouts:READOUTS_HK, pipes:PIPES_HK}};
 let S = {equips:[], records:[], insps:[], sel:null, view:"map", pw:"", user:null, users:[], labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
 
@@ -641,7 +642,7 @@ async function http(method,params,body){
  }finally{clearTimeout(tm);}
 }
 
-const SEED_VER=4;
+const SEED_VER=6;
 const ID_MAP={"HK-01": "5A-01", "HK-02": "5A-02", "HK-03": "5A-03", "HK-04": "5A-04", "HK-05": "5A-05", "HK-06": "5A-06", "HK-07": "5A-07", "HK-08": "5A-08", "HK-09": "5A-09", "HK-10": "5A-10", "HK-11": "5A-11", "HK-12": "5A-12", "HK-13": "5A-13", "HK-14": "5A-14", "HK-15": "5A-15", "HK-16": "5A-16", "HK-17": "5A-17", "HK-18": "5A-18", "HK-19": "5A-19", "HK-20": "5A-20", "HK-21": "5A-21", "HK-22": "5A-22", "HK-23": "5A-23", "HK-24": "5A-24", "HK-25": "5A-25", "HK-26": "5A-26", "HK-31": "5A-27", "HK-32": "5A-28", "HK-41": "5A-29", "HK-42": "5A-30", "HK-43": "5A-31", "HK-44": "5A-32", "HK-45": "5A-33", "HK-46": "5A-34", "HK-47": "5A-35", "HK-48": "5A-36", "HK-49": "5A-37", "HK-50": "5A-38", "HK-51": "5A-39", "HK-61": "5A-40", "HK-62": "5A-41", "HK-63": "5A-42", "HK-64": "5A-43", "HK-65": "5A-44", "HK-66": "5A-45", "HK-67": "5A-46", "HK-68": "5A-47", "HK-69": "5A-48", "HK-70": "5A-49", "HK-71": "5A-50", "HK-72": "5A-51", "HK-73": "5A-52", "HK-74": "5A-53", "HK-75": "5A-54", "HK-76": "5A-55"};
 function remapIds(){const f=id=>ID_MAP[id]||id;S.equips.forEach(e=>e.id=f(e.id));S.records.forEach(r=>r.eid=f(r.eid));(S.insps||[]).forEach(x=>(x.items||[]).forEach(i=>{if(i.eid)i.eid=f(i.eid);}));}
 const SEED_FIX={"5A-04":"整壓器B","5A-08":"整壓器A1","5A-11":"整壓器A2","5A-16":"4\"軸流閥整壓器","5A-21":"2\"DIVAL BP 直動型整壓器（中減低）","5A-25":"6\"球閥（A/B線連通）"};
@@ -649,6 +650,7 @@ const DEMO_USERS=[["白沛豫","管理員","1688"],["陳經理","部門主管","
 function loadDemo(){
  try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});if(!S.users.some(x=>x.role==="管理員"&&String(x.active).toUpperCase()==="Y")){const a=S.users.find(x=>x.name==="白沛豫");if(a){a.role="管理員";a.active="Y";}}
   if((d.seedVer||1)<4)remapIds();
+  if((d.seedVer||1)<6)S.equips.forEach(e=>{if(e.tag&&e.tag.indexOf("洩漏偵測")===0)e.tag=e.tag.replace("洩漏偵測","漏氣偵測");});
   if((d.seedVer||1)<SEED_VER){const has=new Set(S.equips.map(e=>e.id));SEED_EQ.forEach(e=>{if(!has.has(e.id))S.equips.push(JSON.parse(JSON.stringify(e)));});
    Object.keys(SEED_FIX).forEach(id=>{const e=eqById(id),n=SEED_EQ.find(x=>x.id===id);if(e&&n&&(e.name===SEED_FIX[id]||e.short===SEED_FIX[id])){["section","group","item","name","short","spec"].forEach(k=>e[k]=n[k]);}});saveDemo();}
   return;}}catch(e){}
@@ -878,14 +880,15 @@ function sym(t){
  if(t==="blind")return '<rect x="-7" y="-24" width="14" height="48" rx="2" fill="#34495e"/><rect x="-24" y="-5" width="17" height="10" fill="#6c7a88"/>';
  return "";
 }
+function sizedShort(e){const sh=e.short||e.name,sz=(String(e.spec||"").match(/^\d+(\.\d+)?"/)||[""])[0];return sz&&!/^\d/.test(sh)?sz+sh:sh;}
 function lblPos(t,L){if(L.r)return{x:L.x-30,y:L.y+8,a:"end"};if(t==="gauge")return{x:L.x,y:L.y-70,a:"middle"};if(t==="meter")return{x:L.x,y:L.y+56,a:"middle"};return{x:L.x,y:L.y+48,a:"middle"};}
 function curMap(){const M=MAPS[ST().map]||null;return {M,LAYOUT:M?M.layout:{},READOUTS:M?M.readouts:[],PIPES:M?M.pipes:{}};}
 function eqPos(id){const {LAYOUT,READOUTS}=curMap();if(LAYOUT[id])return{x:LAYOUT[id].x,y:LAYOUT[id].y};const r=READOUTS.find(x=>x.id===id);if(r)return{x:r.x+80,y:r.y+22};return null;}
 function mapSvg(vb,mini){
  const {LAYOUT,READOUTS,PIPES}=curMap();
  let s='<svg '+(mini===true?'class="mini"':'id="'+(mini==="fs"?"fsSvg":"map")+'" class="'+(S.labels?"":"nolbl")+'"')+' viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gM" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#d5dce2"/><stop offset="1" stop-color="#8d99a5"/></linearGradient></defs>';
- s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="748">中壓 A 線</text><text class="sec" x="1030" y="345">低壓 A 線</text><text class="sec" x="1030" y="160">低壓 B 線</text>';
- s+='<text class="sec" x="30" y="395">進氣 →</text><text class="sec" x="1590" y="645" text-anchor="end">下方出口 →</text>';
+ s+='<text class="sec" x="180" y="165">中壓 B 線</text><text class="sec" x="180" y="760">中壓 A 線</text><text class="sec" x="1430" y="345">低壓 A 線</text><text class="sec" x="1430" y="160">低壓 B 線</text>';
+ s+='<text class="sec" x="30" y="395">進氣 →</text>';
  for(const pid in PIPES){
   const e=eqById(pid);const nm=e?e.name:pid;
   s+='<g class="eq pipe'+(S.sel===pid?" sel":"")+'" data-id="'+pid+'"><title>'+esc(pid+" "+nm)+'</title>';
@@ -898,7 +901,7 @@ function mapSvg(vb,mini){
   const p=lblPos(L.t,L),oc=openCnt(id),up=L.t==="gauge";
   s+='<g class="eq'+(S.sel===id?" sel":"")+'" data-id="'+id+'"><title>'+esc(id+" "+e.name)+'</title>';
   s+='<g transform="translate('+L.x+','+L.y+')'+(L.r?' rotate('+L.r+')':'')+'"><rect x="-32" y="-60" width="64" height="94" fill="transparent"/><circle class="halo" r="38"/>'+sym(L.t)+'</g>';
-  s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(e.short||e.name)+'</text>';
+  s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(sizedShort(e))+'</text>';
   s+='<text class="lid" x="'+p.x+'" y="'+(up?p.y-24:p.y+22)+'" text-anchor="'+p.a+'">'+esc(id)+'</text>';
   const cinf=calInfo(e);if(cinf&&(cinf.state==="over"||cinf.state==="soon"))s+='<circle cx="'+(L.x-24)+'" cy="'+(L.y-34)+'" r="12" fill="'+(cinf.state==="over"?"#c0392b":"#d68910")+'" stroke="#fff" stroke-width="2"/><text x="'+(L.x-24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="13" fill="#fff">⏰</text>';
   if(oc)s+='<circle cx="'+(L.x+24)+'" cy="'+(L.y-34)+'" r="12" fill="#c0392b"/><text x="'+(L.x+24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">'+oc+'</text>';
@@ -914,7 +917,7 @@ function mapSvg(vb,mini){
 }
 function renderMap(){
  const {M,LAYOUT,READOUTS,PIPES}=curMap();
- const s=mapSvg("0 0 1640 760",false);
+ const s=mapSvg("0 0 "+MAP_W+" "+MAP_H,false);
  $("svgbox").innerHTML=M?s:'<div style="padding:30px;font-size:17px;color:#5d6d7e">此站尚未建立示意圖，請點下方設備卡片。</div>';
  const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
  const rest=stEq().filter(e=>!onMap.has(e.id)).sort((a,b)=>(a.order||0)-(b.order||0));
@@ -934,28 +937,28 @@ function selectEq(id){S.sel=id;setUrl(id);if(S.view!=="map")go("map");else{rende
 function locHtml(id){
  const e=eqById(id);if(!e)return "";
  const {M,PIPES}=curMap();const q=eqPos(id);
- if(M&&q){const x=Math.max(0,Math.min(1640-900,q.x-450)),y=Math.max(0,Math.min(760-500,q.y-250));
+ if(M&&q){const x=Math.max(0,Math.min(MAP_W-900,q.x-450)),y=Math.max(0,Math.min(MAP_H-500,q.y-250));
   return '<div class="loc"><div class="muted">📍 在系統中的位置（紅圈處）</div>'+mapSvg(x+" "+y+" 900 500",true)+'<button class="btn sm ghost" style="margin-top:6px" onclick="showOnMap()">🗺 在整張示意圖上看</button></div>';}
- if(M&&PIPES[id])return '<div class="loc"><div class="muted">📍 在系統中的位置（藍色管線）</div>'+mapSvg("0 0 1640 760",true)+'</div>';
+ if(M&&PIPES[id])return '<div class="loc"><div class="muted">📍 在系統中的位置（藍色管線）</div>'+mapSvg("0 0 "+MAP_W+" "+MAP_H,true)+'</div>';
  const g={"監控":"三、監控系統","非供氣":"二、非供氣設備","防爆":"防爆設備"}[e.group]||"其他設備";
  return '<div class="loc hint">📍 此設備不在管線圖上，列在示意圖下方「'+g+'」卡片區'+(e.tag?'（監控畫面：'+esc(e.tag)+'）':'')+'。</div>';
 }
 function popHtml(){return locHtml(S.sel)+$("drawer").innerHTML;}
 function openPop(){if(!S.sel)return;$("popBody").innerHTML=popHtml();openM("mScan");}
 function showOnMap(){closePop();const q=eqPos(S.sel);
- if($("fsMap").classList.contains("on")){const b=$("fsBody"),sv=$("fsSvg");if(!q||!sv)return;if(FS.z<2){FS.z=2;applyFsZ();}const sc=sv.clientWidth/1640;b.scrollLeft=Math.max(0,q.x*sc-b.clientWidth/2);b.scrollTop=Math.max(0,q.y*sc-b.clientHeight/2);return;}
+ if($("fsMap").classList.contains("on")){const b=$("fsBody"),sv=$("fsSvg");if(!q||!sv)return;if(FS.z<2){FS.z=2;applyFsZ();}const sc=sv.clientWidth/MAP_W;b.scrollLeft=Math.max(0,q.x*sc-b.clientWidth/2);b.scrollTop=Math.max(0,q.y*sc-b.clientHeight/2);return;}
  const box=$("svgbox"),svg=$("map");if(!q||!svg)return;
- box.scrollIntoView({block:"start"});const sc=svg.clientWidth/1640;box.scrollLeft=Math.max(0,q.x*sc-box.clientWidth/2);}
+ box.scrollIntoView({block:"start"});const sc=svg.clientWidth/MAP_W;box.scrollLeft=Math.max(0,q.x*sc-box.clientWidth/2);}
 function closePop(){closeM("mScan");}
 /* ===== full-screen map ===== */
 let FS={z:1,user:false};
 function fsBaseW(){return $("fsBody").clientWidth||window.innerWidth;}
-function fsDefaultZ(){const b=$("fsBody"),w=b.clientWidth,h=b.clientHeight;if(!w)return 1;const fitH=h/(w*760/1640);return w<700?Math.min(2.2,Math.max(1,fitH*0.85)):Math.min(1,Math.max(1,fitH));}
+function fsDefaultZ(){const b=$("fsBody"),w=b.clientWidth,h=b.clientHeight;if(!w)return 1;const fitH=h/(w*MAP_H/MAP_W);return w<700?Math.min(2.2,Math.max(1,fitH*0.85)):Math.min(1,Math.max(1,fitH));}
 function openFs(){if(!MAPS[ST().map]){toast("此站尚未建立示意圖");return;}$("fsMap").classList.add("on");$("fsTitle").textContent="📍 "+ST().name;FS.user=false;renderFs();requestAnimationFrame(()=>{FS.z=fsDefaultZ();applyFsZ();});}
 function closeFs(){$("fsMap").classList.remove("on");try{const u=new URL(location.href);u.searchParams.delete("st");history.replaceState(null,"",u.toString());}catch(e){}}
 function renderFs(){
  const b=$("fsBody"),sl=b.scrollLeft,stp=b.scrollTop;
- b.innerHTML=mapSvg("0 0 1640 760","fs");applyFsZ();b.scrollLeft=sl;b.scrollTop=stp;
+ b.innerHTML=mapSvg("0 0 "+MAP_W+" "+MAP_H,"fs");applyFsZ();b.scrollLeft=sl;b.scrollTop=stp;
  const {LAYOUT,READOUTS,PIPES}=curMap();const onMap=new Set([...Object.keys(LAYOUT),...Object.keys(PIPES),...READOUTS.map(r=>r.id)]);
  $("fsChips").innerHTML='<b style="align-self:center;color:#1f4e79;white-space:nowrap;font-size:15px">圖外設備 ›</b>'+stEq().filter(e=>!onMap.has(e.id)).sort((a,c)=>(a.order||0)-(c.order||0)).map(e=>'<div class="tile'+(S.sel===e.id?" sel":"")+'" data-id="'+e.id+'"><b>'+esc(e.short||e.name)+'</b><span>'+esc(e.id)+'</span></div>').join("");
 }
