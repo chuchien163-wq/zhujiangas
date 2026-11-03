@@ -212,6 +212,10 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 @keyframes sp{to{transform:rotate(360deg)}}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2c3e50;color:#fff;padding:10px 18px;border-radius:10px;z-index:90;display:none;font-size:16px;max-width:90vw}
 .toast.on{display:block}.toast.err{background:var(--red)}
+.verbar{display:none;position:fixed;left:0;right:0;top:0;z-index:95;background:#fff3cd;color:#5c4400;border-bottom:2px solid #f0b429;padding:10px 14px;font-size:16px;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.verbar.on{display:flex}
+.verbar .vn{flex:1;min-width:200px}
+.verbar small{display:block;color:#7d6608;font-size:14px;margin-top:2px}
 .banner{background:#fdebd0;color:#7e5109;padding:8px 18px;font-size:15px;display:none}
 .banner.on{display:block}
 @media(max-width:1250px){.mapwrap{grid-template-columns:minmax(0,1fr)}.drawer{position:static}}
@@ -265,6 +269,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <button class="btn sm ghost" onclick="loadAll()">↻ 重新整理</button>
  <button class="btn sm lock" id="lockBtn" onclick="toggleLock()">🔒 登入</button>
 </header>
+<div class="verbar" id="verBar"></div>
 <div class="banner" id="banner"></div>
 <div class="main">
 <nav>
@@ -502,7 +507,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "";
-const VERSION = "v1.7";
+const VERSION = "v1.8";
+const WHATS_NEW = "新增版本更新通知：之後有新版本，畫面上方會自動提醒並可一鍵更新";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -1381,6 +1387,32 @@ function renderStat(){
 
 $("stSel").innerHTML=STATIONS.map((t,i)=>'<option value="'+i+'">'+esc(t.name)+'</option>').join("");
 $("verInfo").textContent=VERSION;
+/* ===== 版本更新通知（同管線系統做法）===== */
+function verCmp(a,b){const x=String(a).replace(/^v/,"").split("."),y=String(b).replace(/^v/,"").split(".");for(let i=0;i<Math.max(x.length,y.length);i++){const d=(parseInt(x[i],10)||0)-(parseInt(y[i],10)||0);if(d)return d;}return 0;}
+let VER_CHECKING=false,VER_SHOWN="";
+function checkWebVer(){
+ if(VER_CHECKING||!window.fetch||location.protocol==="file:")return;
+ VER_CHECKING=true;
+ const ctl=window.AbortController?new AbortController():null;
+ const dog=setTimeout(()=>{if(ctl)ctl.abort();VER_CHECKING=false;},8000);
+ fetch(location.pathname+"?vchk="+Date.now(),{cache:"no-store",signal:ctl?ctl.signal:undefined})
+  .then(r=>r.ok?r.text():"")
+  .then(t=>{const m=/const VERSION = "(v[\d.]+)"/.exec(t||""),n=/const WHATS_NEW = "([^"]*)"/.exec(t||"");if(m&&verCmp(m[1],VERSION)>0)showVerBar(m[1],n?n[1]:"");})
+  .catch(()=>{})
+  .then(()=>{clearTimeout(dog);VER_CHECKING=false;});
+}
+function showVerBar(v,note){
+ if(VER_SHOWN===v)return;VER_SHOWN=v;
+ const b=$("verBar");
+ b.innerHTML='<span class="vn">⚠️ 系統有新版本 <b>'+esc(v)+'</b>（你現在是 '+esc(VERSION)+'）'+(note?'<small>本次更新：'+esc(note)+'</small>':'')+'</span><button class="btn grn" onclick="reloadNew()">🔄 立即更新</button><button class="btn ghost" onclick="$(\'verBar\').classList.remove(\'on\')" title="先關掉">✕</button>';
+ b.classList.add("on");
+}
+function reloadNew(){
+ if($("loading").classList.contains("on")||$("mInsp").classList.contains("on")||$("mRec").classList.contains("on")){if(!confirm("你還有正在填寫或儲存中的資料，現在更新會遺失未送出的內容。確定要更新？"))return;}
+ const u=new URL(location.href);u.searchParams.delete("vchk");u.searchParams.set("v",Date.now());location.replace(u.toString());
+}
+setTimeout(checkWebVer,3000);setInterval(checkWebVer,10*60*1000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkWebVer();});
 window.addEventListener("beforeunload",e=>{if($("loading").classList.contains("on")){e.preventDefault();e.returnValue="";}});
 loadAll();
 </script>
