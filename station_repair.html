@@ -117,6 +117,23 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
 .mask.on{display:flex}
 #mScan{z-index:45}
+#mCard{z-index:49}
+.cardtop{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 10px}
+.cardtop .tag{font-size:14px;padding:3px 10px}
+.phrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.phbox{position:relative;border-radius:10px;overflow:hidden;background:#f3f6f9;aspect-ratio:4/3;border:1px solid var(--line)}
+.phbox img{width:100%;height:100%;object-fit:cover;display:block}
+.phempty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#5d6d7e;font-size:15px;text-align:center}
+.phempty span{font-size:13px}
+.phbtn{position:absolute;right:6px;bottom:6px;background:rgba(31,78,121,.9);color:#fff;border-radius:8px;padding:4px 10px;font-size:14px;cursor:pointer}
+.phbtn input{display:none}
+.sec-h{display:flex;align-items:center;justify-content:space-between;font-weight:800;color:#1f4e79;font-size:17px;margin:12px 0 6px;border-top:1px solid var(--line);padding-top:10px}
+.calbox{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#f3f8f4;border-radius:10px;padding:10px;margin-bottom:6px}
+.calbox span{display:block;font-size:13px;color:#5d6d7e}.calbox b{font-size:16px}
+.calbox .calst{grid-column:1/-1;font-weight:700;color:#1e8f4e}
+.calbox.soon{background:#fdf3e1}.calbox.soon .calst{color:#9c640c}
+.calbox.over{background:#fbeaea}.calbox.over .calst{color:#c0392b}
+.duec{color:#c0392b;font-weight:700}.dues{color:#9c640c;font-weight:700}
 #mAcc{z-index:48}
 .login{position:fixed;inset:0;z-index:70;background:linear-gradient(135deg,#1f4e79,#2e6da4);display:none;align-items:center;justify-content:center;padding:16px}
 .login.on{display:flex}
@@ -267,7 +284,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
    <div class="maptools">
     <button class="btn sm" onclick="openFs()">⛶ 全螢幕示意圖</button>
     <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱／編號</label>
-    <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
+    <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#d68910"></i>⏰ 校驗快到期／逾期</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
    </div>
    <div class="svgbox" id="svgbox"></div>
    <div class="tiles" id="tiles"></div>
@@ -357,7 +374,13 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="fgrid">
   <label class="full">設備 <span class="req">*</span><select id="f_eid"></select></label>
   <label>日期 <span class="req">*</span><input type="date" id="f_date"></label>
-  <label>類型 <span class="req">*</span><select id="f_type"></select></label>
+  <label>類型 <span class="req">*</span><select id="f_type" onchange="recTypeChanged()"></select></label>
+  <div class="full muted" id="f_hint" style="color:#1e8f4e"></div>
+  <div class="full fgrid" id="f_newcard" style="display:none;background:#f3f8f4;border-radius:10px;padding:10px">
+   <label class="full" style="color:#1e8f4e;font-weight:700">新設備資料（會寫回履歷）</label>
+   <label>新廠牌<input id="n_brand"></label><label>新型號<input id="n_model"></label>
+   <label>新出廠序號<input id="n_serial"></label><label>新設定值<input id="n_setting"></label>
+  </div>
   <label class="full">異常狀況／檢測發現<textarea id="f_issue"></textarea></label>
   <label class="full">處理說明 <span class="req">*</span><textarea id="f_action"></textarea></label>
   <label>更換零件<input id="f_parts"></label>
@@ -369,6 +392,24 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
   <label class="full">備註<input id="f_note"></label>
  </div>
  <div class="mfoot"><button class="btn red" id="btnDelRec" onclick="delRec()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mRec')">取消</button><button class="btn" onclick="saveRec()">💾 儲存</button></div>
+</div></div>
+
+<div class="mask" id="mCard"><div class="modal">
+ <h2 id="cardT">編輯履歷資料</h2>
+ <div class="fgrid">
+  <label>狀態<select id="c_status"></select></label>
+  <label>廠牌<input id="c_brand"></label><label>型號<input id="c_model"></label>
+  <label>出廠序號<input id="c_serial"></label><label>規格／口徑<input id="c_spec"></label>
+  <label>設定值<input id="c_setting" placeholder="例：出口壓力 2.0 kg／跳脫 2.6 kg"></label>
+  <label>供應商<input id="c_supplier"></label>
+  <label>購置日期<input type="date" id="c_buyDate"></label><label>安裝日期<input type="date" id="c_installDate"></label>
+  <label>保固到期<input type="date" id="c_warranty"></label>
+  <label>校驗週期（月）<input type="number" min="0" id="c_calCycle" placeholder="例：12"></label>
+  <label>上次校驗日<input type="date" id="c_lastCal"></label>
+  <label class="full">備註<input id="c_note"></label>
+ </div>
+ <div class="hint">之後新增「校驗」紀錄會自動更新上次校驗日；新增「汰換」紀錄可直接帶入新設備的廠牌／型號／序號。</div>
+ <div class="mfoot"><button class="btn ghost" onclick="closeM('mCard')">取消</button><button class="btn" onclick="saveCard()">💾 儲存</button></div>
 </div></div>
 
 <div class="mask" id="mEq"><div class="modal">
@@ -461,7 +502,7 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "";
-const VERSION = "v1.6";
+const VERSION = "v1.7";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -470,7 +511,7 @@ const STATIONS = [
 const PUBLIC_URL = "https://chuchien163-wq.github.io/zhujiangas/station_repair.html";
 let ST_I = 0;
 function ST(){return STATIONS[ST_I];}
-const TYPES = ["定期檢測","異常維修","零件更換","保養","校驗","其他"];
+const TYPES = ["安裝","定期檢測","校驗","保養","異常維修","零件更換","汰換","報廢","其他"];
 const STATUS = ["已完成","處理中","待處理"];
 const GROUPS = ["中壓","低壓","非供氣","監控","防爆"];
 
@@ -648,6 +689,9 @@ async function write(action,data){
   if(action==="deleteUser"){if(o.name===S.user.name){alert("不能刪除自己");return false;}S.users=S.users.filter(u=>u.name!==o.name);saveDemo();return true;}
   if(action==="signInspection"){const x=S.insps.find(i=>i.iid===o.iid);if(!x)return false;if(!canSign(x,o.level)){alert("❌ 你的角色不能簽這一欄，或已經簽過");return false;}const n=nowStr();if(o.level==="unit"){x.unitName=me.name;x.sigUnit=me.sig;x.unitAt=n;}else{x.deptName=me.name;x.sigDept=me.sig;x.deptAt=n;}x.signState=signStateOf(x);saveDemo();renderAll();return true;}
   if(action==="addRecord")o.createdBy=S.user.name;
+  if(action==="updateEquipCard"){const e=eqById(o.id);if(!e)return false;CARD_DEF.forEach(c=>{if(o[c[0]]!==undefined)e[c[0]]=o[c[0]];});e.status=o.status;e.note=o.note;saveDemo();renderAll();return true;}
+  if(action==="uploadPhoto"){const e=eqById(o.id);if(!e)return false;e[o.slot]=o.data;saveDemo();renderAll();return true;}
+  if((action==="addRecord"||action==="updateRecord")&&o.newCard!==undefined||action==="addRecord"||action==="updateRecord"){demoSync(o);delete o.newCard;}
   if(action==="addRecord"){o.rid="R"+today().replace(/-/g,"").slice(2)+String(Date.now()).slice(-5);o.createdAt=nowStr();o.updatedAt=o.createdAt;o.createdBy="示範";}
   if(action==="updateRecord")o.updatedAt=nowStr();
   if(action==="addInspection"){const n=nowStr(),base=ST().key+"-"+o.date.replace(/-/g,"")+"-",seq=S.insps.filter(x=>(x.iid||"").startsWith(base)).length+1;
@@ -659,7 +703,8 @@ async function write(action,data){
  showLoading("寫入雲端中，請勿關閉…");
  try{
   const j=await http("POST",null,{action,user:S.user?S.user.name:"",pw:S.user?S.user.pw:"",data});
-  applyLocal(action,j.item||data);
+  if(action==="updateEquipCard"||action==="uploadPhoto")applyLocal("saveEquip",j.item);else applyLocal(action,j.item||data);
+  if(j.equip)applyLocal("saveEquip",j.equip);
   try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");renderAll();return true;
  }catch(e){
@@ -835,6 +880,7 @@ function mapSvg(vb,mini){
   s+='<g transform="translate('+L.x+','+L.y+')'+(L.r?' rotate('+L.r+')':'')+'"><rect x="-32" y="-60" width="64" height="94" fill="transparent"/><circle class="halo" r="38"/>'+sym(L.t)+'</g>';
   s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(e.short||e.name)+'</text>';
   s+='<text class="lid" x="'+p.x+'" y="'+(up?p.y-24:p.y+22)+'" text-anchor="'+p.a+'">'+esc(id)+'</text>';
+  const cinf=calInfo(e);if(cinf&&(cinf.state==="over"||cinf.state==="soon"))s+='<circle cx="'+(L.x-24)+'" cy="'+(L.y-34)+'" r="12" fill="'+(cinf.state==="over"?"#c0392b":"#d68910")+'" stroke="#fff" stroke-width="2"/><text x="'+(L.x-24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="13" fill="#fff">⏰</text>';
   if(oc)s+='<circle cx="'+(L.x+24)+'" cy="'+(L.y-34)+'" r="12" fill="#c0392b"/><text x="'+(L.x+24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">'+oc+'</text>';
   s+='</g>';
  }
@@ -924,17 +970,12 @@ function renderDrawer(){
   const recent=stRec().slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).slice(0,5);
   d.innerHTML='<div class="muted">'+esc(ST().name)+'</div><div class="dname">請點選設備</div><p style="font-size:15px;margin:4px 0 10px">點示意圖上的閥件、儀表、管線或下方監控設備，即可看到設備名稱與維修履歷。</p>'
   +'<div class="kpis"><div class="kpi"><b>'+stEq().length+'</b><span>設備數</span></div><div class="kpi"><b>'+stRec().length+'</b><span>維修紀錄</span></div><div class="kpi"><b style="color:'+(open.length?"#c0392b":"#1e8f4e")+'">'+open.length+'</b><span>未結案</span></div></div>'
+  +(()=>{const due=stEq().map(e=>({e,c:calInfo(e)})).filter(x=>x.c&&(x.c.state==="over"||x.c.state==="soon")).sort((a,b)=>a.c.left-b.c.left);return due.length?'<h3>⏰ 校驗到期提醒</h3><ul class="tl">'+due.map(x=>'<li class="'+(x.c.state==="over"?"open":"")+'"><a href="javascript:void(0)" onclick="selectEq(\''+x.e.id+'\')"><b>'+esc(x.e.id)+'</b> '+esc(x.e.name)+'</a><div class="'+(x.c.state==="over"?"duec":"dues")+'">下次 '+esc(x.c.next)+'｜'+esc(x.c.text)+'</div></li>').join("")+'</ul>':'';})()
   +(open.length?'<h3>🔴 未結案</h3><ul class="tl">'+open.map(r=>recItem(r,true)).join("")+'</ul>':'')
   +(recent.length?'<h3>🕘 最近紀錄</h3><ul class="tl">'+recent.map(r=>recItem(r,true)).join("")+'</ul>':'<div class="hint">目前尚無維修紀錄。進入編輯模式後，點設備即可新增。</div>');
   closePop();return;
  }
- const rs=recsOf(e.id),oc=rs.filter(r=>r.status!=="已完成").length,cost=rs.reduce((a,r)=>a+(Number(r.cost)||0),0);
- d.innerHTML='<div class="muted">'+esc(ST().name)+'｜'+esc(e.section||"")+'</div><div class="dname"><span class="idb">'+esc(e.id)+'</span>'+esc(e.name)+'</div>'
- +'<dl class="dmeta"><dt>規格</dt><dd>'+esc(e.spec||"—")+'</dd><dt>檢測表項目</dt><dd>'+esc((e.group||"")+"－"+(e.item||""))+'</dd><dt>監控點</dt><dd>'+esc(e.tag||"—")+'</dd>'+(e.note?'<dt>備註</dt><dd>'+esc(e.note)+'</dd>':'')+'</dl>'
- +'<div class="kpis"><div class="kpi"><b>'+rs.length+'</b><span>維修次數</span></div><div class="kpi"><b style="font-size:17px">'+esc(rs[0]?rs[0].date:"—")+'</b><span>最近維修</span></div><div class="kpi"><b style="color:'+(oc?"#c0392b":"#1e8f4e")+'">'+oc+'</b><span>未結案</span></div></div>'
- +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增維修紀錄</button>'+(isAdmin()?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">✏ 編輯設備</button>':'')+'<button class="btn ghost" onclick="clearSel()">✕</button></div>'
- +(cost?'<div class="muted" style="margin-top:6px">累計費用 $'+money(cost)+'</div>':'')
- +(rs.length?'<ul class="tl">'+rs.map(r=>recItem(r,false)).join("")+'</ul>':'<div class="hint">這個設備還沒有維修紀錄。</div>');
+ d.innerHTML=cardHtml(e);
  if($("mScan").classList.contains("on"))$("popBody").innerHTML=popHtml();
 }
 
@@ -954,14 +995,14 @@ function fillSelects(){
 }
 
 /* ===== equipment list ===== */
-const EQ_COLS=[["id","編號"],["name","設備名稱"],["section","區段"],["item","檢測表項目"],["spec","規格"],["tag","監控點"],["cnt","維修次數"],["last","最近維修"],["open","未結案"]];
+const EQ_COLS=[["id","編號"],["name","設備名稱"],["status","狀態"],["bm","廠牌／型號"],["serial","出廠序號"],["item","檢測表項目"],["nextCal","下次校驗"],["cnt","紀錄數"],["last","最近紀錄"],["open","未結案"]];
 function renderEquip(){
  const q=$("eqQ").value.trim().toLowerCase(),sec=$("eqSec").value,grp=$("eqGrp").value;
- let rows=stEq().map(e=>{const rs=recsOf(e.id);return Object.assign({},e,{cnt:rs.length,last:rs[0]?rs[0].date:"",open:rs.filter(r=>r.status!=="已完成").length});})
-  .filter(e=>(!sec||e.section===sec)&&(!grp||e.group===grp)&&(!q||[e.id,e.name,e.spec,e.tag,e.item,e.section].join(" ").toLowerCase().includes(q)));
+ let rows=stEq().map(e=>{const rs=recsOf(e.id),ci=calInfo(e);return Object.assign({},e,{status:e.status||"使用中",bm:[e.brand,e.model].filter(Boolean).join(" "),nextCal:ci&&ci.next||"",calSt:ci?ci.state:"",cnt:rs.length,last:rs[0]?rs[0].date:"",open:rs.filter(r=>r.status!=="已完成").length});})
+  .filter(e=>(!sec||e.section===sec)&&(!grp||e.group===grp)&&(!q||[e.id,e.name,e.spec,e.tag,e.item,e.section,e.brand,e.model,e.serial].join(" ").toLowerCase().includes(q)));
  const k=S.eqSort.k,d=S.eqSort.d;rows.sort((a,b)=>{const x=a[k],y=b[k];return (typeof x==="number"&&typeof y==="number"?x-y:String(x||"").localeCompare(String(y||""),"zh-Hant"))*d;});
  $("eqHead").innerHTML=EQ_COLS.map(c=>'<th onclick="sortEq(\''+c[0]+'\')">'+c[1]+(k===c[0]?(d>0?" ▲":" ▼"):"")+'</th>').join("")+(isAdmin()?'<th></th>':'');
- $("eqBody").innerHTML=rows.map(e=>'<tr class="clk" onclick="selectEq(\''+e.id+'\')">'+EQ_COLS.map(c=>{let v=e[c[0]];if(c[0]==="open")v=v?'<span class="bdg">'+v+'</span>':"";else v=esc(v===0?"0":v);if(c[0]==="item")v=esc(e.group+"－"+e.item);return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(isAdmin()?'<td><button class="btn sm ghost" onclick="event.stopPropagation();openEquip(\''+e.id+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="10">沒有符合的設備</td></tr>';
+ $("eqBody").innerHTML=rows.map(e=>'<tr class="clk" onclick="selectEq(\''+e.id+'\')">'+EQ_COLS.map(c=>{let v=e[c[0]];if(c[0]==="open")v=v?'<span class="bdg">'+v+'</span>':"";else v=esc(v===0?"0":v);if(c[0]==="item")v=esc(e.group+"－"+e.item);if(c[0]==="status")v=stTag(e.status);if(c[0]==="nextCal"&&e.nextCal)v='<span class="'+(e.calSt==="over"?"duec":e.calSt==="soon"?"dues":"")+'">'+esc(e.nextCal)+'</span>';return '<td data-l="'+c[1]+'">'+v+'</td>';}).join("")+(isAdmin()?'<td><button class="btn sm ghost" onclick="event.stopPropagation();openEquip(\''+e.id+'\')">編輯</button></td>':'')+'</tr>').join("")||'<tr><td colspan="10">沒有符合的設備</td></tr>';
  $("eqSum").innerHTML='共 <b>'+rows.length+'</b> 項設備（點任一列可在示意圖上定位）';
 }
 function sortEq(k){S.eqSort=S.eqSort.k===k?{k,d:-S.eqSort.d}:{k,d:1};renderEquip();}
@@ -997,9 +1038,11 @@ function exportCSV(){
 function openRec(rid,eid){
  if(!needEdit())return;
  const r=rid?S.records.find(x=>x.rid===rid):null;S.editRid=r?r.rid:null;
- $("mRecT").textContent=r?"編輯維修紀錄　"+r.rid:"新增維修紀錄";$("btnDelRec").style.display=r&&isAdmin()?"":"none";
+ $("mRecT").textContent=r?"編輯紀錄　"+r.rid:"新增履歷紀錄";$("btnDelRec").style.display=r&&isAdmin()?"":"none";
  const v=r||{eid:eid||S.sel||(stEq()[0]||{}).id,date:today(),type:"異常維修",status:"已完成"};
  ["eid","date","type","issue","action","parts","fixDate","staff","vendor","cost","status","note"].forEach(k=>$("f_"+k).value=v[k]==null?"":v[k]);
+ if(!r&&!v.staff)$("f_staff").value=S.user.name;
+ ["brand","model","serial","setting"].forEach(k=>$("n_"+k).value="");recTypeChanged();
  openM("mRec");
 }
 async function saveRec(){
@@ -1007,6 +1050,9 @@ async function saveRec(){
  if(!o.eid||!o.date||!o.type||!o.action||!o.status){alert("請填寫：設備、日期、類型、處理說明、狀態");return;}
  if(o.status==="已完成"&&!o.fixDate)o.fixDate=o.date;
  const e=eqById(o.eid);o.ename=e?e.name:"";o.station=ST().name;
+ if(o.type==="汰換"){o.newCard={};["brand","model","serial","setting"].forEach(k=>o.newCard[k]=$("n_"+k).value.trim());
+  if(e)o.note=(o.note?o.note+"；":"")+"汰換前："+[e.brand,e.model,e.serial?"序號"+e.serial:""].filter(Boolean).join(" ");}
+ if(o.type==="報廢"&&!confirm("存檔後這台設備會標記為「已報廢」，確定？"))return;
  let ok;
  if(S.editRid){const old=S.records.find(x=>x.rid===S.editRid);ok=await write("updateRecord",Object.assign({},old,o));}
  else ok=await write("addRecord",o);
@@ -1250,6 +1296,72 @@ async function inspDocx(iid){
  const a=document.createElement("a");a.href=URL.createObjectURL(zipStore(files));a.download="整壓站安檢表_"+x.iid+".docx";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
 }
 
+/* ===== 設備履歷卡 ===== */
+const EQ_STATUS=["使用中","備用","停用","已汰換","已報廢"];
+const CARD_DEF=[["brand","廠牌","text"],["model","型號","text"],["serial","出廠序號","text"],["spec","規格／口徑","text"],["setting","設定值","text"],["supplier","供應商","text"],["buyDate","購置日期","date"],["installDate","安裝日期","date"],["warranty","保固到期","date"],["calCycle","校驗週期（月）","number"],["lastCal","上次校驗日","date"]];
+function addMonths(ymd,m){const p=String(ymd).split("-").map(Number);const d=new Date(p[0],p[1]-1+Number(m),p[2]);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function daysBetween(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/864e5);}
+function calInfo(e){
+ if(!e||!Number(e.calCycle))return null;
+ if(!e.lastCal)return {next:"",state:"none",text:"尚未登錄校驗日"};
+ const next=addMonths(e.lastCal,e.calCycle),left=daysBetween(today(),next);
+ if(left<0)return {next,state:"over",left,text:"已逾期 "+(-left)+" 天"};
+ if(left<=30)return {next,state:"soon",left,text:"剩 "+left+" 天到期"};
+ return {next,state:"ok",left,text:"剩 "+left+" 天"};
+}
+function warnInfo(e){if(!e||!e.warranty)return null;const left=daysBetween(today(),e.warranty);return left<0?{state:"over",text:"保固已過期"}:left<=60?{state:"soon",text:"保固剩 "+left+" 天"}:null;}
+function photoSrc(v,big){if(!v)return "";if(/^data:/.test(v))return v;return "https://drive.google.com/thumbnail?id="+encodeURIComponent(v)+"&sz=w"+(big?1600:600);}
+function photoLink(v){if(!v)return "#";if(/^data:/.test(v))return v;return "https://drive.google.com/file/d/"+encodeURIComponent(v)+"/view";}
+function stTag(st){st=st||"使用中";const c=st==="使用中"?"s-done":st==="備用"?"s-doing":"s-todo";return '<span class="tag '+c+'">'+esc(st)+'</span>';}
+function cardHtml(e){
+ const rs=recsOf(e.id),oc=rs.filter(r=>r.status!=="已完成").length,cost=rs.reduce((a,r)=>a+(Number(r.cost)||0),0),ci=calInfo(e),wi=warnInfo(e);
+ const ph=["photo1","photo2"].map((k,i)=>'<div class="phbox">'+(e[k]?'<a href="'+photoLink(e[k])+'" target="_blank" rel="noopener"><img src="'+photoSrc(e[k])+'" alt="'+(i?"銘牌照片":"設備照片")+'" loading="lazy"></a>':'<div class="phempty">'+(i?"🏷 銘牌照片":"📷 設備照片")+'<br><span>尚未上傳</span></div>')+(S.user?'<label class="phbtn">'+(e[k]?"更換":"上傳")+'<input type="file" accept="image/*" capture="environment" onchange="uploadPhoto(\''+e.id+'\',\''+k+'\',this)"></label>':'')+'</div>').join("");
+ const v=(f)=>esc(e[f]==null||e[f]===""?"—":e[f]);
+ return '<div class="muted">'+esc(ST().name)+'｜'+esc(e.section||"")+'｜'+esc((e.group||"")+"－"+(e.item||""))+'</div>'
+ +'<div class="dname"><span class="idb">'+esc(e.id)+'</span>'+esc(e.name)+'</div>'
+ +'<div class="cardtop">'+stTag(e.status)+(ci&&ci.state!=="ok"?'<span class="tag '+(ci.state==="over"?"s-todo":"s-doing")+'">⏰ 校驗'+esc(ci.text)+'</span>':'')+(wi?'<span class="tag '+(wi.state==="over"?"s-todo":"s-doing")+'">🛡 '+esc(wi.text)+'</span>':'')+(oc?'<span class="tag s-todo">🔧 未結案 '+oc+' 筆</span>':'')+'</div>'
+ +'<div class="phrow">'+ph+'</div>'
+ +'<div class="sec-h">📇 基本資料'+(S.user?'<button class="btn sm ghost" onclick="openCard(\''+e.id+'\')">✏ 編輯</button>':'')+'</div>'
+ +'<dl class="dmeta">'+CARD_DEF.filter(c=>!["calCycle","lastCal"].includes(c[0])).map(c=>'<dt>'+c[1]+'</dt><dd>'+v(c[0])+'</dd>').join("")+(e.tag?'<dt>監控點</dt><dd>'+esc(e.tag)+'</dd>':'')+(e.note?'<dt>備註</dt><dd>'+esc(e.note)+'</dd>':'')+'</dl>'
+ +'<div class="sec-h">⏰ 校驗</div>'
+ +(Number(e.calCycle)?'<div class="calbox '+(ci?ci.state:"")+'"><div><span>週期</span><b>每 '+esc(e.calCycle)+' 個月</b></div><div><span>上次</span><b>'+v("lastCal")+'</b></div><div><span>下次到期</span><b>'+esc(ci&&ci.next||"—")+'</b></div><div class="calst">'+esc(ci?ci.text:"")+'</div></div>':'<div class="muted" style="margin-bottom:8px">未設定校驗週期'+(S.user?'（按上方「✏ 編輯」設定）':'')+'</div>')
+ +'<div class="sec-h">🕘 履歷時間軸（'+rs.length+' 筆'+(cost?'｜累計 $'+money(cost):'')+'）</div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px"><button class="btn grn" onclick="openRec(null,\''+e.id+'\')">＋ 新增紀錄</button>'+(isAdmin()?'<button class="btn ghost" onclick="openEquip(\''+e.id+'\')">⚙ 設備設定</button>':'')+'<button class="btn ghost" onclick="clearSel()">✕</button></div>'
+ +(rs.length?'<ul class="tl">'+rs.map(r=>recItem(r,false)).join("")+'</ul>':'<div class="hint">還沒有任何紀錄。安裝、校驗、保養、維修、更換都可以用「＋ 新增紀錄」記下來。</div>');
+}
+function openCard(id){
+ if(!needEdit())return;const e=eqById(id);if(!e)return;S.editCard=id;
+ $("cardT").textContent="✏ 編輯履歷資料　"+e.id+" "+e.name;
+ $("c_status").innerHTML=opts(EQ_STATUS);$("c_status").value=e.status||"使用中";
+ CARD_DEF.forEach(c=>$("c_"+c[0]).value=e[c[0]]==null?"":e[c[0]]);$("c_note").value=e.note||"";
+ openM("mCard");
+}
+async function saveCard(){
+ const o={id:S.editCard,status:$("c_status").value,note:$("c_note").value.trim()};
+ CARD_DEF.forEach(c=>o[c[0]]=$("c_"+c[0]).value.trim());
+ if(o.calCycle&&!(Number(o.calCycle)>0)){alert("校驗週期請填正整數（月）");return;}
+ if(await write("updateEquipCard",o)){closeM("mCard");toast("✅ 履歷資料已更新");}
+}
+function shrinkImage(file,max,q){
+ return new Promise((res,rej)=>{
+  const done=(src,w,h)=>{const sc=Math.min(1,max/Math.max(w,h)),c=document.createElement("canvas");c.width=Math.round(w*sc);c.height=Math.round(h*sc);c.getContext("2d").drawImage(src,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",q));};
+  if(window.createImageBitmap){createImageBitmap(file,{imageOrientation:"from-image"}).then(b=>done(b,b.width,b.height)).catch(()=>fallback());}else fallback();
+  function fallback(){const u=URL.createObjectURL(file),i=new Image();i.onload=()=>{done(i,i.naturalWidth,i.naturalHeight);URL.revokeObjectURL(u);};i.onerror=()=>rej(new Error("無法讀取照片"));i.src=u;}
+ });
+}
+async function uploadPhoto(id,slot,inp){
+ const f=inp.files&&inp.files[0];inp.value="";if(!f)return;if(!needEdit())return;
+ try{
+  const data=await shrinkImage(f,S.mode==="demo"?700:1000,S.mode==="demo"?0.72:0.82);
+  if(await write("uploadPhoto",{id,slot,data}))toast("✅ 照片已上傳");
+ }catch(e){alert("❌ 照片處理失敗："+e.message);}
+}
+function recTypeChanged(){const t=$("f_type").value;$("f_newcard").style.display=t==="汰換"?"":"none";$("f_hint").textContent=t==="校驗"?"存檔後會自動更新這台設備的「上次校驗日」，並重算下次到期日。":t==="汰換"?"存檔後會把新設備的廠牌／型號／序號寫回履歷，安裝日期改為這筆的日期。":t==="報廢"?"存檔後這台設備狀態會改成「已報廢」。":"";}
+
+function demoSync(o){const e=eqById(o.eid);if(!e)return;
+ if(o.type==="校驗"&&(!e.lastCal||o.date>e.lastCal))e.lastCal=o.date;
+ if(o.type==="汰換"&&o.newCard){["brand","model","serial","setting"].forEach(k=>{if(o.newCard[k])e[k]=o.newCard[k];});e.installDate=o.date;e.status="使用中";}
+ if(o.type==="報廢")e.status="已報廢";}
 /* ===== stats ===== */
 function bars(list,max){max=max||Math.max(1,...list.map(x=>x[1]));return list.map(x=>'<div class="bar"><span class="n" title="'+esc(x[0])+'">'+esc(x[0])+'</span><span class="b" style="width:'+(x[1]/max*60)+'%"></span><b>'+x[1]+'</b></div>').join("")||'<div class="muted">尚無資料</div>';}
 function renderStat(){
