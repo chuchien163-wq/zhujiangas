@@ -290,7 +290,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v4.6</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v4.7</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -308,6 +308,7 @@ table.ttrack td{vertical-align:middle}
       <button data-p="rep"><span class="ico">🔁</span>汰換彙總</button>
       <button data-p="track"><span class="ico">📌</span>施工追蹤</button>
       <button data-p="leak"><span class="ico">🔎</span>探漏搶修</button>
+      <button data-p="tk"><span class="ico">🚨</span>轉單處理</button>
       <button data-p="report"><span class="ico">📄</span>產生報告</button>
       <button data-p="log"><span class="ico">🕘</span>修改紀錄</button>
       <button data-p="set"><span class="ico">⚙️</span>參數設定</button>
@@ -328,7 +329,7 @@ table.ttrack td{vertical-align:middle}
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
 // 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
-var WEB_VER = "4.6";
+var WEB_VER = "4.7";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_pw_v1";
 var TIMEOUT_MS = 25000;
@@ -442,7 +443,7 @@ function req(method, payload) {
   });
 }
 function setData(d) {
-  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {}; DB.logs = d.logs || []; DB.mmap = d.mmap || []; DB.meter = d.meter || null; AUTOMAP = null;
+  DB.cases = d.cases || []; DB.pipes = d.pipes || []; DB.leaks = d.leaks || []; DB.params = d.params || {}; DB.logs = d.logs || []; DB.mmap = d.mmap || []; DB.meter = d.meter || null; DB.tickets = d.tickets || []; DB.tstat = d.tstat || []; AUTOMAP = null;
   PB = {};
   DB.pipes.forEach(function (p) { (PB[p["案件UID"]] = PB[p["案件UID"]] || []).push(p); });
   $("#navFoot").innerHTML = "案件 " + DB.cases.length + " 筆<br>讀取於 " + new Date().toLocaleTimeString("zh-TW", { hour12: false });
@@ -547,7 +548,7 @@ function statsFor(y, m1, m2, withMod) {
 /* ---------- 版面 ---------- */
 function render() {
   $$("#nav button").forEach(function (b) { b.classList.toggle("on", b.dataset.p === (UI.page === "drill" ? "dash" : UI.page)); });
-  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
+  var fn = { dash: renderDash, drill: renderDrill, prog: renderProg, track: renderTrack, rep: renderRep, leak: renderLeak, tk: renderTk, report: renderReport, log: renderLog, set: renderSet }[UI.page] || renderDash;
   fn(); saveUI();
 }
 function clsBadge(c) { return c === "汰換" ? '<span class="badge b-rep">汰換</span>' : c === "改裝" ? '<span class="badge b-mod" title="工程編號第7碼R，不列入董監事統計">改裝</span>' : '<span class="badge b-new">新設</span>'; }
@@ -1905,6 +1906,131 @@ function delCase() {
 }
 
 /* ---------- 探漏編輯 ---------- */
+/* ===== 轉單處理（搶修）：一張單一筆，月統計＋每週轉單記錄自動產生 ===== */
+function tkPending(t) { return (t["狀態"] || "未處理") !== "已處理"; }
+function tkByUid(u) { var r = null; (DB.tickets || []).forEach(function (t) { if (t.UID === u) r = t; }); return r; }
+function ymOf(iso) { return isISO(iso) ? { y: parseInt(iso.slice(0, 4), 10) - 1911, m: parseInt(iso.slice(5, 7), 10) } : null; }
+function isoAddDays(iso, n) { var d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+// 某天結束時還沒處理的件數（上週／本週案件數用）
+function tkPendingAt(iso) { return (DB.tickets || []).filter(function (t) { if (!isISO(t["接單日"]) || t["接單日"] > iso) return false; return tkPending(t) || !isISO(t["處理日"]) || t["處理日"] > iso; }).length; }
+function tkMonthStats(y) {
+  var base = {}; (DB.tstat || []).forEach(function (r) { if (num(r["年"]) === y) base[num(r["月"])] = r; });
+  var now = ymOf(todayISO()), out = [], prev = null;
+  for (var m = 1; m <= 12; m++) {
+    if (base[m]) { var b = base[m]; prev = num(b["小計"]); out.push({ m: m, add: num(b["新增"]), carry: num(b["未處理"]), done: num(b["已處理"]), sub: prev, src: "原統計表" }); continue; }
+    if (y > now.y || (y === now.y && m > now.m)) { out.push({ m: m, future: true }); continue; }
+    var first = (y + 1911) + "-" + (m < 10 ? "0" : "") + m + "-01";
+    var carry = prev !== null ? prev : tkPendingAt(isoAddDays(first, -1));
+    var add = (DB.tickets || []).filter(function (t) { var a = ymOf(t["接單日"]); return a && a.y === y && a.m === m; }).length;
+    var done = (DB.tickets || []).filter(function (t) { var a = ymOf(t["處理日"]); return !tkPending(t) && a && a.y === y && a.m === m; }).length;
+    prev = carry + add - done;
+    out.push({ m: m, add: add, carry: carry, done: done, sub: prev, src: "系統" });
+  }
+  return out;
+}
+function renderTk() {
+  var all = DB.tickets || [], st = UI.tks || "未處理", q = (UI.tkq || "").trim().toLowerCase();
+  var today = todayISO(), now = ymOf(today);
+  var pend = all.filter(tkPending), mAdd = all.filter(function (t) { var a = ymOf(t["接單日"]); return a && a.y === now.y && a.m === now.m; }).length;
+  var mDone = all.filter(function (t) { var a = ymOf(t["處理日"]); return !tkPending(t) && a && a.y === now.y && a.m === now.m; }).length;
+  var lastWk = tkPendingAt(isoAddDays(today, -7));
+  var list = all.filter(function (t) { return st === "全部" ? true : st === "未處理" ? tkPending(t) : !tkPending(t); });
+  if (q) list = list.filter(function (t) { return [t["單號"], t["用戶名稱"], t["裝置地址"], t["說明"], t["預定施工時間"], t["備註"]].join(" ").toLowerCase().indexOf(q) > -1; });
+  list.sort(function (a, b) { return st === "已處理" ? String(b["處理日"]).localeCompare(String(a["處理日"])) : String(a["單號"]).localeCompare(String(b["單號"])); });
+  var h = '<h2 class="pg">🚨 轉單處理（搶修）<span class="sp"></span><button class="btn" onclick="exportTkXlsx()">⬇ 下載統計表 Excel</button><button class="btn pri" onclick="openTk()">＋ 新增轉單</button></h2>';
+  if (!DB.tstat || (!DB.tstat.length && !all.length)) h += '<div class="errbox">後端還沒更新到 GAS v2.0（或還沒執行 upgradeV20），目前沒有轉單資料。</div>';
+  h += '<div class="kpis" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">' +
+    '<div class="kpi rep click" onclick="UI.tks=\'未處理\';renderTk()"><div class="lb">目前未處理</div><div class="v">' + pend.length + '<small>件</small></div><div class="d">上週同日 ' + lastWk + " 件</div></div>" +
+    '<div class="kpi new"><div class="lb">' + now.m + '月新增</div><div class="v">' + mAdd + '<small>件</small></div><div class="d">依接單日</div></div>' +
+    '<div class="kpi ok"><div class="lb">' + now.m + '月已處理</div><div class="v">' + mDone + '<small>件</small></div><div class="d">依處理日</div></div></div>';
+  h += '<div class="tabs">' + ["未處理", "已處理", "全部"].map(function (x) { var n = x === "全部" ? all.length : x === "未處理" ? pend.length : all.length - pend.length; return '<button class="tab' + (st === x ? " on" : "") + '" onclick="UI.tks=\'' + x + '\';renderTk()">' + x + '<span class="n">' + n + "</span></button>"; }).join("") + "</div>";
+  h += '<div class="toolbar"><input type="search" id="tkq" name="srch_tkq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="搜尋 單號／用戶／地址／說明" value="' + esc(UI.tkq || "") + '"></div>';
+  h += '<div class="card"><div class="tblwrap"><table class="t cardify"><thead><tr><th>#</th><th>單號</th><th>用戶名稱</th><th>裝置地址</th><th>接單日</th><th>預定施工時間</th><th>說明</th>' + (st !== "未處理" ? "<th>處理日</th>" : "") + "<th></th></tr></thead><tbody>";
+  list.forEach(function (t, i) {
+    var days = isISO(t["接單日"]) && tkPending(t) ? Math.round((new Date(today) - new Date(t["接單日"])) / 864e5) : null;
+    h += '<tr class="row" onclick="openTk(\'' + t.UID + '\')"><td data-l="項次">' + (i + 1) + '</td><td class="nw" data-l="單號">' + esc(t["單號"]) + '</td><td data-l="用戶名稱">' + esc(t["用戶名稱"]) + '</td><td data-l="裝置地址">' + esc(t["裝置地址"]) + '</td><td class="nw" data-l="接單日">' + roc(t["接單日"]) + (days !== null ? '<div class="' + (days > 30 ? "red" : "muted") + '" style="font-size:13px">已 ' + days + " 天</div>" : "") + '</td><td data-l="預定施工時間">' + esc(isISO(t["預定施工時間"]) ? roc(t["預定施工時間"]) : t["預定施工時間"]) + '</td><td data-l="說明">' + esc(t["說明"]) + (t["備註"] && t["備註"] !== "接單日依單號前 6 碼推算" ? '<div class="muted" style="font-size:13.5px">' + esc(t["備註"]) + "</div>" : "") + "</td>" + (st !== "未處理" ? '<td class="nw" data-l="處理日">' + (tkPending(t) ? '<span class="badge b-warn">未處理</span>' : roc(t["處理日"])) + "</td>" : "") +
+      '<td class="act" data-l="">' + (tkPending(t) ? '<button class="btn sm pri" onclick="event.stopPropagation();doneTk(\'' + t.UID + '\')">✅ 處理完成</button> ' : "") + '<button class="btn sm" onclick="event.stopPropagation();openTk(\'' + t.UID + '\')">✏️ 編輯</button></td></tr>';
+  });
+  if (!list.length) h += '<tr><td colspan="9" class="empty" data-l="">' + (st === "未處理" ? "目前沒有未處理的轉單 👍" : "沒有資料") + "</td></tr>";
+  h += "</tbody></table></div></div>";
+  // 月統計
+  var y = UI.tky || now.y, ys = {}; ys[now.y] = 1; (DB.tstat || []).forEach(function (r) { ys[num(r["年"])] = 1; }); all.forEach(function (t) { var a = ymOf(t["接單日"]); if (a) ys[a.y] = 1; });
+  var M = tkMonthStats(y);
+  h += '<div class="card"><h3>📊 搶修月統計 <select onchange="UI.tky=parseInt(this.value,10);renderTk()" style="font-size:16px;margin-left:8px">' + Object.keys(ys).map(Number).sort(function (a, b) { return b - a; }).map(function (x) { return "<option" + (x === y ? " selected" : "") + ">" + x + "</option>"; }).join("") + '</select> 年</h3><div class="tblwrap"><table class="t"><thead><tr><th>月份</th><th class="num">新增</th><th class="num">未處理（上月結轉）</th><th class="num">已處理</th><th class="num">小計（月底未處理）</th><th>來源</th></tr></thead><tbody>';
+  M.forEach(function (r) {
+    if (r.future) { h += '<tr><td>' + r.m + '月</td><td colspan="5" class="muted">－</td></tr>'; return; }
+    h += "<tr><td>" + r.m + '月</td><td class="num">' + r.add + '</td><td class="num">' + r.carry + '</td><td class="num">' + r.done + '</td><td class="num"><b>' + r.sub + '</b></td><td class="muted" style="font-size:14px">' + (r.src === "系統" ? "系統自動計算" : "原統計表") + "</td></tr>";
+  });
+  h += '</tbody></table></div><p class="muted" style="margin:8px 0 0">小計＝未處理＋新增－已處理。115 年 1～10 月照原本的統計表；11 月起由上面的轉單逐筆自動算。</p></div>';
+  $("#content").innerHTML = h;
+  bindSearch("tkq", "tkq", renderTk);
+}
+function openTk(uid) { needLogin(function () { openTkNow(uid); }); }
+function openTkNow(uid) {
+  var t = uid ? tkByUid(uid) : null;
+  var it = t ? Object.assign({}, t) : { UID: "", 單號: "", 用戶名稱: "", 裝置地址: "", 接單日: todayISO(), 預定施工時間: "待安排施工", 說明: "", 狀態: "未處理", 處理日: "", 備註: "" };
+  TKEDIT = { orig: t ? Object.assign({}, t) : null };
+  var inp = function (k, lb, w, type, ph) { return '<div class="f ' + (w || "") + '"><label>' + lb + '</label><input data-t="' + k + '" type="' + (type || "text") + '" value="' + esc(type === "date" ? normDate(it[k]) : it[k]) + '"' + (ph ? ' placeholder="' + ph + '"' : "") + "></div>"; };
+  modal('<div class="mh">' + (t ? "✏️ 編輯轉單" : "＋ 新增轉單") + '<span style="flex:1"></span><button class="btn sm" onclick="closeModal()">✕</button></div><div class="mb"><div class="form">' +
+    inp("單號", '單號 <span class="req">*</span>', "", "text", "例：2611030123") + inp("用戶名稱", "用戶名稱") + inp("接單日", "接單日", "", "date") +
+    inp("裝置地址", "裝置地址", "w3") + inp("預定施工時間", "預定施工時間", "w3", "text", "待安排施工 或 115/11/10") +
+    '<div class="f w6"><label>說明</label><textarea data-t="說明" rows="2">' + esc(it["說明"]) + "</textarea></div>" +
+    '<div class="f"><label>狀態</label><select data-t="狀態">' + ["未處理", "已處理"].map(function (x) { return "<option" + (it["狀態"] === x ? " selected" : "") + ">" + x + "</option>"; }).join("") + "</select></div>" + inp("處理日", "處理日（已處理才填）", "", "date") + inp("備註", "備註", "w3") +
+    '</div></div><div class="mf">' + (t ? '<button class="btn danger" id="tkDel" style="margin-right:auto">🗑 刪除</button>' : "") + '<button class="btn" onclick="closeModal()">取消</button><button class="btn pri" id="tkOk">💾 儲存</button></div>');
+  $("#tkOk").onclick = function () {
+    $$("#modal [data-t]").forEach(function (el) { it[el.dataset.t] = el.value.trim(); });
+    ["接單日", "處理日"].forEach(function (k) { it[k] = normDate(it[k]); });
+    if (!it["單號"]) { toast("請填單號", 3000); return; }
+    if (it["狀態"] === "已處理" && !isISO(it["處理日"])) { toast("已處理要填處理日，統計才算得到", 3500); return; }
+    if (it["狀態"] !== "已處理") it["處理日"] = "";
+    sendTk(it, false, function () { closeModal(); });
+  };
+  if (t) $("#tkDel").onclick = function () { confirmBox("確定刪除轉單 <b>" + esc(t["單號"] + " " + (t["用戶名稱"] || "")) + "</b>？", "刪除", function () { needLogin(function () { post("deleteTicket", { uid: t.UID }, "🗑 已刪除").then(function (ok) { if (ok) closeModal(); }); }); }); };
+}
+var TKEDIT = { orig: null };
+function sendTk(it, force, after) {
+  showLoading("存檔中…");
+  req("POST", { action: "saveTicket", pw: PW, item: it, orig: TKEDIT.orig, force: !!force }).then(function (j) {
+    hideLoading();
+    if (j.ok) { if (j.data) setData(j.data); toast("✅ 已儲存轉單：" + it["單號"]); if (after) after(); render(); return; }
+    if (j.conflict) { if (j.data) setData(j.data); render(); toast("⚠️ " + j.msg, 6000); return; }
+    if (/密碼/.test(j.msg || "")) { PW = ""; lsSet(SS_PW, ""); updLock(); }
+    toast("❌ " + (j.msg || "存檔失敗"), 4500);
+  }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); });
+}
+function doneTk(uid) {
+  var t = tkByUid(uid); if (!t) return;
+  modal2('<div class="mh">✅ 處理完成<span style="flex:1"></span><button class="btn sm" onclick="closeModal2()">✕</button></div><div class="mb"><p style="margin:0 0 10px"><b>' + esc(t["單號"] + " " + (t["用戶名稱"] || "")) + "</b><br>" + esc(t["裝置地址"] || "") + '</p><div class="form"><div class="f"><label>處理日</label><input id="tkDoneDate" type="date" value="' + todayISO() + '"></div><div class="f w3"><label>處理說明（可空白）</label><input id="tkDoneNote" placeholder="例：已斷口修復"></div></div></div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="tkDoneOk">✅ 確定</button></div>');
+  $("#tkDoneOk").onclick = function () {
+    var d = $("#tkDoneDate").value, n = $("#tkDoneNote").value.trim();
+    if (!isISO(d)) { toast("請選處理日", 3000); return; }
+    closeModal2();
+    needLogin(function () {
+      var it = Object.assign({}, t, { 狀態: "已處理", 處理日: d });
+      if (n) it["備註"] = (it["備註"] && it["備註"] !== "接單日依單號前 6 碼推算" ? it["備註"] + "；" : "") + n;
+      TKEDIT = { orig: Object.assign({}, t) };
+      sendTk(it, false);
+    });
+  };
+}
+function exportTkXlsx() {
+  withXlsx(function () {
+    var now = ymOf(todayISO()), y = UI.tky || now.y, M = tkMonthStats(y), wb = XLSX.utils.book_new();
+    var aoa = [[y + "年　搶修轉單統計表（填表日期：" + todayRoc() + "）"], ["月份", "新增", "未處理（上月結轉）", "已處理", "小計（月底未處理）"]], kinds = ["title", "head"];
+    M.forEach(function (r) { aoa.push(r.future ? [r.m + "月", "", "", "", ""] : [r.m + "月", r.add, r.carry, r.done, r.sub]); kinds.push("row"); });
+    aoa.push([""]); kinds.push("note"); aoa.push(["※ 小計＝未處理＋新增－已處理；115 年 1～10 月為原統計表數字，11 月起由系統逐筆計算。"]); kinds.push("note");
+    XLSX.utils.book_append_sheet(wb, styled(aoa, kinds, [10, 10, 18, 10, 18]), "統計表");
+    var today = todayISO(), pend = (DB.tickets || []).filter(tkPending).sort(function (a, b) { return String(a["單號"]).localeCompare(String(b["單號"])); });
+    var b = [["竹建瓦斯股份有限公司"], ["轉單處理統計表"], ["上周案件數：" + tkPendingAt(isoAddDays(today, -7)) + "　　本周案件數：" + pend.length + "　　填表日期：" + todayRoc()], ["項次", "單號", "用戶名稱", "裝置地址", "預定施工時間", "說明"]], bk = ["title", "title", "note", "head"];
+    pend.forEach(function (t, i) { b.push([i + 1, String(t["單號"]), t["用戶名稱"] || "", t["裝置地址"] || "", isISO(t["預定施工時間"]) ? roc(t["預定施工時間"]) : (t["預定施工時間"] || ""), t["說明"] || ""]); bk.push("row"); });
+    if (!pend.length) { b.push(["", "目前沒有未處理的轉單"]); bk.push("row"); }
+    var ws = styled(b, bk, [6, 13, 16, 30, 14, 34]);
+    ws["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }, { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }, { s: { r: 2, c: 0 }, e: { r: 2, c: 5 } }];
+    for (var r = 4; r < b.length; r++) { var ref = XLSX.utils.encode_cell({ r: r, c: 1 }); if (ws[ref]) { ws[ref].t = "s"; ws[ref].z = "@"; } }
+    XLSX.utils.book_append_sheet(wb, ws, "轉單記錄");
+    XLSX.writeFile(wb, "轉單處理統計表_" + todayRoc().replace(/\//g, "") + ".xlsx");
+  });
+}
 function openLeak(uid) { needLogin(function () { openLeakNow(uid); }); }
 function openLeakNow(uid) {
   var l = null; DB.leaks.forEach(function (x) { if (x.UID === uid) l = x; });
