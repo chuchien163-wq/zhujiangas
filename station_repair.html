@@ -247,13 +247,14 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 .lab .nm{font-weight:700;word-break:break-all}
 .lab .sc{font-size:2.3mm;color:#444}
 .lab.s{width:50mm;height:30mm}.lab.s .q{width:25mm;height:25mm}.lab.s .id{font-size:4mm}.lab.s .nm{font-size:3mm}
+.lab.m{width:60mm;height:40mm}.lab.m .q{width:33mm;height:33mm}.lab.m .id{font-size:6.5mm}.lab.m .nm{font-size:3.4mm}.lab.m .co{font-size:2.8mm}.lab.m .sc{font-size:2.5mm}
 .lab.l{width:70mm;height:50mm}.lab.l .q{width:38mm;height:38mm}.lab.l .id{font-size:6mm}.lab.l .nm{font-size:4.2mm}.lab.l .co{font-size:3.2mm}.lab.l .sc{font-size:2.8mm}
 #printArea{display:none}
 @media print{
  @page{size:A4;margin:8mm}
  html,body{background:#fff!important;height:auto}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
- .app,.mask,.toast,.loading{display:none!important}
+ .app,.mask,.toast,.loading,.login,.verbar,.fs{display:none!important}
  #printArea{display:flex;flex-wrap:wrap;gap:3mm}
  .lab{border:0.2mm solid #999}
 }
@@ -358,7 +359,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
   <h3>② 設備 QR（一台一張）</h3>
   <div class="filters">
    <select id="qSec" onchange="renderQR()"></select>
-   <select id="qSize" onchange="renderQR()"><option value="s">小標籤 5×3 cm（閥件、儀表旁）</option><option value="l">大標籤 7×5 cm（箱體、牆面）</option></select>
+   <select id="qSize" onchange="renderQR()"><option value="m">QW6319 標準 6×4 cm</option><option value="s">小標籤 5×3 cm（閥件、儀表旁）</option><option value="l">大標籤 7×5 cm（箱體、牆面）</option></select>
    <button class="btn sm ghost" onclick="qrAll(true)">全選</button><button class="btn sm ghost" onclick="qrAll(false)">全不選</button>
    <button class="btn sm grn" onclick="printQR()">🖨 列印勾選標籤</button>
   </div>
@@ -433,7 +434,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
   <label class="full">備註<input id="e_note"></label>
  </div>
  <datalist id="dlSec"></datalist><datalist id="dlItem"></datalist>
- <div class="hint">設備編號是示意圖定位用（例如 HK-03 對應圖上的 OPSO-B），已在圖上的設備請勿改編號，只改名稱即可。</div>
+ <div class="hint">設備編號是示意圖定位用（例如 5A-03 對應圖上的 OPSO-B），已在圖上的設備請勿改編號，只改名稱即可。</div>
  <div class="mfoot"><button class="btn red" id="btnDelEq" onclick="delEquip()">刪除</button><span class="hspace"></span><button class="btn ghost" onclick="closeM('mEq')">取消</button><button class="btn" onclick="saveEquip()">💾 儲存</button></div>
 </div></div>
 
@@ -508,13 +509,13 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(n*r,o*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
 </script>
 <script>
-const API_URL = "";
-const VERSION = "v2.0";
-const WHATS_NEW = "重新整理後畫面保持乾淨，不會自動跳出上次點的設備";
+const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
+const VERSION = "v2.4";
+const WHATS_NEW = "正式連上雲端試算表：所有人看到同一份資料，請重新登入一次";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
- {key:"HK", name:"海口整壓站", code:"5A-00001", addr:"仁德路103號", map:"HK"}
+ {key:"5A", alias:["HK"], name:"海口整壓站", code:"5A-00001", addr:"仁德路103號", map:"HK"}
 ];
 const PUBLIC_URL = "https://chuchien163-wq.github.io/zhujiangas/station_repair.html";
 let ST_I = 0;
@@ -524,80 +525,80 @@ const STATUS = ["已完成","處理中","待處理"];
 const GROUPS = ["中壓","低壓","非供氣","監控","防爆"];
 
 const SEED_EQ = [
- ["HK-01","中壓入口","中壓","壓力表","高壓壓力表（入口）","入口壓力表","","入口壓力"],
- ["HK-02","中壓B線","中壓","開關閥","2\"球閥（B線入口）","球閥","2\"",""],
- ["HK-03","中壓B線","中壓","遮斷閥","2\"超壓遮斷閥（B線）","OPSO-B","2\"","超壓關斷訊號B"],
- ["HK-04","中壓B線","中壓","整壓器","2\"軸流閥整壓器（B線）","整壓器B","2\"",""],
- ["HK-05","中壓B線","中壓","其他","2\"盲板","盲板","2\"",""],
- ["HK-06","中壓A線","中壓","開關閥","2\"球閥（A線入口）","球閥","2\"",""],
- ["HK-07","中壓A線","中壓","過濾器","過濾器","過濾器","",""],
- ["HK-08","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第一段）","整壓器A1","2\"",""],
- ["HK-09","中壓A線","中壓","壓力表","中壓壓力表","中壓表","","中間壓力"],
- ["HK-10","中壓A線","中壓","遮斷閥","2\"超壓遮斷閥（A線）","OPSO-A","2\"","超壓關斷訊號A"],
- ["HK-11","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第二段）","整壓器A2","2\"",""],
- ["HK-12","中壓A線","中壓","計量表","AL5000 計量表","計量表","AL5000",""],
- ["HK-13","中壓A線","中壓","開關閥","2\"球閥（計量表後）","球閥","2\"",""],
- ["HK-14","中壓出口","中壓","壓力表","出口壓力傳送器","出口壓力","","出口壓力"],
- ["HK-15","低壓B線","中壓","開關閥","4\"球閥（B線整壓器前）","4\"球閥","4\"",""],
- ["HK-16","低壓B線","中壓","整壓器","4\"軸流閥整壓器","4\"整壓器","4\"",""],
- ["HK-17","低壓B線","低壓","開關閥","4\"球閥（B線整壓器後）","4\"球閥","4\"",""],
- ["HK-18","低壓B線","低壓","開關閥","6\"球閥（B線出口）","6\"球閥","6\"",""],
- ["HK-19","低壓B線","低壓","壓力表","低壓壓力表（B線出口）","B出口表","mmH2O","B線-低壓出口"],
- ["HK-20","低壓A線","中壓","開關閥","4\"球閥（A線整壓器前）","4\"球閥","4\"",""],
- ["HK-21","低壓A線","中壓","整壓器","2\"DIVAL BP 直動型整壓器（中減低）","DIVAL","2\"",""],
- ["HK-22","低壓A線","低壓","開關閥","4\"球閥（A線整壓器後）","4\"球閥","4\"",""],
- ["HK-23","低壓A線","低壓","開關閥","6\"球閥（A線出口）","6\"球閥","6\"",""],
- ["HK-24","低壓A線","低壓","壓力表","低壓壓力表（A線出口）","A出口表","mmH2O","A線-低壓出口"],
- ["HK-25","低壓連通","低壓","開關閥","6\"球閥（A/B線連通）","6\"連通閥","6\"",""],
- ["HK-26","下方管線","中壓","開關閥","6\"球閥（下方出口）","6\"球閥","6\"",""],
- ["HK-31","中壓管線","中壓","管體","中壓管體","中壓管體","",""],
- ["HK-32","低壓管線","低壓","管體","低壓管體","低壓管體","",""],
- ["HK-41","監控系統","監控","RTU","RTU 遠端監控單元","RTU","","通訊狀態"],
- ["HK-42","監控系統","監控","RTU","UPS 不斷電系統","UPS","","市電狀態"],
- ["HK-43","監控系統","監控","瓦斯偵測器","瓦斯偵測器 1","瓦斯偵測1","","洩漏偵測1"],
- ["HK-44","監控系統","監控","瓦斯偵測器","瓦斯偵測器 2","瓦斯偵測2","","洩漏偵測2"],
- ["HK-45","監控系統","監控","地震感知器","地震感知器 1","地震感知1","","地震警報1"],
- ["HK-46","監控系統","監控","地震感知器","地震感知器 2","地震感知2","","地震警報2"],
- ["HK-47","監控系統","監控","火警感知器","火警（火焰）感知器","火警感知","","火焰警報"],
- ["HK-48","監控系統","監控","其他","門禁感測器","門禁","","門禁狀態"],
- ["HK-49","監控系統","監控","監視器","監視器","監視器","",""],
- ["HK-50","監控系統","監控","其他","環境溫度感測器","溫度感測","","環境溫度"],
- ["HK-51","監控系統","監控","RTU","電動驅動器","電動驅動器","",""],
- ["HK-61","非供氣設備","非供氣","環境","站區環境","環境","",""],
- ["HK-62","非供氣設備","非供氣","警告標示","警告標示","警告標示","",""],
- ["HK-63","供氣設備","中壓","法蘭片","法蘭片（全站）","法蘭片","",""],
- ["HK-64","供氣設備","中壓","支撐架","支撐架（全站）","支撐架","",""],
- ["HK-65","安全設備","非供氣","閥門板手","閥門板手","閥門板手","",""],
- ["HK-66","安全設備","非供氣","乾粉滅火器","乾粉滅火器","滅火器","",""],
- ["HK-67","安全設備","非供氣","通風設備","通風設備","通風設備","",""],
- ["HK-68","防爆設備","防爆","防爆燈具","防爆燈具","防爆燈具","",""],
- ["HK-69","防爆設備","防爆","配管","防爆配管","防爆配管","",""],
- ["HK-70","站房","非供氣","站房結構","站房結構及門鎖","站房門鎖","",""],
- ["HK-71","站房","非供氣","排水系統","排水系統","排水系統","",""],
- ["HK-72","站房","非供氣","隔離設備","隔離設備（護網）","護網","",""],
- ["HK-73","標示牌","非供氣","標示牌","公司站名標示牌","站名牌","",""],
- ["HK-74","標示牌","非供氣","標示牌","危害成分標示牌","危害成分牌","",""],
- ["HK-75","標示牌","非供氣","標示牌","非經許可嚴禁擅入標示牌","禁止擅入牌","",""],
- ["HK-76","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""]
+ ["5A-01","中壓入口","中壓","壓力表","高壓壓力表（入口）","入口壓力表","","入口壓力"],
+ ["5A-02","中壓B線","中壓","開關閥","2\"球閥（B線入口）","球閥","2\"",""],
+ ["5A-03","中壓B線","中壓","遮斷閥","2\"超壓遮斷閥（B線）","OPSO-B","2\"","超壓關斷訊號B"],
+ ["5A-04","中壓B線","中壓","整壓器","2\"軸流閥整壓器（B線）","軸流閥B","2\"",""],
+ ["5A-05","中壓B線","中壓","其他","2\"盲板","盲板","2\"",""],
+ ["5A-06","中壓A線","中壓","開關閥","2\"球閥（A線入口）","球閥","2\"",""],
+ ["5A-07","中壓A線","中壓","過濾器","過濾器","過濾器","",""],
+ ["5A-08","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第一段）","軸流閥A1","2\"",""],
+ ["5A-09","中壓A線","中壓","壓力表","中壓壓力表","中壓表","","中間壓力"],
+ ["5A-10","中壓A線","中壓","遮斷閥","2\"超壓遮斷閥（A線）","OPSO-A","2\"","超壓關斷訊號A"],
+ ["5A-11","中壓A線","中壓","整壓器","2\"軸流閥整壓器（A線第二段）","軸流閥A2","2\"",""],
+ ["5A-12","中壓A線","中壓","計量表","AL5000 計量表","計量表","AL5000",""],
+ ["5A-13","中壓A線","中壓","開關閥","2\"球閥（計量表後）","球閥","2\"",""],
+ ["5A-14","中壓出口","中壓","壓力表","出口壓力傳送器","出口壓力","","出口壓力"],
+ ["5A-15","低壓B線","中壓","開關閥","4\"球閥（B線整壓器前）","4\"球閥","4\"",""],
+ ["5A-16","低壓B線","中壓","整壓器","4\"DIVAL 整壓器（低壓B線）","DIVAL","4\"",""],
+ ["5A-17","低壓B線","低壓","開關閥","4\"球閥（B線整壓器後）","4\"球閥","4\"",""],
+ ["5A-18","低壓B線","低壓","開關閥","6\"球閥（B線出口）","6\"球閥","6\"",""],
+ ["5A-19","低壓B線","低壓","壓力表","低壓壓力表（B線出口）","B出口表","mmH2O","B線-低壓出口"],
+ ["5A-20","低壓A線","中壓","開關閥","4\"球閥（A線整壓器前）","4\"球閥","4\"",""],
+ ["5A-21","低壓A線","中壓","整壓器","2\"DIVAL 整壓器（低壓A線）","DIVAL","2\"",""],
+ ["5A-22","低壓A線","低壓","開關閥","4\"球閥（A線整壓器後）","4\"球閥","4\"",""],
+ ["5A-23","低壓A線","低壓","開關閥","6\"球閥（A線出口）","6\"球閥","6\"",""],
+ ["5A-24","低壓A線","低壓","壓力表","低壓壓力表（A線出口）","A出口表","mmH2O","A線-低壓出口"],
+ ["5A-25","低壓連通","低壓","壓力表","壓力表（A/B線連通）","壓力表","",""],
+ ["5A-26","下方管線","中壓","開關閥","6\"球閥（下方出口）","6\"球閥","6\"",""],
+ ["5A-27","中壓管線","中壓","管體","中壓管體","中壓管體","",""],
+ ["5A-28","低壓管線","低壓","管體","低壓管體","低壓管體","",""],
+ ["5A-29","監控系統","監控","RTU","RTU 遠端監控單元","RTU","","通訊狀態"],
+ ["5A-30","監控系統","監控","RTU","UPS 不斷電系統","UPS","","市電狀態"],
+ ["5A-31","監控系統","監控","瓦斯偵測器","瓦斯偵測器 1","瓦斯偵測1","","洩漏偵測1"],
+ ["5A-32","監控系統","監控","瓦斯偵測器","瓦斯偵測器 2","瓦斯偵測2","","洩漏偵測2"],
+ ["5A-33","監控系統","監控","地震感知器","地震感知器 1","地震感知1","","地震警報1"],
+ ["5A-34","監控系統","監控","地震感知器","地震感知器 2","地震感知2","","地震警報2"],
+ ["5A-35","監控系統","監控","火警感知器","火警（火焰）感知器","火警感知","","火焰警報"],
+ ["5A-36","監控系統","監控","其他","門禁感測器","門禁","","門禁狀態"],
+ ["5A-37","監控系統","監控","監視器","監視器","監視器","",""],
+ ["5A-38","監控系統","監控","其他","環境溫度感測器","溫度感測","","環境溫度"],
+ ["5A-39","監控系統","監控","RTU","電動驅動器","電動驅動器","",""],
+ ["5A-40","非供氣設備","非供氣","環境","站區環境","環境","",""],
+ ["5A-41","非供氣設備","非供氣","警告標示","警告標示","警告標示","",""],
+ ["5A-42","供氣設備","中壓","法蘭片","法蘭片（全站）","法蘭片","",""],
+ ["5A-43","供氣設備","中壓","支撐架","支撐架（全站）","支撐架","",""],
+ ["5A-44","安全設備","非供氣","閥門板手","閥門板手","閥門板手","",""],
+ ["5A-45","安全設備","非供氣","乾粉滅火器","乾粉滅火器","滅火器","",""],
+ ["5A-46","安全設備","非供氣","通風設備","通風設備","通風設備","",""],
+ ["5A-47","防爆設備","防爆","防爆燈具","防爆燈具","防爆燈具","",""],
+ ["5A-48","防爆設備","防爆","配管","防爆配管","防爆配管","",""],
+ ["5A-49","站房","非供氣","站房結構","站房結構及門鎖","站房門鎖","",""],
+ ["5A-50","站房","非供氣","排水系統","排水系統","排水系統","",""],
+ ["5A-51","站房","非供氣","隔離設備","隔離設備（護網）","護網","",""],
+ ["5A-52","標示牌","非供氣","標示牌","公司站名標示牌","站名牌","",""],
+ ["5A-53","標示牌","非供氣","標示牌","危害成分標示牌","危害成分牌","",""],
+ ["5A-54","標示牌","非供氣","標示牌","非經許可嚴禁擅入標示牌","禁止擅入牌","",""],
+ ["5A-55","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""]
 ].map((r,i)=>({id:r[0],station:STATIONS[0].name,section:r[1],group:r[2],item:r[3],name:r[4],short:r[5],spec:r[6],tag:r[7],note:"",order:i+1}));
 
 const LAYOUT_HK = {
- "HK-01":{t:"gauge",x:95,y:420},
- "HK-02":{t:"ball",x:270,y:200},"HK-03":{t:"opso",x:390,y:200},"HK-04":{t:"reg",x:510,y:200},"HK-05":{t:"blind",x:860,y:200},
- "HK-06":{t:"ball",x:250,y:600},"HK-07":{t:"filter",x:340,y:600},"HK-08":{t:"reg",x:430,y:600},"HK-09":{t:"gauge",x:510,y:600},
- "HK-10":{t:"opso",x:590,y:600},"HK-11":{t:"reg",x:680,y:600},"HK-12":{t:"meter",x:790,y:600},"HK-13":{t:"ball",x:880,y:600},
- "HK-15":{t:"ball",x:1090,y:200},"HK-16":{t:"reg",x:1210,y:200},"HK-17":{t:"ball",x:1330,y:200},"HK-18":{t:"ball",x:1490,y:200},"HK-19":{t:"gauge",x:1550,y:200},
- "HK-20":{t:"ball",x:1090,y:400},"HK-21":{t:"reg",x:1210,y:400},"HK-22":{t:"ball",x:1330,y:400},"HK-23":{t:"ball",x:1490,y:400},"HK-24":{t:"gauge",x:1550,y:400},
- "HK-25":{t:"ball",x:1420,y:300,r:90},"HK-26":{t:"ball",x:1300,y:600}
+ "5A-01":{t:"gauge",x:95,y:420},
+ "5A-02":{t:"ball",x:270,y:200},"5A-03":{t:"opso",x:390,y:200},"5A-04":{t:"reg",x:510,y:200},"5A-05":{t:"blind",x:860,y:200},
+ "5A-06":{t:"ball",x:250,y:600},"5A-07":{t:"filter",x:340,y:600},"5A-08":{t:"reg",x:430,y:600},"5A-09":{t:"gauge",x:510,y:600},
+ "5A-10":{t:"opso",x:590,y:600},"5A-11":{t:"reg",x:680,y:600},"5A-12":{t:"meter",x:790,y:600},"5A-13":{t:"ball",x:880,y:600},
+ "5A-15":{t:"ball",x:1090,y:200},"5A-16":{t:"reg",x:1210,y:200},"5A-17":{t:"ball",x:1330,y:200},"5A-18":{t:"ball",x:1490,y:200},"5A-19":{t:"gauge",x:1550,y:200},
+ "5A-20":{t:"ball",x:1090,y:400},"5A-21":{t:"reg",x:1210,y:400},"5A-22":{t:"ball",x:1330,y:400},"5A-23":{t:"ball",x:1490,y:400},"5A-24":{t:"gauge",x:1550,y:400},
+ "5A-25":{t:"gauge",x:1420,y:300,r:90},"5A-26":{t:"ball",x:1300,y:600}
 };
 const READOUTS_HK = [
- {id:"HK-50",l:"環境溫度",x:180,y:20},{id:"HK-01",l:"入口壓力",x:20,y:470},{id:"HK-14",l:"出口壓力",x:700,y:92},
- {id:"HK-43",l:"洩漏偵測 1",x:580,y:330},{id:"HK-44",l:"洩漏偵測 2",x:1110,y:490},{id:"HK-09",l:"中間壓力",x:445,y:690},
- {id:"HK-19",l:"B線低壓出口",x:1270,y:92},{id:"HK-24",l:"A線低壓出口",x:1400,y:490}
+ {id:"5A-38",l:"環境溫度",x:180,y:20},{id:"5A-01",l:"入口壓力",x:20,y:470},{id:"5A-14",l:"出口壓力",x:700,y:92},
+ {id:"5A-31",l:"洩漏偵測 1",x:580,y:330},{id:"5A-32",l:"洩漏偵測 2",x:1110,y:490},{id:"5A-09",l:"中間壓力",x:445,y:690},
+ {id:"5A-19",l:"B線低壓出口",x:1270,y:92},{id:"5A-24",l:"A線低壓出口",x:1400,y:490}
 ];
 const PIPES_HK = {
- "HK-31":["M40 420 H170","M170 200 V600","M170 200 H1210","M930 200 V600","M1000 200 V400 H1210","M170 600 H1585"],
- "HK-32":["M1210 200 H1585","M1210 400 H1585","M1420 200 V400"]
+ "5A-27":["M40 420 H170","M170 200 V600","M170 200 H1210","M930 200 V600","M1000 200 V400 H1210","M170 600 H1585"],
+ "5A-28":["M1210 200 H1585","M1210 400 H1585","M1420 200 V400"]
 };
 
 const MAPS = {HK:{layout:LAYOUT_HK, readouts:READOUTS_HK, pipes:PIPES_HK}};
@@ -640,11 +641,16 @@ async function http(method,params,body){
  }finally{clearTimeout(tm);}
 }
 
-const SEED_VER=2;
+const SEED_VER=4;
+const ID_MAP={"HK-01": "5A-01", "HK-02": "5A-02", "HK-03": "5A-03", "HK-04": "5A-04", "HK-05": "5A-05", "HK-06": "5A-06", "HK-07": "5A-07", "HK-08": "5A-08", "HK-09": "5A-09", "HK-10": "5A-10", "HK-11": "5A-11", "HK-12": "5A-12", "HK-13": "5A-13", "HK-14": "5A-14", "HK-15": "5A-15", "HK-16": "5A-16", "HK-17": "5A-17", "HK-18": "5A-18", "HK-19": "5A-19", "HK-20": "5A-20", "HK-21": "5A-21", "HK-22": "5A-22", "HK-23": "5A-23", "HK-24": "5A-24", "HK-25": "5A-25", "HK-26": "5A-26", "HK-31": "5A-27", "HK-32": "5A-28", "HK-41": "5A-29", "HK-42": "5A-30", "HK-43": "5A-31", "HK-44": "5A-32", "HK-45": "5A-33", "HK-46": "5A-34", "HK-47": "5A-35", "HK-48": "5A-36", "HK-49": "5A-37", "HK-50": "5A-38", "HK-51": "5A-39", "HK-61": "5A-40", "HK-62": "5A-41", "HK-63": "5A-42", "HK-64": "5A-43", "HK-65": "5A-44", "HK-66": "5A-45", "HK-67": "5A-46", "HK-68": "5A-47", "HK-69": "5A-48", "HK-70": "5A-49", "HK-71": "5A-50", "HK-72": "5A-51", "HK-73": "5A-52", "HK-74": "5A-53", "HK-75": "5A-54", "HK-76": "5A-55"};
+function remapIds(){const f=id=>ID_MAP[id]||id;S.equips.forEach(e=>e.id=f(e.id));S.records.forEach(r=>r.eid=f(r.eid));(S.insps||[]).forEach(x=>(x.items||[]).forEach(i=>{if(i.eid)i.eid=f(i.eid);}));}
+const SEED_FIX={"5A-04":"整壓器B","5A-08":"整壓器A1","5A-11":"整壓器A2","5A-16":"4\"軸流閥整壓器","5A-21":"2\"DIVAL BP 直動型整壓器（中減低）","5A-25":"6\"球閥（A/B線連通）"};
 const DEMO_USERS=[["白沛豫","管理員","1688"],["陳經理","部門主管","0007"],["彭敬文","單位主管","0013"],["邱副理","單位主管","0015"],["陳人豪","檢查員","0062"]].map(u=>({name:u[0],role:u[1],pw:u[2],sig:"",active:"Y"}));
 function loadDemo(){
- try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});
-  if((d.seedVer||1)<SEED_VER){const has=new Set(S.equips.map(e=>e.id));SEED_EQ.forEach(e=>{if(!has.has(e.id))S.equips.push(JSON.parse(JSON.stringify(e)));});saveDemo();}
+ try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});if(!S.users.some(x=>x.role==="管理員"&&String(x.active).toUpperCase()==="Y")){const a=S.users.find(x=>x.name==="白沛豫");if(a){a.role="管理員";a.active="Y";}}
+  if((d.seedVer||1)<4)remapIds();
+  if((d.seedVer||1)<SEED_VER){const has=new Set(S.equips.map(e=>e.id));SEED_EQ.forEach(e=>{if(!has.has(e.id))S.equips.push(JSON.parse(JSON.stringify(e)));});
+   Object.keys(SEED_FIX).forEach(id=>{const e=eqById(id),n=SEED_EQ.find(x=>x.id===id);if(e&&n&&(e.name===SEED_FIX[id]||e.short===SEED_FIX[id])){["section","group","item","name","short","spec"].forEach(k=>e[k]=n[k]);}});saveDemo();}
   return;}}catch(e){}
  S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];S.insps=[];S.users=JSON.parse(JSON.stringify(DEMO_USERS));saveDemo();
 }
@@ -694,7 +700,7 @@ async function write(action,data){
   const me=S.users.find(u=>u.name===S.user.name);
   if(action==="setMySig"){me.sig=o.sig;saveDemo();renderAll();return true;}
   if(action==="setMyPw"){me.pw=o.newPw;saveDemo();return true;}
-  if(action==="saveUser"){const u=S.users.find(x=>x.name===o.name);if(u){u.role=o.role;u.active=o.active;if(o.pw)u.pw=o.pw;}else S.users.push({name:o.name,role:o.role,pw:o.pw,active:o.active,sig:""});saveDemo();return true;}
+  if(action==="saveUser"){const lk=adminLock(o);if(lk){alert("❌ "+lk);return false;}const u=S.users.find(x=>x.name===o.name);if(u){u.role=o.role;u.active=o.active;if(o.pw)u.pw=o.pw;}else S.users.push({name:o.name,role:o.role,pw:o.pw,active:o.active,sig:""});saveDemo();return true;}
   if(action==="deleteUser"){if(o.name===S.user.name){alert("不能刪除自己");return false;}S.users=S.users.filter(u=>u.name!==o.name);saveDemo();return true;}
   if(action==="signInspection"){const x=S.insps.find(i=>i.iid===o.iid);if(!x)return false;if(!canSign(x,o.level)){alert("❌ 你的角色不能簽這一欄，或已經簽過");return false;}const n=nowStr();if(o.level==="unit"){x.unitName=me.name;x.sigUnit=me.sig;x.unitAt=n;}else{x.deptName=me.name;x.sigDept=me.sig;x.deptAt=n;}x.signState=signStateOf(x);saveDemo();renderAll();return true;}
   if(action==="addRecord")o.createdBy=S.user.name;
@@ -727,6 +733,7 @@ async function write(action,data){
 /* ===== 登入／帳號／簽名 ===== */
 const ROLES = ["檢查員","單位主管","部門主管","管理員"];
 const LS_LOGIN = "station_repair_login_v1";
+function adminLock(o){if(S.user&&o.name===S.user.name&&(o.role!=="管理員"||String(o.active).toUpperCase()!=="Y"))return "不能把自己改成其他角色或停用，否則會失去管理權限。";const left=(S.users||[]).filter(u=>u.role==="管理員"&&String(u.active).toUpperCase()==="Y"&&u.name!==o.name).length;if(!left&&(o.role!=="管理員"||String(o.active).toUpperCase()!=="Y"))return "系統至少要保留一位啟用中的管理員。";return "";}
 function isAdmin(){return !!(S.user&&S.user.role==="管理員");}
 function updLock(){
  const u=S.user;$("lockBtn").textContent=u?"👤 "+u.name+"（"+u.role+"）":"🔒 登入";
@@ -850,11 +857,11 @@ function deepLink(){
  let nav="";try{nav=(performance.getEntriesByType("navigation")[0]||{}).type||"";}catch(e){}
  cleanUrl();
  if(nav==="reload")return;
- if(!id&&st){const i=STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase());if(i<0){toast("找不到整壓站代碼 "+st,true);return;}ST_I=i;S.sel=null;go("map");renderAll();openFs();return;}
+ if(!id&&st){const i=STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase()||(t.alias||[]).some(a=>a.toUpperCase()===st.toUpperCase()));if(i<0){toast("找不到整壓站代碼 "+st,true);return;}ST_I=i;S.sel=null;go("map");renderAll();openFs();return;}
  if(!id)return;
- const e=eqById(id);if(!e){toast("找不到設備 "+id+"，可能已被刪除或改編號",true);return;}
+ const e=eqById(ID_MAP[id.toUpperCase()]||id);if(!e){toast("找不到設備 "+id+"，可能已被刪除或改編號",true);return;}
  const i=STATIONS.findIndex(t=>t.name===eqSt(e));if(i>=0)ST_I=i;
- S.sel=id;go("map");renderAll();openPop();
+ S.sel=e.id;go("map");renderAll();openPop();
 }
 function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else if(S.view==="insp")renderInsp();else renderStat();}
 
@@ -1108,8 +1115,8 @@ function renderQR(){
  const list=qrList(),sz=$("qSize").value;
  $("qPick").innerHTML=list.map(e=>'<label><input type="checkbox" '+(QR_OFF.has(e.id)?"":"checked")+' onchange="qrTog(\''+e.id+'\',this.checked)"><b>'+esc(e.id)+'</b>'+esc(e.name)+'</label>').join("")||'<div class="muted">此站沒有設備</div>';
  const on=list.filter(e=>!QR_OFF.has(e.id));
- const per=sz==="s"?"每張 A4 約 24 張":"每張 A4 約 10 張";
- $("qSum").innerHTML='已勾選 <b>'+on.length+'</b> / '+list.length+' 項｜'+per+'｜約 <b>'+Math.max(1,Math.ceil(on.length/(sz==="s"?24:10)))+'</b> 張 A4';
+ const per=sz==="s"?"每張 A4 約 24 張":sz==="m"?"每張 A4 約 18 張":"每張 A4 約 10 張";
+ $("qSum").innerHTML='已勾選 <b>'+on.length+'</b> / '+list.length+' 項｜'+per+'｜約 <b>'+Math.max(1,Math.ceil(on.length/(sz==="s"?24:sz==="m"?18:10)))+'</b> 張 A4';
  $("qPrev").innerHTML=on.slice(0,12).map(e=>labelHtml(e,sz)).join("")+(on.length>12?'<div class="muted" style="align-self:center">…其餘 '+(on.length-12)+' 張列印時一併輸出</div>':'');
 }
 function qrTog(id,on){if(on)QR_OFF.delete(id);else QR_OFF.add(id);renderQR();}
