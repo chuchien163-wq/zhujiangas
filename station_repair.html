@@ -15,6 +15,7 @@ header{display:flex;align-items:center;gap:14px;padding:10px 18px;background:var
 header h1{font-size:22px;margin:0;letter-spacing:2px}
 .chip{background:rgba(255,255,255,.14);border-radius:20px;padding:4px 12px;font-size:15px}
 .hspace{flex:1}
+.vchip{background:#f0b429;color:#3d2c00;border-radius:10px;padding:2px 8px;font-size:13px;font-weight:800}
 .stsel{color:#fff;border:0;font-size:16px;font-weight:700;cursor:pointer}.stsel option{color:#000}
 .conn{font-size:14px;padding:4px 10px;border-radius:14px;background:#2c3e50}
 .conn.ok{background:var(--grn)}.conn.demo{background:var(--org)}.conn.err{background:var(--red)}
@@ -262,7 +263,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 <div class="app">
 <header>
  <svg class="logo" viewBox="0 0 40 40"><path d="M20 2 29 11 20 20 11 11Z" fill="#e53935"/><path d="M11 11 20 20 11 29 2 20Z" fill="#2e7d32"/><path d="M29 11 38 20 29 29 20 20Z" fill="#2e7d32"/><path d="M20 20 29 29 20 38 11 29Z" fill="#2e7d32"/></svg>
- <h1>整壓站設備維修履歷</h1>
+ <h1>整壓站設備維修履歷</h1><span class="vchip" id="verChip"></span>
  <select class="chip stsel" id="stSel" onchange="switchSt(this.value)"></select><span class="chip" id="stChip"></span>
  <span class="hspace"></span>
  <span class="conn" id="conn">連線中…</span>
@@ -475,6 +476,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <button class="btn grn" id="lgBtn" style="width:100%;padding:12px;font-size:18px" onclick="doLogin()">登入</button>
  <div id="lgMsg" class="lgmsg"></div>
  <div class="muted" style="margin-top:14px;font-size:14px">沒有帳號或忘記密碼，請洽管理員</div>
+ <div class="muted" style="margin-top:6px;font-size:13px">版本 <b id="lgVer"></b></div>
 </div></div>
 
 <div class="mask" id="mAcc"><div class="modal" style="width:min(720px,100%)">
@@ -507,8 +509,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "";
-const VERSION = "v1.8";
-const WHATS_NEW = "新增版本更新通知：之後有新版本，畫面上方會自動提醒並可一鍵更新";
+const VERSION = "v1.9";
+const WHATS_NEW = "版本號移到標題旁與登入畫面，手機也看得到";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -1386,7 +1388,7 @@ function renderStat(){
 }
 
 $("stSel").innerHTML=STATIONS.map((t,i)=>'<option value="'+i+'">'+esc(t.name)+'</option>').join("");
-$("verInfo").textContent=VERSION;
+$("verInfo").textContent=VERSION;$("verChip").textContent=VERSION;$("lgVer").textContent=VERSION;
 /* ===== 版本更新通知（同管線系統做法）===== */
 function verCmp(a,b){const x=String(a).replace(/^v/,"").split("."),y=String(b).replace(/^v/,"").split(".");for(let i=0;i<Math.max(x.length,y.length);i++){const d=(parseInt(x[i],10)||0)-(parseInt(y[i],10)||0);if(d)return d;}return 0;}
 let VER_CHECKING=false,VER_SHOWN="";
