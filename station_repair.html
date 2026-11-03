@@ -510,8 +510,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
-const VERSION = "v2.7";
-const WHATS_NEW = "海口站管線修正：A線接到立管為止，5A-26 移到下方出口管；「洩漏偵測」改名「漏氣偵測」";
+const VERSION = "v2.8";
+const WHATS_NEW = "補回 5A-56 中壓表（5A-11 與 5A-12 之間）：雲端缺資料時自動補上";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -669,6 +669,7 @@ async function loadAll(){
  try{
   const j=await http("GET",{action:"list"});
   S.equips=j.equips;S.records=j.records;S.insps=parseInsps(j.insps);S.users=j.users||[];
+  S.missingSeed=SEED_EQ.filter(n=>!S.equips.some(e=>e.id===n.id)).map(n=>JSON.parse(JSON.stringify(n)));S.missingSeed.forEach(n=>S.equips.push(Object.assign({},n)));
   try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");$("banner").classList.remove("on");
  }catch(e){
@@ -853,7 +854,13 @@ function switchSt(i){ST_I=+i;S.sel=null;setUrl(null);["rEq","eqSec","qSec"].forE
 function setUrl(){cleanUrl();}
 function cleanUrl(){try{const u=new URL(location.href);["eq","st","v","vchk"].forEach(k=>u.searchParams.delete(k));history.replaceState(null,"",u.pathname+(u.search||"")+u.hash);}catch(e){}}
 let deepDone=false;
-function deepLink(){
+async function healSeed(){
+ if(S.mode!=="cloud"||!S.user||!isAdmin()||!(S.missingSeed||[]).length)return;
+ const list=S.missingSeed;S.missingSeed=[];let ok=0;
+ for(const n of list){try{await http("POST",null,{action:"saveEquip",user:S.user.name,pw:S.user.pw,data:n});ok++;}catch(e){}}
+ if(ok)toast("☁ 已自動補上雲端缺少的設備："+list.map(n=>n.id).join("、"));
+}
+function deepLink(){healSeed();
  if(deepDone)return;deepDone=true;
  const qs=new URLSearchParams(location.search),id=qs.get("eq"),st=qs.get("st");
  let nav="";try{nav=(performance.getEntriesByType("navigation")[0]||{}).type||"";}catch(e){}
