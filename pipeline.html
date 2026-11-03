@@ -287,7 +287,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v4.4</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v4.5</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -325,7 +325,7 @@ table.ttrack td{vertical-align:middle}
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
 // 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
-var WEB_VER = "4.4";
+var WEB_VER = "4.5";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_pw_v1";
 var TIMEOUT_MS = 25000;
@@ -488,7 +488,8 @@ function saveUI() { lsSet(LS_UI, JSON.stringify({ page: UI.page, y: UI.y, m1: UI
 /* ---------- 計算核心 ---------- */
 function caseByUid(u) { for (var i = 0; i < DB.cases.length; i++) if (DB.cases[i].UID === u) return DB.cases[i]; return null; }
 function pipesOf(c) { return PB[c.UID] || []; }
-function planLen(c) { return num(c["預計管線長度"]); }
+// 預計管線長度：空白＝未填（null）；填 0 也算有填
+function planLen(c) { var v = String(c["預計管線長度"] === undefined || c["預計管線長度"] === null ? "" : c["預計管線長度"]).trim(); return v === "" ? null : num(v); }
 function caseLen(c) { return pipesOf(c).reduce(function (s, p) { return s + num(p["敷設長度"]); }, 0); }
 // 類別：工程編號第 7 碼 R＝改裝（不列入董監事統計）、E/F＝汰換、其餘＝新設（P＝推廣，屬新設）
 function isIndiv(c) { return c["類別"] === "改裝" || /^\d{6}R/i.test(String(c["工程編號"] || "")); }
@@ -628,7 +629,7 @@ function renderDash() {
   var plan = 0, unplan = 0;
   s.done.forEach(function (c) { if (c["類別"] === "汰換") { if (c["汰換性質"] === "計畫性") plan += caseLen(c); else unplan += caseLen(c); } });
   var active = DB.cases.filter(function (c) { return ACTIVE.indexOf(c["狀態"]) > -1; });
-  var plannedLen = active.reduce(function (t, c) { return t + (caseLen(c) || planLen(c)); }, 0);
+  var plannedLen = active.reduce(function (t, c) { return t + (caseLen(c) || planLen(c) || 0); }, 0);
   var h = '<h2 class="pg">📊 總覽<span class="muted" style="font-size:16px;font-weight:500">' + periodText() + '（以完工日計）</span></h2>';
   h += '<div class="toolbar"><input type="search" id="dq" name="srch_dq" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="🔍 搜尋全部工程：工程編號／名稱／位置／管種／現況（不分狀態、不分期間）" value="' + esc(UI.dq || "") + '"></div>';
   if ((UI.dq || "").trim()) h += dashSearch(UI.dq.trim());
@@ -755,7 +756,7 @@ function sortCases(list) {
 function cellVal(c, k) {
   if (k === "類別") return clsBadge(clsOf(c)) + (c["類別"] === "汰換" && c["汰換性質"] ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"]) + "</div>" : "");
   if (k === "狀態") return stBadge(c["狀態"]);
-  if (k === "長度") { var L = caseLen(c), PL = planLen(c); return L ? fmt(L) + (PL ? '<div class="muted" style="font-size:13px">預計 ' + fmt(PL) + "</div>" : "") : (PL ? '<span class="muted" title="尚未填實際長度">預計 ' + fmt(PL) + "</span>" : ""); }
+  if (k === "長度") { var L = caseLen(c), PL = planLen(c); return L ? fmt(L) + (PL !== null ? '<div class="muted" style="font-size:13px">預計 ' + fmt(PL) + "</div>" : "") : (PL !== null ? '<span class="muted" title="尚未填實際長度">預計 ' + fmt(PL) + "</span>" : ""); }
   if (k === "待辦") return todoChips(c);
   if (k === "繳費日" || k === "會勘日期" || k === "完工日") return esc(roc(c[k]));
   if (k === "工程名稱") return esc(c[k]) + (c["廠商"] ? "<div>" + (c["廠商"] ? '<span class="badge ' + (c["廠商"] === "欣宬" ? "b-new" : "b-st") + '" style="font-size:12.5px">' + esc(c["廠商"]) + "</span> " : "") + "" + "</div>" : "");
@@ -846,14 +847,14 @@ function repData() {
         ps.forEach(function (p, k) { rows.push({ c: c, p: p, first: k === 0, n: ps.length }); });
       });
       var sub = rows.reduce(function (t, r) { return t + num(r.p["敷設長度"]); }, 0);
-      var pre = cs.reduce(function (t, c) { return t + planLen(c); }, 0);
+      var pre = cs.reduce(function (t, c) { return t + (planLen(c) || 0); }, 0);
       return { g: g, rows: rows, sub: sub, pre: pre, cases: cs.length };
     });
     return { y: y, groups: groups, total: groups[0].sub + groups[1].sub, pre: groups[0].pre + groups[1].pre };
   });
 }
-function repDiff(c) { var a = caseLen(c), p = planLen(c); if (!a || !p) return ""; var d = Math.round((a - p) * 100) / 100; return d === 0 ? '<span class="muted">0</span>' : '<span style="color:' + (d > 0 ? "var(--bad)" : "var(--ok)") + '">' + (d > 0 ? "+" : "") + fmt(d) + "</span>"; }
-function repDiffN(c) { var a = caseLen(c), p = planLen(c); return a && p ? Math.round((a - p) * 100) / 100 : ""; }
+function repDiff(c) { var a = caseLen(c), p = planLen(c); if (!a || p === null) return ""; var d = Math.round((a - p) * 100) / 100; return d === 0 ? '<span class="muted">0</span>' : '<span style="color:' + (d > 0 ? "var(--bad)" : "var(--ok)") + '">' + (d > 0 ? "+" : "") + fmt(d) + "</span>"; }
+function repDiffN(c) { var a = caseLen(c), p = planLen(c); return a && p !== null ? Math.round((a - p) * 100) / 100 : ""; }
 function renderRep() {
   var data = repData(), grand = 0;
   var h = '<h2 class="pg">🔁 汰換計畫案件彙總<span class="sp"></span><button class="btn" onclick="exportRepXlsx()">⬇ 匯出彙總表 Excel</button><button class="btn pri" onclick="openCase(null,null,\'汰換\')">＋ 新增汰換工程</button></h2>';
@@ -865,7 +866,7 @@ function renderRep() {
       G.rows.forEach(function (r, i) {
         var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
         var cls = done ? "" : ' class="red"';
-        h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="年度">' + esc(Y.y) + '年</td><td data-l="類別">' + G.g + '</td><td data-l="項次">' + (i + 1) + '</td><td data-l="工程編號"' + cls + ">" + esc(c["工程編號"]) + '</td><td data-l="工程名稱"' + cls + ">" + esc(c["工程名稱"]) + '</td><td data-l="工程位置"' + cls + ">" + esc(c["工程位置"]) + '</td><td class="num" data-l="預計(M)">' + (r.first && planLen(c) ? fmt(planLen(c)) : "") + '</td><td data-l="管材"' + cls + ">" + esc(r.p["敷設管種"] || "") + '</td><td class="num' + (done ? "" : " red") + '" data-l="實際(M)">' + (r.p["敷設長度"] !== undefined && r.p["敷設長度"] !== "" ? fmt(r.p["敷設長度"]) : "") + '</td><td class="num" data-l="差異(M)">' + (r.first ? repDiff(c) : "") + '</td><td data-l="竣工時間">' + (done ? roc(c["完工日"]) : '<span class="red">' + esc(c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工") + "</span>") + "</td></tr>";
+        h += '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="年度">' + esc(Y.y) + '年</td><td data-l="類別">' + G.g + '</td><td data-l="項次">' + (i + 1) + '</td><td data-l="工程編號"' + cls + ">" + esc(c["工程編號"]) + '</td><td data-l="工程名稱"' + cls + ">" + esc(c["工程名稱"]) + '</td><td data-l="工程位置"' + cls + ">" + esc(c["工程位置"]) + '</td><td class="num" data-l="預計(M)">' + (r.first && planLen(c) !== null ? fmt(planLen(c)) : "") + '</td><td data-l="管材"' + cls + ">" + esc(r.p["敷設管種"] || "") + '</td><td class="num' + (done ? "" : " red") + '" data-l="實際(M)">' + (r.p["敷設長度"] !== undefined && r.p["敷設長度"] !== "" ? fmt(r.p["敷設長度"]) : "") + '</td><td class="num" data-l="差異(M)">' + (r.first ? repDiff(c) : "") + '</td><td data-l="竣工時間">' + (done ? roc(c["完工日"]) : '<span class="red">' + esc(c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工") + "</span>") + "</td></tr>";
       });
       h += '<tr class="sub"><td data-l="">' + esc(Y.y) + '年</td><td data-l="">' + G.g + ' 小計</td><td colspan="4" data-l="">' + G.cases + ' 案</td><td class="num" data-l="預計(M)">' + fmt(G.pre) + '</td><td data-l=""></td><td class="num" data-l="實際(M)">' + fmt(G.sub) + '</td><td colspan="2" data-l=""></td></tr>';
     });
@@ -1272,7 +1273,7 @@ function lenData(p) {
   var pre = function (cls, pr) {
     if (cls !== "汰換") return null;
     var o = { p: 0, d: 0, n: 0, m: 0 };
-    all.forEach(function (c) { if (clsOf(c) !== "汰換" || (pr !== "小計" && rt(c) !== pr)) return; o.n++; if (planLen(c)) { o.p += planLen(c); o.d += caseLen(c) - planLen(c); o.m++; } });
+    all.forEach(function (c) { if (clsOf(c) !== "汰換" || (pr !== "小計" && rt(c) !== pr)) return; o.n++; if (planLen(c) !== null) { o.p += planLen(c); o.d += caseLen(c) - planLen(c); o.m++; } });
     o.d = Math.round(o.d * 100) / 100; return o;
   };
   var list = function (cls, pr) {
@@ -1339,20 +1340,20 @@ function lenPop(i, cls, pr) {
   if (isRep) h += '<p class="muted" style="margin:0 0 8px">差異＝實際－預計；<span class="red">未填</span>的不算進預計和差異。點「✏️ 補預計」可直接補上。</p>';
   h += '<div class="tblwrap"><table class="t cardify"><thead><tr><th>工程編號</th><th>工程名稱</th>' + (isRep ? "<th>性質</th>" : "<th>類別</th>") + (isRep ? '<th class="num">預計(M)</th>' : "") + '<th class="num">實際(M)</th>' + (isRep ? '<th class="num">差異(M)</th>' : "") + "<th>完工日</th><th></th></tr></thead><tbody>";
   list.forEach(function (c) {
-    var A = caseLen(c), PL = planLen(c), D = A && PL ? Math.round((A - PL) * 100) / 100 : null;
-    tA += A; if (PL) { tP += PL; tD += D || 0; fA += A; fN++; } else { uA += A; uN++; }
-    h += '<tr><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="' + (isRep ? "性質" : "類別") + '">' + (isRep ? esc(c["汰換性質"] || "非計畫性") : clsBadge(clsOf(c))) + "</td>" + (isRep ? '<td class="num" data-l="預計(M)">' + (PL ? fmt(PL) : '<span class="red">未填</span>') + "</td>" : "") + '<td class="num" data-l="實際(M)">' + (A ? fmt(A) : '<span class="red">未填</span>') + "</td>" +
+    var A = caseLen(c), PL = planLen(c), D = A && PL !== null ? Math.round((A - PL) * 100) / 100 : null;
+    tA += A; if (PL !== null) { tP += PL; tD += D || 0; fA += A; fN++; } else { uA += A; uN++; }
+    h += '<tr><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="' + (isRep ? "性質" : "類別") + '">' + (isRep ? esc(c["汰換性質"] || "非計畫性") : clsBadge(clsOf(c))) + "</td>" + (isRep ? '<td class="num" data-l="預計(M)">' + (PL !== null ? fmt(PL) : '<span class="red">未填</span>') + "</td>" : "") + '<td class="num" data-l="實際(M)">' + (A ? fmt(A) : '<span class="red">未填</span>') + "</td>" +
       (isRep ? '<td class="num" data-l="差異(M)">' + (D === null ? "" : '<span style="color:' + (D > 0 ? "var(--bad)" : D < 0 ? "var(--ok)" : "inherit") + '">' + (D > 0 ? "+" : "") + fmt(D) + "</span>") + "</td>" : "") +
-      '<td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="closeModal2();openCase(\'' + c.UID + '\')">' + (isRep && !PL ? "✏️ 補預計" : "✏️ 編輯") + "</button></td></tr>";
+      '<td class="nw" data-l="完工日">' + roc(c["完工日"]) + '</td><td class="act" data-l=""><button class="btn sm" onclick="closeModal2();openCase(\'' + c.UID + '\')">' + (isRep && PL === null ? "✏️ 補預計" : "✏️ 編輯") + "</button></td></tr>";
   });
   var sgn = function (x) { x = Math.round(x * 100) / 100; return (x > 0 ? "+" : "") + fmt(x); };
-  h += '<tr class="tot"><td colspan="3" data-l="">合計（' + list.length + ' 件）</td>' + (isRep ? '<td class="num" data-l="預計(M)">' + fmt(tP) + (uN ? '<div class="red" style="font-size:12.5px">缺 ' + uN + " 件</div>" : "") + "</td>" : "") + '<td class="num" data-l="實際(M)">' + fmt(tA) + "</td>" + (isRep ? '<td class="num" data-l="差異(M)">' + (tP ? sgn(tD) : "") + "</td>" : "") + '<td colspan="2" data-l=""></td></tr>';
+  h += '<tr class="tot"><td colspan="3" data-l="">合計（' + list.length + ' 件）</td>' + (isRep ? '<td class="num" data-l="預計(M)">' + fmt(tP) + (uN ? '<div class="red" style="font-size:12.5px">缺 ' + uN + " 件</div>" : "") + "</td>" : "") + '<td class="num" data-l="實際(M)">' + fmt(tA) + "</td>" + (isRep ? '<td class="num" data-l="差異(M)">' + (fN ? sgn(tD) : "") + "</td>" : "") + '<td colspan="2" data-l=""></td></tr>';
   h += "</tbody></table></div></div>";
   modal2(h, true);
 }
 function lenDetail(list) {
   return '<div class="tblwrap"><table class="t cardify"><thead><tr><th>類別</th><th>工程編號</th><th>工程名稱</th><th>管線</th><th class="num">預計(M)</th><th class="num">實際(M)</th><th>完工日</th></tr></thead><tbody>' + sortDone(list).map(function (c) {
-    return '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(clsOf(c)) + (clsOf(c) === "汰換" ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"] || "非計畫性") + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="管線">' + pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).map(function (q) { return esc((q["壓力"] || "低壓") + "｜" + q["敷設管種"] + " " + fmt(q["敷設長度"]) + "M"); }).join("<br>") + '</td><td class="num" data-l="預計(M)">' + (planLen(c) ? fmt(planLen(c)) : "") + '</td><td class="num" data-l="實際(M)">' + fmt(caseLen(c)) + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + "</td></tr>";
+    return '<tr class="row" onclick="openCase(\'' + c.UID + '\')"><td data-l="類別">' + clsBadge(clsOf(c)) + (clsOf(c) === "汰換" ? '<div class="muted" style="font-size:13.5px">' + esc(c["汰換性質"] || "非計畫性") + "</div>" : "") + '</td><td class="nw" data-l="工程編號">' + esc(c["工程編號"]) + '</td><td data-l="工程名稱">' + esc(c["工程名稱"]) + '</td><td data-l="管線">' + pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).map(function (q) { return esc((q["壓力"] || "低壓") + "｜" + q["敷設管種"] + " " + fmt(q["敷設長度"]) + "M"); }).join("<br>") + '</td><td class="num" data-l="預計(M)">' + (planLen(c) !== null ? fmt(planLen(c)) : "") + '</td><td class="num" data-l="實際(M)">' + fmt(caseLen(c)) + '</td><td class="nw" data-l="完工日">' + roc(c["完工日"]) + "</td></tr>";
   }).join("") + "</tbody></table></div>";
 }
 function exportLenXlsx() {
@@ -1388,7 +1389,7 @@ function exportLenXlsx() {
     var det = [["完工明細"], ["期間", "類別", "工程編號", "工程名稱", "壓力", "敷設管種", "預計(M)", "實際(M)", "施工日", "完工日"]], dk = ["title", "head"];
     P.forEach(function (p, i) {
       sortDone(D[i].all).forEach(function (c) {
-        pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).forEach(function (q, k) { det.push([(i === 0 ? "上月 " : "年度 ") + lenPText(p), clsOf(c) + (clsOf(c) === "汰換" ? "／" + (c["汰換性質"] || "非計畫性") : ""), c["工程編號"], c["工程名稱"], q["壓力"] || "低壓", q["敷設管種"], k === 0 && planLen(c) ? planLen(c) : "", num(q["敷設長度"]), roc(c["施工日"]), roc(c["完工日"])]); dk.push("row"); });
+        pipesOf(c).filter(function (q) { return num(q["敷設長度"]); }).forEach(function (q, k) { det.push([(i === 0 ? "上月 " : "年度 ") + lenPText(p), clsOf(c) + (clsOf(c) === "汰換" ? "／" + (c["汰換性質"] || "非計畫性") : ""), c["工程編號"], c["工程名稱"], q["壓力"] || "低壓", q["敷設管種"], k === 0 && planLen(c) !== null ? planLen(c) : "", num(q["敷設長度"]), roc(c["施工日"]), roc(c["完工日"])]); dk.push("row"); });
       });
     });
     XLSX.utils.book_append_sheet(wb, styled(det, dk, [16, 12, 13, 24, 7, 20, 9, 9, 11, 11]), "完工明細");
@@ -1791,7 +1792,7 @@ function bindCase() {
     $("#pipeSum").textContent = "敷設合計 " + fmt(t) + " M";
     var al = $("#actLen"), ld = $("#lenDiff");
     if (al) al.textContent = t ? fmt(t) + " M" : "尚未填（完工後填管線明細）";
-    if (ld) { var pv = num(($('#modal [data-f="預計管線長度"]') || {}).value); var d = Math.round((t - pv) * 100) / 100; ld.innerHTML = t && pv ? '<span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "inherit") + '">' + (d > 0 ? "+" : "") + fmt(d) + " M</span>" : "—"; }
+    if (ld) { var pvs = String(($('#modal [data-f="預計管線長度"]') || {}).value || "").trim(), pv = num(pvs); var d = Math.round((t - pv) * 100) / 100; ld.innerHTML = t && pvs !== "" ? '<span style="color:' + (d > 0 ? "var(--bad)" : d < 0 ? "var(--ok)" : "inherit") + '">' + (d > 0 ? "+" : "") + fmt(d) + " M</span>" : "—"; }
   };
   $$("#pbody input").forEach(function (el) { el.addEventListener("input", upd); });
   var pl = $('#modal [data-f="預計管線長度"]'); if (pl) pl.addEventListener("input", upd);
@@ -1996,7 +1997,7 @@ function exportRepXlsx() {
       Y.groups.forEach(function (G) {
         G.rows.forEach(function (r, i) {
           var c = r.c, done = c["狀態"] === "已竣工" && isISO(c["完工日"]);
-          aoa.push([Y.y + "年", G.g, i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], r.first && planLen(c) ? planLen(c) : "", r.p["敷設管種"] || "", r.p["敷設長度"] === undefined || r.p["敷設長度"] === "" ? "" : num(r.p["敷設長度"]), r.first ? repDiffN(c) : "", done ? roc(c["完工日"]) : (c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工")]);
+          aoa.push([Y.y + "年", G.g, i + 1, c["工程編號"], c["工程名稱"], c["工程位置"], r.first && planLen(c) !== null ? planLen(c) : "", r.p["敷設管種"] || "", r.p["敷設長度"] === undefined || r.p["敷設長度"] === "" ? "" : num(r.p["敷設長度"]), r.first ? repDiffN(c) : "", done ? roc(c["完工日"]) : (c["狀態"] === "完工待驗收" ? "完工待驗收" : "尚未竣工")]);
           kinds.push(done ? "row" : "red");
         });
         aoa.push([Y.y + "年", G.g + " 小計", "", "", "", "", G.pre, "", G.sub, "", ""]); kinds.push("sub");
