@@ -300,7 +300,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.2</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.3</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -339,9 +339,9 @@ table.ttrack td{vertical-align:middle}
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
 // 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
-var WEB_VER = "5.2";
+var WEB_VER = "5.3";
 // 本次更新內容（每次改版都要改，舊版提醒會顯示）
-var WHATS_NEW = "管材選單新增 32MM、PVC被覆鋼管（6\"～3/4\"）、鍍鋅鋼管（2\"～3/4\"）；工程日誌機具改用公司機具設備清單、工別改師傅／小工／焊工";
+var WHATS_NEW = "新增主管理者：在「參數設定」可新增／停用人員、幫忘記密碼的人重設密碼（需後端 GAS v2.4）";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_me_v1"; // v5.0 個人帳號：存 {id,name,pw}
 var TIMEOUT_MS = 25000;
@@ -355,9 +355,9 @@ var RM_TYPES = ["2\" PVC管", "3\" PVC管", "4\" PVC管", "2\" 鋼管", "3\" 鋼
 var DB = { cases: [], pipes: [], leaks: [], params: {}, logs: [] };
 var PB = {};
 var UI = { page: "dash", y: 0, m1: 1, m2: 12, st: "進行中", cls: "全部", q: "", sortK: "", sortD: 1 };
-var PW = "", ME_ID = "", ME_NAME = "";
-function saveMe(id, name, pw) { ME_ID = id || ""; ME_NAME = name || ""; PW = pw || ""; lsSet(SS_PW, PW ? JSON.stringify({ id: ME_ID, name: ME_NAME, pw: PW }) : ""); }
-function clearMe() { saveMe("", "", ""); }
+var PW = "", ME_ID = "", ME_NAME = "", ME_ROLE = "";
+function saveMe(id, name, pw, role) { ME_ID = id || ""; ME_NAME = name || ""; PW = pw || ""; if (role !== undefined) ME_ROLE = role || ""; if (!PW) ME_ROLE = ""; lsSet(SS_PW, PW ? JSON.stringify({ id: ME_ID, name: ME_NAME, pw: PW, role: ME_ROLE }) : ""); }
+function clearMe() { saveMe("", "", "", ""); }
 
 /* ---------- 工具 ---------- */
 function $(s, r) { return (r || document).querySelector(s); }
@@ -1616,12 +1616,48 @@ function renderSet() {
   var h = '<h2 class="pg">⚙️ 參數設定</h2><div class="card"><h3>報告(五)用戶計量表鉛封</h3><div class="form">' +
     f("鉛封_統計截止", "統計截止（文字）", "例：115年9月底") + f("鉛封_裝置戶數", "裝置戶數") + f("鉛封_拆表戶數", "拆表戶數") + f("鉛封_已鉛封戶數", "已鉛封戶數") +
     '</div><h3 style="margin-top:18px">報告(六)地下閥箱安全檢查</h3><div class="form">' + '<div class="f w6"><label>備註文字</label><input data-k="閥箱備註" value="' + esc(P["閥箱備註"] || "") + '"></div></div>' +
-    '<h3 style="margin-top:18px">新人預設密碼</h3><div class="form"><div class="f w3"><label>預設密碼（不改請留空）</label><input data-k="編輯密碼" type="password" autocomplete="new-password"><span class="hint">新加入或被重設密碼的人，用這組登入一次後會被要求改成自己的密碼</span></div></div>' +
+    (ME_ROLE === "管理者" ? '<h3 style="margin-top:18px">新人預設密碼（主管理者）</h3><div class="form"><div class="f w3"><label>預設密碼（不改請留空）</label><input data-k="編輯密碼" type="password" autocomplete="new-password"><span class="hint">新加入或被重設密碼的人，用這組登入一次後會被要求改成自己的密碼</span></div></div>' : "") +
     '<div style="margin-top:16px;display:flex;gap:10px"><button class="btn pri" onclick="saveParams()">💾 儲存參數</button></div></div>';
   h += '<div class="card"><h3>👤 我的帳號</h3>' + (ME_ID ? '<p style="margin:0 0 10px">目前登入：<b>' + esc(ME_ID + " " + ME_NAME) + '</b></p><button class="btn pri" onclick="askChangePw(false)">🔑 修改我的密碼</button>' : '<p class="muted" style="margin:0 0 10px">尚未登入（唯讀）</p><button class="btn pri" onclick="needLogin(function(){renderSet()})">🔓 登入</button>') +
-    '<h3 style="margin-top:18px">可編輯人員（維護者）</h3><p class="muted" style="margin:0 0 8px">' + ((DB.users || []).map(function (u) { return esc(u["工號"] + " " + u["姓名"]); }).join("、") || "（後端尚未更新到 v2.3）") + '</p><p class="hint" style="margin:0">新增／停用人員、忘記密碼重設：到試算表「維護者」分頁改（A1 有說明）。</p></div>';
+    (ME_ROLE === "管理者" ? '<h3 style="margin-top:18px">👑 人員管理（主管理者）</h3><div id="admBox"><button class="btn" onclick="admLoad()">載入人員清單</button></div>' :
+    '<h3 style="margin-top:18px">可編輯人員（維護者）</h3><p class="muted" style="margin:0 0 8px">' + ((DB.users || []).map(function (u) { return esc(u["工號"] + " " + u["姓名"]); }).join("、") || "（後端尚未更新到 v2.3）") + '</p><p class="hint" style="margin:0">新增／停用人員、忘記密碼重設：請找主管理者。</p>') + '</div>';
   h += '<div class="card"><h3>後端連線</h3><p class="muted" style="margin:0 0 8px;word-break:break-all">目前網址：' + esc(apiUrl() || "未設定") + '</p><button class="btn" onclick="pingApi()">測試連線</button> <button class="btn" onclick="renderSetup(true)">更換網址</button><div id="pingOut" class="muted" style="margin-top:8px"></div></div>';
   $("#content").innerHTML = h;
+  if (ME_ROLE === "管理者" && PW) admLoad();
+}
+/* ===== 主管理者：人員管理（v5.3） ===== */
+var ADM = [];
+function admLoad() {
+  showLoading("讀取人員中…");
+  req("POST", { action: "adminUsers", pw: PW }).then(function (j) { hideLoading(); if (!j.ok) { toast("❌ " + (j.msg || "讀取失敗"), 3500); return; } ADM = j.users || []; admDraw(); }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
+}
+function admDraw() {
+  var box = $("#admBox"); if (!box) return;
+  var h = '<div class="tblwrap"><table class="t cardify"><thead><tr><th>工號</th><th>姓名</th><th>狀態</th><th>密碼</th><th>最後登入</th><th>操作</th></tr></thead><tbody>';
+  ADM.forEach(function (u, i) {
+    var off = u["啟用"] === "否";
+    h += '<tr' + (off ? ' style="color:#999"' : "") + '><td data-l="工號">' + esc(u["工號"]) + '</td><td data-l="姓名">' + esc(u["姓名"]) + (u["角色"] === "管理者" ? " 👑" : "") + '</td><td data-l="狀態">' + (off ? "停用" : "啟用") + '</td><td data-l="密碼">' + (u["已設密碼"] === "是" ? "已設定" : '<span class="muted">預設（尚未自訂）</span>') + '</td><td data-l="最後登入">' + esc(u["最後登入"] || "—") + '</td><td data-l="操作" class="nw"><button class="btn sm" onclick="admEdit(' + i + ')">✏️ 編輯</button> <button class="btn sm" onclick="admReset(' + i + ')">🔑 重設密碼</button></td></tr>';
+  });
+  h += '</tbody></table></div><div style="margin-top:10px"><button class="btn pri" onclick="admEdit(-1)">＋ 新增人員</button> <button class="btn" onclick="admLoad()">🔄 重新載入</button></div><p class="hint" style="margin-top:8px">重設密碼＝改回預設密碼，請對方用預設密碼登入後自己設新密碼。密碼一律加密，主管理者也看不到別人的密碼。</p>';
+  box.innerHTML = h;
+}
+function admEdit(i) {
+  var u = i >= 0 ? ADM[i] : { "工號": "", "姓名": "", "啟用": "是", "角色": "" };
+  modal2('<div class="mh">' + (i >= 0 ? "✏️ 編輯人員" : "＋ 新增人員") + '</div><div class="mb"><div class="form"><div class="f w3"><label>工號</label><input id="auId" value="' + esc(u["工號"]) + '"' + (i >= 0 ? " readonly" : "") + ' placeholder="例：0070"></div><div class="f w3"><label>姓名</label><input id="auNm" value="' + esc(u["姓名"]) + '"></div><div class="f w3"><label>狀態</label><select id="auEn"><option' + (u["啟用"] !== "否" ? " selected" : "") + '>是</option><option' + (u["啟用"] === "否" ? " selected" : "") + '>否</option></select><span class="hint">選「否」＝停用，不能再登入</span></div><div class="f w3"><label>身分</label><select id="auRo"><option value=""' + (u["角色"] !== "管理者" ? " selected" : "") + '>一般維護者</option><option value="管理者"' + (u["角色"] === "管理者" ? " selected" : "") + '>主管理者</option></select></div></div>' + (i < 0 ? '<div class="hint" style="margin-top:6px">新人用預設密碼登入，第一次會被要求設定自己的密碼。</div>' : "") + '</div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="auOk">💾 儲存</button></div>');
+  $("#auOk").onclick = function () {
+    var it = { "工號": $("#auId").value.trim(), "姓名": $("#auNm").value.trim(), "啟用": $("#auEn").value, "角色": $("#auRo").value };
+    if (!it["工號"] || !it["姓名"]) { toast("工號、姓名都要填", 2500); return; }
+    showLoading("存檔中…");
+    req("POST", { action: "adminSave", pw: PW, item: it }).then(function (j) { hideLoading(); if (!j.ok) { toast("❌ " + (j.msg || "存檔失敗"), 3500); return; } ADM = j.users || []; closeModal2(); admDraw(); toast("✅ 已儲存"); }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
+  };
+}
+function admReset(i) {
+  var u = ADM[i]; if (!u) return;
+  modal2('<div class="mh">🔑 重設密碼</div><div class="mb">確定把 <b>' + esc(u["工號"] + " " + u["姓名"]) + '</b> 的密碼改回預設密碼？<br><span class="muted">他下次用預設密碼登入後，要自己設定新密碼。</span></div><div class="mf"><button class="btn" onclick="closeModal2()">取消</button><button class="btn pri" id="arOk">確定重設</button></div>');
+  $("#arOk").onclick = function () {
+    showLoading("重設中…");
+    req("POST", { action: "adminReset", pw: PW, id: u["工號"] }).then(function (j) { hideLoading(); if (!j.ok) { toast("❌ " + (j.msg || "重設失敗"), 3500); return; } ADM = j.users || []; closeModal2(); admDraw(); toast("✅ 已重設，請通知 " + u["姓名"] + " 用預設密碼登入"); }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
+  };
 }
 function saveParams() {
   needLogin(function () {
@@ -1667,7 +1703,7 @@ function needLogin(cb) {
     req("POST", { action: "login", uid: id, pw: v }).then(function (j) {
       hideLoading();
       if (!j.ok) { toast("❌ " + (j.msg || "工號或密碼錯誤"), 3500); return; }
-      saveMe(j.id || id, j.name || "", v); updLock(); closeModal2();
+      saveMe(j.id || id, j.name || "", v, j.role || ""); updLock(); closeModal2();
       if (j.mustChange) { askChangePw(true, cb); return; }
       toast("🔓 " + (j.name || "") + "，已進入編輯模式"); cb();
     }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
@@ -2494,7 +2530,7 @@ window.addEventListener("resize", function () { if ($("#tourTip").style.display 
 (function init() {
   try { var u = JSON.parse(lsGet(LS_UI) || "{}"); Object.keys(u).forEach(function (k) { if (u[k] !== undefined && u[k] !== null) UI[k] = u[k]; }); } catch (e) {}
   if (!UI.y) { UI.y = rocYearNow(); UI.m1 = 1; UI.m2 = new Date().getMonth() + 1; }
-  try { var me = JSON.parse(lsGet(SS_PW) || "null"); if (me && me.id && me.pw) saveMe(me.id, me.name, me.pw); } catch (e) {}
+  try { var me = JSON.parse(lsGet(SS_PW) || "null"); if (me && me.id && me.pw) saveMe(me.id, me.name, me.pw, me.role || ""); } catch (e) {}
   try { localStorage.removeItem("pipeline_pw_v1"); } catch (e) {}
   updLock();
   $$("#nav button").forEach(function (b) { b.addEventListener("click", function () { guardLeave(function () { UI.page = b.dataset.p; if (!apiUrl()) { renderSetup(); return; } render(); $("#content").scrollTop = 0; }); }); });
