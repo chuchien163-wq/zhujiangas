@@ -117,6 +117,17 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 /* modal */
 .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:12px}
 .mask.on{display:flex}
+.chknow{display:flex;flex-wrap:wrap;align-items:center;gap:12px;background:#fff7ef;border:1px solid #f5cba7;border-radius:12px;padding:14px 16px;margin:0 0 14px;font-size:17px}
+.ckclock{font-size:40px;font-weight:800;color:#1f4e79;text-align:center;margin:8px 0 2px;letter-spacing:2px}
+.ckwho{text-align:center;color:#555;font-size:17px;margin-bottom:10px}
+.ckgps{text-align:center;font-size:15px;color:#666;margin:6px 0 12px;min-height:22px}
+.ckbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ckbtn{border:0;border-radius:14px;padding:20px 8px;font-size:21px;font-weight:800;color:#fff;cursor:pointer;opacity:.55}
+.ckbtn.in{background:#1e8f4e}.ckbtn.out{background:#d35400}.ckbtn.sug{opacity:1;box-shadow:0 0 0 4px rgba(30,144,255,.35)}
+.ckbtn:disabled{opacity:.3;cursor:wait}
+.ckok{text-align:center;padding:10px 0}.ckok .big{font-size:44px}.ckok h3{margin:6px 0;font-size:21px}
+.ckacts{display:grid;gap:10px;margin-top:14px}.ckacts .btn{font-size:17px;padding:12px}
+.ckin{display:inline-block;padding:3px 10px;border-radius:20px;font-size:14px;font-weight:700;color:#fff}.ckin.in{background:#1e8f4e}.ckin.out{background:#d35400}
 #mScan{z-index:45}
 #mCard{z-index:49}
 .cardtop{display:flex;gap:6px;flex-wrap:wrap;margin:-2px 0 10px}
@@ -280,6 +291,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div class="navc" data-v="rec" onclick="go('rec')"><b>🛠 維修履歷總表</b><span>篩選・排序・匯出</span></div>
  <div class="navc" data-v="stat" onclick="go('stat')"><b>📊 統計</b><span>依檢測表項目彙整</span></div>
  <div class="navc" data-v="insp" onclick="go('insp')"><b>📋 每月安檢</b><span>QRW632601 線上填寫</span></div>
+ <div class="navc" data-v="chk" onclick="go('chk')"><b>📍 進出站打卡</b><span>掃站點 QR・進站／出站</span></div>
  <div class="navc" data-v="qr" onclick="go('qr')"><b>🏷 QR 標籤</b><span>產生・列印設備標籤</span></div>
  <div class="navinfo">表單對應：整壓站檢測維護表 QRW630801<br>保存期限：五年<br><span id="verInfo">v1.0</span></div>
 </nav>
@@ -352,10 +364,27 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  </div>
 </section>
 
+<section class="view" id="v-chk">
+ <div class="card">
+  <h2>📍 進出站打卡</h2>
+  <div class="chknow" id="chkNow"></div>
+  <div class="filters">
+   <select id="cWho" onchange="renderChk()"></select>
+   <select id="cKind" onchange="renderChk()"><option value="">進站＋出站</option><option>進站</option><option>出站</option></select>
+   <input type="date" id="cFrom" onchange="renderChk()" title="起日">
+   <input type="date" id="cTo" onchange="renderChk()" title="迄日">
+   <button class="btn sm ghost" onclick="clearChkFilter()">清除篩選</button>
+   <button class="btn sm grn" onclick="exportChk()">⬇ 匯出 Excel</button>
+  </div>
+  <div class="sumbar" id="cSum"></div>
+  <table class="tb"><thead><tr><th>日期</th><th>時間</th><th>姓名</th><th>類型</th><th>停留</th><th>定位</th><th>方式</th><th>備註</th><th></th></tr></thead><tbody id="cList"></tbody></table>
+ </div>
+</section>
+
 <section class="view" id="v-qr">
  <div class="card">
   <h2>🏷 QR Code 標籤</h2>
-  <div class="stcard"><div class="qprev" id="stQrPrev"></div><div><h3 style="margin:0 0 4px">① 站點 QR（一站一張，A5）</h3><div class="muted" style="margin-bottom:8px">貼在站門口或 RTU 箱，掃了會打開本站全螢幕示意圖，對照現場點設備。</div><div class="muted" id="stUrl" style="word-break:break-all;margin-bottom:8px"></div><button class="btn sm grn" onclick="printStation()">🖨 列印站點標籤（A5）</button></div></div>
+  <div class="stcard"><div class="qprev" id="stQrPrev"></div><div><h3 style="margin:0 0 4px">① 站點 QR（一站一張，A5）</h3><div class="muted" style="margin-bottom:8px">貼在站門口或 RTU 箱。掃了會先跳出「進站／出站打卡」，打完卡再看本站全螢幕示意圖。</div><div class="muted" id="stUrl" style="word-break:break-all;margin-bottom:8px"></div><button class="btn sm grn" onclick="printStation()">🖨 列印站點標籤（A5）</button></div></div>
   <h3>② 設備 QR（一台一張）</h3>
   <div class="filters">
    <select id="qSec" onchange="renderQR()"></select>
@@ -450,6 +479,11 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <div id="popBody"></div>
 </div></div>
 
+<div class="mask" id="mChk"><div class="modal sheet">
+ <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><b style="color:#d35400;font-size:19px" id="ckTitle">📍 進出站打卡</b><span class="hspace"></span><button class="btn sm ghost" onclick="closeChk()">關閉 ✕</button></div>
+ <div id="ckBody"></div>
+</div></div>
+
 <div class="mask" id="mInsp"><div class="modal imodal">
  <div class="ihdr"><h2 id="iTitle" style="margin:0">📋 整壓站安檢表</h2><span class="hspace"></span><button class="btn sm ghost" onclick="if(confirm('放棄這次填寫？'))closeM('mInsp')">✕</button></div>
  <div class="fgrid" style="margin:10px 0">
@@ -510,8 +544,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
-const VERSION = "v2.8";
-const WHATS_NEW = "補回 5A-56 中壓表（5A-11 與 5A-12 之間）：雲端缺資料時自動補上";
+const VERSION = "v3.0";
+const WHATS_NEW = "打卡改名為「進站／出站」：掃站門口 QR 一鍵進站、出站，自動算停留時間；左側「進出站打卡」可篩選匯出";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -603,7 +637,7 @@ const PIPES_HK = {
  "5A-28":["M1620 200 H2030","M1620 400 H2030","M1840 200 V400"]
 };
 const MAPS = {HK:{layout:LAYOUT_HK, readouts:READOUTS_HK, pipes:PIPES_HK}};
-let S = {equips:[], records:[], insps:[], sel:null, view:"map", pw:"", user:null, users:[], labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
+let S = {equips:[], records:[], insps:[], chks:[], sel:null, view:"map", pw:"", user:null, users:[], labels:true, mode:API_URL?"cloud":"demo", editRid:null, editEid:null, recSort:{k:"date",d:-1}, eqSort:{k:"order",d:1}};
 
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
 function today(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Taipei"}).format(new Date());}
@@ -648,7 +682,7 @@ function remapIds(){const f=id=>ID_MAP[id]||id;S.equips.forEach(e=>e.id=f(e.id))
 const SEED_FIX={"5A-04":"整壓器B","5A-08":"整壓器A1","5A-11":"整壓器A2","5A-16":"4\"軸流閥整壓器","5A-21":"2\"DIVAL BP 直動型整壓器（中減低）","5A-25":"6\"球閥（A/B線連通）"};
 const DEMO_USERS=[["白沛豫","管理員","1688"],["陳經理","部門主管","0007"],["彭敬文","單位主管","0013"],["邱副理","單位主管","0015"],["陳人豪","檢查員","0062"]].map(u=>({name:u[0],role:u[1],pw:u[2],sig:"",active:"Y"}));
 function loadDemo(){
- try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});if(!S.users.some(x=>x.role==="管理員"&&String(x.active).toUpperCase()==="Y")){const a=S.users.find(x=>x.name==="白沛豫");if(a){a.role="管理員";a.active="Y";}}
+ try{const d=JSON.parse(localStorage.getItem(LS_DEMO)||"null");if(d&&d.equips){S.equips=d.equips;S.records=d.records||[];S.insps=d.insps||[];S.chks=normChks(d.chks);S.users=d.users||[];DEMO_USERS.forEach(u=>{if(!S.users.some(x=>x.name===u.name))S.users.push(JSON.parse(JSON.stringify(u)));});if(!S.users.some(x=>x.role==="管理員"&&String(x.active).toUpperCase()==="Y")){const a=S.users.find(x=>x.name==="白沛豫");if(a){a.role="管理員";a.active="Y";}}
   if((d.seedVer||1)<4)remapIds();
   if((d.seedVer||1)<6)S.equips.forEach(e=>{if(e.tag&&e.tag.indexOf("洩漏偵測")===0)e.tag=e.tag.replace("洩漏偵測","漏氣偵測");});
   if((d.seedVer||1)<SEED_VER){const has=new Set(S.equips.map(e=>e.id));SEED_EQ.forEach(e=>{if(!has.has(e.id))S.equips.push(JSON.parse(JSON.stringify(e)));});
@@ -656,7 +690,7 @@ function loadDemo(){
   return;}}catch(e){}
  S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];S.insps=[];S.users=JSON.parse(JSON.stringify(DEMO_USERS));saveDemo();
 }
-function saveDemo(){try{localStorage.setItem(LS_DEMO,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,seedVer:SEED_VER}));}catch(e){}}
+function saveDemo(){try{localStorage.setItem(LS_DEMO,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,chks:S.chks,users:S.users,seedVer:SEED_VER}));}catch(e){}}
 function parseInsps(a){return (a||[]).map(x=>{if(typeof x.items==="string"){try{x.items=JSON.parse(x.items);}catch(e){x.items=[];}}return x;});}
 
 async function loadAll(){
@@ -668,13 +702,13 @@ async function loadAll(){
  showLoading("讀取雲端資料…");
  try{
   const j=await http("GET",{action:"list"});
-  S.equips=j.equips;S.records=j.records;S.insps=parseInsps(j.insps);S.users=j.users||[];
+  S.equips=j.equips;S.records=j.records;S.insps=parseInsps(j.insps);S.chks=normChks(j.chks);S.users=j.users||[];
   S.missingSeed=SEED_EQ.filter(n=>!S.equips.some(e=>e.id===n.id)).map(n=>JSON.parse(JSON.stringify(n)));S.missingSeed.forEach(n=>S.equips.push(Object.assign({},n)));
-  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,chks:S.chks,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");$("banner").classList.remove("on");
  }catch(e){
   let c=null;try{c=JSON.parse(localStorage.getItem(LS_CACHE)||"null");}catch(x){}
-  if(c){S.equips=c.equips;S.records=c.records;S.insps=c.insps||[];S.users=c.users||[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），目前顯示 "+c.at+" 的暫存資料，無法新增修改。";}
+  if(c){S.equips=c.equips;S.records=c.records;S.insps=c.insps||[];S.chks=normChks(c.chks);S.users=c.users||[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），目前顯示 "+c.at+" 的暫存資料，無法新增修改。";}
   else{S.equips=JSON.parse(JSON.stringify(SEED_EQ));S.records=[];S.insps=[];$("banner").textContent="⚠ 雲端讀取失敗（"+e.message+"），請按右上「重新整理」。";}
   $("banner").classList.add("on");setConn("err","連線失敗");
  }finally{hideLoading();}
@@ -690,6 +724,8 @@ function applyLocal(action,obj){
  else if(action==="saveEquip"){const i=S.equips.findIndex(e=>e.id===obj.id);if(i>=0)S.equips[i]=obj;else S.equips.push(obj);}
  else if(action==="deleteEquip")S.equips=S.equips.filter(e=>e.id!==obj.id);
  else if(action==="addInspection"){S.insps.push(obj.insp);(obj.records||[]).forEach(r=>S.records.push(r));}
+ else if(action==="checkin")S.chks.push(obj);
+ else if(action==="deleteCheckin")S.chks=S.chks.filter(c=>c.cid!==obj.cid);
  else if(action==="deleteInspection")S.insps=S.insps.filter(x=>x.iid!==obj.iid);
  else if(action==="signInspection"){const x=S.insps.find(i=>i.iid===obj.iid);if(x){Object.assign(x,obj);parseInsps([x]);}}
  else if(action==="saveUser"){const i=S.users.findIndex(u=>u.name===obj.name);if(i>=0)S.users[i]=obj;else S.users.push(obj);}
@@ -699,13 +735,14 @@ function applyLocal(action,obj){
 async function write(action,data){
  if(S.mode==="demo"){
   const o=Object.assign({},data);
-  if(["saveEquip","deleteEquip","saveUser","deleteUser","deleteInspection","deleteRecord"].includes(action)&&!isAdmin()){alert("❌ 此功能限管理員");return false;}
+  if(["saveEquip","deleteEquip","saveUser","deleteUser","deleteInspection","deleteRecord","deleteCheckin"].includes(action)&&!isAdmin()){alert("❌ 此功能限管理員");return false;}
   const me=S.users.find(u=>u.name===S.user.name);
   if(action==="setMySig"){me.sig=o.sig;saveDemo();renderAll();return true;}
   if(action==="setMyPw"){me.pw=o.newPw;saveDemo();return true;}
   if(action==="saveUser"){const lk=adminLock(o);if(lk){alert("❌ "+lk);return false;}const u=S.users.find(x=>x.name===o.name);if(u){u.role=o.role;u.active=o.active;if(o.pw)u.pw=o.pw;}else S.users.push({name:o.name,role:o.role,pw:o.pw,active:o.active,sig:""});saveDemo();return true;}
   if(action==="deleteUser"){if(o.name===S.user.name){alert("不能刪除自己");return false;}S.users=S.users.filter(u=>u.name!==o.name);saveDemo();return true;}
   if(action==="signInspection"){const x=S.insps.find(i=>i.iid===o.iid);if(!x)return false;if(!canSign(x,o.level)){alert("❌ 你的角色不能簽這一欄，或已經簽過");return false;}const n=nowStr();if(o.level==="unit"){x.unitName=me.name;x.sigUnit=me.sig;x.unitAt=n;}else{x.deptName=me.name;x.sigDept=me.sig;x.deptAt=n;}x.signState=signStateOf(x);saveDemo();renderAll();return true;}
+  if(action==="checkin"){const c=buildChk(o,S.user.name);applyLocal("checkin",c);saveDemo();renderAll();CK.last=c;return true;}
   if(action==="addRecord")o.createdBy=S.user.name;
   if(action==="updateEquipCard"){const e=eqById(o.id);if(!e)return false;CARD_DEF.forEach(c=>{if(o[c[0]]!==undefined)e[c[0]]=o[c[0]];});e.status=o.status;e.note=o.note;saveDemo();renderAll();return true;}
   if(action==="uploadPhoto"){const e=eqById(o.id);if(!e)return false;e[o.slot]=o.data;saveDemo();renderAll();return true;}
@@ -721,9 +758,10 @@ async function write(action,data){
  showLoading("寫入雲端中，請勿關閉…");
  try{
   const j=await http("POST",null,{action,user:S.user?S.user.name:"",pw:S.user?S.user.pw:"",data});
+  if(action==="checkin")CK.last=j.item;
   if(action==="updateEquipCard"||action==="uploadPhoto")applyLocal("saveEquip",j.item);else applyLocal(action,j.item||data);
   if(j.equip)applyLocal("saveEquip",j.equip);
-  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,users:S.users,at:nowStr()}));}catch(e){}
+  try{localStorage.setItem(LS_CACHE,JSON.stringify({equips:S.equips,records:S.records,insps:S.insps,chks:S.chks,users:S.users,at:nowStr()}));}catch(e){}
   setConn("ok","☁ 已連線・"+S.records.length+" 筆");renderAll();return true;
  }catch(e){
   alert("❌ 儲存失敗："+e.message+"\n\n資料尚未寫入，請確認網路後再按一次儲存。");
@@ -854,6 +892,79 @@ function switchSt(i){ST_I=+i;S.sel=null;setUrl(null);["rEq","eqSec","qSec"].forE
 function setUrl(){cleanUrl();}
 function cleanUrl(){try{const u=new URL(location.href);["eq","st","v","vchk"].forEach(k=>u.searchParams.delete(k));history.replaceState(null,"",u.pathname+(u.search||"")+u.hash);}catch(e){}}
 let deepDone=false;
+/* ===== 進站打卡 ===== */
+function normChks(a){const m={"到站":"進站","離站":"出站"};return (a||[]).map(c=>(m[c.kind]&&(c.kind=m[c.kind]),c));}
+let CK={pos:null,gpsMsg:"",src:"掃描QR",last:null,timer:null,busy:false};
+function stChks(){return S.chks.filter(c=>c.station===ST().name);}
+function myLastToday(){const t=today(),me=S.user?S.user.name:"";const l=stChks().filter(c=>c.name===me&&String(c.date)===t);return l.length?l[l.length-1]:null;}
+function inStation(){const l=myLastToday();return !!(l&&l.kind==="進站");}
+function hm(at){return String(at||"").slice(11,16);}
+function stayTxt(m){if(m===""||m==null)return "";m=Number(m);return m>=60?Math.floor(m/60)+" 小時 "+(m%60)+" 分":m+" 分";}
+function buildChk(o,name){const at=nowStr(),day=at.slice(0,10),kind=o.kind==="出站"?"出站":"進站";
+ const c={cid:"C"+at.replace(/\D/g,"").slice(2)+String(Math.floor(Math.random()*90+10)),station:o.station,st:o.st,name,kind,at,date:day,lat:o.lat,lng:o.lng,acc:o.acc===""?"":Math.round(o.acc),src:o.src,stay:"",note:o.note||""};
+ c.map=c.lat!==""&&c.lng!==""?"https://maps.google.com/?q="+c.lat+","+c.lng:"";
+ if(kind==="出站"){const l=S.chks.filter(x=>x.name===name&&x.station===c.station&&String(x.date)===day);const p=l[l.length-1];if(p&&p.kind==="進站")c.stay=Math.max(0,Math.round((new Date(at.replace(" ","T")+"+08:00")-new Date(String(p.at).replace(" ","T")+"+08:00"))/60000));}
+ return c;}
+function getPos(){
+ return new Promise(res=>{
+  if(!navigator.geolocation){res({err:"這台裝置不支援定位"});return;}
+  let done=false;const wd=setTimeout(()=>{if(!done){done=true;res({err:"定位逾時"});}},8000);
+  navigator.geolocation.getCurrentPosition(p=>{if(done)return;done=true;clearTimeout(wd);res({lat:+p.coords.latitude.toFixed(6),lng:+p.coords.longitude.toFixed(6),acc:p.coords.accuracy});},
+   e=>{if(done)return;done=true;clearTimeout(wd);res({err:e.code===1?"未允許定位":"無法取得定位"});},{enableHighAccuracy:true,timeout:7500,maximumAge:30000});
+ });
+}
+function openChk(src){
+ if(!S.user){showLogin();return;}
+ CK.src=src||"手動";CK.pos=null;CK.gpsMsg="📡 取得定位中…";CK.last=null;CK.busy=false;
+ $("ckTitle").textContent="📍 "+ST().name+"・打卡";openM("mChk");renderChkModal();
+ clearInterval(CK.timer);CK.timer=setInterval(()=>{const c=$("ckClock");if(c)c.textContent=nowStr().slice(11,19);},1000);
+ getPos().then(p=>{CK.pos=p;CK.gpsMsg=p.err?"⚠ "+p.err+"（仍可打卡，只是不記錄位置）":"✅ 已定位（誤差約 "+Math.round(p.acc)+" 公尺）";const g=$("ckGps");if(g)g.textContent=CK.gpsMsg;});
+}
+function closeChk(){clearInterval(CK.timer);closeM("mChk");}
+function renderChkModal(){
+ if(CK.last){const c=CK.last,inn=c.kind==="進站";
+  $("ckBody").innerHTML='<div class="ckok"><div class="big">'+(inn?"✅":"👋")+'</div><h3>'+esc(c.kind)+'打卡完成　'+esc(hm(c.at))+'</h3><div class="muted">'+esc(c.name)+'・'+esc(ST().name)+(c.stay!==""?'・停留 '+esc(stayTxt(c.stay)):'')+(c.lat!==""?'・已記錄位置':'・未記錄位置')+'</div></div>'
+   +'<div class="ckacts">'+(inn?'<button class="btn grn" onclick="closeChk();go(\'insp\');openInsp()">📋 開始填每月安檢表</button>':'')
+   +'<button class="btn" onclick="closeChk();go(\'map\');openFs()">🗺 看本站示意圖（點設備看履歷）</button><button class="btn ghost" onclick="closeChk()">關閉</button></div>';return;}
+ const inn=inStation(),l=myLastToday();
+ $("ckBody").innerHTML='<div class="ckclock" id="ckClock">'+nowStr().slice(11,19)+'</div><div class="ckwho">'+esc(S.user.name)+'・'+esc(today())+(l?'<br><span class="muted">今天最後一次：'+esc(l.kind)+' '+esc(hm(l.at))+'</span>':'')+'</div>'
+  +'<div class="ckgps" id="ckGps">'+esc(CK.gpsMsg)+'</div>'
+  +'<div class="ckbtns"><button class="ckbtn in'+(inn?"":" sug")+'" onclick="doChk(\'進站\')">🟢 進站</button><button class="ckbtn out'+(inn?" sug":"")+'" onclick="doChk(\'出站\')">🟠 出站</button></div>'
+  +'<input id="ckNote" placeholder="備註（選填，例如：會同廠商、配合抄表）" style="width:100%;margin-top:12px">'
+  +'<div class="ckacts"><button class="btn ghost" onclick="closeChk();go(\'map\');openFs()">先不打卡，直接看示意圖</button></div>';
+}
+async function doChk(kind){
+ if(CK.busy)return;CK.busy=true;document.querySelectorAll(".ckbtn").forEach(b=>b.disabled=true);
+ if(!CK.pos){const g=$("ckGps");if(g)g.textContent="📡 等待定位…";CK.pos=await getPos();}
+ const p=CK.pos||{};
+ const data={station:ST().name,st:ST().key,kind,lat:p.err||p.lat==null?"":p.lat,lng:p.err||p.lng==null?"":p.lng,acc:p.err||p.acc==null?"":p.acc,src:CK.src,note:($("ckNote")||{}).value||""};
+ const ok=await write("checkin",data);CK.busy=false;
+ if(ok){if(!CK.last)CK.last=S.chks[S.chks.length-1];renderChkModal();if(S.view==="chk")renderChk();}
+ else document.querySelectorAll(".ckbtn").forEach(b=>b.disabled=false);
+}
+function filteredChks(){
+ const w=$("cWho").value,k=$("cKind").value,f=$("cFrom").value,t=$("cTo").value;
+ return stChks().filter(c=>(!w||c.name===w)&&(!k||c.kind===k)&&(!f||String(c.date)>=f)&&(!t||String(c.date)<=t)).sort((a,b)=>String(b.at).localeCompare(String(a.at)));
+}
+function clearChkFilter(){["cWho","cKind","cFrom","cTo"].forEach(i=>$(i).value="");renderChk();}
+function renderChk(){
+ const l=myLastToday(),inn=inStation();
+ $("chkNow").innerHTML=(S.user?'<span>'+esc(S.user.name)+'：'+(inn?'<span class="ckin in">在站中・'+esc(hm(l.at))+' 進站</span>':l?'<span class="ckin out">今天已出站 '+esc(hm(l.at))+'</span>':'今天尚未在本站打卡')+'</span>':'請先登入')
+  +'<span class="hspace"></span><button class="btn grn" onclick="openChk(\'手動\')">📍 '+(inn?'出站打卡':'進站打卡')+'</button>';
+ const names=[...new Set(stChks().map(c=>c.name))];keepSel("cWho",opts(names,"全部人員"));
+ const rows=filteredChks(),days=new Set(rows.filter(c=>c.kind==="進站").map(c=>c.date+c.name)).size;
+ $("cSum").textContent="共 "+rows.length+" 筆・進站 "+rows.filter(c=>c.kind==="進站").length+" 次（"+days+" 人日）・出站 "+rows.filter(c=>c.kind==="出站").length+" 次";
+ $("cList").innerHTML=rows.map(c=>'<tr><td data-l="日期">'+esc(c.date)+'</td><td data-l="時間">'+esc(String(c.at).slice(11,19))+'</td><td data-l="姓名">'+esc(c.name)+'</td><td data-l="類型"><span class="ckin '+(c.kind==="進站"?"in":"out")+'">'+esc(c.kind)+'</span></td><td data-l="停留">'+esc(stayTxt(c.stay))+'</td><td data-l="定位">'+(c.map?'<a href="'+esc(c.map)+'" target="_blank" rel="noopener">📍 地圖</a> <span class="muted">±'+esc(c.acc)+'m</span>':'<span class="muted">未記錄</span>')+'</td><td data-l="方式">'+esc(c.src)+'</td><td data-l="備註">'+esc(c.note)+'</td><td>'+(isAdmin()?'<button class="btn sm red" onclick="delChk(\''+esc(c.cid)+'\')">刪除</button>':'')+'</td></tr>').join("")||'<tr><td colspan="9">尚無打卡紀錄。掃站門口的站點 QR，或按上方「進站打卡」。</td></tr>';
+}
+async function delChk(cid){if(!confirm("確定刪除這筆打卡紀錄？"))return;if(await write("deleteCheckin",{cid}))toast("已刪除");}
+function exportChk(){
+ const rows=filteredChks();const q=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+ const head=["打卡編號","站名","日期","時間","姓名","類型","停留分鐘","緯度","經度","定位誤差(m)","地圖","方式","備註"];
+ const lines=[head.map(q).join(",")].concat(rows.map(c=>[c.cid,c.station,c.date,String(c.at).slice(11,19),c.name,c.kind,c.stay,c.lat,c.lng,c.acc,c.map,c.src,c.note].map(q).join(",")));
+ const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=ST().name+"_打卡紀錄_"+today()+".csv";a.click();
+}
+
 async function healSeed(){
  if(S.mode!=="cloud"||!S.user||!isAdmin()||!(S.missingSeed||[]).length)return;
  const list=S.missingSeed;S.missingSeed=[];let ok=0;
@@ -866,13 +977,13 @@ function deepLink(){healSeed();
  let nav="";try{nav=(performance.getEntriesByType("navigation")[0]||{}).type||"";}catch(e){}
  cleanUrl();
  if(nav==="reload")return;
- if(!id&&st){const i=STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase()||(t.alias||[]).some(a=>a.toUpperCase()===st.toUpperCase()));if(i<0){toast("找不到整壓站代碼 "+st,true);return;}ST_I=i;S.sel=null;go("map");renderAll();openFs();return;}
+ if(!id&&st){const i=STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase()||(t.alias||[]).some(a=>a.toUpperCase()===st.toUpperCase()));if(i<0){toast("找不到整壓站代碼 "+st,true);return;}ST_I=i;S.sel=null;go("map");renderAll();openChk("掃描QR");return;}
  if(!id)return;
  const e=eqById(ID_MAP[id.toUpperCase()]||id);if(!e){toast("找不到設備 "+id+"，可能已被刪除或改編號",true);return;}
  const i=STATIONS.findIndex(t=>t.name===eqSt(e));if(i>=0)ST_I=i;
  S.sel=e.id;go("map");renderAll();openPop();
 }
-function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else if(S.view==="insp")renderInsp();else renderStat();}
+function renderView(){if(S.view==="map"){renderMap();renderDrawer();}else if(S.view==="equip")renderEquip();else if(S.view==="rec")renderRec();else if(S.view==="qr")renderQR();else if(S.view==="insp")renderInsp();else if(S.view==="chk")renderChk();else renderStat();}
 
 /* ===== map ===== */
 function sym(t){
