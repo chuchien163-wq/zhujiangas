@@ -125,6 +125,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 .ckbtn{border:0;border-radius:14px;padding:20px 8px;font-size:21px;font-weight:800;color:#fff;cursor:pointer;opacity:.55}
 .ckbtn.in{background:#1e8f4e}.ckbtn.out{background:#d35400}.ckbtn.sug{opacity:1;box-shadow:0 0 0 4px rgba(30,144,255,.35)}
 .ckbtn:disabled{opacity:.3;cursor:wait}
+.ckgf{display:grid;gap:8px;margin:8px 0}.ckgf label{display:grid;gap:4px;font-size:16px}.ckgf input{font-size:18px;padding:10px}
 .ckok{text-align:center;padding:10px 0}.ckok .big{font-size:44px}.ckok h3{margin:6px 0;font-size:21px}
 .ckacts{display:grid;gap:10px;margin-top:14px}.ckacts .btn{font-size:17px;padding:12px}
 .ckin{display:inline-block;padding:3px 10px;border-radius:20px;font-size:14px;font-weight:700;color:#fff}.ckin.in{background:#1e8f4e}.ckin.out{background:#d35400}
@@ -149,6 +150,8 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
 #mAcc{z-index:48}
 .login{position:fixed;inset:0;z-index:70;background:linear-gradient(135deg,#1f4e79,#2e6da4);display:none;align-items:center;justify-content:center;padding:16px}
 .login.on{display:flex}
+.lgguest{display:none;margin-top:16px;padding-top:14px;border-top:1px dashed #ccd;text-align:center}.lgguest.on{display:block}.lgguest .muted{margin-bottom:8px;font-size:15px}
+.ckin.ext{background:#7d3c98}
 .lgcard{background:#fff;border-radius:18px;padding:26px 22px;width:min(400px,100%);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.3)}
 .lgcard h1{font-size:23px;color:#1f4e79;margin:8px 0 2px}
 .lgcard label{display:flex;flex-direction:column;text-align:left;font-size:15px;color:#5d6d7e;gap:4px;margin-bottom:12px}
@@ -510,6 +513,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
  <label class="lgrem"><input type="checkbox" id="lgRem" checked> 記住我（這支手機／電腦下次免登入）</label>
  <button class="btn grn" id="lgBtn" style="width:100%;padding:12px;font-size:18px" onclick="doLogin()">登入</button>
  <div id="lgMsg" class="lgmsg"></div>
+ <div class="lgguest" id="lgGuest"><div class="muted">不是公司系統人員（廠商、外包、支援人員）？</div><button class="btn" style="width:100%;padding:12px;font-size:18px;background:#d35400" onclick="openGuestChk()">🧰 外部人員打卡（輸入姓名即可）</button></div>
  <div class="muted" style="margin-top:14px;font-size:14px">沒有帳號或忘記密碼，請洽管理員</div>
  <div class="muted" style="margin-top:6px;font-size:13px">版本 <b id="lgVer"></b></div>
 </div></div>
@@ -544,8 +548,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
-const VERSION = "v3.0";
-const WHATS_NEW = "打卡改名為「進站／出站」：掃站門口 QR 一鍵進站、出站，自動算停留時間；左側「進出站打卡」可篩選匯出";
+const VERSION = "v3.1";
+const WHATS_NEW = "外部人員打卡：廠商、外包不用帳號，掃站點 QR 後在登入畫面按「外部人員打卡」，輸入姓名就能進站／出站";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -773,6 +777,7 @@ async function write(action,data){
 /* ===== lock ===== */
 /* ===== 登入／帳號／簽名 ===== */
 const ROLES = ["檢查員","單位主管","部門主管","管理員"];
+const LS_GUEST="station_repair_guest_v1";
 const LS_LOGIN = "station_repair_login_v1";
 function adminLock(o){if(S.user&&o.name===S.user.name&&(o.role!=="管理員"||String(o.active).toUpperCase()!=="Y"))return "不能把自己改成其他角色或停用，否則會失去管理權限。";const left=(S.users||[]).filter(u=>u.role==="管理員"&&String(u.active).toUpperCase()==="Y"&&u.name!==o.name).length;if(!left&&(o.role!=="管理員"||String(o.active).toUpperCase()!=="Y"))return "系統至少要保留一位啟用中的管理員。";return "";}
 function isAdmin(){return !!(S.user&&S.user.role==="管理員");}
@@ -788,7 +793,7 @@ function showLogin(msg){
  const saved=(()=>{try{return JSON.parse(localStorage.getItem(LS_LOGIN)||"null");}catch(e){return null;}})();
  $("lgName").innerHTML='<option value="">— 請選擇姓名 —</option>'+ROLES.map(r=>{const g=us.filter(u=>u.role===r);return g.length?'<optgroup label="'+r+'">'+g.map(u=>'<option value="'+esc(u.name)+'">'+esc(u.name)+'</option>').join("")+'</optgroup>':"";}).join("");
  if(saved&&saved.name)$("lgName").value=saved.name;
- $("lgPw").value="";$("lgMsg").textContent=msg||"";$("loginBox").classList.add("on");
+ $("lgPw").value="";$("lgMsg").textContent=msg||"";$("lgGuest").classList.toggle("on",guestStI()>=0);$("loginBox").classList.add("on");
  setTimeout(()=>($("lgName").value?$("lgPw"):$("lgName")).focus(),50);
 }
 async function authUser(name,pw){
@@ -894,9 +899,10 @@ function cleanUrl(){try{const u=new URL(location.href);["eq","st","v","vchk"].fo
 let deepDone=false;
 /* ===== 進站打卡 ===== */
 function normChks(a){const m={"到站":"進站","離站":"出站"};return (a||[]).map(c=>(m[c.kind]&&(c.kind=m[c.kind]),c));}
-let CK={pos:null,gpsMsg:"",src:"掃描QR",last:null,timer:null,busy:false};
+let CK={guest:false,pos:null,gpsMsg:"",src:"掃描QR",last:null,timer:null,busy:false};
 function stChks(){return S.chks.filter(c=>c.station===ST().name);}
-function myLastToday(){const t=today(),me=S.user?S.user.name:"";const l=stChks().filter(c=>c.name===me&&String(c.date)===t);return l.length?l[l.length-1]:null;}
+function ckWho(){return CK.guest?(($("ckGName")||{}).value||CK.gname||"").replace(/\s+/g,""):(S.user?S.user.name:"");}
+function myLastToday(){const t=today(),me=ckWho();if(!me)return null;const l=stChks().filter(c=>c.name===me&&String(c.date)===t);return l.length?l[l.length-1]:null;}
 function inStation(){const l=myLastToday();return !!(l&&l.kind==="進站");}
 function hm(at){return String(at||"").slice(11,16);}
 function stayTxt(m){if(m===""||m==null)return "";m=Number(m);return m>=60?Math.floor(m/60)+" 小時 "+(m%60)+" 分":m+" 分";}
@@ -913,32 +919,46 @@ function getPos(){
    e=>{if(done)return;done=true;clearTimeout(wd);res({err:e.code===1?"未允許定位":"無法取得定位"});},{enableHighAccuracy:true,timeout:7500,maximumAge:30000});
  });
 }
-function openChk(src){
- if(!S.user){showLogin();return;}
+function guestStI(){let nav="";try{nav=(performance.getEntriesByType("navigation")[0]||{}).type||"";}catch(e){}if(nav==="reload")return -1;const st=new URLSearchParams(location.search).get("st");if(!st)return -1;return STATIONS.findIndex(t=>t.key.toUpperCase()===st.toUpperCase()||(t.alias||[]).some(a=>a.toUpperCase()===st.toUpperCase()));}
+function openGuestChk(){const i=guestStI();if(i<0)return;ST_I=i;let g={};try{g=JSON.parse(localStorage.getItem(LS_GUEST)||"{}")||{};}catch(e){}CK.gname=g.name||"";CK.gorg=g.org||"";$("loginBox").classList.remove("on");openChk("外部人員",true);}
+function openChk(src,guest){
+ CK.guest=!!guest;
+ if(!S.user&&!CK.guest){showLogin();return;}
  CK.src=src||"手動";CK.pos=null;CK.gpsMsg="📡 取得定位中…";CK.last=null;CK.busy=false;
  $("ckTitle").textContent="📍 "+ST().name+"・打卡";openM("mChk");renderChkModal();
  clearInterval(CK.timer);CK.timer=setInterval(()=>{const c=$("ckClock");if(c)c.textContent=nowStr().slice(11,19);},1000);
  getPos().then(p=>{CK.pos=p;CK.gpsMsg=p.err?"⚠ "+p.err+"（仍可打卡，只是不記錄位置）":"✅ 已定位（誤差約 "+Math.round(p.acc)+" 公尺）";const g=$("ckGps");if(g)g.textContent=CK.gpsMsg;});
 }
-function closeChk(){clearInterval(CK.timer);closeM("mChk");}
+function closeChk(){clearInterval(CK.timer);closeM("mChk");if(CK.guest){CK.guest=false;if(!S.user)showLogin();}}
 function renderChkModal(){
  if(CK.last){const c=CK.last,inn=c.kind==="進站";
   $("ckBody").innerHTML='<div class="ckok"><div class="big">'+(inn?"✅":"👋")+'</div><h3>'+esc(c.kind)+'打卡完成　'+esc(hm(c.at))+'</h3><div class="muted">'+esc(c.name)+'・'+esc(ST().name)+(c.stay!==""?'・停留 '+esc(stayTxt(c.stay)):'')+(c.lat!==""?'・已記錄位置':'・未記錄位置')+'</div></div>'
-   +'<div class="ckacts">'+(inn?'<button class="btn grn" onclick="closeChk();go(\'insp\');openInsp()">📋 開始填每月安檢表</button>':'')
-   +'<button class="btn" onclick="closeChk();go(\'map\');openFs()">🗺 看本站示意圖（點設備看履歷）</button><button class="btn ghost" onclick="closeChk()">關閉</button></div>';return;}
+   +(CK.guest?'<div class="ckacts"><div class="muted" style="text-align:center">'+(inn?'離開時請再掃一次站門口 QR，按「外部人員打卡」→「出站」。':'謝謝，可以直接關閉這個頁面。')+'</div><button class="btn ghost" onclick="closeChk()">關閉</button></div>':'<div class="ckacts">'+(inn?'<button class="btn grn" onclick="closeChk();go(\'insp\');openInsp()">📋 開始填每月安檢表</button>':'')
+   +'<button class="btn" onclick="closeChk();go(\'map\');openFs()">🗺 看本站示意圖（點設備看履歷）</button><button class="btn ghost" onclick="closeChk()">關閉</button></div>');return;}
  const inn=inStation(),l=myLastToday();
- $("ckBody").innerHTML='<div class="ckclock" id="ckClock">'+nowStr().slice(11,19)+'</div><div class="ckwho">'+esc(S.user.name)+'・'+esc(today())+(l?'<br><span class="muted">今天最後一次：'+esc(l.kind)+' '+esc(hm(l.at))+'</span>':'')+'</div>'
+ $("ckBody").innerHTML='<div class="ckclock" id="ckClock">'+nowStr().slice(11,19)+'</div>'
+  +(CK.guest?'<div class="ckgf"><label>姓名（必填）<input id="ckGName" value="'+esc(CK.gname)+'" placeholder="請輸入你的姓名" oninput="CK.gname=this.value;ckSug()"></label><label>公司／單位<input id="ckGOrg" value="'+esc(CK.gorg)+'" placeholder="例如：○○工程行（選填）" oninput="CK.gorg=this.value"></label></div>':'')
+  +'<div class="ckwho">'+(CK.guest?'🧰 外部人員':esc(S.user.name))+'・'+esc(today())+(l?'<br><span class="muted">今天最後一次：'+esc(l.kind)+' '+esc(hm(l.at))+'</span>':'')+'</div>'
   +'<div class="ckgps" id="ckGps">'+esc(CK.gpsMsg)+'</div>'
-  +'<div class="ckbtns"><button class="ckbtn in'+(inn?"":" sug")+'" onclick="doChk(\'進站\')">🟢 進站</button><button class="ckbtn out'+(inn?" sug":"")+'" onclick="doChk(\'出站\')">🟠 出站</button></div>'
+  +'<div class="ckbtns" id="ckBtns"><button class="ckbtn in'+(inn?"":" sug")+'" onclick="doChk(\'進站\')">🟢 進站</button><button class="ckbtn out'+(inn?" sug":"")+'" onclick="doChk(\'出站\')">🟠 出站</button></div>'
   +'<input id="ckNote" placeholder="備註（選填，例如：會同廠商、配合抄表）" style="width:100%;margin-top:12px">'
-  +'<div class="ckacts"><button class="btn ghost" onclick="closeChk();go(\'map\');openFs()">先不打卡，直接看示意圖</button></div>';
+  +(CK.guest?'':'<div class="ckacts"><button class="btn ghost" onclick="closeChk();go(\'map\');openFs()">先不打卡，直接看示意圖</button></div>');
 }
+function ckSug(){const inn=inStation(),b=document.querySelectorAll(".ckbtn");if(b.length===2){b[0].classList.toggle("sug",!inn);b[1].classList.toggle("sug",inn);}}
 async function doChk(kind){
+ if(CK.guest&&!ckWho()){toast("請先輸入姓名",true);$("ckGName").focus();return;}
  if(CK.busy)return;CK.busy=true;document.querySelectorAll(".ckbtn").forEach(b=>b.disabled=true);
  if(!CK.pos){const g=$("ckGps");if(g)g.textContent="📡 等待定位…";CK.pos=await getPos();}
  const p=CK.pos||{};
  const data={station:ST().name,st:ST().key,kind,lat:p.err||p.lat==null?"":p.lat,lng:p.err||p.lng==null?"":p.lng,acc:p.err||p.acc==null?"":p.acc,src:CK.src,note:($("ckNote")||{}).value||""};
- const ok=await write("checkin",data);CK.busy=false;
+ let ok;
+ if(CK.guest){
+  data.gname=ckWho();data.gorg=(CK.gorg||"").trim();
+  try{localStorage.setItem(LS_GUEST,JSON.stringify({name:data.gname,org:data.gorg}));}catch(e){}
+  if(S.mode==="demo"){if(S.users.some(u=>u.name===data.gname)){alert("❌ "+data.gname+" 是系統人員，請用帳號密碼登入後再打卡");ok=false;}else{data.note=(data.gorg?"單位："+data.gorg:"")+(data.gorg&&data.note?"｜":"")+data.note;const c=buildChk(data,data.gname);c.src="外部人員";applyLocal("checkin",c);saveDemo();CK.last=c;ok=true;}}
+  else{showLoading("打卡中…");try{const j=await http("POST",null,{action:"guestCheckin",data});applyLocal("checkin",j.item);CK.last=j.item;ok=true;}catch(e){alert("❌ 打卡失敗："+e.message);ok=false;}finally{hideLoading();}}
+ }else ok=await write("checkin",data);
+ CK.busy=false;
  if(ok){if(!CK.last)CK.last=S.chks[S.chks.length-1];renderChkModal();if(S.view==="chk")renderChk();}
  else document.querySelectorAll(".ckbtn").forEach(b=>b.disabled=false);
 }
@@ -954,7 +974,7 @@ function renderChk(){
  const names=[...new Set(stChks().map(c=>c.name))];keepSel("cWho",opts(names,"全部人員"));
  const rows=filteredChks(),days=new Set(rows.filter(c=>c.kind==="進站").map(c=>c.date+c.name)).size;
  $("cSum").textContent="共 "+rows.length+" 筆・進站 "+rows.filter(c=>c.kind==="進站").length+" 次（"+days+" 人日）・出站 "+rows.filter(c=>c.kind==="出站").length+" 次";
- $("cList").innerHTML=rows.map(c=>'<tr><td data-l="日期">'+esc(c.date)+'</td><td data-l="時間">'+esc(String(c.at).slice(11,19))+'</td><td data-l="姓名">'+esc(c.name)+'</td><td data-l="類型"><span class="ckin '+(c.kind==="進站"?"in":"out")+'">'+esc(c.kind)+'</span></td><td data-l="停留">'+esc(stayTxt(c.stay))+'</td><td data-l="定位">'+(c.map?'<a href="'+esc(c.map)+'" target="_blank" rel="noopener">📍 地圖</a> <span class="muted">±'+esc(c.acc)+'m</span>':'<span class="muted">未記錄</span>')+'</td><td data-l="方式">'+esc(c.src)+'</td><td data-l="備註">'+esc(c.note)+'</td><td>'+(isAdmin()?'<button class="btn sm red" onclick="delChk(\''+esc(c.cid)+'\')">刪除</button>':'')+'</td></tr>').join("")||'<tr><td colspan="9">尚無打卡紀錄。掃站門口的站點 QR，或按上方「進站打卡」。</td></tr>';
+ $("cList").innerHTML=rows.map(c=>'<tr><td data-l="日期">'+esc(c.date)+'</td><td data-l="時間">'+esc(String(c.at).slice(11,19))+'</td><td data-l="姓名">'+esc(c.name)+(c.src==="外部人員"?' <span class="ckin ext">外部</span>':'')+'</td><td data-l="類型"><span class="ckin '+(c.kind==="進站"?"in":"out")+'">'+esc(c.kind)+'</span></td><td data-l="停留">'+esc(stayTxt(c.stay))+'</td><td data-l="定位">'+(c.map?'<a href="'+esc(c.map)+'" target="_blank" rel="noopener">📍 地圖</a> <span class="muted">±'+esc(c.acc)+'m</span>':'<span class="muted">未記錄</span>')+'</td><td data-l="方式">'+esc(c.src)+'</td><td data-l="備註">'+esc(c.note)+'</td><td>'+(isAdmin()?'<button class="btn sm red" onclick="delChk(\''+esc(c.cid)+'\')">刪除</button>':'')+'</td></tr>').join("")||'<tr><td colspan="9">尚無打卡紀錄。掃站門口的站點 QR，或按上方「進站打卡」。</td></tr>';
 }
 async function delChk(cid){if(!confirm("確定刪除這筆打卡紀錄？"))return;if(await write("deleteCheckin",{cid}))toast("已刪除");}
 function exportChk(){
