@@ -50,6 +50,7 @@ svg#map{display:block;width:100%;min-width:900px;height:auto}
 .eq.sel .halo{opacity:1}
 .eq .lbl{font-size:22px;fill:#1d2833;paint-order:stroke;stroke:#fff;stroke-width:4px;font-weight:600}
 .eq.sel .lbl{fill:#0b5ed7}
+.eq .lbl .nosz{fill:#e67e22}
 .eq .lid{font-size:17px;fill:#2e6da4;font-weight:700;paint-order:stroke;stroke:#fff;stroke-width:4px}
 .nolbl .eq .lid{display:none}.nolbl .eq.sel .lid{display:inline}
 .eq.sel .lid{fill:#fff;stroke:#0b5ed7;stroke-width:8px}
@@ -306,7 +307,7 @@ h3{margin:0 0 8px;font-size:18px;color:var(--pri)}
    <div class="maptools">
     <button class="btn sm" onclick="openFs()">⛶ 全螢幕示意圖</button>
     <label><input type="checkbox" id="chkLbl" checked onchange="toggleLabels()"> 顯示設備名稱／編號</label>
-    <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#d68910"></i>⏰ 校驗快到期／逾期</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span></div>
+    <div class="legend"><span><i style="background:#c0392b"></i>有未結案維修</span><span><i style="background:#d68910"></i>⏰ 校驗快到期／逾期</span><span><i style="background:#1e90ff"></i>目前選取</span><span>管線可點（中壓／低壓管體）</span><span><b style="color:#e67e22">?"</b> 尺寸未填（到履歷卡「規格」填，例如 1/2"）</span></div>
    </div>
    <div class="svgbox" id="svgbox"></div>
    <div class="tiles" id="tiles"></div>
@@ -548,8 +549,8 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
 </script>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbzypqvAWNXu2jr8w-WM3z1bcBAboqeMV_19iAxPjDFPYFaPkJYkLsYM2bMhZREzRAc0gg/exec";
-const VERSION = "v3.1";
-const WHATS_NEW = "外部人員打卡：廠商、外包不用帳號，掃站點 QR 後在登入畫面按「外部人員打卡」，輸入姓名就能進站／出站";
+const VERSION = "v3.2";
+const WHATS_NEW = "海口站示意圖：立管加裝 5A-57 壓力表；所有設備標籤統一「尺寸＋名稱，下方編號」，未填尺寸顯示橘色 ?\"";
 const LS_DEMO = "station_repair_demo_v1";
 const LS_CACHE = "station_repair_cache_v1";
 const STATIONS = [
@@ -618,7 +619,8 @@ const SEED_EQ = [
  ["5A-52","標示牌","非供氣","標示牌","公司站名標示牌","站名牌","",""],
  ["5A-53","標示牌","非供氣","標示牌","危害成分標示牌","危害成分牌","",""],
  ["5A-54","標示牌","非供氣","標示牌","非經許可嚴禁擅入標示牌","禁止擅入牌","",""],
- ["5A-55","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""]
+ ["5A-55","標示牌","非供氣","標示牌","嚴禁煙火標示牌","嚴禁煙火牌","",""],
+ ["5A-57","下方管線","中壓","壓力表","壓力表（下方出口立管）","壓力表","",""]
 ].map((r,i)=>({id:r[0],station:STATIONS[0].name,section:r[1],group:r[2],item:r[3],name:r[4],short:r[5],spec:r[6],tag:r[7],note:"",order:i+1}));
 
 const MAP_W = 2080, MAP_H = 800;
@@ -629,7 +631,7 @@ const LAYOUT_HK = {
  "5A-10":{t:"opso",x:730,y:600},"5A-11":{t:"reg",x:870,y:600},"5A-56":{t:"gauge",x:990,y:600},"5A-12":{t:"meter",x:1110,y:600},"5A-13":{t:"ball",x:1240,y:600},
  "5A-15":{t:"ball",x:1490,y:200},"5A-16":{t:"reg",x:1620,y:200},"5A-17":{t:"ball",x:1750,y:200},"5A-18":{t:"ball",x:1920,y:200},"5A-19":{t:"gauge",x:1990,y:200},
  "5A-20":{t:"ball",x:1490,y:400},"5A-21":{t:"reg",x:1620,y:400},"5A-22":{t:"ball",x:1750,y:400},"5A-23":{t:"ball",x:1920,y:400},"5A-24":{t:"gauge",x:1990,y:400},
- "5A-25":{t:"gauge",x:1840,y:300,r:90},"5A-26":{t:"ball",x:1700,y:700}
+ "5A-25":{t:"gauge",x:1840,y:300,r:90},"5A-26":{t:"ball",x:1700,y:700},"5A-57":{t:"gauge",x:1320,y:460,r:90}
 };
 const READOUTS_HK = [
  {id:"5A-38",l:"環境溫度",x:180,y:20},{id:"5A-01",l:"入口壓力",x:20,y:470},{id:"5A-14",l:"出口壓力",x:1040,y:92},
@@ -680,7 +682,7 @@ async function http(method,params,body){
  }finally{clearTimeout(tm);}
 }
 
-const SEED_VER=6;
+const SEED_VER=7;
 const ID_MAP={"HK-01": "5A-01", "HK-02": "5A-02", "HK-03": "5A-03", "HK-04": "5A-04", "HK-05": "5A-05", "HK-06": "5A-06", "HK-07": "5A-07", "HK-08": "5A-08", "HK-09": "5A-09", "HK-10": "5A-10", "HK-11": "5A-11", "HK-12": "5A-12", "HK-13": "5A-13", "HK-14": "5A-14", "HK-15": "5A-15", "HK-16": "5A-16", "HK-17": "5A-17", "HK-18": "5A-18", "HK-19": "5A-19", "HK-20": "5A-20", "HK-21": "5A-21", "HK-22": "5A-22", "HK-23": "5A-23", "HK-24": "5A-24", "HK-25": "5A-25", "HK-26": "5A-26", "HK-31": "5A-27", "HK-32": "5A-28", "HK-41": "5A-29", "HK-42": "5A-30", "HK-43": "5A-31", "HK-44": "5A-32", "HK-45": "5A-33", "HK-46": "5A-34", "HK-47": "5A-35", "HK-48": "5A-36", "HK-49": "5A-37", "HK-50": "5A-38", "HK-51": "5A-39", "HK-61": "5A-40", "HK-62": "5A-41", "HK-63": "5A-42", "HK-64": "5A-43", "HK-65": "5A-44", "HK-66": "5A-45", "HK-67": "5A-46", "HK-68": "5A-47", "HK-69": "5A-48", "HK-70": "5A-49", "HK-71": "5A-50", "HK-72": "5A-51", "HK-73": "5A-52", "HK-74": "5A-53", "HK-75": "5A-54", "HK-76": "5A-55"};
 function remapIds(){const f=id=>ID_MAP[id]||id;S.equips.forEach(e=>e.id=f(e.id));S.records.forEach(r=>r.eid=f(r.eid));(S.insps||[]).forEach(x=>(x.items||[]).forEach(i=>{if(i.eid)i.eid=f(i.eid);}));}
 const SEED_FIX={"5A-04":"整壓器B","5A-08":"整壓器A1","5A-11":"整壓器A2","5A-16":"4\"軸流閥整壓器","5A-21":"2\"DIVAL BP 直動型整壓器（中減低）","5A-25":"6\"球閥（A/B線連通）"};
@@ -1018,8 +1020,11 @@ function sym(t){
  if(t==="blind")return '<rect x="-7" y="-24" width="14" height="48" rx="2" fill="#34495e"/><rect x="-24" y="-5" width="17" height="10" fill="#6c7a88"/>';
  return "";
 }
-function sizedShort(e){const sh=e.short||e.name,sz=(String(e.spec||"").match(/^\d+(\.\d+)?"/)||[""])[0];return sz&&!/^\d/.test(sh)?sz+sh:sh;}
-function lblPos(t,L){if(L.r)return{x:L.x-30,y:L.y+8,a:"end"};if(t==="gauge")return{x:L.x,y:L.y-70,a:"middle"};if(t==="meter")return{x:L.x,y:L.y+56,a:"middle"};return{x:L.x,y:L.y+48,a:"middle"};}
+const SIZE_RE=/(\d+-\d+\/\d+|\d+\/\d+|\d+(?:\.\d+)?)\s*(?:"|”|″|吋|英吋)/;
+function eqSize(e){const m=String(e.spec||"").match(SIZE_RE);return m?m[1]+'"':"";}
+function sizedShort(e){const sh=e.short||e.name;if(/^[\d\/\-\.]+\s*["”″]/.test(sh))return sh;const sz=eqSize(e);return sz?sz+sh:sh;}
+function lblHtml(e){const sh=e.short||e.name;if(/^[\d\/\-\.]+\s*["”″]/.test(sh))return esc(sh);const sz=eqSize(e);return sz?esc(sz+sh):'<tspan class="nosz">?"</tspan>'+esc(sh);}
+function lblPos(t,L){if(L.r===90)return{x:L.x-26,y:L.y+2,a:"end"};if(L.r===-90)return{x:L.x+26,y:L.y+2,a:"start"};if(t==="gauge")return{x:L.x,y:L.y-94,a:"middle"};if(t==="meter")return{x:L.x,y:L.y+56,a:"middle"};return{x:L.x,y:L.y+48,a:"middle"};}
 function curMap(){const M=MAPS[ST().map]||null;return {M,LAYOUT:M?M.layout:{},READOUTS:M?M.readouts:[],PIPES:M?M.pipes:{}};}
 function eqPos(id){const {LAYOUT,READOUTS}=curMap();if(LAYOUT[id])return{x:LAYOUT[id].x,y:LAYOUT[id].y};const r=READOUTS.find(x=>x.id===id);if(r)return{x:r.x+80,y:r.y+22};return null;}
 function mapSvg(vb,mini){
@@ -1036,11 +1041,11 @@ function mapSvg(vb,mini){
  }
  for(const id in LAYOUT){
   const L=LAYOUT[id],e=eqById(id);if(!e)continue;
-  const p=lblPos(L.t,L),oc=openCnt(id),up=L.t==="gauge";
+  const p=lblPos(L.t,L),oc=openCnt(id);
   s+='<g class="eq'+(S.sel===id?" sel":"")+'" data-id="'+id+'"><title>'+esc(id+" "+e.name)+'</title>';
   s+='<g transform="translate('+L.x+','+L.y+')'+(L.r?' rotate('+L.r+')':'')+'"><rect x="-32" y="-60" width="64" height="94" fill="transparent"/><circle class="halo" r="38"/>'+sym(L.t)+'</g>';
-  s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+esc(sizedShort(e))+'</text>';
-  s+='<text class="lid" x="'+p.x+'" y="'+(up?p.y-24:p.y+22)+'" text-anchor="'+p.a+'">'+esc(id)+'</text>';
+  s+='<text class="lbl" x="'+p.x+'" y="'+p.y+'" text-anchor="'+p.a+'">'+lblHtml(e)+'</text>';
+  s+='<text class="lid" x="'+p.x+'" y="'+(p.y+22)+'" text-anchor="'+p.a+'">'+esc(id)+'</text>';
   const cinf=calInfo(e);if(cinf&&(cinf.state==="over"||cinf.state==="soon"))s+='<circle cx="'+(L.x-24)+'" cy="'+(L.y-34)+'" r="12" fill="'+(cinf.state==="over"?"#c0392b":"#d68910")+'" stroke="#fff" stroke-width="2"/><text x="'+(L.x-24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="13" fill="#fff">⏰</text>';
   if(oc)s+='<circle cx="'+(L.x+24)+'" cy="'+(L.y-34)+'" r="12" fill="#c0392b"/><text x="'+(L.x+24)+'" y="'+(L.y-29)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">'+oc+'</text>';
   s+='</g>';
