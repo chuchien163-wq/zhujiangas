@@ -300,7 +300,7 @@ table.ttrack td{vertical-align:middle}
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.3</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.4</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -339,9 +339,9 @@ table.ttrack td{vertical-align:middle}
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
 // 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
-var WEB_VER = "5.3";
+var WEB_VER = "5.4";
 // 本次更新內容（每次改版都要改，舊版提醒會顯示）
-var WHATS_NEW = "新增主管理者：在「參數設定」可新增／停用人員、幫忘記密碼的人重設密碼（需後端 GAS v2.4）";
+var WHATS_NEW = "密碼對不上時直接跳出登入視窗，登入後自動接著刪除／存檔；主管理者可在試算表直接打密碼（需後端 GAS v2.6）";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_me_v1"; // v5.0 個人帳號：存 {id,name,pw}
 var TIMEOUT_MS = 25000;
@@ -358,6 +358,8 @@ var UI = { page: "dash", y: 0, m1: 1, m2: 12, st: "進行中", cls: "全部", q:
 var PW = "", ME_ID = "", ME_NAME = "", ME_ROLE = "";
 function saveMe(id, name, pw, role) { ME_ID = id || ""; ME_NAME = name || ""; PW = pw || ""; if (role !== undefined) ME_ROLE = role || ""; if (!PW) ME_ROLE = ""; lsSet(SS_PW, PW ? JSON.stringify({ id: ME_ID, name: ME_NAME, pw: PW, role: ME_ROLE }) : ""); }
 function clearMe() { saveMe("", "", "", ""); }
+// v5.4 密碼對不上（被重設、在別台改過）：清掉記住的登入 → 跳登入視窗 → 登入後 retry
+function authFail(retry, msg) { clearMe(); updLock(); toast("🔒 " + (msg || "密碼已變更") + "，請重新登入", 3500); needLogin(function () { if (retry) retry(); }); }
 
 /* ---------- 工具 ---------- */
 function $(s, r) { return (r || document).querySelector(s); }
@@ -482,7 +484,7 @@ function post(action, data, okMsg) {
   return req("POST", payload).then(function (j) {
     hideLoading();
     if (!j.ok) {
-      if (/密碼/.test(j.msg || "")) { clearMe(); updLock(); }
+      if (/密碼/.test(j.msg || "")) { return new Promise(function (res) { authFail(function () { post(action, data, okMsg).then(res); }, j.msg); }); }
       toast("❌ " + (j.msg || "存檔失敗"), 4000); return false;
     }
     if (j.data) setData(j.data);
@@ -1132,7 +1134,7 @@ function doSaveTrack(after) {
       });
       return chain.then(done, function (e) { fail(e.message); });
     }
-    if (/密碼/.test(j.msg || "")) { clearMe(); updLock(); }
+    if (/密碼/.test(j.msg || "")) { hideLoading(); authFail(function () { doSaveTrack(after); }, j.msg); return; }
     fail(j.msg || "存檔失敗");
   }).catch(function (e) { fail(e.message); });
 }
@@ -1888,7 +1890,7 @@ function sendCase(it, pipes, force) {
     hideLoading();
     if (j.ok) { if (j.data) setData(j.data); toast("✅ 已儲存：" + it["工程編號"]); closeModal(); render(); return; }
     if (j.conflict) { caseConflict(j, it, pipes); return; }
-    if (/密碼/.test(j.msg || "")) { clearMe(); updLock(); }
+    if (/密碼/.test(j.msg || "")) { hideLoading(); authFail(function () { sendCase(it, pipes, force); }, j.msg); return; }
     toast("❌ " + (j.msg || "存檔失敗"), 4000);
   }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); });
 }
@@ -2099,7 +2101,7 @@ function sendTk(it, force, after) {
     hideLoading();
     if (j.ok) { if (j.data) setData(j.data); toast("✅ 已儲存：" + it["單號"]); if (after) after(); render(); return; }
     if (j.conflict) { if (j.data) setData(j.data); render(); toast("⚠️ " + j.msg, 6000); return; }
-    if (/密碼/.test(j.msg || "")) { clearMe(); updLock(); }
+    if (/密碼/.test(j.msg || "")) { hideLoading(); authFail(function () { sendTk(it, force, after); }, j.msg); return; }
     toast("❌ " + (j.msg || "存檔失敗"), 4500);
   }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); });
 }
@@ -2312,7 +2314,7 @@ function saveDoc(andDownload) {
       hideLoading();
       if (j.ok) { if (j.data) setData(j.data); toast("✅ 已儲存"); var kind = V.kind, uid = j.uid; if (andDownload) makeDoc(kind, uid); docBack(); return; }
       if (j.data) setData(j.data);
-      if (/密碼/.test(j.msg || "")) { clearMe(); updLock(); }
+      if (/密碼/.test(j.msg || "")) { hideLoading(); authFail(function () { drawDocForm(); saveDoc(andDownload); }, j.msg); return; }
       toast((j.conflict ? "⚠️ " : "❌ ") + (j.msg || "存檔失敗"), 6000);
     }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4500); });
   });
