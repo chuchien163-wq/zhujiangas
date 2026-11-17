@@ -295,12 +295,22 @@ table.ttrack td{vertical-align:middle}
   .ptable tr{border:1px solid var(--line);border-radius:10px;padding:6px;margin-bottom:8px}
   .ptable td::before{content:attr(data-l);display:block;font-size:13.5px;color:var(--sub)}
 }
+#gate{position:fixed;inset:0;z-index:70;background:linear-gradient(135deg,#1d4e89,#2f6fb3);display:none;align-items:center;justify-content:center;padding:16px}
+#gate .gcard{background:#fff;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:30px 28px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:8px;font-size:17px}
+#gate .gtt{font-size:26px;font-weight:800;color:#1d4e89}
+#gate .gsub{color:#6b7a90;margin-bottom:8px}
+#gate .gmsg{background:#fff4d6;border:1px solid #f0c75e;border-radius:10px;padding:8px 12px;color:#7a5600}
+#gate label{font-weight:700;margin-top:6px}
+#gate input,#gate select{font-size:17px;padding:12px;border:1px solid #cfd8e3;border-radius:10px;width:100%;box-sizing:border-box}
+#gate .btn{margin-top:12px;font-size:18px;padding:12px}
+#gate .ghint{color:#6b7a90;font-size:14px}
+#gate .gro{color:#2f6fb3;font-size:15px;text-align:center;margin-top:4px}
 </style>
 </head>
 <body>
 <div class="app">
   <header>
-    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.4</span>
+    <h1>🔧 工程管線管理系統</h1><span class="ver" id="verTag">竹建瓦斯｜v5.5</span>
     <div class="period">
       <span>統計期間</span>
       <select id="pY"></select><span>年</span>
@@ -339,9 +349,9 @@ table.ttrack td{vertical-align:middle}
 "use strict";
 /* ====== 設定：部署 GAS 後把 /exec 網址貼在這裡 ====== */
 // 網頁版本：每次改網頁都要一起改（舊版提醒靠它比對 GitHub 上的最新檔）
-var WEB_VER = "5.4";
+var WEB_VER = "5.5";
 // 本次更新內容（每次改版都要改，舊版提醒會顯示）
-var WHATS_NEW = "密碼對不上時直接跳出登入視窗，登入後自動接著刪除／存檔；主管理者可在試算表直接打密碼（需後端 GAS v2.6）";
+var WHATS_NEW = "改成開網頁先登入一次就好（登入畫面當首頁），之後刪除、存檔都不會再問密碼；修正登入後刪除還說密碼錯誤的問題（需後端 GAS v2.7）";
 var API_URL = "https://script.google.com/macros/s/AKfycbzH46DNlo1DatqaOw0vYq-Pl6eeCtc5tJgZuu4ftqthOh6f-QoyoqUSgLVgp0whLDDS/exec";
 var LS_API = "pipeline_api_v1", LS_UI = "pipeline_ui_v1", SS_PW = "pipeline_me_v1"; // v5.0 個人帳號：存 {id,name,pw}
 var TIMEOUT_MS = 25000;
@@ -443,7 +453,7 @@ function req(method, payload) {
   if (ctrl) opt.signal = ctrl.signal;
   var full = url;
   if (method === "GET") full = url + (url.indexOf("?") > -1 ? "&" : "?") + "action=getAll&t=" + Date.now();
-  else { if (payload && payload.pw !== undefined && payload.uid === undefined) payload.uid = ME_ID; opt.body = JSON.stringify(payload); }
+  else { if (payload && payload.pw !== undefined && payload.me === undefined) payload.me = ME_ID; opt.body = JSON.stringify(payload); }
   var f = fetch(full, opt).then(function (r) {
     if (!r.ok) throw new Error("後端回應錯誤 HTTP " + r.status);
     return r.text();
@@ -472,7 +482,7 @@ function load() {
     hideLoading();
     if (!d.ok) throw new Error(d.msg || "讀取失敗");
     setData(d); fillPeriod(); render();
-    if (!lsGet(TOUR_KEY)) setTimeout(startTour, 400);
+    gateCheck();
   }).catch(function (e) {
     hideLoading();
     $("#content").innerHTML = '<div class="errbox">⚠ ' + esc(e.message) + '</div><button class="btn pri" onclick="load()">重試</button> <button class="btn" onclick="renderSetup(true)">重新設定後端網址</button>';
@@ -1702,7 +1712,7 @@ function needLogin(cb) {
     if (!id) { toast("請先選擇人員", 2500); return; }
     if (!v) { toast("請輸入密碼", 2500); return; }
     showLoading("驗證中…");
-    req("POST", { action: "login", uid: id, pw: v }).then(function (j) {
+    req("POST", { action: "login", uid: id, me: id, pw: v }).then(function (j) {
       hideLoading();
       if (!j.ok) { toast("❌ " + (j.msg || "工號或密碼錯誤"), 3500); return; }
       saveMe(j.id || id, j.name || "", v, j.role || ""); updLock(); closeModal2();
@@ -1734,6 +1744,52 @@ function askChangePw(force, cb) {
   $("#np2").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
   setTimeout(function () { $("#np1").focus(); }, 50);
 }
+
+/* ---------- v5.5 登入首頁：開網頁先登入一次，之後不再問 ---------- */
+var GATE_SKIP = false;
+function gateCheck() {
+  var tour = function () { if (!lsGet(TOUR_KEY)) setTimeout(startTour, 400); };
+  if (PW && ME_ID) {
+    // 記住的登入先跟後端確認一次；密碼被改過就回登入畫面（避免做到一半才說密碼錯）
+    req("POST", { action: "login", uid: ME_ID, me: ME_ID, pw: PW }).then(function (j) {
+      if (j.ok) { saveMe(j.id || ME_ID, j.name || ME_NAME, PW, j.role || ""); updLock(); if (j.mustChange) askChangePw(true); else tour(); }
+      else { clearMe(); updLock(); showGate("密碼已變更，請重新登入"); }
+    }).catch(function () { tour(); });
+    return;
+  }
+  if (GATE_SKIP) { tour(); return; }
+  showGate();
+}
+function showGate(msg) {
+  var g = $("#gate");
+  if (!g) { g = document.createElement("div"); g.id = "gate"; document.body.appendChild(g); }
+  var us = DB.users || [];
+  var who = us.length ? '<select id="gUid"><option value="">— 選擇你的名字 —</option>' + us.map(function (u) { return '<option value="' + esc(u["工號"]) + '">' + esc(u["工號"] + " " + u["姓名"]) + "</option>"; }).join("") + "</select>"
+    : '<input id="gUid" placeholder="工號，例如 0070" autocomplete="username">';
+  g.innerHTML = '<div class="gcard"><div class="gtt">🔧 工程管線管理系統</div><div class="gsub">竹建瓦斯｜v' + esc(WEB_VER) + '</div>' + (msg ? '<div class="gmsg">' + esc(msg) + "</div>" : "") +
+    '<label>人員</label>' + who + '<label>密碼</label><input id="gPw" type="password" placeholder="個人密碼（第一次用預設密碼）" autocomplete="current-password">' +
+    '<button class="btn pri" id="gOk">登入</button><div class="ghint">這台電腦會記住，下次打開不用再登入；在別人的電腦用完請按右上角登出。</div>' +
+    '<a href="javascript:void(0)" id="gRo" class="gro">只看不改（唯讀瀏覽）</a></div>';
+  g.style.display = "flex";
+  var go = function () {
+    var id = ($("#gUid").value || "").trim(), v = $("#gPw").value;
+    if (!id) { toast("請先選擇人員", 2500); return; }
+    if (!v) { toast("請輸入密碼", 2500); return; }
+    showLoading("登入中…");
+    req("POST", { action: "login", uid: id, me: id, pw: v }).then(function (j) {
+      hideLoading();
+      if (!j.ok) { toast("❌ " + (j.msg || "工號或密碼錯誤"), 3500); $("#gPw").value = ""; $("#gPw").focus(); return; }
+      saveMe(j.id || id, j.name || "", v, j.role || ""); updLock(); hideGate();
+      if (j.mustChange) { askChangePw(true); return; }
+      toast("🔓 " + (j.name || "") + "，歡迎"); if (!lsGet(TOUR_KEY)) setTimeout(startTour, 400);
+    }).catch(function (e) { hideLoading(); toast("❌ " + e.message, 4000); });
+  };
+  $("#gOk").onclick = go;
+  $("#gPw").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+  $("#gRo").onclick = function () { GATE_SKIP = true; hideGate(); toast("目前是唯讀，要修改時按右上角 🔒 登入", 3500); };
+  setTimeout(function () { var f = $("#gUid"); if (f) f.focus(); }, 50);
+}
+function hideGate() { var g = $("#gate"); if (g) g.style.display = "none"; }
 
 /* ---------- Modal ---------- */
 function modal(html, small) {
@@ -2548,7 +2604,7 @@ window.addEventListener("resize", function () { if ($("#tourTip").style.display 
   $("#btnTour").addEventListener("click", startTour);
   document.addEventListener("keydown", function (e) { if ($("#tourTip").style.display === "block") { if (e.key === "Escape") endTour(); if (e.key === "ArrowRight" && tourI < TOUR.length - 1) { tourI++; showTour(); } if (e.key === "ArrowLeft" && tourI) { tourI--; showTour(); } } });
   $("#btnLock").addEventListener("click", function () {
-    if (PW) { clearMe(); updLock(); toast("🔒 已登出，回到唯讀"); }
+    if (PW) { clearMe(); updLock(); GATE_SKIP = false; showGate("已登出"); }
     else needLogin(function () {});
   });
   // 編輯視窗不因點到背景或按 Esc 而關閉（避免填到一半消失）；只有 ✕／取消／存檔成功才關
